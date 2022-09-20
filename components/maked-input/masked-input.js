@@ -39,7 +39,8 @@ export class MaskManager {
 
         // are we at a valid input point, if yes, exit
         const maskAt = this._mask[this._index];
-        if (maskValues.indexOf(maskAt) != -1) return true;
+        const validIndex = maskValues.indexOf(maskAt) != -1;
+        if (validIndex == true) return true;
 
         // move cursor up
         this._index += 1;
@@ -51,6 +52,7 @@ export class MaskManager {
         if (this.stepCursor() == true && canEdit(this._mask[this._index], char)) {
             this.values[this._index] = char;
             this.text = this.values.join("");
+            this._index += 1;
         }
     }
 }

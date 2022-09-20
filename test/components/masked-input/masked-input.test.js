@@ -37,4 +37,18 @@ Deno.test("masked-input - set char", async () => {
     manager.setCursor(0);
     manager.set("2");
     assertEquals(manager.text, "(2__) __ ___");
+
+    manager.set("a");
+    assertEquals(manager.text, "(2__) __ ___");
+
+    manager.setCursor(0);
+    manager.set(0);
+    manager.set(1);
+    manager.set(2);
+    manager.set(3);
+    manager.set(4);
+    manager.set(5);
+    manager.set(6);
+    manager.set(7);
+    assertEquals(manager.text, "(012) 34 567");
 })
