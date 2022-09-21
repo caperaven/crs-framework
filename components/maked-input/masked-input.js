@@ -1,24 +1,50 @@
 export class MaskedInput extends HTMLInputElement {
-    async connectedCallback() {
+    #maskManager;
+    #updateHandler;
 
+    async connectedCallback() {
+        this.#updateHandler = this.#update.bind(this);
+        this.#maskManager = new MaskManager(this.dataset.mask, this.#updateHandler);
     }
 
     async disconnectedCallback() {
+        this.#maskManager = this.#maskManager.dispose();
+    }
+
+    #update() {
 
     }
 }
 
-customElements.define("masked-input", MaskedInput, { extends: "input" });
-
 const maskValues = Object.freeze(["0", "#", "_"]);
 
 export class MaskManager {
+    #mask;
+    #text;
+    #values;
+    #index;
+
+    get value() {
+        return this.#text;
+    }
+
+    get currentIndex() {
+        return this.#index;
+    }
+
     constructor(mask) {
-        this._mask = mask;
-        this.text = maskToText(mask);
-        this.values = this.text.split("");
+        this.#mask = mask;
+        this.#text = maskToText(mask);
+        this.#values = this.#text.split("");
 
         this.setCursor(0);
+    }
+
+    dispose() {
+        this.#text = null;
+        this.#values = null;
+        this.#mask = null;
+        return null;
     }
 
     /**
@@ -26,25 +52,25 @@ export class MaskManager {
      * @param index
      */
     setCursor(index) {
-        this._index = index;
-        this.stepCursor();
+        this.#index = index;
+        this.#stepCursor();
     }
 
     /**
      * step the index until it finds a valid input
      */
-    stepCursor() {
+    #stepCursor() {
         // we are at the end so exit
-        if (this._index == this._mask.length) return false;
+        if (this.#index == this.#mask.length) return false;
 
         // are we at a valid input point, if yes, exit
-        const maskAt = this._mask[this._index];
+        const maskAt = this.#mask[this.#index];
         const validIndex = maskValues.indexOf(maskAt) != -1;
         if (validIndex == true) return true;
 
         // move cursor up
-        this._index += 1;
-        this.stepCursor();
+        this.#index += 1;
+        this.#stepCursor();
         return true;
     }
 
@@ -54,33 +80,33 @@ export class MaskManager {
      */
     set(char) {
         // we are at the end and there is nothing left to edit so return
-        if (this._index == this._mask.length -1 && this.values[this._index] != "_") return;
+        if (this.#index == this.#mask.length -1 && this.#values[this.#index] != "_") return;
 
         // step to the next open spot and make sure that you have a valid input
-        if (this.stepCursor() == true && canEdit(this._mask[this._index], char)) {
-            this.values[this._index] = char;
-            this.text = this.values.join("");
-            this._index += 1;
+        if (this.#stepCursor() == true && canEdit(this.#mask[this.#index], char)) {
+            this.#values[this.#index] = char;
+            this.#text = this.#values.join("");
+            this.#index += 1;
 
-            if (this._index >= this._mask.length) {
-                this._index = this._mask.length - 1;
+            if (this.#index >= this.#mask.length) {
+                this.#index = this.#mask.length - 1;
             }
         }
     }
 
     clearBack() {
-        if (this._index == 0) return;
+        if (this.#index == 0) return;
 
-        const moveBack = this.values[this._index] == "_" || maskValues.indexOf(this._mask[this._index]) == -1;
+        const moveBack = this.#values[this.#index] == "_" || maskValues.indexOf(this.#mask[this.#index]) == -1;
 
         if (moveBack == true) {
-            this._index -= 1;
+            this.#index -= 1;
         }
 
-        const maskAt = this._mask[this._index];
+        const maskAt = this.#mask[this.#index];
         if (maskValues.indexOf(maskAt) != -1) {
-            this.values[this._index] = "_";
-            this.text = this.values.join("");
+            this.#values[this.#index] = "_";
+            this.#text = this.#values.join("");
         }
         else {
             this.clearBack();
@@ -88,7 +114,7 @@ export class MaskManager {
     }
 
     clear() {
-        this.text = maskToText(this._mask);
+        this.#text = maskToText(this.#mask);
         this.setCursor(0);
     }
 }
@@ -119,3 +145,4 @@ export function canEdit(maskValue, char) {
     return false;
 }
 
+customElements.define("masked-input", MaskedInput, { extends: "input" });

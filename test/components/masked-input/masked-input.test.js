@@ -21,30 +21,29 @@ Deno.test("canEdit", async () => {
 
 Deno.test("masked-input - set mask text", async () => {
     const manager = new MaskManager("(000) 00 000");
-    assertEquals(manager.text, "(___) __ ___");
-    assertEquals(manager.values.length, 12);
-    assertEquals(manager._index, 1);
+    assertEquals(manager.value, "(___) __ ___");
+    assertEquals(manager.currentIndex, 1);
 })
 
 Deno.test("masked-input - set char", async () => {
     const manager = new MaskManager("(000) 00 000");
-    assertEquals(manager.text, "(___) __ ___");
-    assertEquals(manager._index, 1);
+    assertEquals(manager.value, "(___) __ ___");
+    assertEquals(manager.currentIndex, 1);
 
     manager.set("1");
-    assertEquals(manager.text, "(1__) __ ___");
+    assertEquals(manager.value, "(1__) __ ___");
 
     manager.setCursor(0);
     manager.set("2");
-    assertEquals(manager.text, "(2__) __ ___");
+    assertEquals(manager.value, "(2__) __ ___");
 
     manager.set("a");
-    assertEquals(manager.text, "(2__) __ ___");
+    assertEquals(manager.value, "(2__) __ ___");
 })
 
 Deno.test("masked-input - set char full", async () => {
     const manager = new MaskManager("(000) 00 000");
-    assertEquals(manager.text, "(___) __ ___");
+    assertEquals(manager.value, "(___) __ ___");
 
     manager.set(0);
     manager.set(1);
@@ -56,40 +55,40 @@ Deno.test("masked-input - set char full", async () => {
     manager.set(7);
     manager.set(8);
     manager.set(9);
-    assertEquals(manager.text, "(012) 34 567");
-    assertEquals(manager._index,11);
+    assertEquals(manager.value, "(012) 34 567");
+    assertEquals(manager.currentIndex,11);
 })
 
 Deno.test("mask-input - jump back", async () => {
     const manager = new MaskManager("00 0");
-    assertEquals(manager.text, "__ _");
+    assertEquals(manager.value, "__ _");
 
     manager.set(0);
     manager.set(1);
     manager.set(2);
-    assertEquals(manager.text, "01 2");
-    assertEquals(manager._index, 3);
+    assertEquals(manager.value, "01 2");
+    assertEquals(manager.currentIndex, 3);
 
     manager.clearBack();
-    assertEquals(manager.text, "01 _");
-    assertEquals(manager._index, 3);
+    assertEquals(manager.value, "01 _");
+    assertEquals(manager.currentIndex, 3);
 
     manager.clearBack();
-    assertEquals(manager.text, "0_ _");
-    assertEquals(manager._index, 1);
+    assertEquals(manager.value, "0_ _");
+    assertEquals(manager.currentIndex, 1);
 
     manager.clearBack();
-    assertEquals(manager.text, "__ _");
-    assertEquals(manager._index, 0);
+    assertEquals(manager.value, "__ _");
+    assertEquals(manager.currentIndex, 0);
 
     manager.clearBack();
-    assertEquals(manager.text, "__ _");
-    assertEquals(manager._index, 0);
+    assertEquals(manager.value, "__ _");
+    assertEquals(manager.currentIndex, 0);
 })
 
 Deno.test("mask-input - clear", async () => {
     const manager = new MaskManager("(000) 00 000");
-    assertEquals(manager.text, "(___) __ ___");
+    assertEquals(manager.value, "(___) __ ___");
 
     manager.set(0);
     manager.set(1);
@@ -101,15 +100,15 @@ Deno.test("mask-input - clear", async () => {
     manager.set(7);
     manager.set(8);
     manager.set(9);
-    assertEquals(manager.text, "(012) 34 567");
+    assertEquals(manager.value, "(012) 34 567");
 
     manager.clear();
-    assertEquals(manager.text, "(___) __ ___");
+    assertEquals(manager.value, "(___) __ ___");
 })
 
 Deno.test("masked-input - clearBack", async () => {
     const manager = new MaskManager("(000) 00 000");
-    assertEquals(manager.text, "(___) __ ___");
+    assertEquals(manager.value, "(___) __ ___");
 
     manager.set(0);
     manager.set(1);
@@ -121,23 +120,23 @@ Deno.test("masked-input - clearBack", async () => {
     manager.set(7);
     manager.set(8);
     manager.set(9);
-    assertEquals(manager.text, "(012) 34 567");
-    // assertEquals(manager._index,11);
+    assertEquals(manager.value, "(012) 34 567");
+    // assertEquals(manager.currentIndex,11);
 
     manager.clearBack();
-    assertEquals(manager.text, "(012) 34 56_");
-    // assertEquals(manager._index,10);
+    assertEquals(manager.value, "(012) 34 56_");
+    // assertEquals(manager.currentIndex,10);
 
     manager.clearBack();
-    assertEquals(manager.text, "(012) 34 5__");
-    // assertEquals(manager._index,9);
+    assertEquals(manager.value, "(012) 34 5__");
+    // assertEquals(manager.currentIndex,9);
 
     manager.clearBack();
     manager.clearBack();
-    assertEquals(manager.text, "(012) 3_ ___");
-    // assertEquals(manager._index,6);
+    assertEquals(manager.value, "(012) 3_ ___");
+    // assertEquals(manager.currentIndex,6);
 
     manager.set(9);
-    assertEquals(manager.text, "(012) 39 ___");
-    // assertEquals(manager._index,8);
+    assertEquals(manager.value, "(012) 39 ___");
+    // assertEquals(manager.currentIndex,8);
 })
