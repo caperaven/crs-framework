@@ -1,18 +1,75 @@
 export class MaskedInput extends HTMLInputElement {
+    #actions;
     #maskManager;
     #updateHandler;
 
     async connectedCallback() {
         this.#updateHandler = this.#update.bind(this);
         this.#maskManager = new MaskManager(this.dataset.mask, this.#updateHandler);
+
+        this.#enableActions();
+        this.#enableEvents();
     }
 
     async disconnectedCallback() {
+        this.#actions = crsbinding.utils.disposeProperties(this.#actions);
+        crsbinding.dom.disableEvents(this);
         this.#maskManager = this.#maskManager.dispose();
     }
 
-    #update() {
+    #enableActions() {
+        this.#actions = {
+            "ArrowLeft": this.#maskManager.moveIndexLeft.bind(this.#maskManager),
+            "ArrowRight": this.#maskManager.moveIndexRight.bind(this.#maskManager),
+            "Backspace": this.#maskManager.clearBack.bind(this.#maskManager)
+        }
+    }
 
+    #enableEvents() {
+        crsbinding.dom.enableEvents(this);
+        this.registerEvent(this, "focus", this.#focus.bind(this));
+        this.registerEvent(this, "keydown", this.#keydown.bind(this));
+        this.registerEvent(this, "click", this.#click.bind(this));
+    }
+
+    #update(text, index) {
+        this.value = text;
+        this.setSelectionRange(index, index);
+    }
+
+    async #focus(event) {
+        event.preventDefault();
+        const index = this.#maskManager.currentIndex;
+        this.setSelectionRange(index, index);
+    }
+
+    async #click(event) {
+        event.preventDefault();
+
+        requestAnimationFrame(() => {
+            const index = this.#maskManager.currentIndex;
+            this.setSelectionRange(index, index);
+        })
+    }
+
+    async #keydown(event) {
+        if (event.key.toLowerCase() == "a" && event.ctrlKey == true) {
+            return;
+        }
+
+        if (event.key == "Tab") {
+            return;
+        }
+
+        event.preventDefault();
+
+        if (this.#actions[event.key] != null) {
+            return this.#actions[event.key](this.selectionStart, this.selectionEnd);
+        }
+
+        if (event.key.length == 1) {
+            return this.#maskManager.set(event.key);
+        }
     }
 }
 
@@ -40,6 +97,7 @@ export class MaskManager {
         this.#values = this.#text.split("");
 
         this.setCursor(0);
+        this.#notifyUpdate();
     }
 
     dispose() {
@@ -79,6 +137,7 @@ export class MaskManager {
     setCursor(index) {
         this.#index = index;
         this.#stepCursor();
+        this.#notifyUpdate();
     }
 
     /**
@@ -102,7 +161,11 @@ export class MaskManager {
         }
     }
 
-    clearBack() {
+    clearBack(selectionStart, selectionEnd) {
+        if (selectionEnd - selectionStart == this.#mask.length) {
+            return this.clear();
+        }
+
         if (this.#index == 0) return;
 
         const moveBack = this.#values[this.#index] == "_" || maskValues.indexOf(this.#mask[this.#index]) == -1;
@@ -124,6 +187,26 @@ export class MaskManager {
     clear() {
         this.#text = maskToText(this.#mask);
         this.setCursor(0);
+    }
+
+    moveIndexLeft() {
+        // JHR: todo add the step next until valid position
+        this.#index -= 1;
+
+        if (this.#index < 0) {
+            this.#index = 0;
+        }
+
+        this.#notifyUpdate();
+    }
+
+    moveIndexRight() {
+        // JHR: todo add the step prior until valid position
+        this.#index += 1;
+
+        if (this.#index >= this.#mask.length) {
+            this.#index = this.#mask.length - 1;
+        }
     }
 }
 
