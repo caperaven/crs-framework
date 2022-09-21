@@ -17,4 +17,9 @@
     <input value.bind="data.lastName">
 </label>
 
+<label>
+    <div>Duration</div>
+    <input is="masked-input" mask="000 : 00 : 00" />
+</label>
+
 <div class="booking">Booking for ${data.firstName} ${data.lastName}</div>
