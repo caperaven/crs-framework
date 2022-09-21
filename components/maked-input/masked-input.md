@@ -13,7 +13,6 @@ In cases where you want to extend the input until finished, use the "*" marker.
 ```html
 <input type="phone" is="masked-input" data-mask="(000) 00 00000">
 <input type="duration" is="masked-input" data-mask="000 : 00 : 00 : 00">
-<input type="email" is="masked-input" data-mask="#*@#*">
 ```
 
 The email example shows that you have text input continuously before and after the "@".  
