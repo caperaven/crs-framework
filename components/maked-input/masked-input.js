@@ -23,6 +23,7 @@ export class MaskManager {
     #text;
     #values;
     #index;
+    #updateCallback;
 
     get value() {
         return this.#text;
@@ -32,8 +33,9 @@ export class MaskManager {
         return this.#index;
     }
 
-    constructor(mask) {
+    constructor(mask, updateCallback) {
         this.#mask = mask;
+        this.#updateCallback = updateCallback;
         this.#text = maskToText(mask);
         this.#values = this.#text.split("");
 
@@ -45,15 +47,6 @@ export class MaskManager {
         this.#values = null;
         this.#mask = null;
         return null;
-    }
-
-    /**
-     * set the cursor position
-     * @param index
-     */
-    setCursor(index) {
-        this.#index = index;
-        this.#stepCursor();
     }
 
     /**
@@ -74,6 +67,20 @@ export class MaskManager {
         return true;
     }
 
+    #notifyUpdate() {
+        this.#text = this.#values.join("");
+        this.#updateCallback?.(this.#text, this.#index);
+    }
+
+    /**
+     * set the cursor position
+     * @param index
+     */
+    setCursor(index) {
+        this.#index = index;
+        this.#stepCursor();
+    }
+
     /**
      * Set the value
      * @param char
@@ -85,12 +92,13 @@ export class MaskManager {
         // step to the next open spot and make sure that you have a valid input
         if (this.#stepCursor() == true && canEdit(this.#mask[this.#index], char)) {
             this.#values[this.#index] = char;
-            this.#text = this.#values.join("");
             this.#index += 1;
 
             if (this.#index >= this.#mask.length) {
                 this.#index = this.#mask.length - 1;
             }
+
+            this.#notifyUpdate();
         }
     }
 
@@ -106,7 +114,7 @@ export class MaskManager {
         const maskAt = this.#mask[this.#index];
         if (maskValues.indexOf(maskAt) != -1) {
             this.#values[this.#index] = "_";
-            this.#text = this.#values.join("");
+            this.#notifyUpdate();
         }
         else {
             this.clearBack();
