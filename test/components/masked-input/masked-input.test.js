@@ -1,7 +1,7 @@
 import {initRequired} from "./../../mockups/init-required.js";
 
 import { assertEquals } from "https://deno.land/std@0.149.0/testing/asserts.ts";
-import { MaskManager, maskToText, canEdit } from "./../../../components/maked-input/masked-input.js";
+import { MaskManager, maskToText, canEdit } from "../../../components/masked-input/masked-input.js";
 
 await initRequired();
 

@@ -39,13 +39,18 @@ export class MaskedInput extends HTMLInputElement {
 
     async #focus(event) {
         event.preventDefault();
-        const index = this.#maskManager.currentIndex;
-        this.setSelectionRange(index, index);
+
+        // JHR: todo Refactor this to one function
+        requestAnimationFrame(() => {
+            const index = this.#maskManager.currentIndex;
+            this.setSelectionRange(index, index);
+        })
     }
 
     async #click(event) {
         event.preventDefault();
 
+        // JHR: todo Refactor this to one function
         requestAnimationFrame(() => {
             const index = this.#maskManager.currentIndex;
             this.setSelectionRange(index, index);
@@ -62,6 +67,10 @@ export class MaskedInput extends HTMLInputElement {
         }
 
         event.preventDefault();
+
+        if (event.key == " ") {
+            return;
+        }
 
         if (this.#actions[event.key] != null) {
             return this.#actions[event.key](this.selectionStart, this.selectionEnd);
@@ -101,9 +110,11 @@ export class MaskManager {
     }
 
     dispose() {
+        this.#mask = null;
         this.#text = null;
         this.#values = null;
-        this.#mask = null;
+        this.#index = null;
+        this.#updateCallback = null;
         return null;
     }
 
@@ -185,8 +196,9 @@ export class MaskManager {
     }
 
     clear() {
-        this.#text = maskToText(this.#mask);
+        this.#values = maskToText(this.#mask).split("");
         this.setCursor(0);
+        this.#notifyUpdate();
     }
 
     moveIndexLeft() {
