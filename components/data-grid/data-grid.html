@@ -7,7 +7,7 @@
         --default-height: 2rem;
         --default-padding: 0 var(--padding);
 
-        --columns: 400px 400px 400px 400px;
+        --columns: 400px 200px 400px 400px;
 
         display: grid;
         grid-template-rows: 3rem 1fr;
@@ -83,8 +83,21 @@
         border-bottom: var(--border);
         border-right: var(--border);
         display: flex;
-        padding: 0.25rem;
         background: white;
+        padding: 0 0.5rem;
+        align-items: center;
+    }
+
+    data-grid .left {
+        justify-content: flex-start;
+    }
+
+    data-grid .right {
+        justify-content: flex-end;
+    }
+
+    data-grid .middle {
+        justify-content: center;
     }
 
     data-grid .padding {
@@ -146,7 +159,7 @@
 <div class="grouping"></div>
 <div class="grid" role="grid">
     <div role="columnheader" data-column="0">Column 1</div>
-    <div role="columnheader" data-column="1">Column 2</div>
+    <div role="columnheader" data-column="1" class="right">Column 2</div>
     <div role="columnheader" data-column="2">Column 3</div>
     <div role="columnheader" data-column="3">Column 4</div>
 
@@ -160,14 +173,14 @@
 
         <div role="row" style="translate: 0 2rem; height: 2rem">
             <div role="gridcell" data-column="0">value 1</div>
-            <div role="gridcell" data-column="1">value 2</div>
+            <div role="gridcell" data-column="1" class="right">value 2</div>
             <div role="gridcell" data-column="2">value 3</div>
             <div role="gridcell" data-column="3">value 4</div>
         </div>
 
         <div role="row" style="translate: 0 4rem; height: 2rem">
             <div role="gridcell" data-column="0">value 1</div>
-            <div role="gridcell" data-column="1">value 2</div>
+            <div role="gridcell" data-column="1" class="right">value 2</div>
             <div role="gridcell" data-column="2">value 3</div>
             <div role="gridcell" data-column="3">value 4</div>
         </div>
