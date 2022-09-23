@@ -1,6 +1,7 @@
 <style>
     data-grid {
         --cl-border: silver;
+        --cl-column-back: #f2f2f2;
         --border: 1px solid var(--cl-border);
         --padding: 0.5rem;
         --default-height: 2rem;
@@ -20,13 +21,18 @@
     }
 
     data-grid .grid {
+        position: relative;
         overflow: auto;
         display: grid;
         grid-template-columns: 400px 400px 400px 400px;
-        grid-template-rows: repeat(2, var(--default-height));
+        grid-template-rows: repeat(auto-fill, var(--default-height));
     }
 
     data-grid [role="columnheader"] {
+        background: var(--cl-column-back);
+        position: sticky;
+        top: 0;
+        z-index: 1;
         border-right: var(--border);
         border-bottom: var(--border);
         height: var(--default-height);
@@ -80,6 +86,15 @@
     data-grid [aria-expanded="true"] .expand {
         rotate: 90deg;
     }
+
+    data-grid .marker {
+        position: absolute;
+        top: 0;
+        left: 0;
+        translate: 0 2000px;
+        width: 1px;
+        height: 1px;
+    }
 </style>
 
 <template id="grid-row-group">
@@ -103,4 +118,6 @@
         <div class="padding"></div>
         <div class="sticky-right">count: 10</div>
     </div>
+
+    <div class="marker"></div>
 </div>
