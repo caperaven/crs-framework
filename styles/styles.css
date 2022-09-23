@@ -9,6 +9,20 @@
 @import "./lib/color-classes.css";
 @import "./lib/input.css";
 
+@font-face {
+    font-family: SourceSansPro;
+    src: url(/resources/fonts/Source_Sans_Pro/SourceSansPro-Regular.ttf);
+}
+
+@font-face {
+    font-family: 'icons';
+    src: url(/resources/fonts/icons/icons.ttf);
+}
+
+* {
+    box-sizing: border-box;
+}
+
 *:focus {
     border: solid 1px blue;
 }

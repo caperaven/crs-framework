@@ -16,6 +16,11 @@
       "view": "form"
     },
     {
+      "title": "Grid",
+      "hash": "#grid",
+      "view": "grid"
+    },
+    {
       "title": "About",
       "hash": "#about",
       "view": "about",
