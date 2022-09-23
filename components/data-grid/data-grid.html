@@ -84,6 +84,7 @@
         border-right: var(--border);
         display: flex;
         padding: 0.25rem;
+        background: white;
     }
 
     data-grid .padding {
@@ -121,6 +122,17 @@
         width: 1px;
         height: 1px;
     }
+
+    [data-column="0"] {
+        position: sticky;
+        left: 0;
+        z-index: 1;
+    }
+
+    [role="columnheader"][data-column="0"] {
+        z-index: 2;
+    }
+
 </style>
 
 <template id="grid-row-group">
@@ -133,10 +145,10 @@
 
 <div class="grouping"></div>
 <div class="grid" role="grid">
-    <div role="columnheader">Column 1</div>
-    <div role="columnheader">Column 2</div>
-    <div role="columnheader">Column 3</div>
-    <div role="columnheader">Column 4</div>
+    <div role="columnheader" data-column="0">Column 1</div>
+    <div role="columnheader" data-column="1">Column 2</div>
+    <div role="columnheader" data-column="2">Column 3</div>
+    <div role="columnheader" data-column="3">Column 4</div>
 
     <div class="rows-container">
         <div role="rowgroup" aria-expanded="false">
@@ -147,17 +159,17 @@
         </div>
 
         <div role="row" style="translate: 0 2rem; height: 2rem">
-            <div role="gridcell">value 1</div>
-            <div role="gridcell">value 2</div>
-            <div role="gridcell">value 3</div>
-            <div role="gridcell">value 4</div>
+            <div role="gridcell" data-column="0">value 1</div>
+            <div role="gridcell" data-column="1">value 2</div>
+            <div role="gridcell" data-column="2">value 3</div>
+            <div role="gridcell" data-column="3">value 4</div>
         </div>
 
         <div role="row" style="translate: 0 4rem; height: 2rem">
-            <div role="gridcell">value 1</div>
-            <div role="gridcell">value 2</div>
-            <div role="gridcell">value 3</div>
-            <div role="gridcell">value 4</div>
+            <div role="gridcell" data-column="0">value 1</div>
+            <div role="gridcell" data-column="1">value 2</div>
+            <div role="gridcell" data-column="2">value 3</div>
+            <div role="gridcell" data-column="3">value 4</div>
         </div>
 
         <div class="marker"></div>
