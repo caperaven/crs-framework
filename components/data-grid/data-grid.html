@@ -7,6 +7,8 @@
         --default-height: 2rem;
         --default-padding: 0 var(--padding);
 
+        --columns: 400px 400px 400px 400px;
+
         display: grid;
         grid-template-rows: 3rem 1fr;
         width: 100%;
@@ -24,8 +26,8 @@
         position: relative;
         overflow: auto;
         display: grid;
-        grid-template-columns: 400px 400px 400px 400px;
-        grid-template-rows: repeat(auto-fill, var(--default-height));
+        grid-template-columns: var(--columns);
+        grid-template-rows: 2rem auto;
     }
 
     data-grid [role="columnheader"] {
@@ -42,22 +44,46 @@
         user-select: none;
     }
 
+    data-grid .rows-container {
+        position: relative;
+        grid-column: -1/1;
+    }
+
     data-grid [role="rowgroup"] {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
         height: var(--default-height);
         display: flex;
         flex-direction: row;
         align-items: center;
         padding: var(--default-padding);
-        grid-column: -1/1;
         border-bottom: var(--border);
         border-right: var(--border);
-        position: relative;
         user-select: none;
     }
 
     data-grid [role="rowheader"] {
         position: sticky;
         left: calc(var(--padding) + var(--default-height));
+    }
+
+    data-grid [role="row"] {
+        display: grid;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        grid-template-columns: var(--columns);
+        height: max-content;
+    }
+
+    data-grid [role="gridcell"] {
+        border-bottom: var(--border);
+        border-right: var(--border);
+        display: flex;
+        padding: 0.25rem;
     }
 
     data-grid .padding {
@@ -110,14 +136,30 @@
     <div role="columnheader">Column 1</div>
     <div role="columnheader">Column 2</div>
     <div role="columnheader">Column 3</div>
-    <div role="columnheader">Column 3</div>
+    <div role="columnheader">Column 4</div>
 
-    <div role="rowgroup" aria-expanded="false">
-        <div class="expand">expand</div>
-        <div role="rowheader">Grouping Row</div>
-        <div class="padding"></div>
-        <div class="sticky-right">count: 10</div>
+    <div class="rows-container">
+        <div role="rowgroup" aria-expanded="false">
+            <div class="expand">expand</div>
+            <div role="rowheader">Grouping Row</div>
+            <div class="padding"></div>
+            <div class="sticky-right">count: 10</div>
+        </div>
+
+        <div role="row" style="translate: 0 2rem; height: 2rem">
+            <div role="gridcell">value 1</div>
+            <div role="gridcell">value 2</div>
+            <div role="gridcell">value 3</div>
+            <div role="gridcell">value 4</div>
+        </div>
+
+        <div role="row" style="translate: 0 4rem; height: 2rem">
+            <div role="gridcell">value 1</div>
+            <div role="gridcell">value 2</div>
+            <div role="gridcell">value 3</div>
+            <div role="gridcell">value 4</div>
+        </div>
+
+        <div class="marker"></div>
     </div>
-
-    <div class="marker"></div>
 </div>
