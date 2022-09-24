@@ -27,7 +27,7 @@
         overflow: auto;
         display: grid;
         grid-template-columns: var(--columns);
-        grid-template-rows: 2rem auto;
+        grid-template-rows: 2rem 2rem auto;
     }
 
     data-grid [role="columnheader"] {
@@ -47,6 +47,13 @@
     data-grid .rows-container {
         position: relative;
         grid-column: -1/1;
+    }
+
+    data-grid .column-headers div {
+        border-right: var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     data-grid [role="rowgroup"] {
@@ -158,6 +165,9 @@
 
 <div class="grouping"></div>
 <div class="grid" role="grid">
+    <div role="columnheader" style="grid-column: 1 / span 2">Column Group 1</div>
+    <div role="columnheader" style="grid-column: 3 / span 2">Column Group 1</div>
+
     <div role="columnheader" data-column="0">Column 1</div>
     <div role="columnheader" data-column="1" class="right">Column 2</div>
     <div role="columnheader" data-column="2">Column 3</div>

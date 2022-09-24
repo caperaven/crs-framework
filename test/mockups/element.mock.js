@@ -73,7 +73,10 @@ export class ElementMock {
     }
 
     insertBefore(element, oldElement) {
+    }
 
+    dispatchEvent(event, args) {
+        this.events[event]?.(args);
     }
 }
 
