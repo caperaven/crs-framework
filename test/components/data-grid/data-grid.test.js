@@ -42,6 +42,25 @@ describe("data grid tests", () => {
         assertEquals(instance.variables["--columns"], "100px");
     })
 
+
+    it("remove column", async () => {
+        await crs.call("grid_columns", "add_columns", {
+            element: instance,
+            columns: [{ title: "code", width: 100 }, { title: "code2", width: 200 }]
+        });
+
+        assertEquals(instance.columns.length, 2);
+        assertEquals(instance.variables["--columns"], "100px 200px");
+
+        await crs.call("grid_columns", "remove_columns", {
+            element: instance,
+            index: 1
+        });
+
+        assertEquals(instance.columns.length, 1);
+        assertEquals(instance.variables["--columns"], "100px");
+    })
+
     it ("add groups", async () => {
         await crs.call("grid_columns", "add_groups", {
             element: instance,

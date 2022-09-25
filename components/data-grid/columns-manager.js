@@ -25,6 +25,32 @@ export class ColumnsActions {
     }
 
     /**
+     * Remove a column from a certain index
+     * @param element
+     * @param index
+     * @param count: <optional>
+     */
+    static async remove_columns(step, context, process, item) {
+        const grid = await crs.dom.get_element(step, context, process, item);
+        const index = await crs.process.getValue(step.args.index, context, process, item);
+        const count = (await crs.process.getValue(step.args.count, context, process, item)) || 1;
+
+        grid.columns.splice(index, count);
+        writeCSSColumns(grid, this.#columnsProperty, grid.columns);
+    }
+
+    /**
+     * Move a column from the "from" index to the "too" index
+     * @param element
+     * @param from
+     * @param too
+     * @returns {Promise<void>}
+     */
+    static async move_columns(step, context, process, item) {
+
+    }
+
+    /**
      * Add a collection of groups to the grid
      * @param element
      * @param groups
@@ -39,6 +65,31 @@ export class ColumnsActions {
         const grid = await crs.dom.get_element(step, context, process, item);
         const groups = await crs.process.getValue(step.args.groups, context, process, item);
         addToCollection(grid.columnGroups, groups);
+    }
+
+    /**
+     * Remove a column group from a certain index
+     * @param element
+     * @param index
+     * @param count: <optional>
+     */
+    static async remove_group(step, context, process, item) {
+        const grid = await crs.dom.get_element(step, context, process, item);
+        const index = await crs.process.getValue(step.args.index, context, process, item);
+        const count = (await crs.process.getValue(step.args.count, context, process, item)) || 1;
+
+        grid.columnGroups.splice(index, count);
+    }
+
+    /**
+     * Move a column group from the "from" index to the "too" index
+     * @param element
+     * @param from
+     * @param too
+     * @returns {Promise<void>}
+     */
+    static async move_group(step, context, process, item) {
+
     }
 
     /**
