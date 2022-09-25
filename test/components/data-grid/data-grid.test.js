@@ -64,7 +64,23 @@ describe("data grid tests", () => {
     it ("add groups", async () => {
         await crs.call("grid_columns", "add_groups", {
             element: instance,
-            groups: [{ title: "code", index: 1, span: 2 }]
+            groups: [{ title: "group 1", index: 1, span: 2 }]
+        });
+
+        assertEquals(instance.columnGroups.length, 1);
+    })
+
+    it ("remove groups", async () => {
+        await crs.call("grid_columns", "add_groups", {
+            element: instance,
+            groups: [{ title: "group 1", index: 1, span: 2 }, { title: "group 2", index: 1, span: 2 }]
+        });
+
+        assertEquals(instance.columnGroups.length, 2);
+
+        await crs.call("grid_columns", "remove_group", {
+            element: instance,
+            index: 1
         });
 
         assertEquals(instance.columnGroups.length, 1);
