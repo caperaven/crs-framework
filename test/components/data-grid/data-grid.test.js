@@ -18,9 +18,9 @@ afterAll(async () => {
 describe("data grid tests", () => {
 
     beforeEach(async () => {
-        instance = new globalThis.DataGrid;
+        instance = new globalThis.DataGrid();
         instance.variables = {};
-        await instance.connectedCallback()
+        await instance.connectedCallback();
     });
 
     afterEach(async () => {

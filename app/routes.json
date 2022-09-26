@@ -21,6 +21,11 @@
       "view": "grid"
     },
     {
+      "title": "Kan Ban",
+      "hash": "#kan-ban",
+      "view": "kan-ban"
+    },
+    {
       "title": "About",
       "hash": "#about",
       "view": "about",

@@ -1,4 +1,4 @@
-import "./columns-manager.js"
+import "./actions/editing-actions.js";
 
 export default class DataGrid extends crsbinding.classes.BindableElement {
     #columns;
@@ -8,16 +8,8 @@ export default class DataGrid extends crsbinding.classes.BindableElement {
         return this.#columns;
     }
 
-    set columns(newValue) {
-        this.#columns = newValue;
-    }
-
     get columnGroups() {
         return this.#columnGroups;
-    }
-
-    set columnGroups(newValue) {
-        this.#columnGroups = newValue;
     }
 
     get html() {
@@ -34,6 +26,30 @@ export default class DataGrid extends crsbinding.classes.BindableElement {
         this.#columns = null;
         this.#columnGroups = null;
         await super.disconnectedCallback();
+    }
+
+    /**
+     * Used during double click or keyboard events to execute primary row actions
+     * @param event
+     * @returns {Promise<void>}
+     */
+    async rowExecute(event) {
+        /**
+         * execute = open record in dialog - working on row
+         * ctrl + execute = open cell item in dialog - working on cell
+         */
+
+
+        // JHR: make this to work with ctrl + click instead
+        if (event.ctrlKey == true) {
+            return await crs.call("grid_editing", "edit", { element: event.target });
+        }
+
+        event.preventDefault();
+        // this.dispatchEvent(new CustomEvent("row-execute", event.target));
+
+        event.target.parentElement.style.translate = "0 600px";
+
     }
 }
 

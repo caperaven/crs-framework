@@ -65,21 +65,29 @@
         import "./packages/crs-binding/crs-binding.js";
         import "./packages/crs-modules/crs-modules.js";
         import "./packages/crs-router/crs-router.js";
+        import {initialize} from "./packages/crs-process-api/crs-process-api.js";
         import IndexViewModel from "./index.js";
 
-        async function load() {
+        window.addEventListener("load", async (event) => {
             await crs.modules.enableBinding([
-                ["data-grid", "/components/data-grid/data-grid.js"]
+                ["data-grid", "/components/data-grid/data-grid.js"],
+                ["kan-ban", "/components/kan-ban/kan-ban.js"]
             ])
-
             document.viewModel = new IndexViewModel(document.body);
+            await document.viewModel.connectedCallback();
+        });
 
-            window.addEventListener("load", (event) => {
-                document.viewModel.connectedCallback();
-            });
-        }
-
-        load();
+        await initialize("/packages/crs-process-api");
+        // async function load() {
+        //
+        //     document.viewModel = new IndexViewModel(document.body);
+        //
+        //     window.addEventListener("load", (event) => {
+        //         document.viewModel.connectedCallback();
+        //     });
+        // }
+        //
+        // load();
     </script>
 </body>
 </html>

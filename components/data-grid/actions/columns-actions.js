@@ -13,8 +13,8 @@ export class ColumnsActions {
      * a column = {
      *     title: "column title",
      *     width: 100
-     *     align: <optional> "left", "right", "middle",
-     *     group: <optional> index of group
+     *     type: <optional>"string", "number", "date", "duration" - default "string"
+     *     align: <optional> "left", "right", "middle" - default = left
      * }
      */
     static async add_columns(step, context, process, item) {
@@ -47,6 +47,15 @@ export class ColumnsActions {
      * @returns {Promise<void>}
      */
     static async move_columns(step, context, process, item) {
+
+    }
+
+    /**
+     * Reset the grid columns so that there are none
+     * @param element
+     * @returns {Promise<void>}
+     */
+    static async clear_columns(step, context, process, item) {
 
     }
 
