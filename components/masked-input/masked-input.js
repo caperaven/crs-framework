@@ -165,7 +165,7 @@ export class MaskManager {
             this.#index += 1;
 
             if (this.#index >= this.#mask.length) {
-                this.#index = this.#mask.length - 1;
+                this.#index = this.#mask.length;
             }
 
             this.#notifyUpdate();

@@ -6,11 +6,12 @@ export class ColumnsActions {
     }
 
     /**
-     * Add a collection of columns to the grid
+     * Add a collection of columns to the element
      * @param element
      * @param columns
      *
      * a column = {
+     *     id: "id of the column",
      *     title: "column title",
      *     width: 100
      *     type: <optional>"string", "number", "date", "duration" - default "string"
@@ -18,10 +19,12 @@ export class ColumnsActions {
      * }
      */
     static async add_columns(step, context, process, item) {
-        const grid = await crs.dom.get_element(step, context, process, item);
+        const element = await crs.dom.get_element(step, context, process, item);
         const columns = await crs.process.getValue(step.args.columns, context, process, item);
-        addToCollection(grid.columns, columns);
-        writeCSSColumns(grid, this.#columnsProperty, grid.columns);
+        addToCollection(element.columns, columns);
+        writeCSSColumns(element, this.#columnsProperty, element.columns);
+        
+        await element.addColumnElements?.(columns);
     }
 
     /**
@@ -31,12 +34,12 @@ export class ColumnsActions {
      * @param count: <optional>
      */
     static async remove_columns(step, context, process, item) {
-        const grid = await crs.dom.get_element(step, context, process, item);
+        const element = await crs.dom.get_element(step, context, process, item);
         const index = await crs.process.getValue(step.args.index, context, process, item);
         const count = (await crs.process.getValue(step.args.count, context, process, item)) || 1;
 
-        grid.columns.splice(index, count);
-        writeCSSColumns(grid, this.#columnsProperty, grid.columns);
+        element.columns.splice(index, count);
+        writeCSSColumns(element, this.#columnsProperty, element.columns);
     }
 
     /**
@@ -51,7 +54,7 @@ export class ColumnsActions {
     }
 
     /**
-     * Reset the grid columns so that there are none
+     * Reset the element columns so that there are none
      * @param element
      * @returns {Promise<void>}
      */
@@ -60,7 +63,7 @@ export class ColumnsActions {
     }
 
     /**
-     * Add a collection of groups to the grid
+     * Add a collection of groups to the element
      * @param element
      * @param groups
      *
@@ -71,9 +74,9 @@ export class ColumnsActions {
      * }
      */
     static async add_groups(step, context, process, item) {
-        const grid = await crs.dom.get_element(step, context, process, item);
+        const element = await crs.dom.get_element(step, context, process, item);
         const groups = await crs.process.getValue(step.args.groups, context, process, item);
-        addToCollection(grid.columnGroups, groups);
+        addToCollection(element.columnGroups, groups);
     }
 
     /**
@@ -83,11 +86,11 @@ export class ColumnsActions {
      * @param count: <optional>
      */
     static async remove_group(step, context, process, item) {
-        const grid = await crs.dom.get_element(step, context, process, item);
+        const element = await crs.dom.get_element(step, context, process, item);
         const index = await crs.process.getValue(step.args.index, context, process, item);
         const count = (await crs.process.getValue(step.args.count, context, process, item)) || 1;
 
-        grid.columnGroups.splice(index, count);
+        element.columnGroups.splice(index, count);
     }
 
     /**
@@ -108,10 +111,10 @@ export class ColumnsActions {
      * @param width
      */
     static async set_width(step, context, process, item) {
-        const grid = await crs.dom.get_element(step, context, process, item);
+        const element = await crs.dom.get_element(step, context, process, item);
         const index = await crs.process.getValue(step.args.index, context, process, item);
         const width = await crs.process.getValue(step.args.width, context, process, item);
-        grid.columns[index].width = width;
+        element.columns[index].width = width;
     }
 }
 

@@ -1,10 +1,10 @@
-import {ElementMock} from "./element.mock.js"
+import {ElementMock, mockElement} from "./element.mock.js"
 import {DocumentMock} from "./dom-mock.js";
 import "./computed-style-mock.js";
 
 globalThis.HTMLElement = ElementMock;
 globalThis.HTMLInputElement = ElementMock;
-
+globalThis.mockElement = mockElement;
 globalThis.elementRegistry = {}
 
 globalThis.customElements = {

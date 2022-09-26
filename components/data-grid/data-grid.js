@@ -51,6 +51,10 @@ export default class DataGrid extends crsbinding.classes.BindableElement {
         event.target.parentElement.style.translate = "0 600px";
 
     }
+
+    async addColumnElements(columns) {
+        dispatchEvent(new CustomEvent("columns-added", {detail: this}));
+    }
 }
 
 customElements.define("data-grid", DataGrid);

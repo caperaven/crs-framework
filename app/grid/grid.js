@@ -1,4 +1,4 @@
-import "./../../components/data-grid/actions/columns-actions.js";
+import "../../src/actions/columns-actions.js";
 
 export default class Grid extends crsbinding.classes.ViewBase {
     async connectedCallback() {
