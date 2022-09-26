@@ -202,23 +202,35 @@ export class MaskManager {
     }
 
     moveIndexLeft() {
-        // JHR: todo add the step next until valid position
         this.#index -= 1;
 
-        if (this.#index < 0) {
+        if (this.#index <= 0) {
             this.#index = 0;
+            return this.#notifyUpdate();
+        }
+
+        const maskAt = this.#mask[this.#index];
+        if (maskValues.indexOf(maskAt) == -1) {
+            this.moveIndexLeft();
         }
 
         this.#notifyUpdate();
     }
 
     moveIndexRight() {
-        // JHR: todo add the step prior until valid position
         this.#index += 1;
 
         if (this.#index >= this.#mask.length) {
-            this.#index = this.#mask.length - 1;
+            this.#index = this.#mask.length;
+            return this.#notifyUpdate();
         }
+
+        const maskAt = this.#mask[this.#index];
+        if (maskValues.indexOf(maskAt) == -1) {
+            this.moveIndexRight();
+        }
+
+        this.#notifyUpdate();
     }
 }
 
