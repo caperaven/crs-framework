@@ -48,10 +48,18 @@ export class MaskedInput extends HTMLInputElement {
     }
 
     async #click(event) {
+        if (this.selectionEnd - this.selectionStart > 1) {
+            return;
+        }
+
         event.preventDefault();
 
         // JHR: todo Refactor this to one function
         requestAnimationFrame(() => {
+            if (this.#maskManager.isFilled) {
+                return this.#maskManager.setCursor(this.selectionStart);
+            }
+
             const index = this.#maskManager.currentIndex;
             this.setSelectionRange(index, index);
         })
@@ -66,6 +74,10 @@ export class MaskedInput extends HTMLInputElement {
             return;
         }
 
+        if (event.shiftKey == true) {
+            return;
+        }
+
         event.preventDefault();
 
         if (event.key == " ") {
@@ -74,6 +86,11 @@ export class MaskedInput extends HTMLInputElement {
 
         if (this.#actions[event.key] != null) {
             return this.#actions[event.key](this.selectionStart, this.selectionEnd);
+        }
+
+        if (this.selectionStart != this.selectionEnd) {
+            this.#maskManager.clearBack(this.selectionStart, this.selectionEnd);
+            this.selectionEnd = this.selectionStart;
         }
 
         if (event.key.length == 1) {
@@ -97,6 +114,10 @@ export class MaskManager {
 
     get currentIndex() {
         return this.#index;
+    }
+
+    get isFilled() {
+        return this.#values.indexOf("_") == -1;
     }
 
     constructor(mask, updateCallback) {
@@ -157,7 +178,8 @@ export class MaskManager {
      */
     set(char) {
         // we are at the end and there is nothing left to edit so return
-        if (this.#index == this.#mask.length -1 && this.#values[this.#index] != "_") return;
+        // if (this.#index == this.#mask.length -1 && this.#values[this.#index] != "_") return;
+        if (this.#index == this.#mask.length) return;
 
         // step to the next open spot and make sure that you have a valid input
         if (this.#stepCursor() == true && canEdit(this.#mask[this.#index], char)) {
@@ -177,7 +199,14 @@ export class MaskManager {
             return this.clear();
         }
 
+        const diff = selectionEnd - selectionStart;
+        if (diff > 1 && selectionStart != null && selectionEnd != null) {
+            return this.clear(selectionStart, selectionEnd);
+        }
+
         if (this.#index == 0) return;
+
+        this.#index = selectionStart - 1;
 
         const moveBack = this.#values[this.#index] == "_" || maskValues.indexOf(this.#mask[this.#index]) == -1;
 
@@ -191,30 +220,46 @@ export class MaskManager {
             this.#notifyUpdate();
         }
         else {
-            this.clearBack();
+            this.clearBack(selectionStart - 1, selectionEnd - 1);
         }
     }
 
-    clear() {
-        this.#values = maskToText(this.#mask).split("");
-        this.setCursor(0);
+    clear(start, end) {
+        if (start == null) {
+            this.#values = maskToText(this.#mask).split("");
+            this.setCursor(0);
+            return this.#notifyUpdate();
+        }
+
+        for (let i = start; i < end; i++) {
+            const maskAt = this.#mask[i];
+            if (maskValues.indexOf(maskAt) != -1) {
+                this.#values[i] = "_"
+            }
+        }
+
+        this.setCursor(start);
         this.#notifyUpdate();
     }
 
     moveIndexLeft() {
-        this.#index -= 1;
+        if (this.#index == 0) return;
 
-        if (this.#index <= 0) {
-            this.#index = 0;
+        let maskAt = this.#mask[this.#index - 1];
+        if (maskValues.indexOf(maskAt) != -1) {
+            this.#index -= 1;
             return this.#notifyUpdate();
         }
 
-        const maskAt = this.#mask[this.#index];
-        if (maskValues.indexOf(maskAt) == -1) {
-            this.moveIndexLeft();
+        for (let i = this.#index; i > 0; i--) {
+            maskAt = this.#mask[i - 1];
+            if (maskValues.indexOf(maskAt) != -1) {
+                this.#index = i;
+                break;
+            }
         }
 
-        this.#notifyUpdate();
+        return this.#notifyUpdate();
     }
 
     moveIndexRight() {
