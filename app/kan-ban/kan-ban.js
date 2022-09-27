@@ -1,19 +1,14 @@
+import "/src/actions/columns-actions.js";
+
 export default class KanBan extends crsbinding.classes.ViewBase {
     async connectedCallback() {
         await super.connectedCallback();
+    }
 
+    async addColumn() {
         await crs.call("grid_columns", "add_columns", {
             element: this.kanban,
-            columns: {
-                id: 1001,
-                width: 200
-            }
-        })
-
-        await crs.call("kanban", "add_card", {
-            element: this.kanban,
-            cards: [],
-            column: 1001
+            columns: [{ id: 1001, width: 200, title: `Column ${this.kanban.columns.length}` }]
         })
     }
 }

@@ -1,6 +1,6 @@
 import {initRequired} from "../../mockups/init-required.js";
 import { beforeAll, afterAll, afterEach, beforeEach, describe, it} from "https://deno.land/std@0.157.0/testing/bdd.ts";
-import { assertEquals, assertExists } from "https://deno.land/std@0.149.0/testing/asserts.ts";
+import { assertEquals, assertExists, assert } from "https://deno.land/std@0.149.0/testing/asserts.ts";
 
 await initRequired();
 
@@ -33,11 +33,12 @@ describe("data grid tests", () => {
         kbInstance = await kbInstance.disconnectedCallback();
     });
 
-    it("initialized", async () => {
+    it("initialized", () => {
         assertExists(gridInstance.columns, "grid columns should exist");
         assertExists(gridInstance.columnGroups, "grid column groups should exist");
         assertExists(kbInstance.columns, "kb columns should exist");
     })
+});
     //
     // it("add column", async () => {
     //     await crs.call("grid_columns", "add_columns", {
@@ -111,4 +112,4 @@ describe("data grid tests", () => {
     //     assertEquals(gridInstance.columns[0].width, 200);
     // })
 
-})
+// })

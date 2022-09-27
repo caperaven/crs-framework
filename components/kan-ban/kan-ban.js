@@ -1,3 +1,5 @@
+import {addColumnFeatures} from "./columns.js";
+
 export default class KanBan extends crsbinding.classes.BindableElement {
     #columns;
 
@@ -10,18 +12,15 @@ export default class KanBan extends crsbinding.classes.BindableElement {
     }
 
     async connectedCallback() {
-        super.connectedCallback();
+        await super.connectedCallback();
 
         this.#columns = [];
+        addColumnFeatures(this);
     }
 
-    /**
-     * Create the required elements in the header and container for the new columns
-     * @param columns
-     * @returns {Promise<void>}
-     */
-    async addColumnElements(columns) {
-        dispatchEvent(new CustomEvent("columns-added", {detail: this}));
+    async disconnectedCallback() {
+        this.#columns = null;
+        await super.disconnectedCallback();
     }
 }
 

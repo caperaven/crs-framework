@@ -21,6 +21,7 @@ export class ColumnsActions {
     static async add_columns(step, context, process, item) {
         const element = await crs.dom.get_element(step, context, process, item);
         const columns = await crs.process.getValue(step.args.columns, context, process, item);
+
         addToCollection(element.columns, columns);
         writeCSSColumns(element, this.#columnsProperty, element.columns);
         
@@ -40,6 +41,8 @@ export class ColumnsActions {
 
         element.columns.splice(index, count);
         writeCSSColumns(element, this.#columnsProperty, element.columns);
+
+        await element.removeColumnElements?.(index, count);
     }
 
     /**
@@ -50,7 +53,11 @@ export class ColumnsActions {
      * @returns {Promise<void>}
      */
     static async move_columns(step, context, process, item) {
+        const element = await crs.dom.get_element(step, context, process, item);
+        const from = await crs.process.getValue(step.args.from, context, process, item);
+        const to = await crs.process.getValue(step.args.to, context, process, item);
 
+        await element.moveColumnElement(from, to)
     }
 
     /**
@@ -126,7 +133,7 @@ function addToCollection(collection, items) {
 
 function writeCSSColumns(element, property, value) {
     value = value.map(item => `${item.width}px`).join(" ");
-    getComputedStyle(element).setProperty(property, value);
+    element.style.setProperty(property, value);
 }
 
 crs.intent.grid_columns = ColumnsActions;
