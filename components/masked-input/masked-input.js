@@ -18,11 +18,11 @@ export class MaskedInput extends HTMLInputElement {
     }
 
     #enableActions() {
-        this.#actions = {
+        this.#actions = Object.freeze({
             "ArrowLeft": this.#maskManager.moveIndexLeft.bind(this.#maskManager),
             "ArrowRight": this.#maskManager.moveIndexRight.bind(this.#maskManager),
             "Backspace": this.#maskManager.clearBack.bind(this.#maskManager)
-        }
+        })
     }
 
     #enableEvents() {
@@ -40,7 +40,6 @@ export class MaskedInput extends HTMLInputElement {
     async #focus(event) {
         event.preventDefault();
 
-        // JHR: todo Refactor this to one function
         requestAnimationFrame(() => {
             const index = this.#maskManager.currentIndex;
             this.setSelectionRange(index, index);
@@ -54,7 +53,6 @@ export class MaskedInput extends HTMLInputElement {
 
         event.preventDefault();
 
-        // JHR: todo Refactor this to one function
         requestAnimationFrame(() => {
             if (this.#maskManager.isFilled) {
                 return this.#maskManager.setCursor(this.selectionStart);
