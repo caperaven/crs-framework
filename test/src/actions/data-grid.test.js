@@ -1,6 +1,7 @@
 import {initRequired} from "../../mockups/init-required.js";
 import { beforeAll, afterAll, afterEach, beforeEach, describe, it} from "https://deno.land/std@0.157.0/testing/bdd.ts";
 import { assertEquals, assertExists, assert } from "https://deno.land/std@0.149.0/testing/asserts.ts";
+import {ElementMock} from "../../mockups/element.mock.js";
 
 await initRequired();
 
@@ -9,19 +10,24 @@ let kbInstance;
 
 beforeAll(async () => {
     await import("./../../../src/actions/columns-actions.js");
-    globalThis.DataGrid = (await import("./../../../components/data-grid/data-grid.js")).default;
-    globalThis.KanBan = (await import("./../../../components/kan-ban/kan-ban.js")).default;
+    await import("./../../../components/data-grid/data-grid.js");
+    await import("./../../../components/kan-ban/kan-ban.js");
 })
 
 afterAll(async () => {
-    globalThis.DataGrid = null;
-    globalThis.KanBan = null;
 })
+
+function initKanban(element) {
+    element.header = new ElementMock("div");
+    element.container = new ElementMock("div");
+}
 
 describe("data grid tests", () => {
     beforeEach(async () => {
-        gridInstance = mockElement(new globalThis.DataGrid());
-        kbInstance = mockElement(new globalThis.KanBan());
+        gridInstance = document.createElement("data-grid");
+        kbInstance = document.createElement("kan-ban");
+
+        initKanban(kbInstance);
 
         await gridInstance.connectedCallback();
         await kbInstance.connectedCallback();
@@ -48,6 +54,8 @@ describe("data grid tests", () => {
             element: kbInstance,
             columns: [{title: "code", width: 100}]
         })
+
+        assertEquals(kbInstance.header.children.length, 1);
     })
 });
     //

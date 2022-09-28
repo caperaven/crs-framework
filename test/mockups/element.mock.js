@@ -30,7 +30,12 @@ export function mockElement(instance, tagName, name) {
             ownerElement: instance
         };
 
-        instance.attributes.push(attrObj);
+        const old = instance.getAttribute(attr);
+        instance.attributes[attr] = attrObj;
+
+        if (instance.attributeChangedCallback != null) {
+            instance.attributeChangedCallback(attr, old.value, value);
+        }
     }
 
     instance.removeAttribute = (attr, value) => {

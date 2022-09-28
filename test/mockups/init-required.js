@@ -7,12 +7,6 @@ globalThis.HTMLInputElement = ElementMock;
 globalThis.mockElement = mockElement;
 globalThis.elementRegistry = {}
 
-globalThis.customElements = {
-    define(id, className, options) {
-        globalThis.elementRegistry[id] = className;
-    }
-}
-
 globalThis.requestAnimationFrame = (callback) => callback();
 
 export async function initRequired() {
@@ -20,7 +14,7 @@ export async function initRequired() {
     globalThis.DocumentFragment = ElementMock;
 
     globalThis.customElements = {
-        define: () => {return null}
+        define: (id, className, options) => globalThis.elementRegistry[id] = className
     }
 
     globalThis.document = new DocumentMock();
