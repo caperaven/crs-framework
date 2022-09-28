@@ -58,13 +58,15 @@ export function mockElement(instance, tagName, name) {
 
     instance.appendChild = (element) => {
         instance.children.push(element);
+        element.parentElement = instance;
         return instance;
     };
 
     instance.removeChild = (child) => {
         const index = instance.children.indexOf(child);
         if (index != -1) {
-            instance.children.splice(index, 1);
+            const removed = instance.children.splice(index, 1);
+            removed.parentElement = null;
         }
         return instance;
     }
@@ -78,6 +80,8 @@ export function mockElement(instance, tagName, name) {
     }
 
     instance.insertBefore = (element, oldElement) => {
+        const index = instance.children.indexOf(oldElement);
+        instance.children.splice(index, 0, element);
     }
 
     instance.dispatchEvent = (event, args) => {
@@ -90,8 +94,12 @@ export function mockElement(instance, tagName, name) {
 
 
 export class ElementMock {
-    constructor(tagName, name) {
+    constructor(tagName, name, parentElement) {
         mockElement(this, tagName, name);
+
+        if (parentElement != null) {
+            parentElement.appendChild(this);
+        }
     }
 }
 

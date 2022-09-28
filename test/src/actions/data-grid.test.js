@@ -17,17 +17,16 @@ beforeAll(async () => {
 afterAll(async () => {
 })
 
-function initKanban(element) {
-    element.header = new ElementMock("div");
-    element.container = new ElementMock("div");
-}
-
 describe("data grid tests", () => {
     beforeEach(async () => {
         gridInstance = document.createElement("data-grid");
         kbInstance = document.createElement("kan-ban");
 
-        initKanban(kbInstance);
+        gridInstance.grid = new ElementMock("div", "grid");
+        gridInstance.rowContainer = new ElementMock("div", "rowContainer", gridInstance.grid);
+
+        kbInstance.header = new ElementMock("div");
+        kbInstance.container = new ElementMock("div");
 
         await gridInstance.connectedCallback();
         await kbInstance.connectedCallback();
@@ -56,6 +55,7 @@ describe("data grid tests", () => {
         })
 
         assertEquals(kbInstance.header.children.length, 1);
+        assertEquals(gridInstance.grid.children.length, 2); // column + row container
     })
 });
     //

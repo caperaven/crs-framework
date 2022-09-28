@@ -1,4 +1,5 @@
 import "./actions/editing-actions.js";
+import {addColumnFeatures} from "./columns.js";
 
 export default class DataGrid extends crsbinding.classes.BindableElement {
     #columns;
@@ -20,6 +21,7 @@ export default class DataGrid extends crsbinding.classes.BindableElement {
         await super.connectedCallback();
         this.#columns = [];
         this.#columnGroups = [];
+        addColumnFeatures(this);
     }
 
     async disconnectedCallback() {
