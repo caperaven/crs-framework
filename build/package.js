@@ -15,12 +15,21 @@ async function createFolderStructure() {
     await ensureDir("./dist");
     await emptyDir("./dist");
 
-    await ensureDir("./dist/styles/views");
     await ensureDir("./dist/components");
     await ensureDir("./dist/src");
+    await ensureDir("./dist/test");
+}
 
-    for (const folder of ["404", "about", "form", "welcome"]) {
-        await ensureDir(`./dist/app/${folder}`);
+async function copyDirectory(source, target) {
+    await ensureDir(target);
+
+    for await (const dirEntry of Deno.readDir(source)) {
+        if (dirEntry.isDirectory == true) {
+            await ensureDir(`${target}/${dirEntry.name}`);
+            return await copyDirectory(`${source}/${dirEntry.name}`, `${target}/${dirEntry.name}`);
+        }
+
+        await Deno.copyFile(`${source}/${dirEntry.name}`, `${target}/${dirEntry.name}`);
     }
 }
 
@@ -106,36 +115,12 @@ async function bundleCss(file, output, minified) {
 }
 
 await createFolderStructure();
-
-// routes
-await packageMarkup("./app/routes.json", "./dist/app/routes.json", true);
-
-// html files
-await packageHTML("./app/404/404.html", "./dist/app/404/404.html", true);
-await packageHTML("./app/about/about.html", "./dist/app/about/about.html", true);
-await packageHTML("./app/form/form.html", "./dist/app/form/form.html", true);
-await packageHTML("./app/welcome/grid.html", "./dist/app/welcome/grid.html", true);
-
-// css files
-await bundleCss("./styles/styles.css", "./dist/styles/styles.css", true);
-await packageMarkup("./styles/views/404.css", "./dist/styles/views/404.css", true);
-await packageMarkup("./styles/views/about.css", "./dist/styles/views/about.css", true);
-await packageMarkup("./styles/views/welcome.css", "./dist/styles/views/welcome.css", true);
-
-// js files
-await bundleJs("./index.js", "./dist/index.js", true);
-await packageFile("./app/form/form.js", "./dist/app/form/form.js", "js", "esm", true);
-await packageFile("./app/welcome/grid.js", "./dist/app/welcome/grid.js", "js", "esm", true);
-
-// copy files
-await packageHTML("./index.html", "./dist/index.html", true);
-await Deno.copyFile("./favicon.ico", "./dist/favicon.ico");
-await copy("./packages", "./dist/packages");
-
-// components
-await packageFile("./components/component.js", "./dist/components/component.js", "js", "esm", true);
-
-// src
-await packageFile("./src/my-class.js", "./dist/src/my-class.js", "js", "esm", true);
+await copyDirectory("./packages/crs-binding", "./dist/crs-binding");
+await copyDirectory("./packages/crs-modules", "./dist/crs-modules");
+await copyDirectory("./packages/crs-process-api", "./dist/crs-process-api");
+await copyDirectory("./packages/crs-router", "./dist/crs-router");
+await copyDirectory("./packages/crs-schema", "./dist/crs-schema");
+await copyDirectory("./documents", "./dist/documents");
+await copyDirectory("./test/mockups", "./dist/test/mockups");
 
 Deno.exit(0);
