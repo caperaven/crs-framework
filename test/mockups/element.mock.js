@@ -91,8 +91,6 @@ export function mockElement(instance, tagName, name) {
     return instance;
 }
 
-
-
 export class ElementMock {
     constructor(tagName, name, parentElement) {
         mockElement(this, tagName, name);
