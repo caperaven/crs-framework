@@ -19,7 +19,6 @@ afterAll(async () => {
 })
 
 describe("data grid tests", () => {
-
     beforeEach(async () => {
         gridInstance = mockElement(new globalThis.DataGrid());
         kbInstance = mockElement(new globalThis.KanBan());
@@ -37,6 +36,18 @@ describe("data grid tests", () => {
         assertExists(gridInstance.columns, "grid columns should exist");
         assertExists(gridInstance.columnGroups, "grid column groups should exist");
         assertExists(kbInstance.columns, "kb columns should exist");
+    })
+
+    it ("add column", async () => {
+        await crs.call("grid_columns", "add_columns", {
+            element: gridInstance,
+            columns: [{title: "code", width: 100}]
+        })
+
+        await crs.call("grid_columns", "add_columns", {
+            element: kbInstance,
+            columns: [{title: "code", width: 100}]
+        })
     })
 });
     //

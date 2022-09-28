@@ -15,7 +15,8 @@ export function mockElement(instance, tagName, name) {
     instance.name = name;
     instance.style = {
         gridTemplateColumns: "",
-        gridTemplateRows: ""
+        gridTemplateRows: "",
+        setProperty: (property, value) => instance.variables[property] = value
     };
 
     instance.getAttribute = (attr) => {
