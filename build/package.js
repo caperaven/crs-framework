@@ -42,10 +42,13 @@ export async function copyDirectory(source, target) {
     for await (const dirEntry of Deno.readDir(source)) {
         if (dirEntry.isDirectory == true) {
             await ensureDir(`${target}/${dirEntry.name}`);
-            return await copyDirectory(`${source}/${dirEntry.name}`, `${target}/${dirEntry.name}`);
+            await copyDirectory(`${source}/${dirEntry.name}`, `${target}/${dirEntry.name}`);
+            continue;
         }
 
         await Deno.copyFile(`${source}/${dirEntry.name}`, `${target}/${dirEntry.name}`);
+
+        console.log(`${source}/${dirEntry.name}`);
     }
 }
 
