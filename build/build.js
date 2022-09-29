@@ -25,4 +25,6 @@ await copyDirectory("./documents", "./dist/documents");
 await packageFolder("./components", "./dist/components", true);
 await packageFolder("./src", "./dist/src", true);
 
+Deno.copyFile("./build/package.js", "./dist/build/package.js");
+
 Deno.exit(0);
