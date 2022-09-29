@@ -48,7 +48,7 @@ function createAttributeFunction(query) {
         .split('"').join("")
         .split("=");
 
-    const code = `const value = item.getAttribute("${parts[0]}"); console.log(value); return value == "${parts[1]}";`;
+    const code = `return item.getAttribute("${parts[0]}") == "${parts[1]}";`;
     return new Function("item", code);
 }
 
