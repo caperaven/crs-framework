@@ -193,6 +193,9 @@ export class MaskManager {
     }
 
     clearBack(selectionStart, selectionEnd) {
+        selectionStart = selectionStart || this.#index;
+        selectionEnd = selectionEnd || selectionStart;
+
         if (selectionEnd - selectionStart == this.#mask.length) {
             return this.clear();
         }
@@ -205,12 +208,6 @@ export class MaskManager {
         if (this.#index == 0) return;
 
         this.#index = selectionStart - 1;
-
-        const moveBack = this.#values[this.#index] == "_" || maskValues.indexOf(this.#mask[this.#index]) == -1;
-
-        if (moveBack == true) {
-            this.#index -= 1;
-        }
 
         const maskAt = this.#mask[this.#index];
         if (maskValues.indexOf(maskAt) != -1) {
