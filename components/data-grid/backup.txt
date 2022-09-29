@@ -152,11 +152,41 @@
     [role="columnheader"][data-column="0"] {
         z-index: 2;
     }
+
 </style>
 
 <div class="grouping"></div>
 <div class="grid" role="grid">
+<!--    <div role="columnheader" style="grid-column: 1 / span 2">Column Group 1</div>-->
+<!--    <div role="columnheader" style="grid-column: 3 / span 2">Column Group 1</div>-->
+
+<!--    <div role="columnheader" data-column="0">Column 1</div>-->
+<!--    <div role="columnheader" data-column="1" class="right">Column 2</div>-->
+<!--    <div role="columnheader" data-column="2">Column 3</div>-->
+<!--    <div role="columnheader" data-column="3">Column 4</div>-->
+
     <div class="rows-container" dblclick.call="rowExecute" ref="rowContainer">
+<!--        <div role="rowgroup" aria-expanded="false">-->
+<!--            <div class="expand">expand</div>-->
+<!--            <div role="rowheader">Grouping Row</div>-->
+<!--            <div class="padding"></div>-->
+<!--            <div class="sticky-right">count: 10</div>-->
+<!--        </div>-->
+
+<!--        <div role="row" style="translate: 0 2rem; height: 2rem">-->
+<!--            <div role="gridcell" data-column="0">value 1</div>-->
+<!--            <div role="gridcell" data-column="1" class="right">value 2</div>-->
+<!--            <div role="gridcell" data-column="2">value 3</div>-->
+<!--            <div role="gridcell" data-column="3">value 4</div>-->
+<!--        </div>-->
+
+<!--        <div role="row" style="translate: 0 4rem; height: 2rem">-->
+<!--            <div role="gridcell" data-column="0">value 1</div>-->
+<!--            <div role="gridcell" data-column="1" class="right">value 2</div>-->
+<!--            <div role="gridcell" data-column="2">value 3</div>-->
+<!--            <div role="gridcell" data-column="3">value 4</div>-->
+<!--        </div>-->
+
         <div class="marker"></div>
     </div>
 </div>

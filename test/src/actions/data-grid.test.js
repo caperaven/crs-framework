@@ -1,7 +1,7 @@
 import { beforeAll, afterAll, afterEach, beforeEach, describe, it} from "https://deno.land/std@0.157.0/testing/bdd.ts";
 import { assertEquals, assertExists, assert } from "https://deno.land/std@0.149.0/testing/asserts.ts";
-import {ElementMock} from "../../../test/mockups/element-mock.js"
 import {init} from "./../../../test/mockups/init.js";
+import {createMockChildren} from "../../mockups/child-mock-factory.js";
 
 await init();
 
@@ -22,14 +22,17 @@ describe("data grid tests", () => {
         gridInstance = document.createElement("data-grid");
         kbInstance = document.createElement("kan-ban");
 
-        gridInstance.grid = new ElementMock("div", "grid");
-        gridInstance.rowContainer = new ElementMock("div", "rowContainer", gridInstance.grid);
+        // gridInstance.grid = new ElementMock("div", "grid");
+        // gridInstance.rowContainer = new ElementMock("div", "rowContainer", gridInstance.grid);
 
-        kbInstance.header = new ElementMock("div");
-        kbInstance.container = new ElementMock("div");
+        // kbInstance.header = new ElementMock("div");
+        // kbInstance.container = new ElementMock("div");
 
         await gridInstance.connectedCallback();
         await kbInstance.connectedCallback();
+
+        createMockChildren(gridInstance);
+        createMockChildren(kbInstance);
     });
 
     afterEach(async () => {
@@ -56,7 +59,9 @@ describe("data grid tests", () => {
 
         assertEquals(kbInstance.header.children.length, 1);
         assertEquals(kbInstance.container.children.length, 1);
-        assertEquals(gridInstance.grid.children.length, 2); // column + row container
+
+        const grid = gridInstance.querySelector('[role="grid"]');
+        assertEquals(grid.children.length, 2); // column + row container
     })
 });
     //

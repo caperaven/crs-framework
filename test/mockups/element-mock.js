@@ -1,6 +1,7 @@
 import {ClassList} from "./class-list.js";
 import {Style} from "./style.js";
 import {cloneElementMock} from "./clone-node.js";
+import {find, findAll, createQueryFunction} from "./query.js";
 
 export class ElementMock {
     constructor(tag, id, parentElement) {
@@ -52,7 +53,10 @@ export function createMockChildren(instance) {
 }
 
 function getAttribute(attr) {
-    return this.attributes.find(item => item.name == attr);
+    if (this.attributes.length == 0) return;
+
+    const result = this.attributes.find(item => item.name == attr);
+    return result?.value;
 }
 
 function setAttribute(attr, value) {
@@ -63,7 +67,7 @@ function setAttribute(attr, value) {
     };
 
     const old = this.getAttribute(attr);
-    this.attributes[attr] = attrObj;
+    this.attributes.push(attrObj);
 
     if (this["attributeChangedCallback"] != null) {
         this["attributeChangedCallback"](attr, old.value, value);
@@ -81,11 +85,15 @@ function removeAttribute (attr) {
 }
 
 function querySelector(selector) {
-
+    const callback = createQueryFunction(selector);
+    return find(this, callback);
 }
 
 function querySelectorAll(selector) {
-
+    const callback = createQueryFunction(selector);
+    const result = [];
+    findAll(this, callback, result);
+    return result;
 }
 
 function cloneNode() {
