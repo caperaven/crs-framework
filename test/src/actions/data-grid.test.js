@@ -1,9 +1,9 @@
-import {initRequired} from "../../mockups/init-required.js";
 import { beforeAll, afterAll, afterEach, beforeEach, describe, it} from "https://deno.land/std@0.157.0/testing/bdd.ts";
 import { assertEquals, assertExists, assert } from "https://deno.land/std@0.149.0/testing/asserts.ts";
-import {ElementMock} from "../../mockups/element.mock.js";
+import {ElementMock} from "../../../test/mockups/element-mock.js"
+import {init} from "./../../../test/mockups/init.js";
 
-await initRequired();
+await init();
 
 let gridInstance;
 let kbInstance;

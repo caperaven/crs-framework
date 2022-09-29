@@ -5,6 +5,6 @@
     "scripts": {
         "test": "deno test --allow-read",
         "bundle": "deno run --allow-read --allow-write --allow-env --allow-run  --allow-net ./build/build.js",
-        "build-html-parser": "wasm-pack build rust/html_parser/ --target web --out-dir ../../test/bin"
+        "build-html-parser": "wasm-pack build rust/html_parser/ --target web --out-dir ../../test/mockups/bin"
     }
 }

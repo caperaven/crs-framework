@@ -1,4 +1,4 @@
-import {initRequired} from "./../../mockups/init-required.js";
+import {initRequired} from "../../mockups/backup/init-required.js";
 
 import { assertEquals } from "https://deno.land/std@0.149.0/testing/asserts.ts";
 import { MaskManager, maskToText, canEdit } from "../../../components/masked-input/masked-input.js";

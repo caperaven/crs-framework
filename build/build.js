@@ -13,11 +13,11 @@ async function createFolderStructure() {
 }
 
 await createFolderStructure();
-await copyDirectory("./packages/crs-binding", "./dist/crs-binding");
-await copyDirectory("./packages/crs-modules", "./dist/crs-modules");
-await copyDirectory("./packages/crs-process-api", "./dist/crs-process-api");
-await copyDirectory("./packages/crs-router", "./dist/crs-router");
-await copyDirectory("./packages/crs-schema", "./dist/crs-schema");
+await copyDirectory("./packages/crs-binding", "./dist/packages/crs-binding");
+await copyDirectory("./packages/crs-modules", "./dist/packages/crs-modules");
+await copyDirectory("./packages/crs-process-api", "./dist/packages/crs-process-api");
+await copyDirectory("./packages/crs-router", "./dist/packages/crs-router");
+await copyDirectory("./packages/crs-schema", "./dist/packages/crs-schema");
 await copyDirectory("./documents", "./dist/documents");
 await copyDirectory("./test/mockups", "./dist/test/mockups");
 await packageFolder("./components", "./dist/components", true);
