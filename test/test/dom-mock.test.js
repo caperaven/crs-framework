@@ -56,4 +56,16 @@ describe("test framework tests", () => {
         assert(element != null);
         assertEquals(element.textContent, "Menu Item 1");
     })
+
+    it("get element by class", async () => {
+        const element = instance.querySelector('.green');
+        assert(element != null);
+        assertEquals(element.textContent, "Menu Item 2");
+    })
+
+    it("get element by tag name", async () => {
+        const element = instance.querySelector('nav');
+        assert(element != null);
+        assertEquals(element.nodeName, "NAV");
+    })
 })
