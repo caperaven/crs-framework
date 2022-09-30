@@ -12,6 +12,10 @@ export function createMockChildren(element) {
 }
 
 function createChildren(context, element, json) {
+    if (json.children.length == 1 && typeof json.children[0] == "string") {
+        return element.textContent = json.children[0];
+    }
+
     for (const item of json.children) {
         if (typeof item == "string" || item.name == "style") continue;
 

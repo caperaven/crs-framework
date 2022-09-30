@@ -37,9 +37,23 @@ describe("test framework tests", () => {
     })
 
     it("perform event action", async () => {
+        // menu is set on the instance because it has a ref attribute in the html
+        // click has a binding on it and auto set on the instance.
         const event = instance.menu.performEvent("click");
 
         assertEquals(instance.menu.style.background, "red");
         assertEquals(event.actionsCalled.stopPropagation, true);
+    })
+
+    it("get element by id", async () => {
+        const element = instance.querySelector("#main-menu");
+        assert(element != null);
+        assertEquals(element.id, "main-menu");
+    })
+
+    it("get element by attribute", async () => {
+        const element = instance.querySelector('[data-id="menuItem1"]');
+        assert(element != null);
+        assertEquals(element.textContent, "Menu Item 1");
     })
 })
