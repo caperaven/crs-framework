@@ -64,8 +64,13 @@ describe("test framework tests", () => {
     })
 
     it("get element by tag name", async () => {
-        const element = instance.querySelector('nav');
+        const element = instance.querySelector("nav");
         assert(element != null);
         assertEquals(element.nodeName, "NAV");
+    })
+
+    it("select all li items", async () => {
+        const result = instance.querySelectorAll("li");
+        assertEquals(result.length, 3);
     })
 })
