@@ -41,6 +41,10 @@ function setAttributes(context, element, item) {
             element.dataset[parts[1]] = value;
             element.setAttribute(key, value);
         }
+        else if (key.indexOf("_call") != -1) {
+            const parts = key.split("_call");
+            element.addEventListener(parts[0], context[value]);
+        }
         else {
             element.setAttribute(key, value);
         }
