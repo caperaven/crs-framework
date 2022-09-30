@@ -15,6 +15,7 @@ export class ElementMock {
 
 export function mockElement(instance, tag, id) {
     instance.__events = [];
+    instance.queryResults = {};
 
     instance.nodeName = (tag || "div").toUpperCase();
     instance.id = id;
@@ -85,6 +86,10 @@ function removeAttribute (attr) {
 }
 
 function querySelector(selector) {
+    if (this.queryResults[selector] != null) {
+        return this.queryResults[selector];
+    }
+
     const callback = createQueryFunction(selector);
     return find(this, callback);
 }

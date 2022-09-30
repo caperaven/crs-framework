@@ -36,6 +36,11 @@ function setAttributes(context, element, item) {
         if (key == "ref") {
             context[value] = element;
         }
+        else if (key.indexOf("data-") != -1) {
+            const parts = key.split("-");
+            element.dataset[parts[1]] = value;
+            element.setAttribute(key, value);
+        }
         else {
             element.setAttribute(key, value);
         }
