@@ -1,8 +1,12 @@
-export function createRowInflation(grid) {
-    const code = [];
+export function createRowInflation(grid, idField, rowFormatting, cellFormatting) {
+    const code = [
+        `element.setAttribute("data-id", model.${idField})`
+    ];
 
     for (let i = 0; i < grid.columns.length; i++) {
         const column = grid.columns[i];
+
+        code.push(`element.children[${i}].dataset.field = "${column.field}";`)
 
         if (column.convert != null) {
             code.push(`element.children[${i}].textContent = crsbinding.valueConvertersManager.convert(model.${column.field}, "${column.convert.converter}", "get")`);

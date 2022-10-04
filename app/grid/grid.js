@@ -23,7 +23,10 @@ export default class Grid extends crsbinding.classes.ViewBase {
             ]
         });
 
-        createRowInflation(this.grid);
+        const rowFormatting = {};
+        const cellFormatting = {}
+
+        createRowInflation(this.grid, "workOrderId", rowFormatting, cellFormatting);
 
         await createRowElement(this.grid, this.grid.rowInflateFn, data[0], "0rem", "2rem");
         await createRowElement(this.grid, this.grid.rowInflateFn, data[1], "2rem", "2rem");
