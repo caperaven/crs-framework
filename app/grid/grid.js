@@ -18,6 +18,7 @@ export default class Grid extends crsbinding.classes.ViewBase {
             element: this.grid,
             columns: [
                 { title: "Code", field: "workOrderCode", width: 150 },
+                { title: "Description", field: "workOrderDescription", width: 200 },
                 { title: "Attribute Code", field: "attributeCode", width: 150 },
                 { title: "Value", field: "predefinedValueValue:udf()", width: 150 },
             ]

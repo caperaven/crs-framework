@@ -89,9 +89,11 @@
     data-grid [role="gridcell"] {
         border-bottom: var(--border);
         border-right: var(--border);
-        display: flex;
-        padding: 0 0.5rem;
+        padding: 0.25rem 0.5rem;
         align-items: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     data-grid .left {
