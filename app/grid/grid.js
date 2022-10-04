@@ -23,8 +23,26 @@ export default class Grid extends crsbinding.classes.ViewBase {
             ]
         });
 
-        const rowFormatting = {};
-        const cellFormatting = {}
+        const rowFormatting = {
+            "model.predefinedValueValue?.type.toLowerCase() == 'string'": {
+                background: "#ff0090",
+                color: "#ffffff"
+            },
+            "model.predefinedValueValue?.type.toLowerCase() == 'integer'": {
+                background: "#0098e0",
+                color: "#ffffff"
+            }
+        };
+
+        const cellFormatting = {
+            "attributeCode": {
+                "model.attributeCode == 'Make'": {
+                    background: "#005c87",
+                    color: "#ffffff",
+                    fontStyle: "italic"
+                }
+            }
+        }
 
         createRowInflation(this.grid, "workOrderId", rowFormatting, cellFormatting);
 

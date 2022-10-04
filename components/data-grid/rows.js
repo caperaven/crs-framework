@@ -3,8 +3,14 @@ export function createRowInflation(grid, idField, rowFormatting, cellFormatting)
         `element.setAttribute("data-id", model.${idField})`
     ];
 
+    createConditionalProperties(rowFormatting, code, "element");
+
     for (let i = 0; i < grid.columns.length; i++) {
         const column = grid.columns[i];
+
+        if (cellFormatting[column.field] != null) {
+            createConditionalProperties(cellFormatting[column.field], code, `element.children[${i}]`);
+        }
 
         code.push(`element.children[${i}].dataset.field = "${column.field}";`)
 
@@ -46,4 +52,18 @@ export async function createRowElement(grid, inflateFn, model, top, height) {
     }
 
     inflateFn(rowElement, model);
+}
+
+function createConditionalProperties(obj, code, elementCode) {
+    const keys = Object.keys(obj || {});
+    for (const key of keys) {
+        code.push(`if (${key}) {`);
+
+        const props = Object.keys(obj[key]);
+        for (const prop of props) {
+            code.push(`    ${elementCode}.style.${prop} = "${obj[key][prop]}"`);
+        }
+
+        code.push("}")
+    }
 }
