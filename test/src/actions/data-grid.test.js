@@ -22,12 +22,6 @@ describe("data grid tests", () => {
         gridInstance = document.createElement("data-grid");
         kbInstance = document.createElement("kan-ban");
 
-        // gridInstance.grid = new ElementMock("div", "grid");
-        // gridInstance.rowContainer = new ElementMock("div", "rowContainer", gridInstance.grid);
-
-        // kbInstance.header = new ElementMock("div");
-        // kbInstance.container = new ElementMock("div");
-
         await gridInstance.connectedCallback();
         await kbInstance.connectedCallback();
 

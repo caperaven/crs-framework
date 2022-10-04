@@ -18,17 +18,6 @@ async function addColumnElements(columns) {
         })
 
         this.rowContainer.parentElement.insertBefore(header, this.rowContainer);
-
-        //
-        // this.header.appendChild(header);
-        //
-        // const cell = await crs.call("dom", "create_element", {
-        //     attributes: {
-        //         role: "cell"
-        //     }
-        // })
-        //
-        // this.container.appendChild(cell);
     }
 
     dispatchEvent(new CustomEvent("columns-added", {detail: this}));

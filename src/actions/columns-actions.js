@@ -13,6 +13,7 @@ export class ColumnsActions {
      * a column = {
      *     id: "id of the column",
      *     title: "column title",
+     *     field: predefinedValueValue:udf()
      *     width: 100
      *     type: <optional>"string", "number", "date", "duration" - default "string"
      *     align: <optional> "left", "right", "middle" - default = left
@@ -127,6 +128,11 @@ export class ColumnsActions {
 
 function addToCollection(collection, items) {
     for (const item of items) {
+        if (item.field.indexOf(":") != -1) {
+            item.convert = crsbinding.utils.getConverterParts(item.field);
+            item.field = item.convert.path;
+        }
+
         collection.push(item);
     }
 }
