@@ -40,6 +40,9 @@ export default class Grid extends crsbinding.classes.ViewBase {
                     background: "#005c87",
                     color: "#ffffff",
                     fontStyle: "italic"
+                },
+                "model.attributeCode == 'AAIntTest'": {
+                    color: "#ccff00"
                 }
             }
         }
