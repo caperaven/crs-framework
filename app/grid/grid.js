@@ -6,10 +6,12 @@ export default class Grid extends crsbinding.classes.ViewBase {
     async connectedCallback() {
         await super.connectedCallback();
         crsbinding.valueConvertersManager.add("udf", udfConverter);
+        crsbinding.valueConvertersManager.add("svg", svgConverter);
     }
 
     async disconnectedCallback() {
         crsbinding.valueConvertersManager.remove("udf");
+        crsbinding.valueConvertersManager.remove("svg");
         await super.disconnectedCallback();
     }
 
@@ -17,6 +19,7 @@ export default class Grid extends crsbinding.classes.ViewBase {
         await crs.call("grid_columns", "add_columns", {
             element: this.grid,
             columns: [
+                { title: "", field: "sequenceNumber:svg()", html: true, width: 42 },
                 { title: "Code", field: "workOrderCode", width: 150 },
                 { title: "Description", field: "workOrderDescription", width: 200 },
                 { title: "Attribute Code", field: "attributeCode", width: 150 },
@@ -36,6 +39,16 @@ export default class Grid extends crsbinding.classes.ViewBase {
         };
 
         const cellFormatting = {
+            "sequenceNumber": {
+                "model.sequenceNumber == 3": {
+                    fill: "#ff0080"
+                },
+
+                "model.predefinedValueValue?.type.toLowerCase() == 'string'": {
+                    fill: "#ffffff"
+                }
+            },
+
             "attributeCode": {
                 "model.attributeCode == 'Make'": {
                     background: "#005c87",
@@ -69,5 +82,44 @@ const udfConverter = {
         }
 
         return `${value.value} : ${value.type}`;
+    }
+}
+
+const svgConverter = {
+    set (value, args) {
+        return value;
+    },
+
+    get (value, args) {
+        switch(value) {
+            case 1: {
+                return `
+                    <svg class="icon">
+                        <use xlink:href="#icon-home"></use>
+                    </svg>
+                `
+                break;
+            }
+            case 2: {
+                return `
+                    <svg class="icon">
+                        <use xlink:href="#icon-approved"></use>
+                    </svg>
+                `
+                break;
+            }
+            case 3: {
+                return `
+                    <svg class="icon">
+                        <use xlink:href="#icon-account"></use>
+                    </svg>
+                `
+                break;
+            }
+            default: {
+                return "";
+                break;
+            }
+        }
     }
 }

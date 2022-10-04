@@ -1,4 +1,4 @@
-export function addColumnFeatures(instance) {
+export async function addColumnFeatures(instance) {
     instance.addColumnElements = addColumnElements;
     instance.removeColumnElements = removeColumnElements;
 }
@@ -14,7 +14,9 @@ async function addColumnElements(columns) {
             text_content: column.title,
             attributes: {
                 role: "columnheader",
-            }
+            },
+            styles: column.styles,
+            classes: column.classes
         })
 
         this.rowContainer.parentElement.insertBefore(header, this.rowContainer);

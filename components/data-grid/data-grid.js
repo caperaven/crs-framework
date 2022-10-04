@@ -1,5 +1,8 @@
 import "./actions/editing-actions.js";
 import {addColumnFeatures} from "./columns.js";
+import {addSelectionFeature} from "./selection.js";
+import {selectedConverter} from "./value-converters/selected-converter.js";
+import {enableInput, disableInput} from "./input.js";
 
 export default class DataGrid extends crsbinding.classes.BindableElement {
     #columns;
@@ -13,20 +16,35 @@ export default class DataGrid extends crsbinding.classes.BindableElement {
         return this.#columnGroups;
     }
 
+    get selectionType() {
+        return this.dataset.selection || "none";
+    }
+
     get html() {
         return import.meta.url.replace(".js", ".html");
     }
 
     async connectedCallback() {
         await super.connectedCallback();
+
+        crsbinding.valueConvertersManager.add("selected", selectedConverter);
+
         this.#columns = [];
         this.#columnGroups = [];
-        addColumnFeatures(this);
+
+        await addColumnFeatures(this);
+        await addSelectionFeature(this);
+        await enableInput(this);
     }
 
     async disconnectedCallback() {
+        crsbinding.valueConvertersManager.remove("selected");
+
         this.#columns = null;
         this.#columnGroups = null;
+
+        await disableInput(this);
+        await disableSelectionFeature(this);
         await super.disconnectedCallback();
     }
 

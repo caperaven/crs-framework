@@ -15,8 +15,8 @@
 }
 
 @font-face {
-    font-family: 'icons';
-    src: url(/resources/fonts/icons/icons.ttf);
+    font-family: selection;
+    src: url(/resources/fonts/icons/selection.ttf);
 }
 
 * {

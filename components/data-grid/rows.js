@@ -15,7 +15,8 @@ export function createRowInflation(grid, idField, rowFormatting, cellFormatting)
         code.push(`element.children[${i}].dataset.field = "${column.field}";`)
 
         if (column.convert != null) {
-            code.push(`element.children[${i}].textContent = crsbinding.valueConvertersManager.convert(model.${column.field}, "${column.convert.converter}", "get")`);
+            const target = column.html == true ? "innerHTML" : "textContent";
+            code.push(`element.children[${i}].${target} = crsbinding.valueConvertersManager.convert(model.${column.field}, "${column.convert.converter}", "get")`);
         }
         else {
             code.push(`element.children[${i}].textContent = model.${column.field}`);
@@ -43,7 +44,9 @@ export async function createRowElement(grid, inflateFn, model, top, height) {
             parent: rowElement,
             attributes: {
                 role: "gridcell"
-            }
+            },
+            styles: column.styles,
+            classes: column.classes
         })
 
         if (column.align != null) {
