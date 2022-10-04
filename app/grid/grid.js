@@ -63,11 +63,11 @@ export default class Grid extends crsbinding.classes.ViewBase {
 
         createRowInflation(this.grid, "workOrderId", rowFormatting, cellFormatting);
 
-        await createRowElement(this.grid, this.grid.rowInflateFn, data[0], "0rem", "2rem");
-        await createRowElement(this.grid, this.grid.rowInflateFn, data[1], "2rem", "2rem");
-        await createRowElement(this.grid, this.grid.rowInflateFn, data[2], "4rem", "2rem");
-        await createRowElement(this.grid, this.grid.rowInflateFn, data[3], "6rem", "2rem");
-        await createRowElement(this.grid, this.grid.rowInflateFn, data[4], "8rem", "2rem");
+        await createRowElement(this.grid, this.grid.rowInflateFn, data[0], 0,"0rem", "2rem");
+        await createRowElement(this.grid, this.grid.rowInflateFn, data[1], 1, "2rem", "2rem");
+        await createRowElement(this.grid, this.grid.rowInflateFn, data[2], 2, "4rem", "2rem");
+        await createRowElement(this.grid, this.grid.rowInflateFn, data[3], 3, "6rem", "2rem");
+        await createRowElement(this.grid, this.grid.rowInflateFn, data[4], 4, "8rem", "2rem");
     }
 }
 

@@ -1,4 +1,4 @@
-import {markSelected} from "./selection.js";
+import {markSelected, markAllSelected} from "./selection.js";
 
 export async function enableInput(grid) {
     grid._clickHandler = click.bind(grid);
@@ -13,7 +13,15 @@ export async function disableInput(grid) {
 async function click(event) {
     event.preventDefault();
 
+    // click on cell for selection
     if (event.target.dataset.field == "_selected") {
         return await markSelected(this, event.target);
+    }
+
+    // click on selection header
+    if (event.target.classList.contains("selection")) {
+        const checked = event.target.textContent == "check";
+        await markAllSelected(this, !checked);
+        return event.target.textContent = checked ? "uncheck" : "check";
     }
 }

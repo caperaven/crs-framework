@@ -66,14 +66,16 @@ export default class DataGrid extends crsbinding.classes.BindableElement {
         }
 
         event.preventDefault();
-        // this.dispatchEvent(new CustomEvent("row-execute", event.target));
-
-        event.target.parentElement.style.translate = "0 600px";
-
+        this.dispatchEvent(new CustomEvent("row-execute", event.target));
     }
 
     async addColumnElements(columns) {
         dispatchEvent(new CustomEvent("columns-added", {detail: this}));
+    }
+
+    async modifyRecord(rowIndex, field, value, convert) {
+        console.log(`edit = row: ${rowIndex}, field: "${field}", value: "${value}"`);
+        console.log(convert);
     }
 }
 

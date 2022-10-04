@@ -27,7 +27,7 @@ export function createRowInflation(grid, idField, rowFormatting, cellFormatting)
     grid.rowInflateFn = fn;
 }
 
-export async function createRowElement(grid, inflateFn, model, top, height) {
+export async function createRowElement(grid, inflateFn, model, index, top, height) {
     const rowElement = await crs.call("dom", "create_element", {
         parent: grid.rowContainer,
         attributes: {
@@ -36,6 +36,9 @@ export async function createRowElement(grid, inflateFn, model, top, height) {
         styles: {
             height: height,
             translate: `0 ${top}`
+        },
+        dataset: {
+            index: index
         }
     })
 
