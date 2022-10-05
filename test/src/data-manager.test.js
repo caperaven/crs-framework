@@ -78,20 +78,35 @@ describe("data manager tests", () => {
 
         assertEquals(manager.count, 1);
     })
+
+    it ("update - by index", async () => {
+        await crs.call("data_manager", "update", {
+            manager: "store",
+            index: 0,
+            changes: {
+                code: "ABC"
+            }
+        })
+
+        const record = manager.getIndex(0);
+        assertEquals(record.code, "ABC");
+    })
+
+    it ("update - by id", async () => {
+        await crs.call("data_manager", "update", {
+            manager: "store",
+            id: "1000",
+            changes: {
+                code: "ABC"
+            }
+        })
+
+        const record = manager.getIndex(0);
+        assertEquals(record.code, "ABC");
+    })
 })
 
 
-//
-// Deno.test("data manager - remove", async () => {
-//     /**
-//      *  Remove a new record to the existing collection
-//      */
-//
-//     await crs.call("data_manager", "remove", {
-//         manager: "work_orders_store",
-//         indexes: 0 // index or id
-//     })
-// })
 //
 // Deno.test("data manager - update", async () => {
 //     /**

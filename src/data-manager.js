@@ -33,6 +33,14 @@ class BaseDataManager {
     removeIds(count) {
         this.#count = count;
     }
+
+    updateIndex(index, changes) {
+        return null;
+    }
+
+    updateId(id, changes) {
+        return null;
+    }
 }
 
 class MemoryDataManager extends BaseDataManager {
@@ -77,6 +85,22 @@ class MemoryDataManager extends BaseDataManager {
         }
 
         super.removeIds(this.#records.length);
+    }
+
+    updateIndex(index, changes) {
+        const record = this.#records[index];
+        const keys = Object.keys(changes);
+        for (const key of keys) {
+            record[key] = changes[key];
+        }
+    }
+
+    updateId(id, changes) {
+        const record = this.#records.find(item => item[this.dataField] == id);
+        const keys = Object.keys(changes);
+        for (const key of keys) {
+            record[key] = changes[key];
+        }
     }
 }
 
@@ -138,10 +162,15 @@ class DataManagerStore {
 
     static async update(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
-        const index = await crs.process.getValue(step.args.indexes, context, process, item);
+        const index = await crs.process.getValue(step.args.index, context, process, item);
         const id = await crs.process.getValue(step.args.id, context, process, item);
         const changes = await crs.process.getValue(step.args.changes, context, process, item);
 
+        if (index != null) {
+            return globalThis.dataManagers[manager].updateIndex(index, changes);
+        }
+
+        return globalThis.dataManagers[manager].updateId(id, changes);
     }
 
     static async update_batch(step, context, process, item) {
