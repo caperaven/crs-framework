@@ -44,7 +44,6 @@ export default class DataGrid extends crsbinding.classes.BindableElement {
         this.#columnGroups = null;
 
         await disableInput(this);
-        await disableSelectionFeature(this);
         await super.disconnectedCallback();
     }
 

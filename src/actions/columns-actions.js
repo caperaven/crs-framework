@@ -40,8 +40,13 @@ export class ColumnsActions {
         const index = await crs.process.getValue(step.args.index, context, process, item);
         const count = (await crs.process.getValue(step.args.count, context, process, item)) || 1;
 
-        element.columns.splice(index, count);
+        const removed = element.columns.splice(index, count);
         writeCSSColumns(element, this.#columnsProperty, element.columns);
+
+        for (const column of removed) {
+            column.convert.fn = null;
+            column.convert = null;
+        }
 
         await element.removeColumnElements?.(index, count);
     }
@@ -130,6 +135,12 @@ function addToCollection(collection, items) {
     for (const item of items) {
         if (item.field.indexOf(":") != -1) {
             item.convert = crsbinding.utils.getConverterParts(item.field);
+
+            if (item.convert.postExp != null) {
+                const code = `return crsbinding.valueConvertersManager.convert(value, "${item.convert.converter}", "get")`;
+                item.convert.fn = new Function("value", code);
+            }
+
             item.field = item.convert.path;
         }
 
