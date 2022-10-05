@@ -20,7 +20,7 @@ describe("data manager tests", () => {
 
         manager = await crs.call("data_manager", "register", {
             manager: "store",
-            id_field: "workOrderId",
+            id_field: "id",
             type: "memory",
             records: records
         })
@@ -60,14 +60,27 @@ describe("data manager tests", () => {
         assertEquals(manager.count, 3);
         assertEquals(record.id, "2000");
     })
+
+    it ("remove - by index", async () => {
+        await crs.call("data_manager", "remove", {
+            manager: "store",
+            indexes: [1]
+        })
+
+        assertEquals(manager.count, 1);
+    })
+
+    it ("remove - by id", async () => {
+        await crs.call("data_manager", "remove", {
+            manager: "store",
+            ids: ["1000"]
+        })
+
+        assertEquals(manager.count, 1);
+    })
 })
 
-//
-// Deno.test("data manager - append", async () => {
-//     /**
-//      *  Add a new record to the existing collection in index_db
-//      */
-// })
+
 //
 // Deno.test("data manager - remove", async () => {
 //     /**

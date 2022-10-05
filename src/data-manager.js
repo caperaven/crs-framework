@@ -6,6 +6,10 @@ class BaseDataManager {
         return this.#count;
     }
 
+    get dataField() {
+        return this.#dataField;
+    }
+
     constructor(dataField) {
         this.#dataField = dataField;
     }
@@ -22,12 +26,12 @@ class BaseDataManager {
         return null;
     }
 
-    from_index(index) {
-        return null;
+    removeIndexes(count) {
+        this.#count = count;
     }
 
-    from_id(id) {
-        return null;
+    removeIds(count) {
+        this.#count = count;
     }
 }
 
@@ -54,6 +58,25 @@ class MemoryDataManager extends BaseDataManager {
 
     getId(id) {
         return null;
+    }
+
+    removeIndexes(indexes) {
+        indexes.sort((a, b) => a > b ? -1 : 1);
+
+        for (const index of indexes) {
+            this.#records.splice(index, 1);
+        }
+
+        super.removeIndexes(this.#records.length);
+    }
+
+    removeIds(ids) {
+        for (const id of ids) {
+            const index = this.#records.findIndex(item => item[this.dataField] == id);
+            this.#records.splice(index, 1);
+        }
+
+        super.removeIds(this.#records.length);
     }
 }
 
@@ -106,6 +129,11 @@ class DataManagerStore {
         const indexes = await crs.process.getValue(step.args.indexes, context, process, item);
         const ids = await crs.process.getValue(step.args.ids, context, process, item);
 
+        if (indexes != null) {
+            return globalThis.dataManagers[manager].removeIndexes(indexes);
+        }
+
+        globalThis.dataManagers[manager].removeIds(ids);
     }
 
     static async update(step, context, process, item) {
