@@ -170,21 +170,4 @@ describe("data manager tests", () => {
         const rows = await crs.call("data_manager", "get_all", { manager: "store" });
         assertEquals(rows.length, 10);
     })
-
 })
-
-
-
-
-//
-// Deno.test("data manager - get_page", async () => {
-//     /**
-//      *  Get any number of records based on start index and page
-//      */
-//
-//     await crs.call("data_manager", "get_page", {
-//         manager: "work_orders_store",
-//         from: 0,
-//         to: 99
-//     })
-// });
