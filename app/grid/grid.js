@@ -1,6 +1,7 @@
 import "../../src/actions/columns-actions.js";
 import {data} from "./../../data/static.js";
 import {createRowInflation, createRowElement} from "./../../components/data-grid/rows.js";
+import "./../../src/data-manager.js"
 
 export default class Grid extends crsbinding.classes.ViewBase {
     async connectedCallback() {
@@ -13,6 +14,15 @@ export default class Grid extends crsbinding.classes.ViewBase {
         crsbinding.valueConvertersManager.remove("udf");
         crsbinding.valueConvertersManager.remove("svg");
         await super.disconnectedCallback();
+    }
+
+    async preLoad() {
+        await crs.call("data_manager",  "register", {
+            manager: "store",
+            id_field: "workOrderId",
+            type: "memory",
+            records: data
+        })
     }
 
     async addColumn() {
@@ -63,11 +73,14 @@ export default class Grid extends crsbinding.classes.ViewBase {
 
         createRowInflation(this.grid, "workOrderId", rowFormatting, cellFormatting);
 
-        await createRowElement(this.grid, this.grid.rowInflateFn, data[0], 0,"0rem", "2rem");
-        await createRowElement(this.grid, this.grid.rowInflateFn, data[1], 1, "2rem", "2rem");
-        await createRowElement(this.grid, this.grid.rowInflateFn, data[2], 2, "4rem", "2rem");
-        await createRowElement(this.grid, this.grid.rowInflateFn, data[3], 3, "6rem", "2rem");
-        await createRowElement(this.grid, this.grid.rowInflateFn, data[4], 4, "8rem", "4rem");
+        const records = await crs.call("data_manager", "get_all", { manager: "store"} )
+        let top = 0;
+        let index = 0;
+        for (const record of records) {
+            await createRowElement(this.grid, this.grid.rowInflateFn, record, 0,`${top}rem`, "2rem");
+            top += 2;
+            index += 1;
+        }
     }
 }
 

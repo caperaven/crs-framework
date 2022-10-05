@@ -73,8 +73,17 @@ export default class DataGrid extends crsbinding.classes.BindableElement {
     }
 
     async modifyRecord(rowIndex, field, value, convert) {
-        console.log(`edit = row: ${rowIndex}, field: "${field}", value: "${value}"`);
-        console.log(convert);
+        if (convert != null) {
+            value = await crsbinding.valueConvertersManager.convert(value, convert.converter, "set", convert.parameter);
+        }
+
+        await crs.call("data_manager", "update", {
+            manager: this.dataset.manager,
+            index: rowIndex,
+            changes: {
+                [field]: value
+            }
+        })
     }
 }
 

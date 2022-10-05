@@ -22,36 +22,12 @@ class BaseDataManager {
         this.#count = count;
     }
 
-    getIndex(index) {
-        return null;
-    }
-
-    getId(id) {
-        return null;
-    }
-
-    getAll() {
-        return null;
-    }
-
-    getPage(from, to) {
-        return null;
-    }
-
     removeIndexes(count) {
         this.#count = count;
     }
 
     removeIds(count) {
         this.#count = count;
-    }
-
-    updateIndex(index, changes) {
-        return null;
-    }
-
-    updateId(id, changes) {
-        return null;
     }
 }
 
