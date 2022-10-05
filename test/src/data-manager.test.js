@@ -104,63 +104,78 @@ describe("data manager tests", () => {
         const record = manager.getIndex(0);
         assertEquals(record.code, "ABC");
     })
+
+    it ("update_batch - indexes", async () => {
+        await crs.call("data_manager", "update_batch", {
+            manager: "store",
+            batch: [
+                {
+                    index: 0,
+                    changes: {
+                        code: "C1"
+                    }
+                },
+                {
+                    id: "1001",
+                    changes: {
+                        code: "C2"
+                    }
+                }
+            ]
+        })
+
+        assertEquals(manager.getIndex(0).code, "C1");
+        assertEquals(manager.getIndex(1).code, "C2");
+    })
+
+    it ("update_batch", async () => {
+        const record1 = await crs.call("data_manager", "get", { manager: "store", index: 0 });
+        const record2 = await crs.call("data_manager", "get", { manager: "store", id: "1001" });
+
+        assert(record1 != null);
+        assert(record2 != null);
+    })
+
+    it ("get_page", async () => {
+        const records = [];
+        for (let i = 0; i < 10; i++) {
+            records.push({ id: i, code: `code ${i}` });
+        }
+
+        await crs.call("data_manager", "set_records", {
+            manager: "store",
+            records: records
+        })
+
+        const page = await crs.call("data_manager", "get_page", {
+            manager: "store",
+            from: 0,
+            to: 5
+        });
+
+        assertEquals(page.length, 5);
+    })
+
+    it ("get_all", async () => {
+        const records = [];
+        for (let i = 0; i < 10; i++) {
+            records.push({ id: i, code: `code ${i}` });
+        }
+
+        await crs.call("data_manager", "set_records", {
+            manager: "store",
+            records: records
+        })
+
+        const rows = await crs.call("data_manager", "get_all", { manager: "store" });
+        assertEquals(rows.length, 10);
+    })
+
 })
 
 
-//
-// Deno.test("data manager - update", async () => {
-//     /**
-//      *  Remove a new record to the existing collection
-//      */
-//
-//     await crs.call("data_manager", "update", {
-//         manager: "work_orders_store",
-//         index: 0, // index or id
-//         changes: {
-//             "property1": "value",
-//             "property2": "value"
-//         }
-//     })
-// })
-//
-//
-// Deno.test("data manager - update_batch", async () => {
-//     /**
-//      *  Change properties on an existing record
-//      */
-//
-//     await crs.call("data_manager", "update_batch", {
-//         manager: "work_orders_store",
-//
-//         /**
-//          * scenarios:
-//          * 1. index -> update the record at that index
-//          * 2. id -> find that record and update it
-//          * 3. index and id -> check if that record matches the id I gave, if true then update else perform step 2.
-//           */
-//
-//         batch: [
-//             {
-//                 index: 0, // index / id,
-//                 changes: {
-//                     "property1": "value",
-//                     "property2": "value"
-//                 }
-//             }
-//         ]
-//     })
-// })
-//
-// Deno.test("data manager - get", async () => {
-//     /**
-//      *  Get a record at a given index
-//      */
-//
-//     await crs.call("data_manager", "get", {
-//         manager: "work_orders_store",
-//         indexes: 0 // indexes or ids
-//     })
-// })
+
+
 //
 // Deno.test("data manager - get_page", async () => {
 //     /**

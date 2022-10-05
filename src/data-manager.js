@@ -22,7 +22,19 @@ class BaseDataManager {
         this.#count = count;
     }
 
+    getIndex(index) {
+        return null;
+    }
+
+    getId(id) {
+        return null;
+    }
+
     getAll() {
+        return null;
+    }
+
+    getPage(from, to) {
         return null;
     }
 
@@ -60,12 +72,16 @@ class MemoryDataManager extends BaseDataManager {
         return this.#records;
     }
 
+    getPage(from, to) {
+        return this.#records.slice(from, to);
+    }
+
     getIndex(index) {
         return this.#records[index];
     }
 
     getId(id) {
-        return null;
+        return this.#records.find(item => item[this.dataField] == id);
     }
 
     removeIndexes(indexes) {
@@ -177,11 +193,19 @@ class DataManagerStore {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
         const batch = await crs.process.getValue(step.args.batch, context, process, item);
 
+        for (let item of batch) {
+            if (item.index != null) {
+                globalThis.dataManagers[manager].updateIndex(item.index, item.changes);
+            }
+            else {
+                globalThis.dataManagers[manager].updateId(item.id, item.changes);
+            }
+        }
     }
 
     static async get(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
-        const index = await crs.process.getValue(step.args.indexes, context, process, item);
+        const index = await crs.process.getValue(step.args.index, context, process, item);
         const id = await crs.process.getValue(step.args.id, context, process, item);
 
         if (index != null) {
@@ -195,6 +219,8 @@ class DataManagerStore {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
         const from = await crs.process.getValue(step.args.from, context, process, item);
         const to = await crs.process.getValue(step.args.to, context, process, item);
+
+        return globalThis.dataManagers[manager].getPage(from, to);
     }
 
     static async get_all(step, context, process, item) {
