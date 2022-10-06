@@ -69,7 +69,7 @@ describe("data manager tests", () => {
             records: [{ id: "2000", "code":  "2000" }]
         })
 
-        const record = manager.getIndex(2);
+        const record = manager.getByIndex(2);
         assertEquals(manager.count, 3);
         assertEquals(record.id, "2000");
     })
@@ -101,7 +101,7 @@ describe("data manager tests", () => {
             }
         })
 
-        const record = manager.getIndex(0);
+        const record = manager.getByIndex(0);
         assertEquals(record.code, "ABC");
     })
 
@@ -114,7 +114,7 @@ describe("data manager tests", () => {
             }
         })
 
-        const record = manager.getIndex(0);
+        const record = manager.getByIndex(0);
         assertEquals(record.code, "ABC");
     })
 
@@ -137,8 +137,8 @@ describe("data manager tests", () => {
             ]
         })
 
-        assertEquals(manager.getIndex(0).code, "C1");
-        assertEquals(manager.getIndex(1).code, "C2");
+        assertEquals(manager.getByIndex(0).code, "C1");
+        assertEquals(manager.getByIndex(1).code, "C2");
     })
 
     it ("get - by id and index", async () => {
@@ -147,6 +147,17 @@ describe("data manager tests", () => {
 
         assert(record1 != null);
         assert(record2 != null);
+    })
+
+    it ("get ids", async () => {
+        const idCollection = await crs.call("data_manager", "get_ids", {
+            manager: "store",
+            indexes: [0, 1]
+        })
+
+        assertEquals(idCollection.length, 2);
+        assertEquals(idCollection[0], "1000");
+        assertEquals(idCollection[1], "1001");
     })
 
     it ("get_page", async () => {

@@ -95,35 +95,52 @@ class MemoryDataManager extends BaseDataManager {
         return this.#records.slice(from, to);
     }
 
-    getIndex(index) {
+    getByIndex(index) {
         return this.#records[index];
     }
 
-    getId(id) {
+    getById(id) {
         return this.#records.find(item => item[this.dataField] == id);
+    }
+
+    getIds(indexes) {
+        const ids = [];
+        for (const index of indexes) {
+            ids.push(this.#records[index][this.dataField]);
+        }
+        return ids;
     }
 
     removeIndexes(indexes) {
         indexes.sort((a, b) => a > b ? -1 : 1);
+        const ids = [];
 
         for (const index of indexes) {
+            ids.push(this.#records[index][this.dataField]);
             this.#records.splice(index, 1);
         }
 
         super.removeIndexes(this.#records.length);
+        return {indexes, ids};
     }
 
     removeIds(ids) {
+        const indexes = [];
         for (const id of ids) {
             const index = this.#records.findIndex(item => item[this.dataField] == id);
+            indexes.push(index);
             this.#records.splice(index, 1);
         }
 
+        indexes.sort((a, b) => a > b ? -1 : 1);
         super.removeIds(this.#records.length);
+        return {indexes, ids};
     }
 
     updateIndex(index, changes) {
         const record = this.#records[index];
+        const id = record[this.dataField];
+
         const keys = Object.keys(changes);
         for (const key of keys) {
             record[key] = changes[key];
@@ -131,7 +148,9 @@ class MemoryDataManager extends BaseDataManager {
     }
 
     updateId(id, changes) {
-        const record = this.#records.find(item => item[this.dataField] == id);
+        const index = this.#records.findIndex(item => item[this.dataField] == id);
+        const record = this.#records[index];
+
         const keys = Object.keys(changes);
         for (const key of keys) {
             record[key] = changes[key];
@@ -199,7 +218,17 @@ class DataManagerStore {
     static async append(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
         const records = await crs.process.getValue(step.args.records || [], context, process, item);
-        globalThis.dataManagers[manager].append(...records);
+
+        const managerObj = globalThis.dataManagers[manager];
+        const index = manager.count;
+        managerObj.append(...records);
+
+        await managerObj.notifyChanges({
+            action: CHANGE_TYPES.add,
+            records: records,
+            index: index,
+            count: records.length
+        });
     }
 
     static async remove(step, context, process, item) {
@@ -207,11 +236,21 @@ class DataManagerStore {
         const indexes = await crs.process.getValue(step.args.indexes, context, process, item);
         const ids = await crs.process.getValue(step.args.ids, context, process, item);
 
+        const managerObj = globalThis.dataManagers[manager];
+        let result;
+
         if (indexes != null) {
-            return globalThis.dataManagers[manager].removeIndexes(indexes);
+            result = managerObj.removeIndexes(indexes);
+        }
+        else {
+            result = managerObj.removeIds(ids);
         }
 
-        globalThis.dataManagers[manager].removeIds(ids);
+        await managerObj.notifyChanges({
+            action: CHANGE_TYPES.delete,
+            indexes: result.indexes,
+            ids: result.ids
+        })
     }
 
     static async update(step, context, process, item) {
@@ -250,10 +289,10 @@ class DataManagerStore {
         const id = await crs.process.getValue(step.args.id, context, process, item);
 
         if (index != null) {
-            return globalThis.dataManagers[manager].getIndex(index);
+            return globalThis.dataManagers[manager].getByIndex(index);
         }
 
-        return globalThis.dataManagers[manager].getId(id);
+        return globalThis.dataManagers[manager].getById(id);
     }
 
     static async get_page(step, context, process, item) {
@@ -267,6 +306,13 @@ class DataManagerStore {
     static async get_all(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
         return globalThis.dataManagers[manager].getAll();
+    }
+
+    static async get_ids(step, context, process, item) {
+        const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        const indexes = await crs.process.getValue(step.args.indexes, context, process, item);
+
+        return globalThis.dataManagers[manager].getIds(indexes);
     }
 
     static async on_change(step, context, process, item) {
