@@ -11,9 +11,11 @@ beforeAll(async () => {
 describe("data manager tests", () => {
     let records;
     let manager;
-    let changeArgs;
+    let changeArgs = [];
 
     beforeEach(async () => {
+        changeArgs.length = 0;
+
         records = [
             { id: "1000", code: "code 1" },
             { id: "1001", code: "code 2" }
@@ -28,7 +30,7 @@ describe("data manager tests", () => {
 
         await crs.call("data_manager", "on_change", {
             manager: "store",
-            callback: async (args) => changeArgs = args
+            callback: async (args) => changeArgs.push(args)
         });
     })
 
@@ -58,9 +60,9 @@ describe("data manager tests", () => {
 
         const manager_records = await crs.call("data_manager", "get_all", { manager: "store" });
         assertEquals(manager_records, records);
-        assertEquals(changeArgs.managerId, "store");
-        assertEquals(changeArgs.action, "refresh");
-        assertEquals(changeArgs.count, 2);
+        assertEquals(changeArgs[0].managerId, "store");
+        assertEquals(changeArgs[0].action, "refresh");
+        assertEquals(changeArgs[0].count, 2);
     })
 
     it ("append", async () => {
@@ -73,10 +75,10 @@ describe("data manager tests", () => {
         assertEquals(manager.count, 3);
         assertEquals(record.id, "2000");
 
-        assertEquals(changeArgs.action, "add");
-        assertEquals(changeArgs.records.length, 1);
-        assertEquals(changeArgs.index, 2);
-        assertEquals(changeArgs.count, 1);
+        assertEquals(changeArgs[0].action, "add");
+        assertEquals(changeArgs[0].models.length, 1);
+        assertEquals(changeArgs[0].index, 2);
+        assertEquals(changeArgs[0].count, 1);
     })
 
     it ("remove - by index", async () => {
@@ -86,9 +88,9 @@ describe("data manager tests", () => {
         })
 
         assertEquals(manager.count, 1);
-        assertEquals(changeArgs.action, "delete");
-        assertEquals(changeArgs.ids, ["1001"]);
-        assertEquals(changeArgs.indexes, [1]);
+        assertEquals(changeArgs[0].action, "delete");
+        assertEquals(changeArgs[0].ids, ["1001"]);
+        assertEquals(changeArgs[0].indexes, [1]);
     })
 
     it ("remove - by id", async () => {
@@ -98,9 +100,9 @@ describe("data manager tests", () => {
         })
 
         assertEquals(manager.count, 1);
-        assertEquals(changeArgs.action, "delete");
-        assertEquals(changeArgs.ids, ["1000"]);
-        assertEquals(changeArgs.indexes, [0]);
+        assertEquals(changeArgs[0].action, "delete");
+        assertEquals(changeArgs[0].ids, ["1000"]);
+        assertEquals(changeArgs[0].indexes, [0]);
     })
 
     it ("update - by index", async () => {
@@ -114,10 +116,10 @@ describe("data manager tests", () => {
 
         const record = manager.getByIndex(0);
         assertEquals(record.code, "ABC");
-        assertEquals(changeArgs.action, "update");
-        assertEquals(changeArgs.id, "1000");
-        assertEquals(changeArgs.index, 0);
-        assertEquals(changeArgs.changes.code, "ABC");
+        assertEquals(changeArgs[0].action, "update");
+        assertEquals(changeArgs[0].id, "1000");
+        assertEquals(changeArgs[0].index, 0);
+        assertEquals(changeArgs[0].changes.code, "ABC");
     })
 
     it ("update - by id", async () => {
@@ -133,10 +135,10 @@ describe("data manager tests", () => {
         assertEquals(record.code, "ABC");
         assertEquals(record.code, "ABC");
 
-        assertEquals(changeArgs.action, "update");
-        assertEquals(changeArgs.id, "1000");
-        assertEquals(changeArgs.index, 0);
-        assertEquals(changeArgs.changes.code, "ABC");
+        assertEquals(changeArgs[0].action, "update");
+        assertEquals(changeArgs[0].id, "1000");
+        assertEquals(changeArgs[0].index, 0);
+        assertEquals(changeArgs[0].changes.code, "ABC");
     })
 
     it ("update_batch - indexes", async () => {
@@ -160,6 +162,15 @@ describe("data manager tests", () => {
 
         assertEquals(manager.getByIndex(0).code, "C1");
         assertEquals(manager.getByIndex(1).code, "C2");
+
+        assertEquals(changeArgs[0].action, "update");
+        assertEquals(changeArgs[1].action, "update");
+        assertEquals(changeArgs[0].index, 0);
+        assertEquals(changeArgs[1].index, 1);
+        assertEquals(changeArgs[0].id, "1000");
+        assertEquals(changeArgs[1].id, "1001");
+        assertEquals(changeArgs[0].model.code, "C1");
+        assertEquals(changeArgs[1].model.code, "C2");
     })
 
     it ("get - by id and index", async () => {

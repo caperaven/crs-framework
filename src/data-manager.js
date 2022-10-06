@@ -211,11 +211,11 @@ class DataManagerStore {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
         const records = await crs.process.getValue(step.args.records || [], context, process, item);
 
-        const managerObj = globalThis.dataManagers[manager];
-        managerObj.setRecords(records);
-        await managerObj.notifyChanges({
+        const dataManager = globalThis.dataManagers[manager];
+        dataManager.setRecords(records);
+        await dataManager.notifyChanges({
             action: CHANGE_TYPES.refresh,
-            count: managerObj.count
+            count: dataManager.count
         })
     }
 
@@ -223,13 +223,13 @@ class DataManagerStore {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
         const records = await crs.process.getValue(step.args.records || [], context, process, item);
 
-        const managerObj = globalThis.dataManagers[manager];
-        const index = managerObj.count;
-        managerObj.append(...records);
+        const dataManager = globalThis.dataManagers[manager];
+        const index = dataManager.count;
+        dataManager.append(...records);
 
-        await managerObj.notifyChanges({
+        await dataManager.notifyChanges({
             action: CHANGE_TYPES.add,
-            records: records,
+            models: records,
             index: index,
             count: records.length
         });
@@ -240,17 +240,17 @@ class DataManagerStore {
         const indexes = await crs.process.getValue(step.args.indexes, context, process, item);
         const ids = await crs.process.getValue(step.args.ids, context, process, item);
 
-        const managerObj = globalThis.dataManagers[manager];
+        const dataManager = globalThis.dataManagers[manager];
         let result;
 
         if (indexes != null) {
-            result = managerObj.removeIndexes(indexes);
+            result = dataManager.removeIndexes(indexes);
         }
         else {
-            result = managerObj.removeIds(ids);
+            result = dataManager.removeIds(ids);
         }
 
-        await managerObj.notifyChanges({
+        await dataManager.notifyChanges({
             action: CHANGE_TYPES.delete,
             indexes: result.indexes,
             ids: result.ids
@@ -263,17 +263,17 @@ class DataManagerStore {
         const id = await crs.process.getValue(step.args.id, context, process, item);
         const changes = await crs.process.getValue(step.args.changes, context, process, item);
 
-        const managerObj = globalThis.dataManagers[manager];
+        const dataManager = globalThis.dataManagers[manager];
 
         let result;
         if (index != null) {
-            result = managerObj.updateIndex(index, changes);
+            result = dataManager.updateIndex(index, changes);
         }
         else {
-            result = managerObj.updateId(id, changes);
+            result = dataManager.updateId(id, changes);
         }
 
-        await managerObj.notifyChanges({
+        await dataManager.notifyChanges({
             action: CHANGE_TYPES.update,
             id: result.id,
             index: result.index,
@@ -288,12 +288,20 @@ class DataManagerStore {
 
         dataManager.beginTransaction();
         for (let item of batch) {
+            let result;
             if (item.index != null) {
-                dataManager.updateIndex(item.index, item.changes);
+                result = dataManager.updateIndex(item.index, item.changes);
             }
             else {
-                dataManager.updateId(item.id, item.changes);
+                result = dataManager.updateId(item.id, item.changes);
             }
+
+            await dataManager.notifyChanges({
+                action: CHANGE_TYPES.update,
+                index: result.index,
+                id: result.id,
+                model: dataManager.getByIndex(result.index)
+            })
         }
         dataManager.commit();
     }
