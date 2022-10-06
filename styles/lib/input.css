@@ -1,3 +1,24 @@
 input {
-    padding: 0.25rem;
+    padding: 0.5rem;
+    outline: none;
+    border: var(--border);
+    border-radius: var(--radius);
+    height: var(--input-height);
+    position: relative;
+}
+
+input:required {
+    border-color: var(--cl-required-dark);
+    background-color: var(--cl-required-light);
+}
+
+input:focus {
+    border: var(--border);
+    border-color: var(--cl-focus-dark);
+    background-color: var(--cl-focus-light);
+}
+
+input:invalid {
+    border-color: var(--cl-error-dark);
+    background-color: var(--cl-error-light);
 }

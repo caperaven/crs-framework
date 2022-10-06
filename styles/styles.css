@@ -19,6 +19,11 @@
     src: url(/resources/fonts/icons/selection.ttf);
 }
 
+@font-face {
+    font-family: crsfrw;
+    src: url(/resources/fonts/icons/crs-framework.woff);
+}
+
 * {
     box-sizing: border-box;
 }
