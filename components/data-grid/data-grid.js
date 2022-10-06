@@ -35,6 +35,12 @@ export default class DataGrid extends crsbinding.classes.BindableElement {
         await addColumnFeatures(this);
         await addSelectionFeature(this);
         await enableInput(this);
+
+        // add dispose and event stuff
+        await crs.call("data-manager", "on_change", {
+            manager: this.dataset.manager,
+            callback: this.recordChangedHandler
+        })
     }
 
     async disconnectedCallback() {

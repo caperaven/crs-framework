@@ -26,6 +26,10 @@ describe("data manager tests", () => {
         })
     })
 
+    afterEach(async () => {
+        await crs.call("data_manager", "dispose", { manager: "store" });
+    })
+
     it ("initialized", async () => {
         const manager_records = manager.getAll();
 
@@ -128,7 +132,7 @@ describe("data manager tests", () => {
         assertEquals(manager.getIndex(1).code, "C2");
     })
 
-    it ("update_batch", async () => {
+    it ("get - by id and index", async () => {
         const record1 = await crs.call("data_manager", "get", { manager: "store", index: 0 });
         const record2 = await crs.call("data_manager", "get", { manager: "store", id: "1001" });
 
@@ -169,5 +173,24 @@ describe("data manager tests", () => {
 
         const rows = await crs.call("data_manager", "get_all", { manager: "store" });
         assertEquals(rows.length, 10);
+    })
+
+    it ("add / remove change events", async () => {
+        assertEquals(manager.eventCount, 0);
+
+        const fn = () => {};
+        await crs.call("data_manager", "on_change", {
+            manager: "store",
+            callback: fn
+        })
+
+        assertEquals(manager.eventCount, 1);
+
+        await crs.call("data_manager", "remove_change", {
+            manager: "store",
+            callback: fn
+        })
+
+        assertEquals(manager.eventCount, 0);
     })
 })

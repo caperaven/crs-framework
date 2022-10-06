@@ -1,6 +1,7 @@
 class BaseDataManager {
     #dataField;
     #count;
+    #events = [];
 
     get count() {
         return this.#count;
@@ -10,8 +11,18 @@ class BaseDataManager {
         return this.#dataField;
     }
 
+    get eventCount() {
+        return this.#events.length;
+    }
+
     constructor(dataField) {
         this.#dataField = dataField;
+    }
+
+    dispose() {
+        this.#dataField = null;
+        this.#events = null;
+        this.#count = null;
     }
 
     setRecords(records) {
@@ -28,6 +39,29 @@ class BaseDataManager {
 
     removeIds(count) {
         this.#count = count;
+    }
+
+    beginTransaction() {
+        return null;
+    }
+
+    commit() {
+        return null;
+    }
+
+    addChangeCallback(callback) {
+        const index = this.#events.indexOf(callback);
+        if (index == -1) {
+            this.#events.push(callback);
+        }
+    }
+
+    removeChangeCallback(callback) {
+        const index = this.#events.indexOf(callback);
+
+        if (index != -1) {
+            this.#events.splice(index, 1);
+        }
     }
 }
 
@@ -128,6 +162,12 @@ class DataManagerStore {
         return globalThis.dataManagers[manager];
     }
 
+    static async dispose(step, context, process, item) {
+        const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        globalThis.dataManagers[manager].dispose();
+        delete globalThis.dataManagers[manager];
+    }
+
     static async set_records(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
         const records = await crs.process.getValue(step.args.records || [], context, process, item);
@@ -168,15 +208,18 @@ class DataManagerStore {
     static async update_batch(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
         const batch = await crs.process.getValue(step.args.batch, context, process, item);
+        const dataManager = globalThis.dataManagers[manager];
 
+        dataManager.beginTransaction();
         for (let item of batch) {
             if (item.index != null) {
-                globalThis.dataManagers[manager].updateIndex(item.index, item.changes);
+                dataManager.updateIndex(item.index, item.changes);
             }
             else {
-                globalThis.dataManagers[manager].updateId(item.id, item.changes);
+                dataManager.updateId(item.id, item.changes);
             }
         }
+        dataManager.commit();
     }
 
     static async get(step, context, process, item) {
@@ -202,6 +245,20 @@ class DataManagerStore {
     static async get_all(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
         return globalThis.dataManagers[manager].getAll();
+    }
+
+    static async on_change(step, context, process, item) {
+        const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        const callback = await crs.process.getValue(step.args.callback, context, process, item);
+
+        return globalThis.dataManagers[manager].addChangeCallback(callback);
+    }
+
+    static async remove_change(step, context, process, item) {
+        const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        const callback = await crs.process.getValue(step.args.callback, context, process, item);
+
+        return globalThis.dataManagers[manager].removeChangeCallback(callback);
     }
 }
 
