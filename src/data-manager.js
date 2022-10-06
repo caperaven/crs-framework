@@ -145,6 +145,8 @@ class MemoryDataManager extends BaseDataManager {
         for (const key of keys) {
             record[key] = changes[key];
         }
+
+        return {id, index, changes};
     }
 
     updateId(id, changes) {
@@ -155,6 +157,8 @@ class MemoryDataManager extends BaseDataManager {
         for (const key of keys) {
             record[key] = changes[key];
         }
+
+        return {id, index, changes};
     }
 }
 
@@ -259,11 +263,22 @@ class DataManagerStore {
         const id = await crs.process.getValue(step.args.id, context, process, item);
         const changes = await crs.process.getValue(step.args.changes, context, process, item);
 
+        const managerObj = globalThis.dataManagers[manager];
+
+        let result;
         if (index != null) {
-            return globalThis.dataManagers[manager].updateIndex(index, changes);
+            result = managerObj.updateIndex(index, changes);
+        }
+        else {
+            result = managerObj.updateId(id, changes);
         }
 
-        return globalThis.dataManagers[manager].updateId(id, changes);
+        await managerObj.notifyChanges({
+            action: CHANGE_TYPES.update,
+            id: result.id,
+            index: result.index,
+            changes: result.changes
+        })
     }
 
     static async update_batch(step, context, process, item) {
