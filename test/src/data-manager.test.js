@@ -72,6 +72,11 @@ describe("data manager tests", () => {
         const record = manager.getByIndex(2);
         assertEquals(manager.count, 3);
         assertEquals(record.id, "2000");
+
+        assertEquals(changeArgs.action, "add");
+        assertEquals(changeArgs.records.length, 1);
+        assertEquals(changeArgs.index, 2);
+        assertEquals(changeArgs.count, 1);
     })
 
     it ("remove - by index", async () => {

@@ -220,7 +220,7 @@ class DataManagerStore {
         const records = await crs.process.getValue(step.args.records || [], context, process, item);
 
         const managerObj = globalThis.dataManagers[manager];
-        const index = manager.count;
+        const index = managerObj.count;
         managerObj.append(...records);
 
         await managerObj.notifyChanges({
