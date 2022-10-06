@@ -1,4 +1,5 @@
 class BaseDataManager {
+    #id;
     #dataField;
     #count;
     #events = [];
@@ -15,7 +16,8 @@ class BaseDataManager {
         return this.#events.length;
     }
 
-    constructor(dataField) {
+    constructor(id, dataField) {
+        this.#id = id;
         this.#dataField = dataField;
     }
 
@@ -61,6 +63,13 @@ class BaseDataManager {
 
         if (index != -1) {
             this.#events.splice(index, 1);
+        }
+    }
+
+    async notifyChanges(args) {
+        args.managerId = this.#id;
+        for (let event of this.#events) {
+            await event(args);
         }
     }
 }
@@ -136,10 +145,17 @@ class IndexDBDataManager extends BaseDataManager {
     }
 }
 
-const managerTypes = Object.freeze({
-    "memory": MemoryDataManager,
-    "indexdb": IndexDBDataManager
-})
+const MANAGER_TYPES = Object.freeze({
+    memory: MemoryDataManager,
+    indexdb: IndexDBDataManager
+});
+
+const CHANGE_TYPES = Object.freeze({
+    add: "add",
+    update: "update",
+    delete: "delete",
+    refresh: "refresh"
+});
 
 class DataManagerStore {
     static async perform(step, context, process, item) {
@@ -155,7 +171,7 @@ class DataManagerStore {
         globalThis.dataManagers ||= {};
 
         if (globalThis.dataManagers[manager] == null) {
-            globalThis.dataManagers[manager] = new managerTypes[type](dataField);
+            globalThis.dataManagers[manager] = new MANAGER_TYPES[type](manager, dataField);
         }
 
         globalThis.dataManagers[manager].setRecords(records);
@@ -171,7 +187,13 @@ class DataManagerStore {
     static async set_records(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
         const records = await crs.process.getValue(step.args.records || [], context, process, item);
-        globalThis.dataManagers[manager].setRecords(records);
+
+        const managerObj = globalThis.dataManagers[manager];
+        managerObj.setRecords(records);
+        await managerObj.notifyChanges({
+            action: CHANGE_TYPES.refresh,
+            count: managerObj.count
+        })
     }
 
     static async append(step, context, process, item) {

@@ -11,6 +11,7 @@ beforeAll(async () => {
 describe("data manager tests", () => {
     let records;
     let manager;
+    let changeArgs;
 
     beforeEach(async () => {
         records = [
@@ -24,6 +25,11 @@ describe("data manager tests", () => {
             type: "memory",
             records: records
         })
+
+        await crs.call("data_manager", "on_change", {
+            manager: "store",
+            callback: async (args) => changeArgs = args
+        });
     })
 
     afterEach(async () => {
@@ -52,6 +58,9 @@ describe("data manager tests", () => {
 
         const manager_records = await crs.call("data_manager", "get_all", { manager: "store" });
         assertEquals(manager_records, records);
+        assertEquals(changeArgs.managerId, "store");
+        assertEquals(changeArgs.action, "refresh");
+        assertEquals(changeArgs.count, 2);
     })
 
     it ("append", async () => {
@@ -176,7 +185,7 @@ describe("data manager tests", () => {
     })
 
     it ("add / remove change events", async () => {
-        assertEquals(manager.eventCount, 0);
+        assertEquals(manager.eventCount, 1);
 
         const fn = () => {};
         await crs.call("data_manager", "on_change", {
@@ -184,13 +193,13 @@ describe("data manager tests", () => {
             callback: fn
         })
 
-        assertEquals(manager.eventCount, 1);
+        assertEquals(manager.eventCount, 2);
 
         await crs.call("data_manager", "remove_change", {
             manager: "store",
             callback: fn
         })
 
-        assertEquals(manager.eventCount, 0);
+        assertEquals(manager.eventCount, 1);
     })
 })
