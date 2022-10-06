@@ -8,23 +8,30 @@
 <h2>${title}</h2>
 
 <label>
-    <div>First Name</div>
+    <div>&{form.firstName}</div>
     <input value.bind="data.firstName" required />
 </label>
 
 <label>
-    <div>Last Name</div>
+    <div>&{form.lastName}</div>
     <input value.bind="data.lastName" required maxlength="5" />
 </label>
 
 <label>
-    <div>Duration</div>
+    <div>&{form.duration}</div>
     <input is="masked-input" data-mask="000 : 00 : 00" placeholder="yyy : mm : dd"/>
 </label>
 
 <label>
-    <div>Phone</div>
+    <div>&{form.phone}</div>
     <input is="masked-input" data-mask="(000) +00 000000000" />
 </label>
+
+<input-composite class="inline" data-title="&{form.firstName}">
+    <input slot="input" value.bind="data.firstName" required />
+    <div slot="buttons">
+        <button>L</button>
+    </div>
+</input-composite>
 
 <div class="booking">Booking for ${data.firstName} ${data.lastName}</div>

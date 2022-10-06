@@ -22,3 +22,8 @@ input:invalid {
     border-color: var(--cl-error-dark);
     background-color: var(--cl-error-light);
 }
+
+input-composite button {
+    width: var(--input-height);
+    height: var(--input-height);
+}
