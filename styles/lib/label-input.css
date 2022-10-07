@@ -87,6 +87,10 @@ label .button-group button {
     margin: 1px 1px 1px 0;
 }
 
+label .button-group button:focus {
+    border: solid 1px var(--cl-focus-dark);
+}
+
 label .button-group button:last-child {
     border-radius: 0 var(--radius) var(--radius) 0;
 }
