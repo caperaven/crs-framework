@@ -27,11 +27,11 @@ html {
 
     /* sizes */
     --border-width: 1px;
-    --input-height: 2.5rem;
+    --input-height: 2rem;
     --input-width: 15rem;
     --radius: 4px;
     --padding: 0.5rem;
-    --inline-length: 10rem;
+    --inline-label-length: 10rem;
 
     /* complex */
     --border: var(--border-width) solid var(--cl-border);

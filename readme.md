@@ -6,3 +6,4 @@ Collection of technologies for fast and efficient application development.
 
 ## Tools
 https://icomoon.io/app/#/select
+https://fontdrop.info/

@@ -1,15 +1,8 @@
-<style>
-    label, .booking {
-        display: block;
-        margin: 0.5rem;
-    }
-</style>
-
 <h2>${title}</h2>
 
-<label>
+<label class="inline">
     <div>&{form.firstName}</div>
-    <input value.bind="data.firstName" required />
+    <input placeholder=" " value.bind="data.firstName" required />
 </label>
 
 <label>
@@ -25,13 +18,48 @@
 <label>
     <div>&{form.phone}</div>
     <input is="masked-input" data-mask="(000) +00 000000000" />
+    <div class="button-group">
+        <button>lookup</button>
+    </div>
 </label>
 
-<input-composite class="inline" data-title="&{form.firstName}">
-    <input slot="input" value.bind="data.firstName" required />
-    <div slot="buttons">
-        <button>L</button>
+<label>
+    <div>&{form.phone}</div>
+    <input is="masked-input" data-mask="(000) +00 000000000" disabled/>
+    <div class="button-group">
+        <button disabled>lookup</button>
     </div>
-</input-composite>
+</label>
 
-<div class="booking">Booking for ${data.firstName} ${data.lastName}</div>
+<hr />
+
+<label id="custom-input1">
+    <div>&{form.lastName}</div>
+    <input id="edtLastName1" slot="input" value.bind="data.lastName" required data-field=""/>
+    <i></i>
+    <div class="button-group">
+        <button for="edtLastName" is="lookup-button">lookup</button>
+    </div>
+</label>
+
+<hr />
+
+<label id="custom-input2" class="inline">
+    <div>&{form.lastName}</div>
+    <input id="edtLastName2" placeholder=" " slot="input" value.bind="data.lastName" required data-field=""/>
+    <i></i>
+    <div class="button-group">
+        <button for="edtLastName" is="lookup-button">preview</button>
+        <button for="edtLastName" is="lookup-button">lookup</button>
+        <button for="edtLastName" is="lookup-button">browse</button>
+    </div>
+</label>
+
+<label id="custom-input3" class="inline">
+    <div>&{form.lastName}</div>
+    <input id="edtLastName3" placeholder=" " slot="input" value.bind="data.lastName" required data-field=""/>
+    <i></i>
+    <div class="button-group">
+        <button for="edtLastName" is="lookup-button">lookup</button>
+    </div>
+</label>

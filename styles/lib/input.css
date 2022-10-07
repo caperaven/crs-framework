@@ -7,12 +7,12 @@ input {
     position: relative;
 }
 
-input:required {
+input:required:placeholder-shown {
     border-color: var(--cl-required-dark);
     background-color: var(--cl-required-light);
 }
 
-input:focus {
+input:focus, input:required:placeholder-shown:focus {
     border: var(--border);
     border-color: var(--cl-focus-dark);
     background-color: var(--cl-focus-light);
@@ -23,7 +23,7 @@ input:invalid {
     background-color: var(--cl-error-light);
 }
 
-input-composite button {
-    width: var(--input-height);
-    height: var(--input-height);
+input:valid {
+    border-color: var(--cl-success-dark);
+    background-color: var(--cl-success-light);
 }

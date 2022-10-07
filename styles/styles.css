@@ -8,6 +8,7 @@
 @import "./lib/aside.css";
 @import "./lib/color-classes.css";
 @import "./lib/input.css";
+@import "./lib/label-input.css";
 
 @font-face {
     font-family: SourceSansPro;
@@ -21,7 +22,7 @@
 
 @font-face {
     font-family: crsfrw;
-    src: url(/resources/fonts/icons/crs-framework.woff);
+    src: url(/resources/fonts/icons/crs-framework.ttf);
 }
 
 * {
