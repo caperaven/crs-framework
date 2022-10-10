@@ -3296,6 +3296,7 @@ var BindableElement = class extends HTMLElement {
   }
   constructor() {
     super();
+    this.attachShadow({ mode: "open" });
     if (this.hasOwnContext == true) {
       this._dataId = crsbinding.data.addObject(this.constructor.name);
       crsbinding.data.addContext(this._dataId, this);
@@ -3323,12 +3324,13 @@ var BindableElement = class extends HTMLElement {
       await this.preLoad(setPropertyCallback);
     }
     if (this.html != null) {
-      this.innerHTML = await crsbinding.templates.get(this.constructor.name, getHtmlPath(this));
+      this.shadowRoot.innerHTML = await crsbinding.templates.get(this.constructor.name, getHtmlPath(this));
       if (this.onHTML != null) {
         await this.onHTML();
       }
       const path2 = crsbinding.utils.getPathOfFile(this.html);
       await crsbinding.parsers.parseElements(this.children, this._dataId, path2 ? { folder: path2 } : null);
+      await crsbinding.parsers.parseElements(this.shadowRoot.children, this._dataId, path2 ? { folder: path2 } : null);
     }
     requestAnimationFrame(() => {
       const name = this.getAttribute("name");
