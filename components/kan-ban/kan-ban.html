@@ -1,5 +1,5 @@
 <style>
-    kan-ban {
+    :host {
         --cell-width: 200px;
         --padding: 0.5rem;
         --rows: minmax(2rem, max-content) 1fr;
@@ -24,13 +24,13 @@
         user-select: none;
     }
 
-    kan-ban .header, kan-ban .container {
+    .header, .container {
         display: grid;
         grid-template-columns: var(--columns);
         gap: var(--padding);
     }
 
-    kan-ban .header {
+    .header {
         position: sticky;
         top: 0;
         z-index: 100;
@@ -38,19 +38,19 @@
         filter: drop-shadow(0 -8px 0 var(--background));
     }
 
-    kan-ban .container {
+    .container {
         position: relative;
         height: var(--height);
     }
 
-    kan-ban .container > [role="cell"] {
+    .container > [role="cell"] {
         background: var(--cell-background);
         border: var(--border);
         width: 100%;
         padding: var(--padding);
     }
 
-    kan-ban [role="columnheader"] {
+    [role="columnheader"] {
         width: 100%;
         background: var(--cell-background);
         border: var(--border);
@@ -60,11 +60,11 @@
         justify-content: center;
     }
 
-    kan-ban .sticky {
+    .sticky {
         position: sticky;
     }
 
-    kan-ban .sticky:before {
+    .sticky:before {
         content: "";
         position: absolute;
         top: 0;
@@ -75,7 +75,7 @@
         z-index: -1;
     }
 
-    kan-ban .sticky:after {
+    .sticky:after {
         content: "";
         position: absolute;
         top: 0;
@@ -86,19 +86,19 @@
         z-index: -1;
     }
 
-    kan-ban [role="columnheader"].sticky::after {
+    [role="columnheader"].sticky::after {
         border-radius: var(--columnheader-borders);
     }
 
-    kan-ban [role="cell"] {
+    [role="cell"] {
         z-index: 0;
     }
 
-    kan-ban [role="cell"].sticky {
+    [role="cell"].sticky {
         z-index: 1;
     }
 
-    kan-ban .card {
+    .card {
         position: relative;
         width: 100%;
         height: 5rem;
@@ -108,7 +108,7 @@
         border-radius: var(--card-borders);
     }
 
-    kan-ban .card:before {
+    .card:before {
         content: "";
         position: absolute;
         left: 0;

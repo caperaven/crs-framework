@@ -12,6 +12,10 @@ export function createMockChildren(element) {
 }
 
 function createChildren(context, element, json) {
+    if (json.children.length == 1 && typeof json.children[0] == "string") {
+        return element.textContent = json.children[0];
+    }
+
     for (const item of json.children) {
         if (typeof item == "string" || item.name == "style") continue;
 
@@ -40,6 +44,10 @@ function setAttributes(context, element, item) {
             const parts = key.split("-");
             element.dataset[parts[1]] = value;
             element.setAttribute(key, value);
+        }
+        else if (key.indexOf("_call") != -1) {
+            const parts = key.split("_call");
+            element.addEventListener(parts[0], context[value]);
         }
         else {
             element.setAttribute(key, value);

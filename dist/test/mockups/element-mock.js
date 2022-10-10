@@ -2,6 +2,7 @@ import {ClassList} from "./class-list.js";
 import {Style} from "./style.js";
 import {cloneElementMock} from "./clone-node.js";
 import {find, findAll, createQueryFunction} from "./query.js";
+import {EventMock} from "./event-mock.js";
 
 export class ElementMock {
     constructor(tag, id, parentElement) {
@@ -43,6 +44,8 @@ export function mockElement(instance, tag, id) {
     instance.insertBefore = insertBefore.bind(instance);
     instance.replaceChild = replaceChild.bind(instance);
     instance.dispatchEvent = dispatchEvent.bind(instance);
+
+    instance.performEvent = performEvent.bind(instance);
 
     return instance;
 }
@@ -153,8 +156,17 @@ function replaceChild(node, child) {
 }
 
 function dispatchEvent(event, args) {
-    const events = this.__events.find(item => item.event == event) || [];
+    const events = this.__events.filter(item => item.event == event) || [];
     for (let eventItem of events) {
         eventItem.callback(args);
     }
+}
+
+function performEvent(event, target, options) {
+    const eventObj = new EventMock(target || this, options);
+    const events = this.__events.filter(item => item.event == event) || [];
+    for (let eventItem of events) {
+        eventItem.callback(eventObj);
+    }
+    return eventObj;
 }

@@ -37,10 +37,10 @@ export default class DataGrid extends crsbinding.classes.BindableElement {
         await enableInput(this);
 
         // add dispose and event stuff
-        await crs.call("data-manager", "on_change", {
-            manager: this.dataset.manager,
-            callback: this.recordChangedHandler
-        })
+        // await crs.call("data_manager", "on_change", {
+        //     manager: this.dataset.manager,
+        //     callback: this.recordChangedHandler
+        // })
     }
 
     async disconnectedCallback() {
@@ -83,13 +83,13 @@ export default class DataGrid extends crsbinding.classes.BindableElement {
             value = await crsbinding.valueConvertersManager.convert(value, convert.converter, "set", convert.parameter);
         }
 
-        await crs.call("data_manager", "update", {
-            manager: this.dataset.manager,
-            index: rowIndex,
-            changes: {
-                [field]: value
-            }
-        })
+        // await crs.call("data_manager", "update", {
+        //     manager: this.dataset.manager,
+        //     index: rowIndex,
+        //     changes: {
+        //         [field]: value
+        //     }
+        // })
     }
 }
 
