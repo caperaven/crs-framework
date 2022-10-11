@@ -35,7 +35,7 @@ export default class KanBan extends crsbinding.classes.BindableElement {
     }
 
     async #clear() {
-        const items = this.querySelectorAll('[role="cell"]');
+        const items = this.container.querySelectorAll("[data-id]");
 
         for (let item of items) {
             item.parentElement.removeChild(item);
