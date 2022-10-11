@@ -52,10 +52,19 @@ export default class KanBan extends crsbinding.classes.ViewBase {
     }
 
     async remove() {
-
+        await crs.call("data_manager", "remove", {
+            manager: "kanban_data",
+            ids: [1005, 1001]
+        })
     }
 
     async update() {
-
+        await crs.call("data_manager", "update", {
+            manager: "kanban_data",
+            id: 1002,
+            changes: {
+                code: "Hello World"
+            }
+        })
     }
 }

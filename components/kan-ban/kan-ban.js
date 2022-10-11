@@ -77,6 +77,26 @@ export default class KanBan extends crsbinding.classes.BindableElement {
         await this.#addInstancesToUI(instances);
     }
 
+    async #delete(args) {
+        const elements = [];
+        for (let id of args.ids) {
+            const element = this.container.querySelector(`[data-id="${id}"]`);
+            if (element != null) {
+                elements.push(element);
+            }
+        }
+
+        for (let element of elements) {
+            element.parentElement.removeChild(element);
+        }
+    }
+
+    async update(args) {
+        const element = this.container.querySelector(`[data-id="${args.id}"]`);
+        const row = await crs.call("data_manager", "get", { manager: this.dataset.manager, id: args.id })
+        crsbinding.inflationManager.get(this.dataset.template, [row], [element]);
+    }
+
     async refresh(args) {
         const action = args?.action || "refresh";
         switch (action) {
@@ -86,6 +106,14 @@ export default class KanBan extends crsbinding.classes.BindableElement {
             }
             case "add": {
                 await this.#add(args);
+                break;
+            }
+            case "delete": {
+                await this.#delete(args);
+                break;
+            }
+            case "update": {
+                await this.update(args);
                 break;
             }
         }
