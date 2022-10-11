@@ -315,6 +315,10 @@ class DataManagerStore {
             return globalThis.dataManagers[manager].getByIndex(index);
         }
 
+        if (globalThis.dataManagers[manager] == null) {
+            return null;
+        }
+
         return globalThis.dataManagers[manager].getById(id);
     }
 
@@ -323,17 +327,30 @@ class DataManagerStore {
         const from = await crs.process.getValue(step.args.from, context, process, item);
         const to = await crs.process.getValue(step.args.to, context, process, item);
 
+        if (globalThis.dataManagers[manager] == null) {
+            return null;
+        }
+
         return globalThis.dataManagers[manager].getPage(from, to);
     }
 
     static async get_all(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
+
+        if (globalThis.dataManagers[manager] == null) {
+            return null;
+        }
+
         return globalThis.dataManagers[manager].getAll();
     }
 
     static async get_ids(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
         const indexes = await crs.process.getValue(step.args.indexes, context, process, item);
+
+        if (globalThis.dataManagers[manager] == null) {
+            return null;
+        }
 
         return globalThis.dataManagers[manager].getIds(indexes);
     }

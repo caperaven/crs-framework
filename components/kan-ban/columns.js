@@ -9,6 +9,7 @@ export function addColumnFeatures(instance) {
  * @returns {Promise<void>}
  */
 async function addColumnElements(columns) {
+    let index = 0;
     for (const column of columns) {
         const header = await this.createHeaderElement?.() || await crs.call("dom", "create_element", {
             text_content: column.title,
@@ -22,10 +23,16 @@ async function addColumnElements(columns) {
         const cell = await crs.call("dom", "create_element", {
             attributes: {
                 role: "cell"
+            },
+            dataset: {
+                index: index
             }
         })
 
+        column.container = cell;
+
         this.container.appendChild(cell);
+        index += 1;
     }
 
     dispatchEvent(new CustomEvent("columns-added", {detail: this}));
