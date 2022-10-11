@@ -42,10 +42,7 @@ export default class KanBan extends crsbinding.classes.BindableElement {
         }
     }
 
-    async #drawAll() {
-        const rows = await crs.call("data_manager", "get_all", { manager: this.dataset.manager });
-
-        const instances = crsbinding.inflationManager.get(this.dataset.template, rows);
+    async #addInstancesToUI(instances) {
         const value_map = {};
 
         while (instances.children.length > 0) {
@@ -62,10 +59,36 @@ export default class KanBan extends crsbinding.classes.BindableElement {
         }
     }
 
-    async refresh(args) {
+    async #drawAll() {
+        const rows = await crs.call("data_manager", "get_all", { manager: this.dataset.manager });
+
+        const instances = crsbinding.inflationManager.get(this.dataset.template, rows);
+        await this.#addInstancesToUI(instances);
+    }
+
+    async #refresh(args) {
         if (this.#columns.length == 0) return;
         await this.#clear();
         await this.#drawAll();
+    }
+
+    async #add(args) {
+        const instances = crsbinding.inflationManager.get(this.dataset.template, args.models);
+        await this.#addInstancesToUI(instances);
+    }
+
+    async refresh(args) {
+        const action = args?.action || "refresh";
+        switch (action) {
+            case "refresh": {
+                await this.#refresh(args);
+                break;
+            }
+            case "add": {
+                await this.#add(args);
+                break;
+            }
+        }
     }
 
     async observe_changes() {
