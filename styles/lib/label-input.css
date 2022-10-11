@@ -33,6 +33,7 @@ label i {
     justify-self: flex-end;
     z-index: 1;
     font-family: crsfrw;
+    font-style: normal;
 }
 
 label input:required + i:before {

@@ -27,3 +27,13 @@ input:valid {
     border-color: var(--cl-success-dark);
     background-color: var(--cl-success-light);
 }
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance:textfield; /* Firefox */
+}
