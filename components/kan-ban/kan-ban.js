@@ -91,7 +91,7 @@ export default class KanBan extends crsbinding.classes.BindableElement {
         }
     }
 
-    async update(args) {
+    async #update(args) {
         const element = this.container.querySelector(`[data-id="${args.id}"]`);
         const row = await crs.call("data_manager", "get", { manager: this.dataset.manager, id: args.id })
         crsbinding.inflationManager.get(this.dataset.template, [row], [element]);
@@ -113,7 +113,7 @@ export default class KanBan extends crsbinding.classes.BindableElement {
                 break;
             }
             case "update": {
-                await this.update(args);
+                await this.#update(args);
                 break;
             }
         }
