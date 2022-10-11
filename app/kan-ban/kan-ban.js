@@ -5,8 +5,14 @@ import {records} from "./data.js";
 export default class KanBan extends crsbinding.classes.ViewBase {
     async connectedCallback() {
         await super.connectedCallback();
-
         await this.refresh();
+    }
+
+    async disconnectedCallback() {
+        crsbinding.inflationManager.unregister("simple");
+        await crs.call("data_manager", "dispose", {
+            manager: "kanban_data"
+        })
     }
 
     preLoad() {

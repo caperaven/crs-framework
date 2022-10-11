@@ -1,8 +1,8 @@
 import {addColumnFeatures} from "./columns.js";
 
 export default class KanBan extends crsbinding.classes.BindableElement {
-    #columns;
-    #refreshHandler;
+    #columns = [];
+    #refreshHandler = this.refresh.bind(this);
 
     get columns() {
         return this.#columns;
@@ -14,8 +14,6 @@ export default class KanBan extends crsbinding.classes.BindableElement {
 
     async connectedCallback() {
         await super.connectedCallback();
-        this.#refreshHandler = this.refresh.bind(this);
-        this.#columns = [];
         addColumnFeatures(this);
         await this.#initialDraw();
     }

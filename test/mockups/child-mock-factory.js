@@ -4,9 +4,10 @@ import {ElementMock} from "./element-mock.js";
 await init();
 
 export function createMockChildren(element) {
-    if (element.innerHTML.trim().length == 0) return;
+    const html = element.shadowRoot?.innerHTML.trim() || element.innerHTML.trim();
+    if (html.length == 0) return;
 
-    const jsonStr = parse(element.innerHTML.split(".").join("_"));
+    const jsonStr = parse(html.split(".").join("_"));
     const json = JSON.parse(jsonStr);
     createChildren(element, element, json);
 }
