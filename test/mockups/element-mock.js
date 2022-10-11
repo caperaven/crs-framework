@@ -44,8 +44,8 @@ export function mockElement(instance, tag, id) {
     instance.insertBefore = insertBefore.bind(instance);
     instance.replaceChild = replaceChild.bind(instance);
     instance.dispatchEvent = dispatchEvent.bind(instance);
-
     instance.performEvent = performEvent.bind(instance);
+    instance.attachShadow = attachShadow.bind(instance);
 
     return instance;
 }
@@ -169,4 +169,8 @@ function performEvent(event, target, options) {
         eventItem.callback(eventObj);
     }
     return eventObj;
+}
+
+function attachShadow(args) {
+    this.shadowRoot = new ElementMock("shadow-root");
 }
