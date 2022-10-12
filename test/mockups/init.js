@@ -6,6 +6,7 @@ import {exists} from "https://deno.land/std/fs/mod.ts"
 import {ElementMock} from "./element-mock.js"
 import "./custom-elements.js";
 import "./document-mock.js";
+import "./computed-style.js";
 
 export async function init() {
     const packages = await getPackagesFolder()

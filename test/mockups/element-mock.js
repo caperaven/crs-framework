@@ -36,6 +36,7 @@ export function mockElement(instance, tag, id) {
     instance.removeAttribute = removeAttribute.bind(instance);
     instance.querySelector = querySelector.bind(instance);
     instance.querySelectorAll = querySelectorAll.bind(instance);
+    instance.getElementsByTagName = getElementsByTagName.bind(instance);
     instance.cloneNode = cloneNode.bind(instance);
     instance.appendChild = appendChild.bind(instance);
     instance.removeChild = removeChild.bind(instance);
@@ -46,6 +47,13 @@ export function mockElement(instance, tag, id) {
     instance.dispatchEvent = dispatchEvent.bind(instance);
     instance.performEvent = performEvent.bind(instance);
     instance.attachShadow = attachShadow.bind(instance);
+
+    Object.defineProperty(instance, "firstElementChild", {
+        get() {
+            if (this.children.length == 0) return null;
+            return instance.children[0];
+        }
+    })
 
     return instance;
 }
@@ -101,6 +109,21 @@ function querySelectorAll(selector) {
     const callback = createQueryFunction(selector);
     const result = [];
     findAll(this, callback, result);
+    return result;
+}
+
+function getElementsByTagName(selector) {
+    if (this.queryResults[selector] != null) {
+        return this.queryResults[selector];
+    }
+
+    const result = [];
+    for (const child of this.children) {
+        if (child.nodeName.toLowerCase() == selector.toLowerCase()) {
+            result.push(child);
+        }
+    }
+
     return result;
 }
 
