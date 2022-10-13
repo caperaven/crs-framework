@@ -5,3 +5,4 @@ yarn-error.log
 /coverage/
 /publish/
 /rust/html_parser/target/
+.idea/
