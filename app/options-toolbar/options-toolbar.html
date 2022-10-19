@@ -5,15 +5,9 @@
     }
 </style>
 
-<options-toolbar>
+<options-toolbar change.setvalue="state = property(this, 'dataset.value')">
     <button data-value="on">On</button>
     <button data-value="off">Off</button>
 </options-toolbar>
 
 <div>${state}</div>
-
-
-<!--change.setvalue="state = attribute(this, data-value)"-->
-<!--state = attribute(this, data-value)-->
-<!--state = attribute($event.target, data-value)-->
-<!--state = property(#my-element, firstName)-->
