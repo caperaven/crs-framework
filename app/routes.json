@@ -26,6 +26,11 @@
       "view": "kan-ban"
     },
     {
+      "title": "Options Toolbar",
+      "hash": "#options-toolbar",
+      "view": "options-toolbar"
+    },
+    {
       "title": "About",
       "hash": "#about",
       "view": "about",
