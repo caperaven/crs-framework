@@ -20,7 +20,7 @@ class OptionsToolbar extends HTMLElement {
             this.#setSelected(firstItem);
             this.addEventListener("click", this.#clickHandler);
 
-            let timeout = setTimeout(() => {
+            const timeout = setTimeout(() => {
                 this.#marker.style.transition = "translate 0.3s ease-out";
                 clearTimeout(timeout);
             }, 0.5)
@@ -47,7 +47,6 @@ class OptionsToolbar extends HTMLElement {
         this.dataset.value = element.dataset.value;
         this.#previouslySelected = element;
 
-        this.dataset.value = element.dataset.value;
         this.dispatchEvent(new CustomEvent("change", { detail: element.dataset.value }));
     }
 

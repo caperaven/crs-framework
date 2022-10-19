@@ -5,7 +5,15 @@
     }
 </style>
 
-<options-toolbar change.call="selectedChanged">
+<options-toolbar>
     <button data-value="on">On</button>
     <button data-value="off">Off</button>
 </options-toolbar>
+
+<div>${state}</div>
+
+
+<!--change.setvalue="state = attribute(this, data-value)"-->
+<!--state = attribute(this, data-value)-->
+<!--state = attribute($event.target, data-value)-->
+<!--state = property(#my-element, firstName)-->
