@@ -12,6 +12,11 @@
         z-index: 999999;
     }
 
+    .back {
+        width: 100%;
+        height: 100%;
+    }
+
     .popup {
         margin: 0;
         border: var(--border);
@@ -28,6 +33,7 @@
 
     ul {
         margin: 0;
+        padding: 0;
         list-style: none;
         background: var(--cl-window);
     }
@@ -38,32 +44,41 @@
 
     li {
         padding: 0.5rem;
+        position: relative;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    li[hidden] {
+        display: none;
     }
 
     li:hover {
         background: var(--cl-li-hover)
     }
 
-    .icon {
+    li[data-icon]::before {
+        content: attr(data-icon);
         font-family: var(--icon-font);
         font-size: 1.5rem;
+        margin-right: var(--padding);
     }
 </style>
 
+<div class="back"></div>
+
 <div class="popup">
-    <filter-header for="ul"></filter-header>
+    <filter-header for="ul" close.call="close"></filter-header>
 
     <ul>
         <li id="item1" data-icon="approved" data-tags="approved">Approved</li>
-
+        <li id="item2" data-icon="browse" data-tags="browse">Browse</li>
+        <li id="item3" data-icon="calendar" data-tags="calendar">Calendar</li>
         <hr/>
-
-        <li class="parent" data-tags="parent">
-            <div>Parent</div>
-            <ul>
-                <li id="child1" data-icon="browse">Browse</li>
-                <li id="child2" data-icon="calendar">Calendar</li>
-            </ul>
-        </li>
+        <li id="item4" data-icon="condition" data-tags="condition">Condition</li>
+        <li id="item5" data-icon="date-time" data-tags="date time">Date Time</li>
+        <li id="item6" data-icon="lookup" data-tags="lookup">Lookup</li>
     </ul>
 </div>

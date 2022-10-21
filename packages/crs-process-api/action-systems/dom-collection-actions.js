@@ -1,1 +1,29 @@
-class n{static async perform(t,e,i,s){await this[t.action]?.(t,e,i,s)}static async filter_children(t,e,i,s){const c=await crs.process.getValue(t.args.filter,e,i,s);await r(t.args.element,c)}}async function r(a,t){a=await crs.dom.get_element(a);const e=t.length>0;for(let i of a.children)i.removeAttribute("hidden"),i.dataset.tags&&e&&i.dataset.tags.indexOf(t)==-1&&i.setAttribute("hidden","hidden")}crs.intent.dom_collection=n;export{n as DomCollectionActions};
+/**
+ * This contains actions for working with lists.
+ * Filtering, sorting ...
+ */
+
+export class DomCollectionActions {
+    static async perform(step, context, process, item) {
+        await this[step.action]?.(step, context, process, item);
+    }
+
+    static async filter_children(step, context, process, item) {
+        const filterString = await crs.process.getValue(step.args.filter, context, process, item);
+        await filter(step.args.element, filterString);
+    }
+}
+
+async function filter(element, filter) {
+    element = await crs.dom.get_element(element);
+    const hasFilter = filter.length > 0;
+
+    for (let child of element.children) {
+        child.removeAttribute("hidden");
+        if (child.dataset.tags && hasFilter && child.dataset.tags.indexOf(filter) == -1) {
+            child.setAttribute("hidden", "hidden");
+        }
+    }
+}
+
+crs.intent.dom_collection = DomCollectionActions;

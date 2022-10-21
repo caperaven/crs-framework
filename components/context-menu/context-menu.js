@@ -1,9 +1,17 @@
 import "./../filter-header/filter-header.js";
 
-class ContextMenu extends HTMLElement {
+class ContextMenu extends crsbinding.classes.BindableElement {
     #options;
     #point;
     #clickHandler;
+
+    get shadowDom() {
+        return true;
+    }
+
+    get html() {
+        return import.meta.url.replace(".js", ".html");
+    }
 
     get options() {
         return this.#options;
@@ -21,15 +29,11 @@ class ContextMenu extends HTMLElement {
         this.#point = newValue;
     }
 
-    constructor() {
-        super();
-        this.attachShadow({mode: "open"});
-    }
-
     async connectedCallback() {
-        this.shadowRoot.innerHTML = await fetch(import.meta.url.replace(".js", ".html")).then(result => result.text());
+        await super.connectedCallback();
+
         this.#clickHandler = this.click.bind(this);
-        this.addEventListener("click", this.#clickHandler);
+        this.shadowRoot.addEventListener("click", this.#clickHandler);
 
         requestAnimationFrame(async () => {
             const ul = this.shadowRoot.querySelector(".popup");
@@ -50,11 +54,19 @@ class ContextMenu extends HTMLElement {
     }
 
     async click(event) {
+        if (event.target.matches(".back")) {
+            return await this.close();
+        }
+
+
         /**
          * execute process api function if defined
          * this.dataset.value = selected id
          * this.dispatchEvent (selected id)
          */
+    }
+
+    async close() {
         await crs.call("context_menu", "close");
     }
 }

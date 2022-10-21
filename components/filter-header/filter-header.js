@@ -28,7 +28,7 @@ class FilterHeader extends crsbinding.classes.BindableElement {
     }
 
     async close() {
-        this.parentElement.parentElement.removeChild(this.parentElement);
+        this.dispatchEvent(new CustomEvent("close"));
     }
 }
 
