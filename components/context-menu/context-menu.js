@@ -89,16 +89,23 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     }
 
     async click(event) {
-        if (event.target.nodeName != 'LI') {
-            return;
-        }
-
         if (event.target.matches(".back")) {
             return await this.close();
         }
 
+        if (event.target.nodeName != 'LI') {
+            return;
+        }
+
         const option = this.#optionById(event.target.id);
-        await crs.call(option.type, option.action, option.args);
+
+        if (option.type != null) {
+            await crs.call(option.type, option.action, option.args);
+        }
+
+        this.dataset.value = option.id;
+        this.dispatchEvent(new CustomEvent("change", {detail: option.id}));
+
         await this.close();
     }
 

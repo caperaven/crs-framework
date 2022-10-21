@@ -28,7 +28,9 @@ export default class ContextMenu extends crsbinding.classes.ViewBase {
                 { id: "item4", title: "Condition", icon: "condition", type: "console", action: "log", args: { message: "Condition "} },
                 { id: "item5", title: "Date and Time", icon: "date-time", type: "console", action: "log", args: { message: "Date and Time "} },
                 { id: "item6", title: "Lookup", icon: "lookup", type: "console", action: "log", args: { message: "Lookup "} }
-            ]
+            ],
+
+            callback: (event) => console.log(event)
         })
     }
 }

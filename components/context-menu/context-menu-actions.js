@@ -7,7 +7,8 @@ export class ContextMenuActions {
 
     static async show(step, context, process, item) {
         const options = await crs.process.getValue(step.args.options, context, process, item);
-        const point = await crs.process.getValue(step.args.point, process, item);
+        const point = await crs.process.getValue(step.args.point, context, process, item);
+        const callback = await crs.process.getValue(step.args.callback, context, process, item);
 
         if (globalThis.contextMenu != null) {
             await this.close();
@@ -21,6 +22,16 @@ export class ContextMenuActions {
         instance.style.setProperty("--icon-font", icon_font_family);
 
         document.body.appendChild(instance);
+
+        if (callback != null) {
+            const fn = (event) => {
+                instance.removeEventListener("change", fn);
+                callback(event);
+            }
+
+            instance.addEventListener("change", fn);
+        }
+
         globalThis.contextMenu = instance;
     }
 
