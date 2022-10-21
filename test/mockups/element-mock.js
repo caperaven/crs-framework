@@ -22,6 +22,10 @@ export class ElementMock {
 }
 
 export function mockElement(instance, tag, id) {
+    if (instance.__events != null) {
+        return instance;
+    }
+
     instance.__events = [];
     instance.queryResults = {};
 
@@ -56,26 +60,31 @@ export function mockElement(instance, tag, id) {
     instance.attachShadow = attachShadow.bind(instance);
     instance.getBoundingClientRect = getBoundingClientRect.bind(instance);
 
-    // Object.defineProperty(instance, "firstElementChild", {
-    //     get() {
-    //         if (this.children.length == 0) return null;
-    //         return this.children[0];
-    //     }
-    // })
-    //
-    // Object.defineProperty(instance, "nextElementSibling", {
-    //     get() {
-    //         const index = this.parentElement.children.indexOf(this);
-    //         return this.parentElement.children[index + 1];
-    //     }
-    // })
-    //
-    // Object.defineProperty(instance, "previousElementSibling", {
-    //     get() {
-    //         const index = this.parentElement.children.indexOf(this);
-    //         return this.parentElement.children[index - 1];
-    //     }
-    // })
+    Object.defineProperty(instance, "firstElementChild", {
+        get() {
+            if (this.children == null) return null;
+            if (this.children.length == 0) return null;
+            return this.children[0];
+        }
+    })
+
+    Object.defineProperty(instance, "nextElementSibling", {
+        get() {
+            if (this.parentElement == null) return null;
+
+            const index = this.parentElement.children.indexOf(this);
+            return this.parentElement.children[index + 1];
+        }
+    })
+
+    Object.defineProperty(instance, "previousElementSibling", {
+        get() {
+            if (this.parentElement == null) return null;
+
+            const index = this.parentElement.children.indexOf(this);
+            return this.parentElement.children[index - 1];
+        }
+    })
 
     Object.defineProperty(instance, "innerHTML", {
         get() {
