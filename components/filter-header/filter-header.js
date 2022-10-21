@@ -21,6 +21,10 @@ class FilterHeader extends crsbinding.classes.BindableElement {
     }
 
     async filter(event) {
+        if (event.code == "ArrowDown") {
+            return this.dispatchEvent(new CustomEvent("focus-out"));
+        }
+
         await crs.call("dom_collection", "filter_children", {
             filter: event.target.value.toLowerCase(),
             element: this.#container

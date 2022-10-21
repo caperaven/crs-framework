@@ -76,6 +76,9 @@ class ContextMenu extends crsbinding.classes.BindableElement {
                         icon: option.icon,
                         tags: option.title.toLowerCase()
                     },
+                    attributes: {
+                        role: "menuitem"
+                    },
                     text_content: option.title
                 })
             }
@@ -101,6 +104,10 @@ class ContextMenu extends crsbinding.classes.BindableElement {
 
     async close() {
         await crs.call("context_menu", "close");
+    }
+
+    async focus() {
+        // console.log("focus first");
     }
 }
 
