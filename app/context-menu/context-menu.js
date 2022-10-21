@@ -21,12 +21,13 @@ export default class ContextMenu extends crsbinding.classes.ViewBase {
             icon_font_family: "crsfrw",
 
             options: [
-                { id: "item 1", icon: "approved", title: "item 1", type: "console", action: "log", args: { message: "Greetings" }},
+                { id: "item1", title: "Approved", icon: "approved", type: "console", action: "log", args: { message: "Approved "} },
+                { id: "item2", title: "Browse", icon: "browse", type: "console", action: "log", args: { message: "Browse "} },
+                { id: "item3", title: "Calendar", icon: "calendar", type: "console", action: "log", args: { message: "Calendar "} },
                 { title: "-" },
-                { id: "item 2", icon: "browse", title: "item 2", children: [
-                        { id: "child 1", icon: "calendar", title: "child 1", type: "console", action: "log", args: { message: "Greetings" }},
-                        { id: "child 2", icon: "condition", title: "child 2" },
-                ]},
+                { id: "item4", title: "Condition", icon: "condition", type: "console", action: "log", args: { message: "Condition "} },
+                { id: "item5", title: "Date and Time", icon: "date-time", type: "console", action: "log", args: { message: "Date and Time "} },
+                { id: "item6", title: "Lookup", icon: "lookup", type: "console", action: "log", args: { message: "Lookup "} }
             ]
         })
     }
