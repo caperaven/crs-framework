@@ -22,7 +22,7 @@ class FilterHeader extends crsbinding.classes.BindableElement {
 
     async filter(event) {
         await crs.call("dom_collection", "filter_children", {
-            filter: event.target.value,
+            filter: event.target.value.toLowerCase(),
             element: this.#container
         })
     }

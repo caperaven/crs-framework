@@ -86,6 +86,10 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     }
 
     async click(event) {
+        if (event.target.nodeName == 'FILTER-HEADER') {
+            return;
+        }
+
         if (event.target.matches(".back")) {
             return await this.close();
         }
