@@ -24,6 +24,8 @@ html {
 
     --cl-border: #DDDDDD;
     --cl-panel: #EEEEEE;
+    --cl-li-hover: #EEEEEE;
+    --cl-window: white;
 
     /* sizes */
     --border-width: 1px;

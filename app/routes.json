@@ -31,6 +31,11 @@
       "view": "options-toolbar"
     },
     {
+      "title": "Context Menu",
+      "hash": "#context-menu",
+      "view": "context-menu"
+    },
+    {
       "title": "About",
       "hash": "#about",
       "view": "about",

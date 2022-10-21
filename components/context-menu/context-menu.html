@@ -1,0 +1,69 @@
+<style>
+    :host {
+        --icon-font: "";
+
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        background: transparent;
+        z-index: 999999;
+    }
+
+    .popup {
+        margin: 0;
+        border: var(--border);
+        background: var(--cl-panel);
+        filter: var(--drop-shadow);
+        width: max-content;
+        height: max-content;
+        min-width: 200px;
+        min-height: 300px;
+        border-radius: var(--radius);
+        display: grid;
+        grid-template-rows: auto 1fr;
+    }
+
+    ul {
+        margin: 0;
+        list-style: none;
+        background: var(--cl-window);
+    }
+
+    hr {
+        border: var(--border);
+    }
+
+    li {
+        padding: 0.5rem;
+    }
+
+    li:hover {
+        background: var(--cl-li-hover)
+    }
+
+    .icon {
+        font-family: var(--icon-font);
+        font-size: 1.5rem;
+    }
+</style>
+
+<div class="popup">
+    <filter-header for="ul"></filter-header>
+
+    <ul>
+        <li id="item1" data-icon="approved" data-tags="approved">Approved</li>
+
+        <hr/>
+
+        <li class="parent" data-tags="parent">
+            <div>Parent</div>
+            <ul>
+                <li id="child1" data-icon="browse">Browse</li>
+                <li id="child2" data-icon="calendar">Calendar</li>
+            </ul>
+        </li>
+    </ul>
+</div>
