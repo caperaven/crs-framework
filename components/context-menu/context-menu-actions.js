@@ -19,6 +19,7 @@ export class ContextMenuActions {
         const instance = document.createElement("context-menu");
         instance.options = options;
         instance.point = point;
+        instance.context = context;
         instance.style.setProperty("--icon-font", icon_font_family);
 
         document.body.appendChild(instance);

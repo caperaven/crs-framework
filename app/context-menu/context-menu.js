@@ -21,16 +21,16 @@ export default class ContextMenu extends crsbinding.classes.ViewBase {
             icon_font_family: "crsfrw",
 
             options: [
-                { id: "item1", title: "Approved", icon: "approved", type: "console", action: "log", args: { message: "Approved "} },
-                { id: "item2", title: "Browse", icon: "browse", type: "console", action: "log", args: { message: "Browse "} },
-                { id: "item3", title: "Calendar", icon: "calendar", type: "console", action: "log", args: { message: "Calendar "} },
+                { id: "item1", title: "&{approved}", tags: "approved", icon: "approved", type: "console", action: "log", args: { message: "Approved "}, attributes: { "aria-hidden.if": "status == 'b'" } },
+                { id: "item2", title: "Browse", tags: "browse", icon: "browse", type: "console", action: "log", args: { message: "Browse "}, styles: { "background": "green"} },
+                { id: "item3", title: "Calendar", tags: "calendar", icon: "calendar", type: "console", action: "log", args: { message: "Calendar "} },
                 { title: "-" },
-                { id: "item4", title: "Condition", icon: "condition", type: "console", action: "log", args: { message: "Condition "} },
-                { id: "item5", title: "Date and Time", icon: "date-time", type: "console", action: "log", args: { message: "Date and Time "} },
-                { id: "item6", title: "Lookup", icon: "lookup", type: "console", action: "log", args: { message: "Lookup "} }
+                { id: "item4", title: "Condition", tags: "condition", icon: "condition", type: "console", action: "log", args: { message: "Condition "} },
+                { id: "item5", title: "Date and Time", tags: "date time", icon: "date-time", type: "console", action: "log", args: { message: "Date and Time "} },
+                { id: "item6", title: "Lookup", tags: "lookup", icon: "lookup", type: "console", action: "log", args: { message: "Lookup "} }
             ],
 
             callback: (event) => console.log(event)
-        })
+        }, { status: "a" });
     }
 }

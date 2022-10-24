@@ -10,6 +10,7 @@
         right: 0;
         background: transparent;
         z-index: 999999;
+        user-select: none;
     }
 
     .back {
@@ -65,11 +66,33 @@
         font-size: 1.5rem;
         margin-right: var(--padding);
     }
+
+    [aria-hidden="true"] {
+        display: none !important;
+    }
+
+    #resize {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        fill: gray;
+        cursor: nwse-resize;
+    }
 </style>
+
+<svg>
+    <symbol id="resize-handle" viewBox="0 0 32 32">
+        <path d="M28.744 6.016c0.766-0.766 0.766-2.008 0-2.774s-2.008-0.766-2.774 0l-22.728 22.728c-0.766 0.766-0.766 2.008 0 2.774s2.008 0.766 2.774 0l22.728-22.728z"></path>
+        <path d="M28.759 21.332c0.766-0.766 0.766-2.008 0-2.774s-2.008-0.766-2.774 0l-7.427 7.427c-0.766 0.766-0.766 2.008 0 2.774s2.008 0.766 2.774 0l7.427-7.427z"></path>
+    </symbol>
+</svg>
 
 <div class="back"></div>
 
-<div class="popup">
+<div class="popup" ref="popup">
     <filter-header for="ul" close.call="close" focus-out.call="focus"></filter-header>
     <ul ref="container" role="menu" tabindex="0"></ul>
+    <svg id="resize" width="24" height="24">
+        <use href="#resize-handle"></use>
+    </svg>
 </div>

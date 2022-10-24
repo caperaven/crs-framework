@@ -1,9 +1,20 @@
 import "./../filter-header/filter-header.js";
 
+/**
+ * Todo:
+ * 1. add expand
+ * 2. add sub item support
+ * 3. add keyboard support
+ */
+
+
 class ContextMenu extends crsbinding.classes.BindableElement {
     #options;
     #point;
     #clickHandler;
+    #context;
+    #process;
+    #item;
 
     get shadowDom() {
         return true;
@@ -13,20 +24,16 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         return import.meta.url.replace(".js", ".html");
     }
 
-    get options() {
-        return this.#options;
-    }
-
     set options(newValue) {
         this.#options = newValue;
     }
 
-    get point() {
-        return this.#point;
-    }
-
     set point(newValue) {
         this.#point = newValue;
+    }
+
+    set context(newValue) {
+        this.#context = newValue;
     }
 
     async connectedCallback() {
@@ -34,6 +41,10 @@ class ContextMenu extends crsbinding.classes.BindableElement {
 
         this.#clickHandler = this.click.bind(this);
         this.shadowRoot.addEventListener("click", this.#clickHandler);
+
+        await crsbinding.translations.add({
+            approved: "Approved"
+        })
 
         requestAnimationFrame(async () => {
             const ul = this.shadowRoot.querySelector(".popup");
@@ -46,6 +57,12 @@ class ContextMenu extends crsbinding.classes.BindableElement {
                 at: "right",
                 anchor: "top",
             })
+
+            await crs.call("dom_interactive", "enable_resize", {
+                element: this.popup,
+                resize_query: "#resize",
+                options: {}
+            })
         })
     }
 
@@ -53,6 +70,10 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         this.removeEventListener("click", this.#clickHandler);
         this.#clickHandler = null;
         this.#options = null;
+        this.#point = null;
+        this.#context = null;
+        this.#process = null;
+        this.#item = null;
     }
 
     #optionById(id) {
@@ -74,11 +95,14 @@ class ContextMenu extends crsbinding.classes.BindableElement {
                     tag_name: "li",
                     dataset: {
                         icon: option.icon,
-                        tags: option.title.toLowerCase()
+                        tags: option.tags || "",
+                        ...(option.dataset || {})
                     },
                     attributes: {
-                        role: "menuitem"
+                        role: "menuitem",
+                        ...(option.attributes || {})
                     },
+                    styles: option.styles,
                     text_content: option.title
                 })
             }
@@ -86,6 +110,10 @@ class ContextMenu extends crsbinding.classes.BindableElement {
 
         this.container.innerHTML = "";
         this.container.appendChild(fragment);
+
+        if (this.#context) {
+            await crsbinding.staticInflationManager.inflateElements(this.container.children, this.#context);
+        }
     }
 
     async click(event) {

@@ -122,11 +122,11 @@ function setAttribute(attr, value) {
         ownerElement: this
     };
 
-    const old = this.getAttribute(attr);
+    const oldValue = this.getAttribute(attr);
     this.attributes.push(attrObj);
 
     if (this["attributeChangedCallback"] != null) {
-        this["attributeChangedCallback"](attr, old.value, value);
+        this["attributeChangedCallback"](attr, oldValue, value);
     }
 }
 
@@ -135,6 +135,8 @@ function removeAttribute (attr) {
 
     if (attrObj != null) {
         const index = this.attributes.indexOf(attrObj);
+        if (index == -1) return;
+
         this.attributes.splice(index, 1);
         attrObj.ownerElement = null;
     }
