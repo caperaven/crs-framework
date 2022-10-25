@@ -1,0 +1,104 @@
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    :host {
+        display: grid;
+        grid-template-rows: auto 1fr;
+        width: 30rem;
+        height: 30rem;
+        border: 1px solid #272C37;
+        border-radius: 3%;
+        margin: 3rem;
+    }
+
+    #calendar-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 5rem;
+        padding: 0.7rem;
+    }
+
+    #calendar-toolbar select {
+        cursor: pointer;
+        text-align: center;
+        font-size: 1.13rem;
+        border-radius: 0.5rem;
+        border: none;
+    }
+
+    #calendar-toolbar button {
+        background: transparent;
+        width: 3rem;
+        height: 3rem;
+        font-size: 30px;
+        cursor: pointer;
+        border: none;
+    }
+
+    #calendar {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        grid-template-rows: repeat(7, 1fr);
+        justify-items: center;
+        align-items: center;
+    }
+
+    #calendar div[role = 'columnheader'] {
+        font-weight: bold;
+    }
+
+    #calendar div[role = 'cell'] {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 3rem;
+        height: 3rem;
+        border-radius: 0.4rem;
+    }
+
+    #calendar div[role = 'cell']:hover {
+        border: 1px solid black;
+        opacity: 1;
+        cursor: default;
+    }
+
+    .non-current-day {
+        opacity: .5;
+    }
+
+    .todays-date {
+        background-color: black;
+        color: white;
+    }
+
+</style>
+
+<template id="tplCell">
+    <div role="cell" data-date="${date}" classlist.if="current == false ? 'non-current-day' : 'test'">${number}</div>
+</template>
+
+<div id="calendar-toolbar"  role="toolbar">
+    <button id="previous-month" aria-label="previous month button"><</button>
+    <div id="Months" value.bind = "date.month" aria-label="Months">Months</div>
+    <div id="Years" value.bind = "date.year" aria-label="Month">Years</div>
+    <button id="next-month" aria-label="next month button">></button>
+</div>
+
+<div id="calendar" role="grid">
+    <div role="columnheader">Sun</div><div role="columnheader">Mon</div><div role="columnheader">Tue</div>
+    <div role="columnheader">Wed</div><div role="columnheader">Thu</div><div role="columnheader">Fri</div><div role="columnheader">Sat</div>
+
+    <div class="non-current-day" role="cell">25</div><div class="non-current-day" role="cell">26</div><div class="non-current-day" role="cell">27</div>
+    <div class="non-current-day" role="cell">28</div><div class="non-current-day" role="cell">29</div><div class="non-current-day" role="cell">30</div><div role="cell">01</div>
+
+    <div role="cell">02</div><div role="cell">03</div><div role="cell">04</div><div role="cell">05</div><div role="cell">06</div><div role="cell">07</div><div role="cell">08</div>
+    <div role="cell">09</div><div role="cell">10</div><div role="cell">11</div><div role="cell">12</div><div role="cell">13</div><div role="cell">14</div><div role="cell">15</div>
+    <div role="cell">16</div><div role="cell">17</div><div role="cell">18</div><div role="cell">19</div><div role="cell">20</div><div role="cell">21</div><div role="cell">22</div>
+    <div role="cell">23</div><div role="cell">24</div><div class="todays-date" role="cell">25</div><div role="cell">26</div><div role="cell">27</div><div role="cell">28</div><div role="cell">29</div>
+
+    <div role="cell">30</div><div role="cell">31</div><div class="non-current-day" role="cell">01</div><div class="non-current-day" role="cell">02</div><div class="non-current-day" role="cell">03</div>
+    <div class="non-current-day"  role="cell">04</div><div class="non-current-day"  role="cell">05</div>
+</div>

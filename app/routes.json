@@ -21,6 +21,11 @@
       "view": "grid"
     },
     {
+      "title": "Calendar",
+      "hash": "#calendar",
+      "view": "calendar"
+    },
+    {
       "title": "Kan Ban",
       "hash": "#kan-ban",
       "view": "kan-ban"
