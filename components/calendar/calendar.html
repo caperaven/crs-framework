@@ -60,7 +60,7 @@
         border-radius: 0.4rem;
     }
 
-    #calendar div[role = 'cell']:hover {
+    #calendar [role = 'cell']:hover {
         border: 1px solid black;
         opacity: 1;
         cursor: default;
@@ -74,12 +74,10 @@
         background-color: black;
         color: white;
     }
-
-
 </style>
 
 <template id="tplCell">
-    <div role="cell" data-date="${date}" classList.if="${current} == false ? 'non-current-day' : 'test'">${number}</div>
+    <div role="cell" data-date="${date}" classList.if="current == false ? 'non-current-day' : 'test'">${number}</div>
 </template>
 
 <div id="calendar-toolbar"  role="toolbar">
