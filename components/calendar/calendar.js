@@ -25,7 +25,6 @@ export default class Calendar extends crsbinding.classes.BindableElement {
 
     async #render(data) {
         const cells = this.shadowRoot.querySelectorAll("[role='cell']");
-
         crsbinding.inflationManager.get("calendar-cell", dates, cells);
     }
 }
