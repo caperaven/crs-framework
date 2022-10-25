@@ -27,6 +27,10 @@ html {
     --cl-li-hover: #EEEEEE;
     --cl-window: white;
 
+    --cl-btn-primary-bg: #292C36;
+    --cl-btn-primary-fg: white;
+    --cl-btn-primary-hover: #757575;
+
     /* sizes */
     --border-width: 1px;
     --input-height: 2rem;

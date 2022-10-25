@@ -36,6 +36,11 @@
       "view": "context-menu"
     },
     {
+      "title": "Buttons",
+      "hash": "#buttons",
+      "view": "buttons"
+    },
+    {
       "title": "About",
       "hash": "#about",
       "view": "about",

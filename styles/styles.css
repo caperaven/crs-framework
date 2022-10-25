@@ -36,6 +36,9 @@
     border: solid 1px var(--cl-focus-dark);
 }
 
+*[disabled] {
+    cursor: not-allowed !important;
+}
 
 i {
     font-style: normal;
