@@ -5,6 +5,13 @@ import {find, findAll, createQueryFunction} from "./query.js";
 import {EventMock} from "./event-mock.js";
 
 export class ElementMock {
+    static async from(tag, innerHTML, id, parentElement) {
+        const instance = new ElementMock(tag, id, parentElement);
+        instance.innerHTML = innerHTML;
+        createMockChildren(instance);
+        return instance;
+    }
+
     constructor(tag, id, parentElement) {
         mockElement(this, tag, id, parentElement);
 
@@ -15,6 +22,10 @@ export class ElementMock {
 }
 
 export function mockElement(instance, tag, id) {
+    if (instance.__events != null) {
+        return instance;
+    }
+
     instance.__events = [];
     instance.queryResults = {};
 
@@ -51,6 +62,7 @@ export function mockElement(instance, tag, id) {
 
     Object.defineProperty(instance, "firstElementChild", {
         get() {
+            if (this.children == null) return null;
             if (this.children.length == 0) return null;
             return this.children[0];
         }
@@ -58,6 +70,8 @@ export function mockElement(instance, tag, id) {
 
     Object.defineProperty(instance, "nextElementSibling", {
         get() {
+            if (this.parentElement == null) return null;
+
             const index = this.parentElement.children.indexOf(this);
             return this.parentElement.children[index + 1];
         }
@@ -65,6 +79,8 @@ export function mockElement(instance, tag, id) {
 
     Object.defineProperty(instance, "previousElementSibling", {
         get() {
+            if (this.parentElement == null) return null;
+
             const index = this.parentElement.children.indexOf(this);
             return this.parentElement.children[index - 1];
         }
@@ -106,11 +122,11 @@ function setAttribute(attr, value) {
         ownerElement: this
     };
 
-    const old = this.getAttribute(attr);
+    const oldValue = this.getAttribute(attr);
     this.attributes.push(attrObj);
 
     if (this["attributeChangedCallback"] != null) {
-        this["attributeChangedCallback"](attr, old.value, value);
+        this["attributeChangedCallback"](attr, oldValue, value);
     }
 }
 
@@ -119,6 +135,8 @@ function removeAttribute (attr) {
 
     if (attrObj != null) {
         const index = this.attributes.indexOf(attrObj);
+        if (index == -1) return;
+
         this.attributes.splice(index, 1);
         attrObj.ownerElement = null;
     }

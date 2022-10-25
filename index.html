@@ -72,7 +72,8 @@
         window.addEventListener("load", async (event) => {
             await crs.modules.enableBinding([
                 ["data-grid", "/components/data-grid/data-grid.js"],
-                ["kan-ban", "/components/kan-ban/kan-ban.js"]
+                ["kan-ban", "/components/kan-ban/kan-ban.js"],
+                ["options-toolbar", "/components/options-toolbar/options-toolbar.js"]
             ])
             document.viewModel = new IndexViewModel(document.body);
             await document.viewModel.connectedCallback();

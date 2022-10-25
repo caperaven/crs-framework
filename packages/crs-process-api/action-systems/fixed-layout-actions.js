@@ -1,1 +1,149 @@
-class f{static#t=Object.freeze({left:this.#e,right:this.#i,top:this.#a,bottom:this.#r});static async perform(t,e,i,a){await this[t.action]?.(t,e,i,a)}static async set(t,e,i,a){const r=await crs.dom.get_element(t.args.element,e,i,a),s=await crs.dom.get_element(t.args.target,e,i,a),l=await crs.process.getValue(t.args.at||"bottom",e,i,a),g=await crs.process.getValue(t.args.anchor,e,i,a),n=await crs.process.getValue(t.args.margin||0,e,i,a);r.style.position="fixed",r.style.left=0,r.style.top=0;const c=r.getBoundingClientRect(),y=s.getBoundingClientRect();let h=this.#t[l](c,y,n,g);h=this.#h(h,c.width,c.height),r.style.translate=`${h.x}px ${h.y}px`}static#e(t,e,i,a){return{x:e.left-t.width-i,y:a=="bottom"?e.bottom-t.height:e.top}}static#i(t,e,i,a){return{x:e.left+e.width+i,y:a=="bottom"?e.bottom-t.height:e.top}}static#a(t,e,i,a){return{x:a=="right"?e.right-t.width:e.left,y:e.top-t.height-i}}static#r(t,e,i,a){return{x:a=="right"?e.right-t.width:e.left,y:e.top+e.height+i}}static#h(t,e,i){return t.x<0&&(t.x=1),t.x+e>screen.width&&(t.x=screen.width-e-1),t.y<0&&(t.y=1),t.y+i>screen.height&&(t.y=screen.height-i-1),t}}crs.intent.fixed_layout=f;export{f as FixedLayoutActions};
+export class FixedLayoutActions {
+    static #actions = Object.freeze({
+        "left": this.#left,
+        "right": this.#right,
+        "top": this.#top,
+        "bottom": this.#bottom
+    })
+
+    static async perform(step, context, process, item) {
+        await this[step.action]?.(step, context, process, item);
+    }
+
+    /**
+     * position a element based on a target element.
+     * you can place the element at the top, right, bottom or left of the target.
+     * you can also anchor the element based on it's position.
+     * for example if you place a element left of target you can anchor it to the top of bottom of the target.
+     * if you place it at the top you can anchor it on the left or right.
+     * ...
+     */
+    static async set(step, context, process, item) {
+        /**
+         * JHR:
+         * 1. todo. add point location
+         * 2. anchor middle
+         */
+
+        const element = await crs.dom.get_element(step.args.element, context, process, item);
+        const target = await crs.dom.get_element(step.args.target, context, process, item);
+        const point = await crs.process.getValue(step.args.point, context, process, item);
+
+        const at = await crs.process.getValue(step.args.at || "bottom", context, process, item);
+        const anchor = await crs.process.getValue(step.args.anchor, context, process, item);
+        const margin = await crs.process.getValue(step.args.margin || 0, context, process, item);
+
+        element.style.position = "fixed";
+        element.style.left = 0;
+        element.style.top = 0;
+
+        const elementBounds = element.getBoundingClientRect();
+
+        let targetBounds;
+
+        if (target != null) {
+            targetBounds = target.getBoundingClientRect();
+        }
+        else {
+            targetBounds = {
+                x: point.x,
+                left: point.x,
+                y: point.y,
+                top: point.y,
+                width: 1,
+                height: 1,
+                right: point.x + 1,
+                bottom: point.y + 1
+            }
+        }
+
+        let position = this.#actions[at](elementBounds, targetBounds, margin, anchor);
+        position = this.#ensureInFrustum(position, elementBounds.width, elementBounds.height);
+        element.style.translate = `${position.x}px ${position.y}px`;
+        element.removeAttribute("hidden");
+    }
+
+    static #left(elementBounds, targetBounds, margin, anchor) {
+        return {
+            x: targetBounds.left - elementBounds.width - margin,
+            y: verticalAnchor(anchor, targetBounds, elementBounds)
+        }
+    }
+
+    static #right(elementBounds, targetBounds, margin, anchor) {
+        return {
+            x: targetBounds.left + targetBounds.width + margin,
+            y: verticalAnchor(anchor, targetBounds, elementBounds)
+        }
+    }
+
+    static #top(elementBounds, targetBounds, margin, anchor) {
+        return {
+            x: horizontalAnchor(anchor, targetBounds, elementBounds),
+            y: targetBounds.top - elementBounds.height - margin
+        }
+    }
+
+    static #bottom(elementBounds, targetBounds, margin, anchor) {
+        return {
+            x: horizontalAnchor(anchor, targetBounds, elementBounds),
+            y: targetBounds.top + targetBounds.height + margin
+        }
+    }
+
+    static #ensureInFrustum(position, width, height) {
+        if (position.x < 0) {
+            position.x = 1;
+        }
+
+        if (position.x + width > screen.width) {
+            position.x = screen.width - width - 1;
+        }
+
+        if (position.y < 0) {
+            position.y = 1;
+        }
+
+        if (position.y + height > screen.height) {
+            position.y = screen.height - height - 1;
+        }
+
+        return position;
+    }
+}
+
+function verticalAnchor(anchor, targetBounds, elementBounds) {
+    switch(anchor) {
+        case "middle": {
+            return (targetBounds.top + targetBounds.height / 2) - (elementBounds.height / 2);
+            break;
+        }
+        case "bottom": {
+            return targetBounds.bottom - elementBounds.height;
+            break;
+        }
+        case "top": {
+            return targetBounds.top;
+            break;
+        }
+    }
+}
+
+function horizontalAnchor(anchor, targetBounds, elementBounds) {
+    switch(anchor) {
+        case "middle": {
+            return (targetBounds.left + targetBounds.width / 2) - (elementBounds.width / 2);
+            break;
+        }
+        case "left": {
+            return targetBounds.left;
+            break;
+        }
+        case "right": {
+            return targetBounds.right - elementBounds.width;
+            break;
+        }
+    }
+}
+
+crs.intent.fixed_layout = FixedLayoutActions;

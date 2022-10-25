@@ -133,5 +133,5 @@ export default class KanBan extends crsbinding.classes.BindableElement {
 }
 
 
-await crs.modules.api("kan_ban", import.meta.url);
+await crs.modules.add("kan_ban", import.meta.url);
 customElements.define("kan-ban", KanBan);

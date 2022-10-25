@@ -209,6 +209,8 @@ class DataManagerStore {
 
     static async set_records(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return;
+
         const records = await crs.process.getValue(step.args.records || [], context, process, item);
 
         const dataManager = globalThis.dataManagers[manager];
@@ -221,6 +223,8 @@ class DataManagerStore {
 
     static async append(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return;
+
         const records = await crs.process.getValue(step.args.records || [], context, process, item);
 
         const dataManager = globalThis.dataManagers[manager];
@@ -237,6 +241,8 @@ class DataManagerStore {
 
     static async remove(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return;
+
         const indexes = await crs.process.getValue(step.args.indexes, context, process, item);
         const ids = await crs.process.getValue(step.args.ids, context, process, item);
 
@@ -259,6 +265,8 @@ class DataManagerStore {
 
     static async update(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return;
+
         const index = await crs.process.getValue(step.args.index, context, process, item);
         const id = await crs.process.getValue(step.args.id, context, process, item);
         const changes = await crs.process.getValue(step.args.changes, context, process, item);
@@ -283,6 +291,8 @@ class DataManagerStore {
 
     static async update_batch(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return;
+
         const batch = await crs.process.getValue(step.args.batch, context, process, item);
         const dataManager = globalThis.dataManagers[manager];
 
@@ -308,6 +318,8 @@ class DataManagerStore {
 
     static async get(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return;
+
         const index = await crs.process.getValue(step.args.index, context, process, item);
         const id = await crs.process.getValue(step.args.id, context, process, item);
 
@@ -324,6 +336,8 @@ class DataManagerStore {
 
     static async get_page(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return;
+
         const from = await crs.process.getValue(step.args.from, context, process, item);
         const to = await crs.process.getValue(step.args.to, context, process, item);
 
@@ -336,6 +350,7 @@ class DataManagerStore {
 
     static async get_all(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return;
 
         if (globalThis.dataManagers[manager] == null) {
             return null;
@@ -346,6 +361,8 @@ class DataManagerStore {
 
     static async get_ids(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return;
+
         const indexes = await crs.process.getValue(step.args.indexes, context, process, item);
 
         if (globalThis.dataManagers[manager] == null) {
@@ -357,15 +374,17 @@ class DataManagerStore {
 
     static async on_change(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
-        const callback = await crs.process.getValue(step.args.callback, context, process, item);
+        if (manager == null) return;
 
+        const callback = await crs.process.getValue(step.args.callback, context, process, item);
         return globalThis.dataManagers[manager].addChangeCallback(callback);
     }
 
     static async remove_change(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
-        const callback = await crs.process.getValue(step.args.callback, context, process, item);
+        if (manager == null) return;
 
+        const callback = await crs.process.getValue(step.args.callback, context, process, item);
         return globalThis.dataManagers[manager].removeChangeCallback(callback);
     }
 }
