@@ -9,6 +9,7 @@ let gridInstance;
 let kbInstance;
 
 beforeAll(async () => {
+    await import("./../../../src/data-manager.js");
     await import("./../../../src/actions/columns-actions.js");
     await import("./../../../components/data-grid/data-grid.js");
     await import("./../../../components/kan-ban/kan-ban.js");
@@ -43,12 +44,12 @@ describe("data grid tests", () => {
     it ("add column", async () => {
         await crs.call("grid_columns", "add_columns", {
             element: gridInstance,
-            columns: [{title: "code", width: 100}]
+            columns: [{title: "code", width: 100, field: "code"}]
         })
 
         await crs.call("grid_columns", "add_columns", {
             element: kbInstance,
-            columns: [{title: "code", width: 100}]
+            columns: [{title: "code", width: 100, field: "code"}]
         })
 
         assertEquals(kbInstance.header.children.length, 1);

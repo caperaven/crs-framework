@@ -24,6 +24,8 @@ html {
 
     --cl-border: #DDDDDD;
     --cl-panel: #EEEEEE;
+    --cl-li-hover: #EEEEEE;
+    --cl-window: white;
 
     /* sizes */
     --border-width: 1px;
@@ -35,4 +37,5 @@ html {
 
     /* complex */
     --border: var(--border-width) solid var(--cl-border);
+    --drop-shadow: drop-shadow(0px 2px 3px silver);
 }
