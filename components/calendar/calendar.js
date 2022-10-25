@@ -1,6 +1,7 @@
-import {dates} from "./temp-data.js";
+
 
 export default class Calendar extends crsbinding.classes.BindableElement {
+
     get shadowDom() {
         return true;
     }
@@ -15,7 +16,8 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         const tplCell = this.shadowRoot.querySelector("#tplCell");
         await crsbinding.inflationManager.register("calendar-cell",tplCell);
 
-        await this.#render(dates)
+        const date = new Date();
+        await this.#render(date.getFullYear(),date.getMonth());
     }
 
     async disconnectedCallback() {
@@ -23,9 +25,10 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         await crsbinding.inflationManager.unregister("calendar-cell");
     }
 
-    async #render(data) {
+    async #render(year,month) {
+        const data = await crs.call("dates","get_days",{ month: month, year: year, only_current: false});
         const cells = this.shadowRoot.querySelectorAll("[role='cell']");
-        crsbinding.inflationManager.get("calendar-cell", dates, cells);
+        crsbinding.inflationManager.get("calendar-cell", data, cells);
     }
 }
 customElements.define("calendar-component", Calendar);

@@ -4,14 +4,17 @@
     }
 
     :host {
+        --size: 3rem;
+
         display: grid;
         grid-template-rows: auto 1fr;
-        width: 30rem;
-        height: 30rem;
+        width: 28rem;
+        height: 28rem;
         box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
         border: 1px solid rgba(99, 99, 99, 0.2);
         border-radius: 3%;
         margin: 3rem;
+        outline: none;
     }
 
     #calendar-toolbar {
@@ -19,24 +22,27 @@
         justify-content: space-between;
         align-items: center;
         height: 5rem;
-        padding: 0.7rem;
+        padding: 1rem 1rem 0 1rem;
     }
 
     #calendar-toolbar select {
         cursor: pointer;
         text-align: center;
-        font-size: 1.13rem;
+        font-size: 19px;
+        font-weight: bold;
         border-radius: 0.5rem;
         border: none;
     }
 
     #calendar-toolbar button {
         background: transparent;
-        width: 3rem;
-        height: 3rem;
+        width: var(--size);
+        height: var(--size);
         font-size: 30px;
+        font-weight: bold;
         cursor: pointer;
         border: none;
+
     }
 
     #calendar {
@@ -45,18 +51,25 @@
         grid-template-rows: repeat(7, 1fr);
         justify-items: center;
         align-items: center;
+        padding: 0 0.8rem 0.8rem 0.8rem;
     }
 
     #calendar [role = 'columnheader'] {
         font-weight: bold;
+        font-size: 1.25rem;
+        color: rgba(99, 99, 99, 0.7) ;
+        padding-bottom: 0.2rem;
     }
 
     #calendar [role = 'cell'] {
         display: flex;
         justify-content: center;
         align-items: center;
-        width: 3rem;
-        height: 3rem;
+        width: var(--size);
+        height: var(--size);
+        font-size: 19px;
+        font-weight: bold;
+        color: rgba(0, 0, 0, 0.8);
         border-radius: 0.4rem;
     }
 
@@ -67,7 +80,7 @@
     }
 
     .non-current-day {
-        opacity: .5;
+        opacity: 0.2;
     }
 
     .todays-date {
@@ -77,13 +90,21 @@
 </style>
 
 <template id="tplCell">
-    <div role="cell" data-date="${date}" classList.if="current == false ? 'non-current-day' : 'test'">${number}</div>
+    <div role="cell" data-date="${date}"  classlist.if="current == false ? 'non-current-day' : 'test'">${number}</div>
 </template>
 
 <div id="calendar-toolbar"  role="toolbar">
     <button id="previous-month" aria-label="previous month button"><</button>
-    <div id="Months" value.bind = "date.month" aria-label="Months">Months</div>
-    <div id="Years" value.bind = "date.year" aria-label="Month">Years</div>
+    <div id="Months" value.bind = "date.month" aria-label="Months">
+        <select>
+        <option>October</option>
+        </select>
+    </div>
+    <div id="Years" value.bind = "date.year" aria-label="Month">
+        <select>
+            <option>2022</option>
+        </select>
+    </div>
     <button id="next-month" aria-label="next month button">></button>
 </div>
 

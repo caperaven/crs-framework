@@ -276,6 +276,7 @@ async function initialize(root) {
   await crs.modules.add("cssgrid", `${root}/action-systems/css-grid-actions.js`);
   await crs.modules.add("data", `${root}/action-systems/data-actions.js`);
   await crs.modules.add("db", `${root}/action-systems/database-actions.js`);
+  await crs.modules.add("dates", `${root}/action-systems/date-actions.js`);
   await crs.modules.add("dom", `${root}/action-systems/dom-actions.js`);
   await crs.modules.add("dom_binding", `${root}/action-systems/dom-binding-actions.js`);
   await crs.modules.add("dom_collection", `${root}/action-systems/dom-collection-actions.js`);
@@ -301,6 +302,8 @@ async function initialize(root) {
   await crs.modules.add("validate", `${root}/action-systems/validate-actions.js`);
   await crs.modules.add("fixed_layout", `${root}/action-systems/fixed-layout-actions.js`);
   await crs.modules.add("colors", `${root}/action-systems/colors-actions.js`);
+  await crs.modules.add("styles", `${root}/action-systems/styles-actions.js`);
+  await crs.modules.add("compile", `${root}/action-systems/compile-actions.js`);
   crs.dom = (await crs.modules.get("dom")).DomActions;
 }
 globalThis.crs = globalThis.crs || {};
