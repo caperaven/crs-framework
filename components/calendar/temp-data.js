@@ -1,5 +1,5 @@
 export const dates =[
-    {"number": 42, "current": false, "day": "Sun", "date": "2022-25-05T22:00:00.000Z"},
+    {"number": 25, "current": false, "day": "Sun", "date": "2022-25-05T22:00:00.000Z"},
     {"number": 26, "current": false, "day": "Mon", "date": "2022-26-05T22:00:00.000Z"},
     {"number": 27, "current": false, "day": "Tue", "date": "2022-27-05T22:00:00.000Z"},
     {"number": 28, "current": false, "day": "Wed", "date": "2022-28-05T22:00:00.000Z"},
