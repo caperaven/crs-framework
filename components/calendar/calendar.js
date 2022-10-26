@@ -23,6 +23,8 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         await super.disconnectedCallback();
         await crsbinding.inflationManager.unregister("calendar-cell");
         this.date = null;
+        this.#month = null;
+        this.#year = null;
     }
 
     preLoad() {
@@ -61,8 +63,5 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         const currentView = "years";
         await this.#selectedView(currentView);
     }
-
-
-
 }
 customElements.define("calendar-component", Calendar);
