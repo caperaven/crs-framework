@@ -1,6 +1,8 @@
 
 
 export default class Calendar extends crsbinding.classes.BindableElement {
+    #month;
+    #year;
 
     get shadowDom() {
         return true;
@@ -13,11 +15,12 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     async connectedCallback() {
         await super.connectedCallback();
 
+        this.#month = 9;
+        this.#year = 2022;
+
         const tplCell = this.shadowRoot.querySelector("#tplCell");
         await crsbinding.inflationManager.register("calendar-cell",tplCell);
 
-        const date = new Date();
-        await this.#render(date.getFullYear(),date.getMonth());
     }
 
     async disconnectedCallback() {
@@ -25,10 +28,25 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         await crsbinding.inflationManager.unregister("calendar-cell");
     }
 
-    async #render(year,month) {
-        const data = await crs.call("dates","get_days",{ month: month, year: year, only_current: false});
+    preLoad() {
+        this.setProperty("selectedView", "default");
+    }
+
+    async #render() {
+        const data = await crs.call("dates","get_days",{ month: this.#month, year: this.#year, only_current: false });
         const cells = this.shadowRoot.querySelectorAll("[role='cell']");
         crsbinding.inflationManager.get("calendar-cell", data, cells);
     }
+
+    async viewLoaded() {
+        console.log("view-loaded")
+        const currentView = this.getProperty("selectedView");
+
+        if (currentView === "default") {
+           requestAnimationFrame(async () => await this.#render() );
+        }
+
+    }
+
 }
 customElements.define("calendar-component", Calendar);

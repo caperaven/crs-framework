@@ -1,0 +1,56 @@
+<style>
+    #calendar {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        grid-template-rows: repeat(7, 1fr);
+        justify-items: center;
+        align-items: center;
+        padding: 0 0.8rem 0.8rem 0.8rem;
+    }
+
+    #calendar [role = 'columnheader'] {
+        font-weight: bold;
+        font-size: 1.25rem;
+        color: rgba(99, 99, 99, 0.7);
+        padding-bottom: 0.2rem;
+    }
+
+    #calendar [role = 'cell'] {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: var(--size);
+        height: var(--size);
+        font-size: var(--text-size);
+        font-weight: bold;
+        color: rgba(0, 0, 0, 0.8);
+        border-radius: 0.4rem;
+    }
+
+    #calendar [role = 'cell']:hover {
+        border: 1px solid black;
+        opacity: 1;
+        cursor: default;
+    }
+
+    .non-current-day {
+        opacity: 0.2;
+    }
+
+    .todays-date {
+        background-color: black;
+        color: white;
+    }
+</style>
+
+<div id="calendar" role="grid">
+    <div role="columnheader">SU</div><div role="columnheader">MO</div><div role="columnheader">TU</div>
+    <div role="columnheader">WE</div><div role="columnheader">TH</div><div role="columnheader">FR</div><div role="columnheader">SA</div>
+
+    <div role="cell"></div><div role="cell"></div><div role="cell"></div><div role="cell"></div><div role="cell"></div><div role="cell"></div><div role="cell"></div>
+    <div role="cell"></div><div role="cell"></div><div role="cell"></div><div role="cell"></div><div role="cell"></div><div role="cell"></div><div role="cell"></div>
+    <div role="cell"></div><div role="cell"></div><div role="cell"></div><div role="cell"></div><div role="cell"></div><div role="cell"></div><div role="cell"></div>
+    <div role="cell"></div><div role="cell"></div><div role="cell"></div><div role="cell"></div><div role="cell"></div><div role="cell"></div><div role="cell"></div>
+    <div role="cell"></div><div role="cell"></div><div role="cell"></div><div role="cell"></div><div role="cell"></div><div role="cell"></div><div role="cell"></div>
+    <div role="cell"></div><div role="cell"></div><div role="cell"></div><div role="cell"></div><div role="cell"></div><div role="cell"></div><div role="cell"></div>
+</div>
