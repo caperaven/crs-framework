@@ -47,17 +47,17 @@ label input:required + i:before {
 
 label input:required:placeholder-shown + i:before {
     content: "required";
-    color: var(--cl-required-dark);
+    color: var(--orange);
 }
 
 label input:invalid + i:before {
     content: "error-outline";
-    color: var(--cl-error-dark);
+    color: var(--red);
 }
 
 label input:valid + i:before {
     content: "check-outline";
-    color: var(--cl-success-dark);
+    color: var(--green);
 }
 
 label button {
@@ -74,7 +74,7 @@ label:has(.button-group) input {
 }
 
 label .button-group {
-    background-color: var(--cl-border);
+    background-color: var(--grey-surface);
     width: max-content;
     display: flex;
     height: var(--input-height);
@@ -89,7 +89,7 @@ label .button-group button {
 }
 
 label .button-group button:focus {
-    border: solid 1px var(--cl-focus-dark);
+    border: solid 1px var(--blue);
 }
 
 label .button-group button:last-child {
