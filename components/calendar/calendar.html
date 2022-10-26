@@ -35,7 +35,7 @@
         border: none;
     }
 
-    #calendar-toolbar button {
+    #calendar-toolbar #previous-month,#next-month {
         background: transparent;
         width: var(--size);
         height: var(--size);
@@ -97,14 +97,8 @@
 
 <div id="calendar-toolbar" role="toolbar">
     <button id="previous-month" aria-label="previous month button"><</button>
-    <select value.bind="selectedView">
-        <option value="default">default</option>
-        <option value="view1">Month</option>
-        <option value="view2">Year</option>
-    </select>
-    <select>
-        <option>2022</option>
-    </select>
+        <button id="Month" value="months" click.call="Month">Month</button>
+        <button id="Year" value="years" click.call="Year">Year</button>
     <button id="next-month" aria-label="next month button">></button>
 </div>
 
@@ -112,10 +106,10 @@
     <template data-id="default" data-default="true">
         <template src="./templates/days.html"></template>
     </template>
-    <template data-id="view1">
+    <template data-id="months">
         <template src="./templates/months.html"></template>
     </template>
-    <template data-id="view2">
+    <template data-id="years">
         <template src="./templates/years.html"></template>
     </template>
 </perspective-element>

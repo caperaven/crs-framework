@@ -1,5 +1,3 @@
-
-
 export default class Calendar extends crsbinding.classes.BindableElement {
     #month;
     #year;
@@ -19,7 +17,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         this.#year = 2022;
 
         const tplCell = this.shadowRoot.querySelector("#tplCell");
-        await crsbinding.inflationManager.register("calendar-cell",tplCell);
+        await crsbinding.inflationManager.register("calendar-cell", tplCell);
 
     }
 
@@ -33,19 +31,31 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     async #render() {
-        const data = await crs.call("dates","get_days",{ month: this.#month, year: this.#year, only_current: false });
+        const data = await crs.call("dates", "get_days", {month: this.#month, year: this.#year, only_current: false});
         const cells = this.shadowRoot.querySelectorAll("[role='cell']");
         crsbinding.inflationManager.get("calendar-cell", data, cells);
     }
 
     async viewLoaded() {
-        console.log("view-loaded")
         const currentView = this.getProperty("selectedView");
 
         if (currentView === "default") {
-           requestAnimationFrame(async () => await this.#render() );
+            requestAnimationFrame(async () => await this.#render());
         }
+    }
 
+    Month() {
+        const currentView = "months";
+        this.selectedView(currentView);
+    }
+
+    Year() {
+        const currentView = "years";
+        this.selectedView(currentView);
+    }
+
+    selectedView(newView) {
+        requestAnimationFrame(async () => this.setProperty("selectedView", newView))
     }
 
 }
