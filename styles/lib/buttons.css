@@ -6,6 +6,21 @@ button {
     border-radius: var(--radius);
     padding: var(--padding);
     box-sizing: border-box;
+    height: 2rem;
+    min-width: 2rem;
+}
+
+button.left {
+    border-radius: var(--radius) 0 0 var(--radius) !important;
+}
+
+button.right {
+    border-radius: 0 var(--radius) var(--radius) 0 !important;
+    margin-left: -0.15rem;
+}
+
+button.center {
+    border: 0;
 }
 
 button:hover {
@@ -19,30 +34,30 @@ button:focus {
 }
 
 button.success {
-    background-color: var(--cl-success-dark) !important;
+    background-color: var(--green) !important;
 }
 
 button.error {
-    background-color: var(--cl-error-dark) !important;
+    background-color: var(--red) !important;
 }
 
 button:active:not([disabled]) {
-    background-color: var(--cl-focus-dark) !important;
-    color: var(--cl-btn-primary-fg);
+    background-color: var(--blue) !important;
+    color: var(--alt-fg);
 }
 
 button.primary {
-    background-color: var(--cl-btn-primary-bg);
-    color: var(--cl-btn-primary-fg);
+    background-color: var(--grey);
+    color: var(--alt-fg);
 }
 
 button.primary:hover {
-    background-color: var(--cl-btn-primary-hover);
-    color: var(--cl-panel);
+    background-color: var(--grey-s1);
+    color: var(--grey-s3);
 }
 
 
 button.primary[disabled] {
-    background-color: var(--cl-panel);
-    color: var(--cl-btn-primary-hover);
+    background-color: var(--grey-surface);
+    color: var(--grey-s1);
 }
