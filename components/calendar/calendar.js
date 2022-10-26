@@ -13,27 +13,36 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     async connectedCallback() {
         await super.connectedCallback();
 
-        this.#month = 9;
-        this.#year = 2022;
+        this.#month = this.date.getMonth();
+        this.#year = this.date.getFullYear();
 
         const tplCell = this.shadowRoot.querySelector("#tplCell");
         await crsbinding.inflationManager.register("calendar-cell", tplCell);
-
     }
 
     async disconnectedCallback() {
         await super.disconnectedCallback();
         await crsbinding.inflationManager.unregister("calendar-cell");
+        this.date = null;
     }
 
     preLoad() {
+        this.date = new Date();
+        const month =  this.date.toLocaleString('en-US', {month: 'long'});
+
         this.setProperty("selectedView", "default");
+        this.setProperty("month",month);
+        this.setProperty("year",this.date.getFullYear());
     }
 
     async #render() {
         const data = await crs.call("dates", "get_days", {month: this.#month, year: this.#year, only_current: false});
         const cells = this.shadowRoot.querySelectorAll("[role='cell']");
         crsbinding.inflationManager.get("calendar-cell", data, cells);
+    }
+
+    async #selectedView(newView) {
+        requestAnimationFrame(async () => this.setProperty("selectedView", newView))
     }
 
     async viewLoaded() {
@@ -44,19 +53,17 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         }
     }
 
-    Month() {
+   async Month() {
         const currentView = "months";
-        this.selectedView(currentView);
+        await this.#selectedView(currentView);
     }
 
-    Year() {
+    async Year() {
         const currentView = "years";
-        this.selectedView(currentView);
+        await this.#selectedView(currentView);
     }
 
-    selectedView(newView) {
-        requestAnimationFrame(async () => this.setProperty("selectedView", newView))
-    }
+
 
 }
 customElements.define("calendar-component", Calendar);
