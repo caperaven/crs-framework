@@ -32,6 +32,7 @@ export function mockElement(instance, tag, id) {
     instance.nodeName = (tag || "div").toUpperCase();
     instance.id = id;
     instance.name = id;
+    instance.tagName = instance.nodeName;
 
     instance.textContent = "";
     instance.innerText = "";
@@ -99,6 +100,19 @@ export function mockElement(instance, tag, id) {
         }
     })
 
+    Object.defineProperty(instance, "textContent", {
+        enumerable: true,
+        configurable: true,
+        get() {
+            const childText = this.children.map(c => c.textContent).join(" ");
+            return childText + (this._textContent ?? "");
+        },
+        set(newValue) {
+            this._textContent = newValue;
+            instance.children.length = 0;
+        }
+    });
+
     return instance;
 }
 
@@ -116,21 +130,32 @@ function getAttribute(attr) {
 }
 
 function setAttribute(attr, value) {
-    const attrObj = {
-        name: attr,
-        value: value,
-        ownerElement: this
-    };
+    let hasAttr = true;
+    let attrObj = this.attributes.find(item => item.name == attr);
+    let oldValue = "";
 
-    const oldValue = this.getAttribute(attr);
-    this.attributes.push(attrObj);
+    if (attrObj == null) {
+        attrObj = {
+            name: attr,
+            value: value,
+            ownerElement: this
+        };
+        hasAttr = false;
+    } else {
+        oldValue = attrObj.value;
+        attrObj.value = value
+    }
+
+    if (hasAttr == false) {
+        this.attributes.push(attrObj);
+    }
 
     if (this["attributeChangedCallback"] != null) {
         this["attributeChangedCallback"](attr, oldValue, value);
     }
 }
 
-function removeAttribute (attr) {
+function removeAttribute(attr) {
     const attrObj = this.attributes.find(item => item.name == attr);
 
     if (attrObj != null) {
