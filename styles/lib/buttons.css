@@ -1,5 +1,48 @@
 button {
     outline: none;
+    border: 0;
     cursor: pointer;
     background: var(--cl-panel);
+    border-radius: var(--radius);
+    padding: var(--padding);
+    box-sizing: border-box;
+}
+
+button:hover {
+    outline: none;
+    border: 0;
+}
+
+button:focus {
+    outline: none;
+    border: 0;
+}
+
+button.success {
+    background-color: var(--cl-success-dark) !important;
+}
+
+button.error {
+    background-color: var(--cl-error-dark) !important;
+}
+
+button:active:not([disabled]) {
+    background-color: var(--cl-focus-dark) !important;
+    color: var(--cl-btn-primary-fg);
+}
+
+button.primary {
+    background-color: var(--cl-btn-primary-bg);
+    color: var(--cl-btn-primary-fg);
+}
+
+button.primary:hover {
+    background-color: var(--cl-btn-primary-hover);
+    color: var(--cl-panel);
+}
+
+
+button.primary[disabled] {
+    background-color: var(--cl-panel);
+    color: var(--cl-btn-primary-hover);
 }
