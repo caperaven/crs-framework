@@ -21,6 +21,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
 
     async disconnectedCallback() {
         await super.disconnectedCallback();
+
         await crsbinding.inflationManager.unregister("calendar-cell");
         this.date = null;
         this.#month = null;
@@ -29,7 +30,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
 
     preLoad() {
         this.date = new Date();
-        const month =  this.date.toLocaleString('en-US', { month: 'long' });
+        const month = this.date.toLocaleString('en-US', {month: 'long'});
 
         this.setProperty("selectedView", "default");
         this.setProperty("month", month);
@@ -54,7 +55,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         }
     }
 
-   async Month() {
+    async Month() {
         const currentView = "months";
         await this.#selectedView(currentView);
     }
