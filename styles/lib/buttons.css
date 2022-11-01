@@ -35,10 +35,12 @@ button:focus {
 
 button.success {
     background-color: var(--green) !important;
+    color: var(--alt-fg) !important;
 }
 
 button.error {
     background-color: var(--red) !important;
+    color: var(--alt-fg) !important;
 }
 
 button:active:not([disabled]) {
@@ -67,6 +69,19 @@ button.secondary {
     border-color: var(--grey);
 }
 
-button.secondary:hover {
-    background-color: var(--grey-s3);
+button.secondary:hover, button.icon:hover, button.alt:hover {
+    background-color: var(--grey-s2);
+}
+
+button.secondary.success, button.icon.success {
+    border: 0;
+}
+
+button.secondary.error, button.icon.success {
+    border: 0;
+}
+
+button.icon {
+    background-color: var(--alt-fg);
+    border: 0;
 }
