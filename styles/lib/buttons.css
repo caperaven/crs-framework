@@ -56,8 +56,17 @@ button.primary:hover {
     color: var(--grey-s3);
 }
 
-
 button.primary[disabled] {
     background-color: var(--grey-surface);
     color: var(--grey-s1);
+}
+
+button.secondary {
+    background-color: var(--alt-fg);
+    border: var(--border);
+    border-color: var(--grey);
+}
+
+button.secondary:hover {
+    background-color: var(--grey-s3);
 }
