@@ -11,9 +11,12 @@ export function addColumnFeatures(instance) {
 async function addColumnElements(columns) {
     let index = 0;
     for (const column of columns) {
-        const header = await this.createHeaderElement?.() || await crs.call("dom", "create_element", {
+        const header = await crs.call("dom", "create_element", {
+            tag_name: "crs-widget",
             text_content: column.title,
+            id: column.id,
             attributes: {
+                "data-name": column.title,
                 role: "columnheader"
             }
         })
