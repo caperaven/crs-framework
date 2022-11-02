@@ -11,7 +11,7 @@ input {
 
 input:required:placeholder-shown {
     border-color: var(--orange);
-    background-color: var(--orange-s2);
+    background-color: var(--yellow-s2);
 }
 
 input:focus, input:required:placeholder-shown:focus {

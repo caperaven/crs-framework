@@ -91,6 +91,7 @@ label .button-group button {
 
 label .button-group button:not(button:last-child) {
     border-right: var(--border);
+    border-radius: 0;
 }
 
 label .button-group button:focus {
