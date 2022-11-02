@@ -2,7 +2,7 @@ button {
     outline: none;
     border: 0;
     cursor: pointer;
-    background: var(--cl-panel);
+    background: var(--grey-surface);
     border-radius: var(--radius);
     padding: var(--padding);
     box-sizing: border-box;
@@ -46,6 +46,7 @@ button.error {
 button:active:not([disabled]) {
     background-color: var(--blue) !important;
     color: var(--alt-fg);
+    fill: var(--alt-fg);
 }
 
 button.primary {
@@ -82,6 +83,14 @@ button.secondary.error, button.icon.success {
 }
 
 button.icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background-color: var(--alt-fg);
     border: 0;
+}
+
+button.icon svg {
+    width: 2rem;
+    height: 2rem;
 }

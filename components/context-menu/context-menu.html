@@ -21,7 +21,7 @@
     .popup {
         margin: 0;
         border: var(--border);
-        background: var(--cl-panel);
+        background: var(--grey-surface);
         filter: var(--drop-shadow);
         width: max-content;
         height: max-content;
@@ -36,7 +36,7 @@
         margin: 0;
         padding: 0;
         list-style: none;
-        background: var(--cl-window);
+        background: var(--window);
     }
 
     hr {
@@ -92,7 +92,7 @@
 <div class="popup" ref="popup">
     <filter-header for="ul" close.call="close" focus-out.call="focus"></filter-header>
     <ul ref="container" role="menu" tabindex="0"></ul>
-    <svg id="resize" width="24" height="24">
+    <svg id="resize" width="16" height="16">
         <use href="#resize-handle"></use>
     </svg>
 </div>

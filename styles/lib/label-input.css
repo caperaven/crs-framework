@@ -79,13 +79,18 @@ label .button-group {
     display: flex;
     height: var(--input-height);
     border-radius: 0 var(--radius) var(--radius) 0;
+    border: var(--border);
 }
 
 label .button-group button {
     font-family: crsfrw;
     font-size: 1.25rem;
     border:0;
-    margin: 1px 1px 1px 0;
+    background-color: transparent !important;
+}
+
+label .button-group button:not(button:last-child) {
+    border-right: var(--border);
 }
 
 label .button-group button:focus {
