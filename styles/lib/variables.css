@@ -6,6 +6,7 @@ html {
 
     /* form */
     --cl-text: #272C37;
+    --window: white;
 
     --blue: #0276C2;
     --blue-s1: #B9D8EC;
@@ -23,6 +24,10 @@ html {
     --orange: #F97825;
     --orange-s1: #F9B98F;
     --orange-s2: #FAD3BA;
+
+    --yellow: #F1C40F;
+    --yellow-s1: #FBE381;
+    --yellow-s2: #FFF9DD;
 
     --grey: #272C37;
     --grey-s1: #757575;

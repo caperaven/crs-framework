@@ -19,7 +19,7 @@
     <div>&{form.phone}</div>
     <input is="masked-input" data-mask="(000) +00 000000000" />
     <div class="button-group">
-        <button>lookup</button>
+        <button class="icon">lookup</button>
     </div>
 </label>
 
@@ -27,7 +27,7 @@
     <div>&{form.phone}</div>
     <input is="masked-input" data-mask="(000) +00 000000000" disabled/>
     <div class="button-group">
-        <button disabled>lookup</button>
+        <button disabled class="icon">lookup</button>
     </div>
 </label>
 
@@ -38,7 +38,7 @@
     <input id="edtLastName1" slot="input" value.bind="data.lastName" required data-field=""/>
     <i></i>
     <div class="button-group">
-        <button for="edtLastName" is="lookup-button">lookup</button>
+        <button for="edtLastName" is="lookup-button" class="icon">lookup</button>
     </div>
 </label>
 
@@ -49,9 +49,9 @@
     <input id="edtLastName2" placeholder=" " slot="input" value.bind="data.lastName" required data-field=""/>
     <i></i>
     <div class="button-group">
-        <button for="edtLastName" is="lookup-button">preview</button>
-        <button for="edtLastName" is="lookup-button">lookup</button>
-        <button for="edtLastName" is="lookup-button">browse</button>
+        <button for="edtLastName" is="lookup-button" class="icon">preview</button>
+        <button for="edtLastName" is="lookup-button" class="icon">lookup</button>
+        <button for="edtLastName" is="lookup-button" class="icon">browse</button>
     </div>
 </label>
 
@@ -60,6 +60,6 @@
     <input id="edtLastName3" placeholder=" " slot="input" value.bind="data.lastName" required data-field=""/>
     <i></i>
     <div class="button-group">
-        <button for="edtLastName" is="lookup-button">lookup</button>
+        <button for="edtLastName" is="lookup-button" class="icon">lookup</button>
     </div>
 </label>

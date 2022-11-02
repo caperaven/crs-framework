@@ -8,6 +8,10 @@ export default class DataGrid extends crsbinding.classes.BindableElement {
     #columns;
     #columnGroups;
 
+    get shadowDom() {
+        return true;
+    }
+
     get columns() {
         return this.#columns;
     }
