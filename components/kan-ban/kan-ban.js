@@ -4,6 +4,10 @@ export default class KanBan extends crsbinding.classes.BindableElement {
     #columns = [];
     #refreshHandler = this.refresh.bind(this);
 
+    get shadowDom() {
+        return true;
+    }
+
     get columns() {
         return this.#columns;
     }

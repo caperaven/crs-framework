@@ -2,7 +2,7 @@ button {
     outline: none;
     border: 0;
     cursor: pointer;
-    background: var(--cl-panel);
+    background: var(--grey-surface);
     border-radius: var(--radius);
     padding: var(--padding);
     box-sizing: border-box;
@@ -35,15 +35,18 @@ button:focus {
 
 button.success {
     background-color: var(--green) !important;
+    color: var(--alt-fg) !important;
 }
 
 button.error {
     background-color: var(--red) !important;
+    color: var(--alt-fg) !important;
 }
 
 button:active:not([disabled]) {
     background-color: var(--blue) !important;
     color: var(--alt-fg);
+    fill: var(--alt-fg);
 }
 
 button.primary {
@@ -56,8 +59,38 @@ button.primary:hover {
     color: var(--grey-s3);
 }
 
-
 button.primary[disabled] {
     background-color: var(--grey-surface);
     color: var(--grey-s1);
+}
+
+button.secondary {
+    background-color: var(--alt-fg);
+    border: var(--border);
+    border-color: var(--grey);
+}
+
+button.secondary:hover, button.icon:hover, button.alt:hover {
+    background-color: var(--grey-s2);
+}
+
+button.secondary.success, button.icon.success {
+    border: 0;
+}
+
+button.secondary.error, button.icon.success {
+    border: 0;
+}
+
+button.icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--alt-fg);
+    border: 0;
+}
+
+button.icon svg {
+    width: 2rem;
+    height: 2rem;
 }

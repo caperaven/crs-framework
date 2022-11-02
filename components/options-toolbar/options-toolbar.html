@@ -1,12 +1,12 @@
 <style>
     :host {
         --cl-selected-bg: white;
-        --cl-selected-fg: var(--cl-focus-dark);
+        --cl-selected-fg: var(--blue);
         --width: 0;
         --height: 0;
 
         display: flex;
-        background: var(--cl-panel);
+        background: var(--grey-surface);
         border-radius: var(--radius);
         width: max-content;
         height: max-content;
@@ -14,6 +14,8 @@
         padding: var(--padding);
         position: relative;
         user-select: none;
+        border: var(--border);
+        border-radius: var(--radius);
     }
 
     ::slotted(button) {
@@ -22,7 +24,12 @@
         background: transparent !important;
     }
 
+    ::slotted(button:active) {
+        color: var(--blue) !important;
+    }
+
     ::slotted([aria-selected="true"]) {
+        background: var(--cl-selected-bg);
         color: var(--cl-selected-fg);
         font-weight: bold;
     }
@@ -33,7 +40,7 @@
         left: 0;
         display: block;
         border-radius: var(--radius);
-        background: var(--cl-selected-bg);
+        background: var(--cl-primary-alt);
         height: var(--height);
         width: var(--width);
         filter: var(--drop-shadow);
