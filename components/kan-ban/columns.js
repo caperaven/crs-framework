@@ -24,6 +24,7 @@ async function addColumnElements(columns) {
         this.header.appendChild(header);
 
         const cell = await crs.call("dom", "create_element", {
+            id: index,
             attributes: {
                 role: "cell"
             },
