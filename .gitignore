@@ -7,3 +7,4 @@ yarn-error.log
 /rust/html_parser/target/
 .idea/
 *.iml
+dist/

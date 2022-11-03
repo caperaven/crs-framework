@@ -1884,12 +1884,13 @@ function ForOnceProvider(element, context, property, value, ctxName = "context",
   const singular = parts.singular;
   const plural = parts.plural;
   const key = `for-once-${singular}`;
-  crsbinding.inflationManager.register(key, element, singular);
-  const data = crsbinding.data.getValue(context, plural);
-  const elements = crsbinding.inflationManager.get(key, data);
-  crsbinding.inflationManager.unregister(key);
-  element.parentElement.appendChild(elements);
-  element.parentElement.removeChild(element);
+  crsbinding.inflationManager.register(key, element, singular).then(() => {
+    const data = crsbinding.data.getValue(context, plural);
+    const elements = crsbinding.inflationManager.get(key, data);
+    crsbinding.inflationManager.unregister(key);
+    element.parentElement.appendChild(elements);
+    element.parentElement.removeChild(element);
+  });
 }
 
 // src/binding/providers/for-map-provider.js
@@ -2410,8 +2411,8 @@ var InflationCodeGenerator = class {
     const text = (element.textContent || element.innerHTML || "").trim();
     let target = "textContent";
     let exp = text;
-    if (exp.indexOf("&amp;{") != -1) {
-      const path2 = exp.replace("&amp;{", "").replace("}", "");
+    if (exp.indexOf("&amp;{") != -1 || exp.indexOf("&{") != -1) {
+      const path2 = exp.replace("${", "").replace("&amp;{", "").replace("}", "");
       const value = await crsbinding.translations.get(path2);
       if (value == null) {
         this.inflateSrc.push(`crsbinding.translations.get("${path2}").then(result => ${this.path}.textContent = result);`);
@@ -2449,7 +2450,7 @@ var InflationCodeGenerator = class {
         this._processAttrValue(attr);
       } else if (attr.value.indexOf("&{") != -1) {
         await this._processTranslationValue(attr);
-      } else if (attr.value.indexOf(".if") != -1) {
+      } else if (attr.name.indexOf(".if") != -1) {
         this._processAttrCondition(attr);
       } else if (attr.name.indexOf(".case") != -1) {
         this._processCaseCondition(attr);
@@ -4035,6 +4036,8 @@ var StaticInflationManager = class {
     await this.inflateElements(element.children, context);
   }
   async #parseTextContent(element, context) {
+    if (element.children.length > 0)
+      return;
     if (element.textContent.indexOf("&{") != -1) {
       return element.textContent = await crsbinding.translations.get_with_markup(element.textContent);
     }
@@ -4070,6 +4073,7 @@ var StaticInflationManager = class {
       await this.#attrIf(attribute, value);
       attribute.ownerElement.removeAttribute(attribute.name);
     }
+    fn = null;
   }
   async #attrIf(attribute, value) {
     const attr = attribute.name.replace(".if", "").replace(".case", "");
@@ -4188,7 +4192,8 @@ var crsbinding2 = {
     ViewBase,
     RepeatBaseProvider,
     Widget,
-    SvgElement
+    SvgElement,
+    AsyncFunction
   },
   events: {
     listenOnPath,
