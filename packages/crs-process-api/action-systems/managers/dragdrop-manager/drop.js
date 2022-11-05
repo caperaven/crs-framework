@@ -1,1 +1,126 @@
-async function p(t,o,a,s){const e=await c(t,o,s);e==!1?await n(o,a):await i(t,o,e,s),l(o,a)}async function n(t,o){if(await r(t,o._bounds),t._dragElement!=null){const a=t._dragElement;delete t._dragElement,t=a}o.parentElement.replaceChild(t,o)}async function i(t,o,a,s){o.parentElement.removeChild(o),a.appendChild(o)}function r(t,o){return new Promise(a=>{const s=setTimeout(()=>{t.style.transition="translate 0.3s ease-out",t.style.translate=`${o.x}px ${o.y}px`}),e=setTimeout(()=>{clearTimeout(s),clearTimeout(e),t.parentElement.removeChild(t),a()},350)})}function l(t,o){delete t._bounds,t.style.width="",t.style.height="",t.style.rotate="",t.style.translate="",t.style.transition="",t.style.filter="",delete o._bounds}async function c(t,o,a){return u[typeof a.drop.allowDrop](t,a)}class u{static async string(o,a){return o.target.matches(a.drop.allowDrop)?o.target:o.target.parentElement?.matches(a.drop.allowDrop)?o.target.parentElement:!1}static async function(o,a){return await a.drop.allowDrop(o)}static async object(o){}}export{p as drop};
+/**
+ * Handle the actions when the mouse is released and the drop action takes place.
+ * @param dragElement
+ * @param placeholder
+ * @param options
+ * @returns {Promise<void>}
+ */
+export async function drop(event, dragElement, placeholder, options) {
+    const target = await allowDrop(event, dragElement, options);
+
+    if (target == false) {
+        await gotoOrigin(dragElement, placeholder, options);
+    }
+    else {
+        await gotoTarget(event, dragElement, target, options, placeholder);
+    }
+
+    cleanElements(dragElement, placeholder, options);
+}
+
+/**
+ * Move back to where you started the drag operation from
+ * @param dragElement
+ * @param placeholder
+ * @returns {Promise<void>}
+ */
+async function gotoOrigin(dragElement, placeholder, options) {
+    await gotoBounds(dragElement, placeholder._bounds);
+
+    if (dragElement._dragElement != null) {
+        const element = dragElement._dragElement;
+        delete dragElement._dragElement;
+        dragElement = element;
+    }
+
+    if (options.drag.clone == "element") {
+        placeholder.parentElement.replaceChild(dragElement, placeholder);
+    }
+}
+
+async function gotoTarget(event, dragElement, target, options, placeholder) {
+    target.appendChild(dragElement);
+
+    switch (options.drop.action) {
+        case "move": {
+            placeholder.parentElement.removeChild(placeholder);
+            break;
+        }
+    }
+}
+
+/**
+ * Move the drag element to a defined bounds
+ * @param bounds
+ * @returns {Promise<unknown>}
+ */
+function gotoBounds(element, bounds) {
+    return new Promise(resolve => {
+        const start = setTimeout(() => {
+            element.style.transition = "translate 0.3s ease-out";
+            element.style.translate = `${bounds.x}px ${bounds.y}px`;
+        });
+
+        const wait = setTimeout(() => {
+            clearTimeout(start);
+            clearTimeout(wait);
+            element.parentElement.removeChild(element);
+            resolve();
+        }, 350);
+    })
+}
+
+/**
+ * Once done with the drag and drop ensure that all properties are cleaned up
+ * @param dragElement
+ * @param placeholder
+ */
+function cleanElements(dragElement, placeholder, options) {
+    delete dragElement._bounds;
+    dragElement.style.width = "";
+    dragElement.style.height = "";
+    dragElement.style.rotate = "";
+    dragElement.style.translate = "";
+    dragElement.style.transition = "";
+    dragElement.style.filter = "";
+
+    if (options.drag?.placeholderType == "opacity" && options.drop?.action == "copy") {
+        placeholder.style.opacity = 1;
+    }
+
+    delete placeholder._bounds;
+}
+
+/**
+ * Check if you are allowed to drop here
+ * @param event
+ * @param options
+ * @returns {Promise<*>}
+ */
+async function allowDrop(event, dragElement, options) {
+    return AllowDrop[typeof options.drop.allowDrop](event, options);
+}
+
+class AllowDrop {
+    static async string(event, options) {
+        const target = event.path[0];
+
+        if (target.matches(options.drop.allowDrop)) {
+            return target;
+        }
+
+        if (target.parentElement?.matches(options.drop.allowDrop)) {
+            return target.parentElement;
+        }
+
+        return false;
+    }
+
+    static async function(event, options) {
+        return await options.drop.allowDrop(event)
+    }
+
+    static async object(event) {
+
+    }
+}

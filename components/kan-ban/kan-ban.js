@@ -19,10 +19,12 @@ export default class KanBan extends crsbinding.classes.BindableElement {
     async connectedCallback() {
         await super.connectedCallback();
         addColumnFeatures(this);
+        await this.#enableDragDrop();
         await this.#initialDraw();
     }
 
     async disconnectedCallback() {
+        await this.#disableDragDrop();
         for (const column of this.#columns) {
             column.container = null;
         }
@@ -133,6 +135,25 @@ export default class KanBan extends crsbinding.classes.BindableElement {
             manager: this.dataset.manager,
             callback: this.#refreshHandler
         })
+    }
+
+    async #enableDragDrop() {
+        await crs.call("dom_interactive", "enable_dragdrop", {
+            element: this,
+            options: {
+                drag: {
+                    placeholderType: "standard",
+                },
+                drop: {
+                    allowDrop: "[role='cell']"
+                },
+                autoScroll: "hv"
+            }
+        })
+    }
+
+    async #disableDragDrop() {
+        await crs.call("dom_interactive", "disable_dragdrop", { element: this });
     }
 }
 

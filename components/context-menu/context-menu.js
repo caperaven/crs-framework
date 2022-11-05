@@ -11,10 +11,14 @@ import "./../filter-header/filter-header.js";
 class ContextMenu extends crsbinding.classes.BindableElement {
     #options;
     #point;
+    #at;
+    #anchor;
+    #target;
     #clickHandler;
     #context;
     #process;
     #item;
+    #margin;
 
     get shadowDom() {
         return true;
@@ -36,6 +40,22 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         this.#context = newValue;
     }
 
+    set at(newValue) {
+        this.#at = newValue
+    }
+
+    set anchor(newValue) {
+        this.#anchor = newValue;
+    }
+
+    set target(newValue) {
+        this.#target = newValue;
+    }
+
+    set margin(newValue) {
+        this.#margin = newValue;
+    }
+
     async connectedCallback() {
         await super.connectedCallback();
 
@@ -51,11 +71,21 @@ class ContextMenu extends crsbinding.classes.BindableElement {
 
             await this.#buildElements();
 
+            let at = "right";
+            let anchor = "top";
+
+            if (this.#target) {
+               at = "bottom";
+               anchor = "left";
+            }
+
             await crs.call("fixed_layout", "set", {
                 element: ul,
+                target: this.#target,
                 point: this.#point,
-                at: "right",
-                anchor: "top",
+                at: this.#at || at,
+                anchor: this.#anchor || anchor,
+                margin: this.#margin || 0
             })
 
             await crs.call("dom_interactive", "enable_resize", {
@@ -71,9 +101,13 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         this.#clickHandler = null;
         this.#options = null;
         this.#point = null;
+        this.#at = null;
+        this.#anchor = null;
+        this.#target = null;
         this.#context = null;
         this.#process = null;
         this.#item = null;
+        this.#margin = null;
     }
 
     #optionById(id) {

@@ -6,8 +6,12 @@ export class ContextMenuActions {
     }
 
     static async show(step, context, process, item) {
+        const target = await crs.dom.get_element(step.args.element, context, process, item);
         const options = await crs.process.getValue(step.args.options, context, process, item);
+        const at = await crs.process.getValue(step.args.at, context, process, item);
+        const anchor = await crs.process.getValue(step.args.anchor, context, process, item);
         const point = await crs.process.getValue(step.args.point, context, process, item);
+        const margin = await crs.process.getValue(step.args.margin, context, process, item);
         const callback = await crs.process.getValue(step.args.callback, context, process, item);
 
         if (globalThis.contextMenu != null) {
@@ -19,7 +23,11 @@ export class ContextMenuActions {
         const instance = document.createElement("context-menu");
         instance.options = options;
         instance.point = point;
+        instance.target = target;
+        instance.at = at;
+        instance.anchor = anchor;
         instance.context = context;
+        instance.margin = margin;
         instance.style.setProperty("--icon-font", icon_font_family);
 
         document.body.appendChild(instance);

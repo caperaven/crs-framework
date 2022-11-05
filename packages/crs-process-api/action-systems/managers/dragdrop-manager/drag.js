@@ -1,1 +1,74 @@
-import{scrollX as a}from"./scroll.js";import{inArea as o}from"./drag-utils.js";async function h(s,t){const i=await crs.call("dom_interactive","get_animation_layer"),e=await n[t.drag.clone](s,t);return e.style.translate=`${s._bounds.x}px ${s._bounds.y}px`,e.style.filter="drop-shadow(0 0 5px #00000080)",i.appendChild(e),e}class n{static async element(t){return t}static async template(t,i){let e=i.drag.template;e==null&&(e=document.querySelector(`#${t.dataset.template}`));const l=e.content.cloneNode(!0).children[0];return l._bounds=t._bounds,l._dragElement=t,l}}async function u(s){if(this._updateDragHandler==null)return;const t=this._dragElement._bounds.x+(this._movePoint.x-this._startPoint.x),i=this._dragElement._bounds.y+(this._movePoint.y-this._startPoint.y);this._dragElement.style.translate=`${t}px ${i}px`,this._scrollAreas!=null&&(o(this._movePoint.x,this._movePoint.y,this._scrollAreas.left)?await a.call(this,s,-1):o(this._movePoint.x,this._movePoint.y,this._scrollAreas.right)?await a.call(this,s,1):o(this._movePoint.x,this._movePoint.y,this._scrollAreas.top)?await a.call(this,s,-1):o(this._movePoint.x,this._movePoint.y,this._scrollAreas.bottom)&&await a.call(this,s,1)),requestAnimationFrame(this._updateDragHandler)}export{h as startDrag,u as updateDrag};
+import {scrollY, scrollX} from "./scroll.js";
+import {inArea} from "./drag-utils.js";
+
+/**
+ * Start the drag operation by creating the animation layer and adding the drag element too it.
+ * @param dragElement
+ * @returns {Promise<void>}
+ */
+export async function startDrag(dragElement, options) {
+    const layer = await crs.call("dom_interactive", "get_animation_layer");
+    const element = await DragClone[options.drag.clone](dragElement, options);
+    element.style.translate = `${dragElement._bounds.x}px ${dragElement._bounds.y}px`;
+    element.style.filter = "drop-shadow(0 0 5px #00000080)";
+    layer.appendChild(element);
+    return element;
+}
+
+class DragClone {
+    static async element(dragElement) {
+        return dragElement;
+    }
+
+    /**
+     * The template can be defined on the options under drag or on the drag element as a data-template attribute
+     * @param dragElement
+     * @param options
+     * @returns {Promise<void>}
+     */
+    static async template(dragElement, options) {
+        let template = options.drag.template;
+        if (template == null) {
+            template = document.querySelector(`#${dragElement.dataset.template}`);
+        }
+
+        const result =  template.content.cloneNode(true).children[0];
+        result._bounds = dragElement._bounds;
+        result.dragElement = dragElement;
+        return result;
+        // JHR: todo, enable inflation on templates
+    }
+}
+
+/**
+ * The main update loop for the drag operation.
+ * This is called from the drag manager as the drag manager.
+ * "this" is the drag manager.
+ * @returns {Promise<void>}
+ */
+export async function updateDrag(frameTime) {
+    if (this.updateDragHandler == null) return;
+
+    const x = this.dragElement._bounds.x + (this.movePoint.x - this.startPoint.x);
+    const y = this.dragElement._bounds.y + (this.movePoint.y - this.startPoint.y);
+
+    this.dragElement.style.translate = `${x}px ${y}px`;
+
+    if (this.scrollAreas != null) {
+        if (inArea(this.movePoint.x, this.movePoint.y, this.scrollAreas.left)) {
+            await scrollX.call(this, frameTime, -1);
+        }
+        else if (inArea(this.movePoint.x, this.movePoint.y, this.scrollAreas.right)) {
+            await scrollX.call(this, frameTime, 1);
+        }
+        else if (inArea(this.movePoint.x, this.movePoint.y, this.scrollAreas.top)) {
+            await scrollX.call(this, frameTime, -1);
+        }
+        else if (inArea(this.movePoint.x, this.movePoint.y, this.scrollAreas.bottom)) {
+            await scrollX.call(this, frameTime, 1);
+        }
+    }
+
+    requestAnimationFrame(this.updateDragHandler);
+}
+

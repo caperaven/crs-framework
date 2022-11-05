@@ -1,1 +1,60 @@
-function x(t,r){const e=r?.dragQuery||"[draggable='true']";return t.target.matches(e)?t.target:t.target.parentElement?.matches(e)?t.target.parentElement:null}function u(t,r){const n=t.getBoundingClientRect(),i={},o=n.left,s=n.top,c=n.left+n.width-32,g=n.top+n.height-32;return r.indexOf("h")!=-1&&(i.left={x1:o,y1:s,x2:o+32,y2:g},i.right={x1:c,y1:s,x2:c+32,y2:g}),r.indexOf("v")!=-1&&(i.top={x1:o,y1:s,x2:c,y2:s+32},i.bottom={x1:o,y1:g,x2:c,y2:g+32}),i}function a(t,r,e){const n=t>=e.x1&&t<=e.x2,i=r>=e.y1&&r<=e.y2;return n&&i}export{x as getDraggable,u as getScrollAreas,a as inArea};
+/**
+ * From the event get the element that can be dragged.
+ * @param event
+ * @param options
+ * @returns {null|any}
+ */
+export function getDraggable(event, options) {
+    const dragQuery = options?.dragQuery || "[draggable='true']";
+
+    if (event.target.matches(dragQuery)) {
+        return event.target;
+    }
+
+    if (event.target.parentElement?.matches(dragQuery)) {
+        return event.target.parentElement;
+    }
+
+    return null;
+}
+
+/**
+ * From the element calculate the element bounds and then calculate the auto scroll hotspots
+ * @param element
+ * @param opts
+ * @returns {*[]}
+ */
+export function getScrollAreas(element, opts) {
+    const size = 32;
+    const bounds = element.getBoundingClientRect();
+    const areas = {};
+
+    const x1 = bounds.left;
+    const y1 = bounds.top;
+    const x2 = bounds.left + bounds.width - size;
+    const y2 = bounds.top + bounds.height - size;
+
+    if (opts.indexOf("h") != -1) {
+        areas.left = { x1: x1, y1: y1, x2: x1 + size, y2: y2 };
+        areas.right = { x1: x2, y1: y1, x2: x2 + size, y2 };
+    }
+
+    if (opts.indexOf("v") != -1) {
+        areas.top = { x1: x1, y1: y1, x2: x2, y2: y1 + size };
+        areas.bottom = { x1: x1, y1: y2, x2: x2, y2: y2 + size };
+    }
+
+    return areas;
+}
+
+/**
+ * Is the x and y coordinate in the defined area.
+ * @param x
+ * @param y
+ * @param area
+ */
+export function inArea(x, y, area) {
+    const inX = x >= area.x1 && x <= area.x2;
+    const inY = y >= area.y1 && y <= area.y2;
+    return inX && inY;
+}

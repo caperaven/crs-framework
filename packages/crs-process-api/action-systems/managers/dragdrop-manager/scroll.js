@@ -1,1 +1,19 @@
-async function n(o,c){console.log(o)}async function l(o,c){console.log(o)}export{l as scrollX,n as scrollY};
+/**
+ * scroll up and down based on time frame and direction
+ * @param time {number}
+ * @param direction {number} -1 or 1
+ * @returns {Promise<void>}
+ */
+export async function scrollY(time, direction) {
+    console.log(time);
+}
+
+/**
+ * scroll left and right based on time frame and direction
+ * @param time {number}
+ * @param direction {number} -1 or 1
+ * @returns {Promise<void>}
+ */
+export async function scrollX(time, direction) {
+    console.log(time);
+}

@@ -1,4 +1,30 @@
+<style>
+    .container {
+        width: 200px;
+        height: 200px;
+        border: var(--border);
+        border-radius: var(--radius);
+        position: relative;
+    }
+
+    .container::before {
+        content: "";
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+
+        width: 0;
+        height: 0;
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        border-bottom: 8px solid black;
+    }
+</style>
+
 <h2>${title}</h2>
 
 <canvas is="color-panel"></canvas>
 <canvas is="color-gradient"></canvas>
+
+<div class="container" is="dialog-container" data-pos="bottom" data-anchor="right"></div>

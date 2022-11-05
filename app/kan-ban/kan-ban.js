@@ -13,6 +13,9 @@ export default class KanBan extends crsbinding.classes.ViewBase {
         await crs.call("data_manager", "dispose", {
             manager: "kanban_data"
         })
+        await crs.call("dom_interactive", "disable_dragdrop", {
+            element: "#divStartStandard"
+        })
     }
 
     preLoad() {

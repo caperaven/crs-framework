@@ -1,1 +1,5 @@
-async function a(n,...t){if(typeof n=="function")return await n(...t)}export{a as call};
+export async function call(option, ...args) {
+    if (typeof option == "function") {
+        return await option(...args);
+    }
+}
