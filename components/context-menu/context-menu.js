@@ -129,6 +129,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
                     tag_name: "li",
                     dataset: {
                         icon: option.icon,
+                        ic: option.icon_color || "black",
                         tags: option.tags || "",
                         ...(option.dataset || {})
                     },
@@ -137,6 +138,9 @@ class ContextMenu extends crsbinding.classes.BindableElement {
                         ...(option.attributes || {})
                     },
                     styles: option.styles,
+                    variables: {
+                        "--cl-icon": option.icon_color || "black"
+                    },
                     text_content: option.title
                 })
             }
