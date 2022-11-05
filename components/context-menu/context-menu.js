@@ -135,6 +135,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
                     },
                     attributes: {
                         role: "menuitem",
+                        "aria-selected": option.selected == true,
                         ...(option.attributes || {})
                     },
                     styles: option.styles,

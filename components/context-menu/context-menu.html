@@ -69,6 +69,14 @@
         color: var(--cl-icon);
     }
 
+    li[aria-selected="true"]::after {
+        content: "checkmark";
+        font-family: crsfrw;
+        position: absolute;
+        right: 8px;
+        color: var(--green);
+    }
+
     [aria-hidden="true"] {
         display: none !important;
     }
