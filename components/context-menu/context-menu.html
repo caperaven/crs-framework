@@ -90,6 +90,21 @@
         fill: gray;
         cursor: nwse-resize;
     }
+
+    ul::-webkit-scrollbar-track {
+        padding: 0.25rem 0;
+        background-color: transparent;
+    }
+
+    ul::-webkit-scrollbar {
+        width: 0.25rem;
+    }
+
+    ul::-webkit-scrollbar-thumb {
+        border-radius: 1rem;
+        box-shadow: inset 0 0 5px var(--grey-s1);
+        background-color: transparent;
+    }
 </style>
 
 <svg>
@@ -103,7 +118,7 @@
 
 <div class="popup" ref="popup">
     <filter-header for="ul" close.call="close" focus-out.call="focus"></filter-header>
-    <ul ref="container" role="menu" tabindex="0"></ul>
+    <ul ref="container" role="menu" tabindex="0" class="scrollbar"></ul>
     <svg id="resize" width="16" height="16">
         <use href="#resize-handle"></use>
     </svg>
