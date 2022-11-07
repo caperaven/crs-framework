@@ -274,7 +274,7 @@ function attachShadow(args) {
 
 function getBoundingClientRect() {
     if (this.bounds == null) {
-        throw new Error("bounds on element mock must be set");
+        this.bounds = {}
     }
     return this.bounds;
 }
