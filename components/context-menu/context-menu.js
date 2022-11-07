@@ -56,6 +56,14 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         this.#margin = newValue;
     }
 
+    set height(newValue) {
+        if (typeof newValue == "number") {
+            newValue = `${newValue}px`
+        }
+
+        this.style.setProperty("--height", newValue);
+    }
+
     async connectedCallback() {
         await super.connectedCallback();
 

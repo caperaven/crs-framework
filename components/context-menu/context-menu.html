@@ -1,6 +1,7 @@
 <style>
     :host {
         --icon-font: "";
+        --height: max-content;
 
         display: block;
         position: fixed;
@@ -24,12 +25,13 @@
         background: var(--grey-surface);
         filter: var(--drop-shadow);
         width: max-content;
-        height: max-content;
+        height: var(--height);
         min-width: 200px;
         min-height: 300px;
         border-radius: var(--radius);
         display: grid;
         grid-template-rows: auto 1fr;
+        overflow: hidden;
     }
 
     ul {
