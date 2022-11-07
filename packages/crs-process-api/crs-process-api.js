@@ -19,7 +19,7 @@ var SchemaRegistry = class {
       const process = schema[processName];
       process.name = processName;
       await copyParametersToProcess(process, args.parameters);
-      const result = await crs.process.run(args.context, process).catch((error) => {
+      const result = await crs.process.run(args.context, process, args.item, null, args.prefixes).catch((error) => {
         let event = process.aborted == true ? "crs-process-aborted" : "crs-process-error";
         crsbinding.events.emitter.emit(event, {
           step: process.currentStep,
@@ -249,6 +249,7 @@ function populatePrefixes(prefixes, process) {
   process.prefixes["$parameters"] = "$process.parameters";
   process.prefixes["$bId"] = "$process.parameters.bId";
   process.prefixes["$global"] = "globalThis";
+  process.prefixes["$translation"] = 'crsbinding.translations.get("$0")';
 }
 function getFromCache(expr, process) {
   if (process == null)
@@ -257,10 +258,18 @@ function getFromCache(expr, process) {
     return process.expCache[expr];
   }
   const prop = expr;
-  const exp = expr.split(".")[0];
+  const parts = expr.split(".");
+  const exp = parts[0];
   if (process?.prefixes[exp] == null)
     return expr;
-  expr = expr.split(exp).join(process.prefixes[exp]);
+  parts.splice(0, 1);
+  const value = process.prefixes[exp];
+  if (value.indexOf("$0") != -1) {
+    const path = parts.join(".");
+    expr = value.replace("$0", path);
+  } else {
+    expr = expr.split(exp).join(value);
+  }
   process.expCache[prop] = expr;
   return expr;
 }
@@ -312,9 +321,16 @@ globalThis.crs.processSchemaRegistry = new SchemaRegistry();
 globalThis.crs.process = ProcessRunner;
 globalThis.crs.AsyncFunction = Object.getPrototypeOf(async function() {
 }).constructor;
-globalThis.crs.call = async (system, fn, args, context, process, item) => {
+globalThis.crs.call = async (system, fn, args, context, process, item, prefixes = null) => {
   if (crs.intent[system] == null) {
     await crs.modules.get(system);
+  }
+  if (process == null) {
+    process = {
+      expCache: {},
+      functions: {}
+    };
+    populatePrefixes(prefixes, process);
   }
   const module = crs.intent[system];
   if (module[fn] == null) {
