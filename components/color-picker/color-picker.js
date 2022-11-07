@@ -12,9 +12,6 @@ class ColorPicker extends crsbinding.classes.BindableElement {
     #panelMouseMoveHandler = this.#panelMouseMove.bind(this);
     #panelMouseUpHandler = this.#panelMouseUp.bind(this);
 
-    #currentBounds;
-    #currentElement;
-
     get shadowDom() {
         return true;
     }
@@ -40,7 +37,6 @@ class ColorPicker extends crsbinding.classes.BindableElement {
         this.#gradientBounds = this.gradient.getBoundingClientRect();
         this.panel.setAttribute("value", this.baseColor || "#FF0000");
         this.registerEvent(this, "mousedown", this.#panelMouseDownHandler);
-        await this.#setPanelSelector(0, 0, this.panelSelector);
     }
 
     async disconnectedCallback() {
@@ -54,20 +50,11 @@ class ColorPicker extends crsbinding.classes.BindableElement {
         this.#panelMouseMoveHandler = null;
         this.#panelMouseUpHandler = null;
 
-        this.#currentBounds = null;
-        this.#currentElement = null;
-
         super.disconnectedCallback();
     }
 
     async attributeChangedCallback(name, oldValue, newValue) {
         this.panel?.setAttribute("value", newValue);
-    }
-
-    async #setPanelSelector(x, y, element) {
-        x -= 8;
-        y -= 8;
-        element.style.translate = `${x}px ${y}px`;
     }
 
     async #panelMouseDown(event) {
@@ -77,15 +64,6 @@ class ColorPicker extends crsbinding.classes.BindableElement {
         this.#x = event.clientX - this.#bounds.x;
         this.#y = event.clientY - this.#bounds.y;
 
-        if (event.path[0] == this.panel) {
-            this.#currentBounds = this.#panelBounds;
-            this.#currentElement = this.panelSelector;
-        }
-        else {
-            this.#currentBounds = this.#gradientBounds;
-            this.#currentElement = this.gradientSelector;
-        }
-
         this.registerEvent(document, "mousemove", this.#panelMouseMoveHandler);
         this.registerEvent(document, "mouseup", this.#panelMouseUpHandler);
         await this.#animate();
@@ -94,8 +72,10 @@ class ColorPicker extends crsbinding.classes.BindableElement {
     async #panelMouseMove(event) {
         event.preventDefault();
 
-        this.#x = event.clientX - this.#bounds.x;
-        this.#y = event.clientY - this.#bounds.y;
+        const point = ptInRect({x: event.clientX, y: event.clientY}, this.#panelBounds);
+
+        this.#x = point.x - this.#bounds.left;
+        this.#y = point.y - this.#bounds.top;
     }
 
     async #panelMouseUp(event) {
@@ -109,13 +89,32 @@ class ColorPicker extends crsbinding.classes.BindableElement {
     }
 
     async #animate() {
-        if (this.#panelMove == false) return;
-
         requestAnimationFrame(() => {
-            this.#setPanelSelector(this.#x, this.#y, this.#currentElement);
+            if (this.#panelMove == false) return;
+            this.panelSelector.style.translate = `${this.#x - 8}px ${this.#y - 8}px`;
             this.#animate();
         })
     }
+}
+
+function ptInRect(point, rect) {
+    if (point.x < rect.x) {
+        point.x = rect.x;
+    }
+
+    if (point.x > rect.right) {
+        point.x = rect.right;
+    }
+
+    if (point.y < rect.y) {
+        point.y = rect.y;
+    }
+
+    if (point.y > rect.bottom) {
+        point.y = rect.bottom;
+    }
+
+    return point;
 }
 
 customElements.define("color-picker", ColorPicker);
