@@ -55,7 +55,7 @@ export default class KanBan extends crsbinding.classes.ViewBase {
         await crs.call("data_manager", "append", {
             manager: "kanban_data",
             records: [
-                { id: 1005, code: "Code F", status:"awaiting approval" }
+                { id: 1005, code: "Code F", statusId: 0, status:"awaiting approval" }
             ]
         })
     }

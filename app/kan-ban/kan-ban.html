@@ -14,7 +14,7 @@
 </style>
 
 <template id="tplSimple">
-    <div class="card" data-value.attr="status" data-id.attr="id" draggable="true">
+    <div class="card" data-value.attr="statusId" data-id.attr="id" draggable="true">
         <label>Code</label>
         <div>${code}</div>
     </div>
@@ -34,7 +34,7 @@
         data-manager="kanban_data"
         data-headertemplate="simple"
         data-template="simple"
-        data-field="status"
+        data-field="statusId"
         data-update="statusId,statusCode,statusDescription"
     ></kan-ban>
 </div>
