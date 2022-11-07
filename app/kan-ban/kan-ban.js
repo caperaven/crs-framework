@@ -1,10 +1,14 @@
 import "/src/actions/columns-actions.js";
 import "/src/data-manager.js";
 import {records} from "./data.js";
+import {schema} from "./schema.js";
 
 export default class KanBan extends crsbinding.classes.ViewBase {
     async connectedCallback() {
         await super.connectedCallback();
+
+        crs.processSchemaRegistry.add(schema);
+
         await this.refresh();
     }
 
@@ -12,9 +16,6 @@ export default class KanBan extends crsbinding.classes.ViewBase {
         crsbinding.inflationManager.unregister("simple");
         await crs.call("data_manager", "dispose", {
             manager: "kanban_data"
-        })
-        await crs.call("dom_interactive", "disable_dragdrop", {
-            element: "#divStartStandard"
         })
     }
 
