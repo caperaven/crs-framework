@@ -19,7 +19,7 @@ export default class ContextMenu extends crsbinding.classes.ViewBase {
         await crs.call("context_menu", "show", {
             element: event.target,
             icon_font_family: "crsfrw",
-            height: 308,
+            height: 304,
 
             options: [
                 { id: "item1", title: "&{approved}", tags: "approved", icon: "approved", icon_color: "#ff0090", selected: true,  type: "console", action: "log", args: { message: "Approved "}, attributes: { "aria-hidden.if": "status == 'b'" } },
