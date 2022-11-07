@@ -73,7 +73,8 @@
             await crs.modules.enableBinding([
                 ["data-grid", "/components/data-grid/data-grid.js"],
                 ["kan-ban", "/components/kan-ban/kan-ban.js"],
-                ["options-toolbar", "/components/options-toolbar/options-toolbar.js"]
+                ["options-toolbar", "/components/options-toolbar/options-toolbar.js"],
+                ["color-picker", "/components/color-picker/color-picker.js"]
             ])
             document.viewModel = new IndexViewModel(document.body);
             await document.viewModel.connectedCallback();
