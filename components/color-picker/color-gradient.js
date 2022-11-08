@@ -1,6 +1,11 @@
 class ColorGradient extends HTMLCanvasElement {
     async connectedCallback() {
-        this.#fillGradient();
+        requestAnimationFrame(() => {
+            const style = getComputedStyle(this);
+            this.width = Number(style.width.replace("px", ""));
+            this.height = Number(style.height.replace("px", ""));
+            this.#fillGradient();
+        })
     }
 
     #fillGradient() {
@@ -16,6 +21,8 @@ class ColorGradient extends HTMLCanvasElement {
         gradient.addColorStop(1, 'rgba(255, 0, 0, 1)');
         ctx.fillStyle = gradient;
         ctx.fill();
+
+        console.log()
     }
 }
 

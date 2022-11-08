@@ -6,8 +6,14 @@ class ColorPanel extends HTMLCanvasElement {
 
     async connectedCallback() {
         this.#rgba = "rgba(255,0,0,1)";
-        this.#ctx = this.getContext('2d');
-        this.#fillGradient();
+
+        requestAnimationFrame(() => {
+            const style = getComputedStyle(this);
+            this.width = Number(style.width.replace("px", ""));
+            this.height = Number(style.height.replace("px", ""));
+            this.#ctx = this.getContext('2d');
+            this.#fillGradient();
+        })
     }
 
     async disconnectedCallback() {
@@ -16,6 +22,8 @@ class ColorPanel extends HTMLCanvasElement {
     }
 
     #fillGradient() {
+        if (this.#ctx == null) return;
+
         this.#ctx.fillStyle = this.#rgba;
         this.#ctx.fillRect(0, 0, this.width, this.height);
 
@@ -34,6 +42,11 @@ class ColorPanel extends HTMLCanvasElement {
 
     async attributeChangedCallback(name, oldValue, newValue) {
         const rgb = await crs.call("colors", "hex_to_rgb", {hex: newValue});
+        this.#rgba = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 1)`;
+        this.#fillGradient();
+    }
+
+    async pushUpdate(rgb) {
         this.#rgba = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 1)`;
         this.#fillGradient();
     }

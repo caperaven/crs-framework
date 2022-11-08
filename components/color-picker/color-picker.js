@@ -14,6 +14,8 @@ class ColorPicker extends crsbinding.classes.BindableElement {
     #gradientMouseDownHandler = this.#gradientMouseDown.bind(this);
     #gradientMouseMoveHandler = this.#gradientMouseMove.bind(this);
     #gradientMouseUpHandler = this.#gradientMouseUp.bind(this);
+    #panelCtx;
+    #gradientCtx;
 
     get shadowDom() {
         return true;
@@ -56,6 +58,8 @@ class ColorPicker extends crsbinding.classes.BindableElement {
         this.#gradientMouseDownHandler = null;
         this.#gradientMouseMoveHandler = null;
         this.#gradientMouseUpHandler = null;
+        this.#panelCtx = null;
+        this.#gradientCtx = null;
 
         super.disconnectedCallback();
     }
@@ -67,6 +71,7 @@ class ColorPicker extends crsbinding.classes.BindableElement {
     async #panelMouseDown(event) {
         event.preventDefault();
 
+        this.#panelCtx = this.panel.getContext("2d", { willReadFrequently: true });
         this.#panelMove = true;
         this.#x = event.clientX - this.#bounds.x;
         this.#y = event.clientY - this.#bounds.y;
@@ -93,6 +98,7 @@ class ColorPicker extends crsbinding.classes.BindableElement {
         this.unregisterEvent(document, "mouseup", this.#panelMouseUpHandler);
         this.#x = null;
         this.#y = null;
+        this.#panelCtx = null;
     }
 
     async #panelAnimate() {
@@ -106,7 +112,7 @@ class ColorPicker extends crsbinding.classes.BindableElement {
     async #gradientAnimate() {
         requestAnimationFrame(() => {
             if (this.#panelMove == false) return;
-            this.gradientSelector.style.translate = `0px ${this.#y - 8}px`;
+            this.gradientSelector.style.translate = `0px ${this.#y - 4}px`;
             this.#gradientAnimate();
         })
     }
@@ -114,6 +120,7 @@ class ColorPicker extends crsbinding.classes.BindableElement {
     async #gradientMouseDown(event) {
         event.preventDefault();
 
+        this.#gradientCtx = this.gradient.getContext("2d", { willReadFrequently: true });
         this.#panelMove = true;
         this.#y = event.clientY - this.#bounds.y;
 
@@ -127,6 +134,9 @@ class ColorPicker extends crsbinding.classes.BindableElement {
 
         const point = ptInRect({x: event.clientX, y: event.clientY}, this.#gradientBounds);
         this.#y = point.y - this.#bounds.top;
+
+        const data = this.#gradientCtx.getImageData(1, this.#y, 1, 1);
+        this.panel.pushUpdate({r: data.data[0], g: data.data[1], b: data.data[2]});
     }
 
     async #gradientMouseUp(event) {
@@ -136,6 +146,8 @@ class ColorPicker extends crsbinding.classes.BindableElement {
         this.unregisterEvent(document, "mousemove", this.#gradientMouseMoveHandler);
         this.unregisterEvent(document, "mouseup", this.#gradientMouseUpHandler);
         this.#y = null;
+        this.#x = null;
+        this.#gradientCtx = null;
     }
 }
 
@@ -152,8 +164,8 @@ function ptInRect(point, rect) {
         point.y = rect.y;
     }
 
-    if (point.y > rect.bottom) {
-        point.y = rect.bottom;
+    if (point.y > rect.bottom - 1) {
+        point.y = rect.bottom - 1;
     }
 
     return point;
