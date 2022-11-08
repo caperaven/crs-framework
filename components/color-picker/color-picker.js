@@ -11,6 +11,9 @@ class ColorPicker extends crsbinding.classes.BindableElement {
     #panelMouseDownHandler = this.#panelMouseDown.bind(this);
     #panelMouseMoveHandler = this.#panelMouseMove.bind(this);
     #panelMouseUpHandler = this.#panelMouseUp.bind(this);
+    #gradientMouseDownHandler = this.#gradientMouseDown.bind(this);
+    #gradientMouseMoveHandler = this.#gradientMouseMove.bind(this);
+    #gradientMouseUpHandler = this.#gradientMouseUp.bind(this);
 
     get shadowDom() {
         return true;
@@ -36,7 +39,8 @@ class ColorPicker extends crsbinding.classes.BindableElement {
         this.#panelBounds = this.panel.getBoundingClientRect();
         this.#gradientBounds = this.gradient.getBoundingClientRect();
         this.panel.setAttribute("value", this.baseColor || "#FF0000");
-        this.registerEvent(this, "mousedown", this.#panelMouseDownHandler);
+        this.registerEvent(this.panel, "mousedown", this.#panelMouseDownHandler);
+        this.registerEvent(this.gradient, "mousedown", this.#gradientMouseDownHandler);
     }
 
     async disconnectedCallback() {
@@ -49,6 +53,9 @@ class ColorPicker extends crsbinding.classes.BindableElement {
         this.#panelMouseDownHandler = null;
         this.#panelMouseMoveHandler = null;
         this.#panelMouseUpHandler = null;
+        this.#gradientMouseDownHandler = null;
+        this.#gradientMouseMoveHandler = null;
+        this.#gradientMouseUpHandler = null;
 
         super.disconnectedCallback();
     }
@@ -66,7 +73,7 @@ class ColorPicker extends crsbinding.classes.BindableElement {
 
         this.registerEvent(document, "mousemove", this.#panelMouseMoveHandler);
         this.registerEvent(document, "mouseup", this.#panelMouseUpHandler);
-        await this.#animate();
+        await this.#panelAnimate();
     }
 
     async #panelMouseMove(event) {
@@ -88,12 +95,47 @@ class ColorPicker extends crsbinding.classes.BindableElement {
         this.#y = null;
     }
 
-    async #animate() {
+    async #panelAnimate() {
         requestAnimationFrame(() => {
             if (this.#panelMove == false) return;
             this.panelSelector.style.translate = `${this.#x - 8}px ${this.#y - 8}px`;
-            this.#animate();
+            this.#panelAnimate();
         })
+    }
+
+    async #gradientAnimate() {
+        requestAnimationFrame(() => {
+            if (this.#panelMove == false) return;
+            this.gradientSelector.style.translate = `0px ${this.#y - 8}px`;
+            this.#gradientAnimate();
+        })
+    }
+
+    async #gradientMouseDown(event) {
+        event.preventDefault();
+
+        this.#panelMove = true;
+        this.#y = event.clientY - this.#bounds.y;
+
+        this.registerEvent(document, "mousemove", this.#gradientMouseMoveHandler);
+        this.registerEvent(document, "mouseup", this.#gradientMouseUpHandler);
+        await this.#gradientAnimate();
+    }
+
+    async #gradientMouseMove(event) {
+        event.preventDefault();
+
+        const point = ptInRect({x: event.clientX, y: event.clientY}, this.#gradientBounds);
+        this.#y = point.y - this.#bounds.top;
+    }
+
+    async #gradientMouseUp(event) {
+        event.preventDefault();
+
+        this.#panelMove = false;
+        this.unregisterEvent(document, "mousemove", this.#gradientMouseMoveHandler);
+        this.unregisterEvent(document, "mouseup", this.#gradientMouseUpHandler);
+        this.#y = null;
     }
 }
 
