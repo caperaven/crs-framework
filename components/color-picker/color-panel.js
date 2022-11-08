@@ -50,6 +50,11 @@ class ColorPanel extends HTMLCanvasElement {
         this.#rgba = `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, 1)`;
         this.#fillGradient();
     }
+
+    get(x, y) {
+        const data = this.#ctx.getImageData(x, y, 1, 1).data;
+        return { r: data[0], g: data[1], b: data[2] };
+    }
 }
 
 customElements.define("color-panel", ColorPanel, {extends: "canvas"});

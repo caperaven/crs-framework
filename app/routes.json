@@ -41,6 +41,11 @@
       "view": "buttons"
     },
     {
+      "title": "Markdown viewer",
+      "hash": "#markdown-viewer",
+      "view": "markdown-viewer"
+    },
+    {
       "title": "About",
       "hash": "#about",
       "view": "about",

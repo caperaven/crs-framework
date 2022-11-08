@@ -30,7 +30,9 @@ class ColorPicker extends crsbinding.classes.BindableElement {
     }
 
     set baseColor(newValue) {
+        this.value = newValue;
         this.setAttribute("value", newValue);
+        this.dispatchEvent(new CustomEvent("change"));
     }
 
     static get observedAttributes() { return ["value"]; }
@@ -88,6 +90,9 @@ class ColorPicker extends crsbinding.classes.BindableElement {
 
         this.#x = point.x - this.#bounds.left;
         this.#y = point.y - this.#bounds.top;
+
+        const rgb = this.panel.get(this.#x, this.#y);
+
     }
 
     async #panelMouseUp(event) {
