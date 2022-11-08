@@ -11,7 +11,7 @@ class ColorPanel extends HTMLCanvasElement {
             const style = getComputedStyle(this);
             this.width = Number(style.width.replace("px", ""));
             this.height = Number(style.height.replace("px", ""));
-            this.#ctx = this.getContext('2d');
+            this.#ctx = this.getContext('2d', { willReadFrequently: true });
             this.#fillGradient();
         })
     }

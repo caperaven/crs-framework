@@ -1,4 +1,11 @@
+/**
+ * You could convert the rgb color to HSV which will provide you with a color value (H) ranging from 0° (top of your slider) to 360° (bottom of your slider).
+ * With that you can calculate the y position according to the size of the slider (height / 360 * H)
+ */
+
 class ColorGradient extends HTMLCanvasElement {
+    #ctx;
+
     async connectedCallback() {
         requestAnimationFrame(() => {
             const style = getComputedStyle(this);
@@ -8,10 +15,14 @@ class ColorGradient extends HTMLCanvasElement {
         })
     }
 
+    async disconnectedCallback() {
+        this.#ctx = null;
+    }
+
     #fillGradient() {
-        const ctx = this.getContext('2d');
-        ctx.rect(0, 0, this.width, this.height);
-        const gradient = ctx.createLinearGradient(0, 0, 0, this.height);
+        this.#ctx = this.getContext('2d', { willReadFrequently: true });
+        this.#ctx.rect(0, 0, this.width, this.height);
+        const gradient = this.#ctx.createLinearGradient(0, 0, 0, this.height);
         gradient.addColorStop(0, 'rgba(255, 0, 0, 1)');
         gradient.addColorStop(0.17, 'rgba(255, 255, 0, 1)');
         gradient.addColorStop(0.34, 'rgba(0, 255, 0, 1)');
@@ -19,10 +30,13 @@ class ColorGradient extends HTMLCanvasElement {
         gradient.addColorStop(0.68, 'rgba(0, 0, 255, 1)');
         gradient.addColorStop(0.85, 'rgba(255, 0, 255, 1)');
         gradient.addColorStop(1, 'rgba(255, 0, 0, 1)');
-        ctx.fillStyle = gradient;
-        ctx.fill();
+        this.#ctx.fillStyle = gradient;
+        this.#ctx.fill();
+    }
 
-        console.log()
+    get(x, y) {
+        const data = this.#ctx.getImageData(x, y, 1, 1).data;
+        return { r: data[0], g: data[1], b: data[2] };
     }
 }
 

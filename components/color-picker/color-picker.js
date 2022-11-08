@@ -134,13 +134,17 @@ class ColorPicker extends crsbinding.classes.BindableElement {
 
         const point = ptInRect({x: event.clientX, y: event.clientY}, this.#gradientBounds);
         this.#y = point.y - this.#bounds.top;
-
-        const data = this.#gradientCtx.getImageData(1, this.#y, 1, 1);
-        this.panel.pushUpdate({r: data.data[0], g: data.data[1], b: data.data[2]});
+        const rgb = this.gradient.get(1, this.#y);
+        await this.panel.pushUpdate(rgb);
     }
 
     async #gradientMouseUp(event) {
         event.preventDefault();
+
+        const point = ptInRect({x: event.clientX, y: event.clientY}, this.#gradientBounds);
+        this.#y = point.y - this.#bounds.top;
+        const rgb = this.gradient.get(1, this.#y);
+        await this.panel.pushUpdate(rgb);
 
         this.#panelMove = false;
         this.unregisterEvent(document, "mousemove", this.#gradientMouseMoveHandler);
