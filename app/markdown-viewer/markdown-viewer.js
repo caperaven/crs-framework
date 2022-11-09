@@ -17,7 +17,6 @@ export default class MarkdownViewer extends crsbinding.classes.ViewBase {
         await crs.call("markdown_viewer", "set_markdown", {
             element: this.viewer,
             markdown: content,
-            title: "My Markdown",
             parameters: {code: "A11"}
         })
     }
