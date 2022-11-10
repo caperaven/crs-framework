@@ -1,16 +1,29 @@
 <style>
+    *{
+        box-sizing: border-box;
+    }
     #months {
         display: grid;
         grid-template: repeat(3, 1fr)/repeat(3, 1fr);
         justify-items: center;
         align-items: center;
-        margin-top: 2rem;
-        row-gap: 2rem;
+        row-gap: 1rem;
+        margin-top: 1rem ;
     }
     #months > div {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 7rem;
+        height: 3rem;
         font-size: 19px;
         font-weight: bold;
         cursor: pointer;
+    }
+
+    #months > div:hover {
+        border: 0.0625rem solid #000000;
+        border-radius: 0.4rem;
     }
 </style>
 
