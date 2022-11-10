@@ -1,6 +1,7 @@
 <style>
     :host {
         --icon-font: "";
+        --height: max-content;
 
         display: block;
         position: fixed;
@@ -21,10 +22,10 @@
     .popup {
         margin: 0;
         border: var(--border);
-        background: var(--cl-panel);
+        background: var(--grey-surface);
         filter: var(--drop-shadow);
         width: max-content;
-        height: max-content;
+        height: var(--height);
         min-width: 200px;
         min-height: 300px;
         border-radius: var(--radius);
@@ -36,7 +37,8 @@
         margin: 0;
         padding: 0;
         list-style: none;
-        background: var(--cl-window);
+        background: var(--window);
+        overflow: auto;
     }
 
     hr {
@@ -44,6 +46,7 @@
     }
 
     li {
+        --cl-icon: black;
         padding: 0.5rem;
         position: relative;
         display: flex;
@@ -65,6 +68,15 @@
         font-family: var(--icon-font);
         font-size: 1.5rem;
         margin-right: var(--padding);
+        color: var(--cl-icon);
+    }
+
+    li[aria-selected="true"]::after {
+        content: "checkmark";
+        font-family: crsfrw;
+        position: absolute;
+        right: 8px;
+        color: var(--blue);
     }
 
     [aria-hidden="true"] {
@@ -78,9 +90,28 @@
         fill: gray;
         cursor: nwse-resize;
     }
+
+    ul::-webkit-scrollbar-track {
+        padding: 0.25rem 0;
+        background-color: transparent;
+    }
+
+    ul::-webkit-scrollbar {
+        width: 0.25rem;
+    }
+
+    ul::-webkit-scrollbar-thumb {
+        border-radius: 1rem;
+        box-shadow: inset 0 0 5px var(--grey-s1);
+        background-color: transparent;
+    }
+
+    #symbols {
+        display: none;
+    }
 </style>
 
-<svg>
+<svg id="symbols">
     <symbol id="resize-handle" viewBox="0 0 32 32">
         <path d="M28.744 6.016c0.766-0.766 0.766-2.008 0-2.774s-2.008-0.766-2.774 0l-22.728 22.728c-0.766 0.766-0.766 2.008 0 2.774s2.008 0.766 2.774 0l22.728-22.728z"></path>
         <path d="M28.759 21.332c0.766-0.766 0.766-2.008 0-2.774s-2.008-0.766-2.774 0l-7.427 7.427c-0.766 0.766-0.766 2.008 0 2.774s2.008 0.766 2.774 0l7.427-7.427z"></path>
@@ -91,8 +122,8 @@
 
 <div class="popup" ref="popup">
     <filter-header for="ul" close.call="close" focus-out.call="focus"></filter-header>
-    <ul ref="container" role="menu" tabindex="0"></ul>
-    <svg id="resize" width="24" height="24">
+    <ul ref="container" role="menu" tabindex="0" class="scrollbar"></ul>
+    <svg id="resize" width="16" height="16">
         <use href="#resize-handle"></use>
     </svg>
 </div>

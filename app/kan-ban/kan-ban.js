@@ -1,10 +1,14 @@
 import "/src/actions/columns-actions.js";
 import "/src/data-manager.js";
 import {records} from "./data.js";
+import {schema} from "./schema.js";
 
 export default class KanBan extends crsbinding.classes.ViewBase {
     async connectedCallback() {
         await super.connectedCallback();
+
+        crs.processSchemaRegistry.add(schema);
+
         await this.refresh();
     }
 
@@ -52,7 +56,7 @@ export default class KanBan extends crsbinding.classes.ViewBase {
         await crs.call("data_manager", "append", {
             manager: "kanban_data",
             records: [
-                { id: 1005, code: "Code F", status:"awaiting approval" }
+                { id: 1005, code: "Code F", statusId: 0, status:"awaiting approval" }
             ]
         })
     }

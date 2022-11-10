@@ -3,6 +3,12 @@ import {addColumnFeatures} from "./columns.js";
 export default class KanBan extends crsbinding.classes.BindableElement {
     #columns = [];
     #refreshHandler = this.refresh.bind(this);
+    #allowDropHandler = this.#allowDrop.bind(this);
+    #onDropHandler = this.#onDrop.bind(this);
+
+    get shadowDom() {
+        return true;
+    }
 
     get columns() {
         return this.#columns;
@@ -14,16 +20,22 @@ export default class KanBan extends crsbinding.classes.BindableElement {
 
     async connectedCallback() {
         await super.connectedCallback();
+
         addColumnFeatures(this);
+        await this.#enableDragDrop();
         await this.#initialDraw();
     }
 
     async disconnectedCallback() {
+        await this.#disableDragDrop();
         for (const column of this.#columns) {
             column.container = null;
         }
 
         this.#columns = null;
+        this.#allowDropHandler = null;
+        this.#onDropHandler = null;
+        this.#refreshHandler = null;
         await super.disconnectedCallback();
     }
 
@@ -130,6 +142,74 @@ export default class KanBan extends crsbinding.classes.BindableElement {
             callback: this.#refreshHandler
         })
     }
+
+    async #enableDragDrop() {
+        await crs.call("dom_interactive", "enable_dragdrop", {
+            element: this,
+            options: {
+                drag: {
+                    placeholderType: "standard",
+                },
+                drop: {
+                    allowDrop: "[role='cell']",
+                    allowCallback: this.#allowDropHandler,
+                    callback: this.#onDropHandler
+                },
+                autoScroll: "hv"
+            }
+        })
+    }
+
+    async #disableDragDrop() {
+        await crs.call("dom_interactive", "disable_dragdrop", { element: this });
+    }
+
+    async #allowDrop(dragElement, target) {
+        if (this.dataset.allowDrop == null) return true;
+
+        const parts = getProcessParts(this.dataset.allowDrop);
+
+        const model = await crs.call("data_manager", "get", {
+            manager: this.dataset.manager,
+            id: dragElement.dataset.id
+        })
+
+        const item = { dragElement, target, model };
+
+        await crs.call("process", parts[1], {
+            schema: parts[0]
+        }, null, null, item);
+
+        const result = item.result;
+        item.dragElement = null;
+        item.target = null;
+        item.model = null;
+
+        return result;
+    }
+
+    async #onDrop(dragElement, target) {
+        const parts = getProcessParts(this.dataset.onDrop);
+
+        const model = await crs.call("data_manager", "get", {
+            manager: this.dataset.manager,
+            id: dragElement.dataset.id
+        })
+
+        const item = { dragElement, target, model };
+
+        await crs.call("process", parts[1], {
+            schema: parts[0]
+        }, null, null, item);
+
+        item.dragElement = null;
+        item.target = null;
+        item.model = null;
+    }
+}
+
+function getProcessParts(exp) {
+    return exp.replace("()]", "").split("[");
 }
 
 

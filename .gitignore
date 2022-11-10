@@ -6,3 +6,5 @@ yarn-error.log
 /publish/
 /rust/html_parser/target/
 .idea/
+*.iml
+dist/

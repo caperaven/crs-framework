@@ -8,13 +8,13 @@
 
     .card {
         border: var(--border);
-        background: var(--cl-panel);
+        background: var(--grey-surface);
         padding: var(--padding);
     }
 </style>
 
 <template id="tplSimple">
-    <div class="card" data-value.attr="status" data-id.attr="id">
+    <div class="card" data-value.attr="statusId" data-id.attr="id" draggable="true">
         <label>Code</label>
         <div>${code}</div>
     </div>
@@ -34,7 +34,8 @@
         data-manager="kanban_data"
         data-headertemplate="simple"
         data-template="simple"
-        data-field="status"
-        data-update="statusId,statusCode,statusDescription"
+        data-field="statusId"
+        data-allow-drop="kanban_drop[allow_drop()]"
+        data-on-drop="kanban_drop[on_drop()]"
     ></kan-ban>
 </div>
