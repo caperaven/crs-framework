@@ -127,11 +127,11 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         const fragment = document.createDocumentFragment();
 
         for (const option of this.#options) {
-            if (option.title.trim() == "-") {
+            if (option.title?.trim() == "-") {
                 fragment.appendChild(document.createElement("hr"));
             }
             else {
-                await crs.call("dom", "create_element", {
+                const args = {
                     parent: fragment,
                     id: option.id,
                     tag_name: "li",
@@ -149,9 +149,16 @@ class ContextMenu extends crsbinding.classes.BindableElement {
                     styles: option.styles,
                     variables: {
                         "--cl-icon": option.icon_color || "black"
-                    },
-                    text_content: option.title
-                })
+                    }
+                }
+
+                if (option.children == null) {
+                    args.text_content = option.title;
+                } else {
+                    args.children = option.children;
+                }
+
+                await crs.call("dom", "create_element", args);
             }
         }
 
