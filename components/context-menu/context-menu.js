@@ -129,36 +129,39 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         for (const option of this.#options) {
             if (option.title?.trim() == "-") {
                 fragment.appendChild(document.createElement("hr"));
+                continue;
             }
-            else {
-                const args = {
-                    parent: fragment,
-                    id: option.id,
-                    tag_name: "li",
-                    dataset: {
-                        icon: option.icon,
-                        ic: option.icon_color || "black",
-                        tags: option.tags || "",
-                        ...(option.dataset || {})
-                    },
-                    attributes: {
-                        role: "menuitem",
-                        "aria-selected": option.selected == true,
-                        ...(option.attributes || {})
-                    },
-                    styles: option.styles,
-                    variables: {
-                        "--cl-icon": option.icon_color || "black"
-                    }
-                }
 
-                if (option.children == null) {
-                    args.text_content = option.title;
-                } else {
-                    args.children = option.children;
+            const li = await crs.call("dom", "create_element", {
+                parent: fragment,
+                id: option.id,
+                tag_name: "li",
+                dataset: {
+                    icon: option.icon,
+                    ic: option.icon_color || "black",
+                    tags: option.tags || "",
+                    ...(option.dataset || {})
+                },
+                attributes: {
+                    role: "menuitem",
+                    "aria-selected": option.selected == true,
+                    ...(option.attributes || {})
+                },
+                styles: option.styles,
+                variables: {
+                    "--cl-icon": option.icon_color || "black"
                 }
+            });
 
-                await crs.call("dom", "create_element", args);
+            if (option.template != null) {
+                const template = this.templates[option.template];
+                const fragment = await crs.call("html", "create", {
+                    ctx: option,
+                    html: template
+                });
+                li.appendChild(fragment);
+            } else {
+                li.textContent = option.title;
             }
         }
 
