@@ -38,7 +38,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     async #render() {
-        const data = await crs.call("dates", "get_days", {month: this.#month, year: this.#year, only_current: false});
+        const data = await crs.call("date", "get_days", {month: this.#month, year: this.#year, only_current: false});
         const cells = this.shadowRoot.querySelectorAll("[role='cell']");
         crsbinding.inflationManager.get("calendar-cell", data, cells);
     }
