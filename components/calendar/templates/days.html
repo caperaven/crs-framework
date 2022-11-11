@@ -5,14 +5,15 @@
         grid-template-rows: repeat(7, 1fr);
         justify-items: center;
         align-items: center;
-        padding: 0 0.8rem 0.8rem 0.8rem;
+        padding: 0 0.5rem 1rem 0.5rem;
     }
 
     #calendar [role = 'columnheader'] {
         font-weight: bold;
         font-size: 1.25rem;
-        color: rgba(99, 99, 99, 0.7);
-        padding-bottom: 0.2rem;
+        color: var(--grey-s1);
+        opacity: 0.8;
+        padding-bottom: var(--padding);
     }
 
     #calendar [role = 'cell'] {
@@ -23,12 +24,12 @@
         height: var(--size);
         font-size: var(--text-size);
         font-weight: bold;
-        color: rgba(0, 0, 0, 0.8);
-        border-radius: 0.4rem;
+        color:var(--grey);
+        border-radius: var(--radius);
     }
 
     #calendar [role = 'cell']:hover {
-        border: 1px solid black;
+        border: var(--border);
         opacity: 1;
         cursor: default;
     }
