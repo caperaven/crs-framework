@@ -56,19 +56,24 @@
     }
 
     .current-view {
-        color: hotpink;
-        background: var(--blue);
+        color: var(--cl-primary-alt);
+        background: var(--blue) !important;
     }
+    .selected {
+        color: var(--blue) !important;
+        background: var(--blue-s2);
+    }
+
 </style>
 
 <template id="tplCell">
-    <div role="cell" data-date="${date}" classlist.if="current == false ? 'non-current-day' : 'test'">${number}</div>
+    <div role="cell" data-date="${date}" classlist.if="current == false ? 'non-current-day'">${number}</div>
 </template>
 
 <div id="calendar-toolbar" role="toolbar">
     <button id="previous-month" aria-label="previous month button"><</button>
-    <button id="month" value="months" click.call="Month">${month}</button>
-    <button id="year" value="years" click.call="Year">${year}</button>
+    <button id="month" value="months" click.call="month" classlist.if="selectedView == 'months' ? 'current-view'">${month}</button>
+    <button id="year" value="years" click.call="year" classlist.if="selectedView == 'years' ? 'current-view'">${year}</button>
     <button id="next-month" aria-label="next month button">></button>
 </div>
 
