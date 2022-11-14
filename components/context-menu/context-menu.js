@@ -183,11 +183,15 @@ class ContextMenu extends crsbinding.classes.BindableElement {
             return await this.close();
         }
 
-        if (event.target.nodeName != 'LI') {
-            return;
-        }
+        const li = await crs.call("dom_utils", "find_parent_of_type", {
+            element: event.target,
+            nodeName: "li",
+            stopAtNodeName: "ul"
+        });
 
-        const option = this.#optionById(event.target.id);
+        if (li == null) return;
+
+        const option = this.#optionById(li.id);
 
         if (option.type != null) {
             await crs.call(option.type, option.action, option.args);
