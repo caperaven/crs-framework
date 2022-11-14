@@ -14,6 +14,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        color: var(--grey);
         width: 7rem;
         height: 3rem;
         font-size: 19px;
@@ -22,12 +23,12 @@
     }
 
     #months > div:hover {
-        border: 0.0625rem solid #000000;
-        border-radius: 0.4rem;
+        border: var(--border);
+        border-radius: var(--radius);
     }
 </style>
 
-<div id="months">
+<div id="months" data-visible="false">
     <div value="0">January</div>
     <div value="1">February</div>
     <div value="2">March</div>

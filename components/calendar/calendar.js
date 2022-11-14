@@ -57,6 +57,10 @@ export default class Calendar extends crsbinding.classes.BindableElement {
 
     async Month() {
         const currentView = "months";
+        const monthElement = this.shadowRoot.querySelector("#month");
+
+        // monthElement.classList.toggle("current-view");
+
         await this.#selectedView(currentView);
     }
 

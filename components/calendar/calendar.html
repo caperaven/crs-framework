@@ -9,8 +9,8 @@
 
         display: grid;
         grid-template-rows: auto 1fr;
-        width: 28rem;
-        height: 28rem;
+        width: 27rem;
+        height: 27rem;
         box-shadow: var(--grey-s2) 0 0.125rem 0.5rem 0;
         border: var(--border);
         border-radius: 3%;
@@ -50,6 +50,15 @@
     #calendar-toolbar #year {
         width: 5rem;
     }
+
+    #calendar-toolbar #month{
+        width: 7rem;
+    }
+
+    .current-view {
+        color: #FFFFFF;
+        background: var(--blue);
+    }
 </style>
 
 <template id="tplCell">
@@ -58,13 +67,12 @@
 
 <div id="calendar-toolbar" role="toolbar">
     <button id="previous-month" aria-label="previous month button"><</button>
-    <button tooltip="Hello World!" id="month" value="months" click.call="Month">${month}</button>
+    <button id="month" value="months" click.call="Month">${month}</button>
     <button id="year" value="years" click.call="Year">${year}</button>
     <button id="next-month" aria-label="next month button">></button>
 </div>
 
-<perspective-element view.bind="selectedView" ctx.once="contextId" data-folder="/components/calendar/"
-                     view-loaded.call="viewLoaded">
+<perspective-element view.bind="selectedView" ctx.once="contextId" data-folder="/components/calendar/" view-loaded.call="viewLoaded">
     <template data-id="default" data-default="true">
         <template src="./templates/days.html"></template>
     </template>
