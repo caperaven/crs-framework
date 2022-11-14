@@ -65,43 +65,48 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     }
 
     async connectedCallback() {
-        await super.connectedCallback();
+        return new Promise(async (resolve) => {
+            await super.connectedCallback();
 
-        this.#clickHandler = this.click.bind(this);
-        this.shadowRoot.addEventListener("click", this.#clickHandler);
+            this.#clickHandler = this.click.bind(this);
+            this.shadowRoot.addEventListener("click", this.#clickHandler);
 
-        await crsbinding.translations.add({
-            approved: "Approved"
-        })
-
-        requestAnimationFrame(async () => {
-            const ul = this.shadowRoot.querySelector(".popup");
-
-            await this.#buildElements();
-
-            let at = "right";
-            let anchor = "top";
-
-            if (this.#target) {
-               at = "bottom";
-               anchor = "left";
-            }
-
-            await crs.call("fixed_layout", "set", {
-                element: ul,
-                target: this.#target,
-                point: this.#point,
-                at: this.#at || at,
-                anchor: this.#anchor || anchor,
-                margin: this.#margin || 0
+            await crsbinding.translations.add({
+                approved: "Approved"
             })
 
-            await crs.call("dom_interactive", "enable_resize", {
-                element: this.popup,
-                resize_query: "#resize",
-                options: {}
+            requestAnimationFrame(async () => {
+                const ul = this.shadowRoot.querySelector(".popup");
+
+                await this.#buildElements();
+
+                let at = "right";
+                let anchor = "top";
+
+                if (this.#target) {
+                    at = "bottom";
+                    anchor = "left";
+                }
+
+                await crs.call("fixed_layout", "set", {
+                    element: ul,
+                    target: this.#target,
+                    point: this.#point,
+                    at: this.#at || at,
+                    anchor: this.#anchor || anchor,
+                    margin: this.#margin || 0
+                })
+
+                await crs.call("dom_interactive", "enable_resize", {
+                    element: this.popup,
+                    resize_query: "#resize",
+                    options: {}
+                });
+
+                await crs.call("component", "notify_ready", {element: this});
+                resolve();
             })
-        })
+        });
     }
 
     async disconnectedCallback() {
