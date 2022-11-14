@@ -14,7 +14,7 @@ export async function init() {
 
     globalThis.DocumentFragment = ElementMock;
     globalThis.HTMLElement = ElementMock;
-    globalThis.SVGElement = ElementMock;
+    globalThis.Element = ElementMock;
     globalThis.HTMLInputElement = ElementMock;
     globalThis.requestAnimationFrame = (callback) => callback();
 
