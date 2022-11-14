@@ -47,6 +47,12 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         requestAnimationFrame(async () => this.setProperty("selectedView", newView))
     }
 
+    async #viewChange(element, view) {
+        element.classList.toggle("current-view");
+        element.className != "current-view" && this.getProperty("selectedView") == view ? view = "default": null;
+        await this.#selectedView(view);
+    }
+
     async viewLoaded() {
         const currentView = this.getProperty("selectedView");
 
@@ -58,15 +64,14 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     async Month() {
         const currentView = "months";
         const monthElement = this.shadowRoot.querySelector("#month");
-
-        // monthElement.classList.toggle("current-view");
-
-        await this.#selectedView(currentView);
+        await this.#viewChange(monthElement,currentView)
     }
 
     async Year() {
         const currentView = "years";
-        await this.#selectedView(currentView);
+        const monthElement = this.shadowRoot.querySelector("#year");
+        await this.#viewChange(monthElement,currentView)
     }
+
 }
 customElements.define("calendar-component", Calendar);
