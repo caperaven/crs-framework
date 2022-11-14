@@ -38,3 +38,5 @@ async function getPackagesFolder() {
 
     return path.join("file://", dir);
 }
+
+await init();

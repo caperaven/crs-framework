@@ -113,6 +113,18 @@ export function mockElement(instance, tag, id) {
         }
     });
 
+    Object.defineProperty(instance, "content", {
+        get() {
+            if (instance.nodeName !== "TEMPLATE") return;
+            const clone = cloneElementMock(this);
+            clone.id = "document-fragment";
+            clone.nodeName = "DOCUMENT-FRAGMENT";
+            return clone;
+        },
+
+        set(newValue) {}
+    });
+
     return instance;
 }
 
@@ -205,6 +217,9 @@ function cloneNode() {
 function appendChild(element) {
     this.children.push(element);
     element.parentElement = this;
+    if (element.connectedCallback != null) {
+        element.connectedCallback();
+    }
     return element;
 
 }
@@ -215,6 +230,9 @@ function removeChild(child) {
     if (index != -1) {
         const removed = this.children.splice(index, 1);
         removed.parentElement = null;
+        if (element.disconnectedCallback != null) {
+            element.disconnectedCallback();
+        }
         return removed;
     }
 
