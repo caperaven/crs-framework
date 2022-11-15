@@ -4,9 +4,13 @@ const ids = Object.freeze({
 })
 
 export class MonacoEditor extends HTMLElement {
+    #editor;
+
     async connectedCallback() {
         await loadRequireJs();
         await loadCSS(this);
+
+        this.#editor = await initEditor(this, this.dataset.minimap, this.dataset.language || "markdown");
     }
 
     async disconnectedCallback() {
@@ -30,9 +34,37 @@ async function loadCSS(element) {
     await crs.call("dom", "set_styles", {
         element,
         styles: {
-            display: "block",
-            width: "100%",
-            height: "100%"
+            display: "block"
         }
+    })
+}
+
+async function initEditor(parent, showMinimap, language) {
+    if (globalThis.require == null) {
+        return requestAnimationFrame(() => initEditor());
+    }
+
+    const path = import.meta.url.replace("monaco.js", "package/min/vs");
+
+    require.config({paths: {vs: path}});
+
+    const options = {
+        language: language,
+        minimap: {
+            enabled: showMinimap == true
+        },
+        parameterHints: {
+            enabled: true,
+            cycle: true
+        }
+    };
+
+    return new Promise(resolve => {
+        require(['vs/editor/editor.main'], () => {
+            const editor = monaco.editor.create(parent, options);
+            editor.__type = "normal";
+
+            resolve(editor);
+        });
     })
 }
