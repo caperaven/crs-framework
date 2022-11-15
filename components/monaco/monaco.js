@@ -6,6 +6,10 @@ const ids = Object.freeze({
 export class MonacoEditor extends HTMLElement {
     #editor;
 
+    get editor() {
+        return this.#editor;
+    }
+
     async connectedCallback() {
         await loadRequireJs();
         await loadCSS(this);
@@ -16,6 +20,8 @@ export class MonacoEditor extends HTMLElement {
     async disconnectedCallback() {
         await crs.call("scripts", "unload_file", { id: ids.REQUIRE_JS });
         await crs.call("styles", "unload_file", { id: ids.MONACO_CSS });
+
+        this.#editor = this.#editor.dispose();
     }
 }
 
