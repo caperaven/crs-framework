@@ -13,6 +13,7 @@ export class ContextMenuActions {
         const point = await crs.process.getValue(step.args.point, context, process, item);
         const margin = await crs.process.getValue(step.args.margin, context, process, item);
         const callback = await crs.process.getValue(step.args.callback, context, process, item);
+        const templates = await crs.process.getValue(step.args.templates, context, process, item);
 
         if (globalThis.contextMenu != null) {
             await this.close();
@@ -23,6 +24,7 @@ export class ContextMenuActions {
 
         const instance = document.createElement("context-menu");
         instance.options = options;
+        instance.templates = templates;
         instance.point = point;
         instance.target = target;
         instance.at = at;

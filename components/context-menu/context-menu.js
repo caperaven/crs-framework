@@ -65,43 +65,48 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     }
 
     async connectedCallback() {
-        await super.connectedCallback();
+        return new Promise(async (resolve) => {
+            await super.connectedCallback();
 
-        this.#clickHandler = this.click.bind(this);
-        this.shadowRoot.addEventListener("click", this.#clickHandler);
+            this.#clickHandler = this.click.bind(this);
+            this.shadowRoot.addEventListener("click", this.#clickHandler);
 
-        await crsbinding.translations.add({
-            approved: "Approved"
-        })
-
-        requestAnimationFrame(async () => {
-            const ul = this.shadowRoot.querySelector(".popup");
-
-            await this.#buildElements();
-
-            let at = "right";
-            let anchor = "top";
-
-            if (this.#target) {
-               at = "bottom";
-               anchor = "left";
-            }
-
-            await crs.call("fixed_layout", "set", {
-                element: ul,
-                target: this.#target,
-                point: this.#point,
-                at: this.#at || at,
-                anchor: this.#anchor || anchor,
-                margin: this.#margin || 0
+            await crsbinding.translations.add({
+                approved: "Approved"
             })
 
-            await crs.call("dom_interactive", "enable_resize", {
-                element: this.popup,
-                resize_query: "#resize",
-                options: {}
+            requestAnimationFrame(async () => {
+                const ul = this.shadowRoot.querySelector(".popup");
+
+                await this.#buildElements();
+
+                let at = "right";
+                let anchor = "top";
+
+                if (this.#target) {
+                    at = "bottom";
+                    anchor = "left";
+                }
+
+                await crs.call("fixed_layout", "set", {
+                    element: ul,
+                    target: this.#target,
+                    point: this.#point,
+                    at: this.#at || at,
+                    anchor: this.#anchor || anchor,
+                    margin: this.#margin || 0
+                })
+
+                await crs.call("dom_interactive", "enable_resize", {
+                    element: this.popup,
+                    resize_query: "#resize",
+                    options: {}
+                });
+
+                await crs.call("component", "notify_ready", {element: this});
+                resolve();
             })
-        })
+        });
     }
 
     async disconnectedCallback() {
@@ -127,31 +132,41 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         const fragment = document.createDocumentFragment();
 
         for (const option of this.#options) {
-            if (option.title.trim() == "-") {
+            if (option.title?.trim() == "-") {
                 fragment.appendChild(document.createElement("hr"));
+                continue;
             }
-            else {
-                await crs.call("dom", "create_element", {
-                    parent: fragment,
-                    id: option.id,
-                    tag_name: "li",
-                    dataset: {
-                        icon: option.icon,
-                        ic: option.icon_color || "black",
-                        tags: option.tags || "",
-                        ...(option.dataset || {})
-                    },
-                    attributes: {
-                        role: "menuitem",
-                        "aria-selected": option.selected == true,
-                        ...(option.attributes || {})
-                    },
-                    styles: option.styles,
-                    variables: {
-                        "--cl-icon": option.icon_color || "black"
-                    },
-                    text_content: option.title
-                })
+
+            const li = await crs.call("dom", "create_element", {
+                parent: fragment,
+                id: option.id,
+                tag_name: "li",
+                dataset: {
+                    icon: option.icon,
+                    ic: option.icon_color || "black",
+                    tags: option.tags || "",
+                    ...(option.dataset || {})
+                },
+                attributes: {
+                    role: "menuitem",
+                    "aria-selected": option.selected == true,
+                    ...(option.attributes || {})
+                },
+                styles: option.styles,
+                variables: {
+                    "--cl-icon": option.icon_color || "black"
+                }
+            });
+
+            if (option.template != null) {
+                const template = this.templates[option.template];
+                const fragment = await crs.call("html", "create", {
+                    ctx: option,
+                    html: template
+                });
+                li.appendChild(fragment);
+            } else {
+                li.textContent = option.title;
             }
         }
 
@@ -168,11 +183,15 @@ class ContextMenu extends crsbinding.classes.BindableElement {
             return await this.close();
         }
 
-        if (event.target.nodeName != 'LI') {
-            return;
-        }
+        const li = await crs.call("dom_utils", "find_parent_of_type", {
+            element: event.target,
+            nodeName: "li",
+            stopAtNodeName: "ul"
+        });
 
-        const option = this.#optionById(event.target.id);
+        if (li == null) return;
+
+        const option = this.#optionById(li.id);
 
         if (option.type != null) {
             await crs.call(option.type, option.action, option.args);

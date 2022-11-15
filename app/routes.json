@@ -51,6 +51,11 @@
       "view": "markdown-viewer"
     },
     {
+      "title": "Monaco",
+      "hash": "#monaco",
+      "view": "monaco"
+    },
+    {
       "title": "About",
       "hash": "#about",
       "view": "about",

@@ -20,9 +20,9 @@ export default class ContextMenu extends crsbinding.classes.ViewBase {
             element: event.target,
             icon_font_family: "crsfrw",
             height: 304,
-
+            templates: {"statuses": "<b>${statusCode}</b>&nbsp;<span>${statusDescription}</span>"},
             options: [
-                { id: "item1", title: "&{approved}", tags: "approved", icon: "approved", icon_color: "#ff0090", selected: true,  type: "console", action: "log", args: { message: "Approved "}, attributes: { "aria-hidden.if": "status == 'b'" } },
+                { id: "item1", template: "statuses", statusCode: "AP", statusDescription: "Approved", tags: "approved", icon: "approved", icon_color: "#ff0090", selected: true,  type: "console", action: "log", args: { message: "Approved "}, attributes: { "aria-hidden.if": "status == 'b'" } },
                 { id: "item2", title: "Browse", tags: "browse", icon: "browse", icon_color: "#ff9000", type: "console", action: "log", args: { message: "Browse "}, styles: { "background": "green"} },
                 { id: "item3", title: "Calendar", tags: "calendar", icon: "calendar", type: "console", action: "log", args: { message: "Calendar "} },
                 { title: "-" },
