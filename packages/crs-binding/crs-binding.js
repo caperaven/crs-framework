@@ -1979,7 +1979,7 @@ var ForInflateProvider = class extends ProviderBase {
       console.error("for.inflate must have a data-id attribute");
       return;
     }
-    crsbinding.inflationManager.register(this.key, this._element, this.singular);
+    await crsbinding.inflationManager.register(this.key, this._element, this.singular);
     this._collectionChangedHandler = this._collectionChanged.bind(this);
     this.listenOnPath(this.plural, this._collectionChangedHandler);
   }
@@ -2385,14 +2385,14 @@ var InflationCodeGenerator = class {
     for (let i = 0; i < element.children.length; i++) {
       const child = element.children[i];
       if (child.nodeName == "TEMPLATE") {
-        this._processTemplate(child);
+        await this._processTemplate(child);
       } else {
         this.path = `${path2}.children[${i}]`;
         await this._processElement(element.children[i]);
       }
     }
   }
-  _processTemplate(element) {
+  async _processTemplate(element) {
     const key = `${this.parentKey}_${this.templateKeys.length + 1}`;
     this.templateKeys.push(key);
     element.dataset.key = key;
@@ -2401,7 +2401,7 @@ var InflationCodeGenerator = class {
       const parts = forStatementParts(value);
       const code = `${this.path}.appendChild(crsbinding.inflationManager.get("${key}", ${parts.plural}));`;
       this.inflateSrc.push(code);
-      crsbinding.inflationManager.register(key, element, parts.singular);
+      await crsbinding.inflationManager.register(key, element, parts.singular);
       element.parentElement.removeChild(element);
     }
   }
@@ -3740,9 +3740,9 @@ function forceClean(id) {
 }
 
 // src/lib/renderCollection.js
-function renderCollection(template, data, elements = null, parentElement = null) {
+async function renderCollection(template, data, elements = null, parentElement = null) {
   const id = "render-collection";
-  crsbinding.inflationManager.register(id, template);
+  await crsbinding.inflationManager.register(id, template);
   let fragment = crsbinding.inflationManager.get(id, data, elements, 0);
   if (fragment != null && parentElement != null) {
     parentElement.appendChild(fragment);
