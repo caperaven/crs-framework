@@ -51,9 +51,9 @@
       "view": "markdown-viewer"
     },
     {
-      "title": "Monaco",
-      "hash": "#monaco",
-      "view": "monaco"
+      "title": "Text Editor",
+      "hash": "#text-editor",
+      "view": "text-editor"
     },
     {
       "title": "About",
