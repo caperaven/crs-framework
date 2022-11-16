@@ -12,8 +12,6 @@ export default class Calendar extends crsbinding.classes.BindableElement {
 
     async connectedCallback() {
         await super.connectedCallback();
-
-
         this.#month = this.date.getMonth();
         this.#year = this.date.getFullYear();
         const tplCell = this.shadowRoot.querySelector("#tplCell");
