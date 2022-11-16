@@ -140,9 +140,7 @@ export async function packageHTML(sourceFile, targetFile, minified) {
  * @returns {Promise<void>}
  */
 export async function bundleCss(sourceFile, output, minified) {
-    const src = await Deno.readTextFile(sourceFile);
-
-    const result = await esbuild.build({
+    await esbuild.build({
         entryPoints: [sourceFile],
         bundle: true,
         loader: {".css": "css"},
