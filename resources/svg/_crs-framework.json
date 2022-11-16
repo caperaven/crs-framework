@@ -140,11 +140,15 @@
     },
     {
       "order": 18,
-      "name": "default-status-outline"
+      "name": "default-status-outline",
+      "prevSize": 32,
+      "ligatures": "status"
     },
     {
       "order": 5,
-      "name": "clock"
+      "name": "clock",
+      "prevSize": 32,
+      "ligatures": "clock"
     }
   ],
   "metadata": {
@@ -404,7 +408,8 @@
       "grid": 0,
       "tags": [
         "default-status-outline"
-      ]
+      ],
+      "defaultCode": 59671
     },
     {
       "paths": [
@@ -413,7 +418,8 @@
       "grid": 0,
       "tags": [
         "clock"
-      ]
+      ],
+      "defaultCode": 59672
     }
   ],
   "colorThemes": [],
@@ -426,14 +432,22 @@
     "fontPref": {
       "prefix": "icon-",
       "metadata": {
-        "fontFamily": "icomoon"
+        "fontFamily": "crs-framework",
+        "majorVersion": 1,
+        "minorVersion": 0
       },
       "metrics": {
         "emSize": 1024,
         "baseline": 6.25,
         "whitespace": 50
       },
-      "embed": false
+      "embed": false,
+      "showSelector": true,
+      "showMetrics": true,
+      "showMetadata": true,
+      "showVersion": true,
+      "noie8": true,
+      "ie7": false
     },
     "imagePref": {
       "prefix": "icon-",
@@ -445,7 +459,8 @@
     },
     "historySize": 50,
     "showCodes": true,
-    "gridSize": 16
+    "gridSize": 16,
+    "showLiga": true
   },
   "IcoMoonType": "icon-set"
 }

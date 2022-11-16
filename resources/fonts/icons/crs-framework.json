@@ -220,7 +220,8 @@
           "name": "default-status-outline",
           "prevSize": 32,
           "code": 59671,
-          "tempChar": ""
+          "tempChar": "",
+          "ligatures": "status"
         },
         {
           "order": 5,
@@ -228,7 +229,8 @@
           "name": "clock",
           "prevSize": 32,
           "code": 59672,
-          "tempChar": ""
+          "tempChar": "",
+          "ligatures": "clock"
         }
       ],
       "id": 0,
