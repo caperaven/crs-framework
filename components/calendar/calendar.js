@@ -13,7 +13,6 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     async connectedCallback() {
         await super.connectedCallback();
         this.#month = this.date.getMonth();
-        this.#year = this.date.getFullYear();
         const tplCell = this.shadowRoot.querySelector("#tplCell");
         await crsbinding.inflationManager.register("calendar-cell", tplCell);
     }
@@ -28,12 +27,11 @@ export default class Calendar extends crsbinding.classes.BindableElement {
 
     preLoad() {
         this.date = new Date();
-        const month = this.date.toLocaleString('en-US', {month: 'long'});
-        const year = this.date.getFullYear();
+        this.#year = this.date.getFullYear();
 
         this.setProperty("selectedView", "default");
-        this.setProperty("month", month);
-        this.setProperty("year", year);
+        this.setProperty("month", this.date.toLocaleString('en-US', {month: 'long'}));
+        this.setProperty("year", this.#year);
     }
 
     async #render() {
@@ -52,10 +50,12 @@ export default class Calendar extends crsbinding.classes.BindableElement {
 
     async selectedMonthChanged(newValue) {
         this.#month = newValue;
+        this.setProperty("month", new Date(this.#year, this.#month).toLocaleString('en-US', {month:'long'}));
     }
 
     async selectedYearChanged(newValue) {
         this.#year = newValue;
+        this.setProperty("year", this.#year);
     }
 
     async month() {
