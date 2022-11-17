@@ -50,6 +50,14 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         }
     }
 
+    async selectedMonthChanged(newValue) {
+        this.#month = newValue;
+    }
+
+    async selectedYearChanged(newValue) {
+        this.#year = newValue;
+    }
+
     async month() {
         this.setProperty("selectedView", this.getProperty("selectedView") == "months" ? "default" : "months");
     }
