@@ -49,12 +49,12 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     async selectedMonthChanged(newValue) {
-        this.#month = newValue;
+        this.#month = newValue == undefined ? this.#month = this.#month: newValue;
         this.setProperty("month", new Date(this.#year, this.#month).toLocaleString('en-US', {month:'long'}));
     }
 
     async selectedYearChanged(newValue) {
-        this.#year = newValue;
+        this.#year = newValue == undefined ? this.#year = this.#year : newValue;
         this.setProperty("year", this.#year);
     }
 
