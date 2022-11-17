@@ -8,5 +8,5 @@ yarn-error.log
 .idea/
 *.iml
 dist/
-/code-mirror-bundle/node_modules/
-/code-mirror-bundle/package-lock.json
+/custom-bundles/code-mirror-bundle/node_modules/
+/custom-bundles/code-mirror-bundle/package-lock.json
