@@ -6,7 +6,7 @@ import {createMockChildren} from "../../mockups/child-mock-factory.js";
 await init();
 
 beforeAll(async () => {
-    await import("../../../components/markdown-viewer/markdown-viewer-actions.js");
+    await import("../../../components/markdown/markdown-viewer/markdown-viewer-actions.js");
 })
 
 describe ("markdown-viewer", async () => {

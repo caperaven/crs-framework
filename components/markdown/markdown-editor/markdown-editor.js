@@ -1,5 +1,5 @@
-import "./../markdown-viewer/markdown-viewer.js";
-import "./../text-editor/text-editor.js";
+import "../markdown-viewer/markdown-viewer.js";
+import "../../text-editor/text-editor.js";
 
 class MarkdownEditor extends HTMLElement {
     #markdown;
@@ -29,6 +29,8 @@ class MarkdownEditor extends HTMLElement {
         this.#textEditor = null;
         this.#viewer = null;
         this.#markdown = null;
+
+        await crs.call("css_grid_resize", "dispose", { element: this });
     }
 
     #checkChange() {
