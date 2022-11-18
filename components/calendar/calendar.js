@@ -54,7 +54,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     async selectedYearChanged(newValue) {
-        this.#year = newValue == undefined ? this.#year = this.#year : newValue;
+        this.#year = newValue == undefined ? this.#year = this.#year: newValue;
         this.setProperty("year", this.#year);
     }
 
@@ -65,6 +65,5 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     async year() {
         this.setProperty("selectedView", this.getProperty("selectedView") == "years" ? "default" : "years");
     }
-
 }
 customElements.define("calendar-component", Calendar);
