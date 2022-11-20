@@ -51,6 +51,11 @@
       "view": "text-editor"
     },
     {
+      "title": "Schema Editor",
+      "hash": "#schema-editor",
+      "view": "schema-editor"
+    },
+    {
       "title": "About",
       "hash": "#about",
       "view": "about",
