@@ -43,12 +43,21 @@ export class SchemaEditor extends HTMLElement {
             await this.update();
 
             this.editor.addEventListener("change", this.#textChangedHandler);
+
+            await crs.call("cssgrid", "enable_resize", {
+                element: this,
+                options: {
+                    columns: [0]
+                }
+            })
         })
     }
 
     async disconnectedCallback() {
         this.editor.removeEventListener("change", this.#textChangedHandler);
         this.#textChangedHandler = null;
+
+        await crs.call("cssgrid", "disable_resize", { element: this });
 
         this.#editor = null;
         this.#waiting = null;

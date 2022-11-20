@@ -21,16 +21,23 @@ class MarkdownEditor extends HTMLElement {
             this.#textEditor = this.shadowRoot.querySelector("text-editor");
             this.#textEditor.addEventListener("change", this.#textChangedHandler);
             this.#viewer = this.shadowRoot.querySelector("markdown-viewer");
+
+            await crs.call("cssgrid", "enable_resize", {
+                element: this,
+                options: {
+                    columns: [0]
+                }
+            })
         })
     }
 
     async disconnectedCallback() {
+        await crs.call("cssgrid", "disable_resize", { element: this });
+
         this.#textEditor.removeEventListener("change", this.#textChangedHandler);
         this.#textEditor = null;
         this.#viewer = null;
         this.#markdown = null;
-
-        await crs.call("css_grid_resize", "dispose", { element: this });
     }
 
     #checkChange() {

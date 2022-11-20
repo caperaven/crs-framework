@@ -1,4 +1,4 @@
-import {EditorView, basicSetup, markdown, json} from "./editor.js";
+import {EditorView, basicSetup, markdown, json, autocompletion} from "./editor.js";
 
 const LANGUAGES = Object.freeze({
     "markdown": markdown,
@@ -38,7 +38,7 @@ class TextEditor extends HTMLElement {
         })
 
         this.#editor = new EditorView({
-            extensions: [basicSetup, LANGUAGES[this.language](), this.#update],
+            extensions: [basicSetup, LANGUAGES[this.language](), autocompletion(), this.#update],
             parent: this
         })
 
