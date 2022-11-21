@@ -35,9 +35,13 @@
     #years > div:hover {
         border: var(--border);
     }
+    #years > [aria-selected = "true"]{
+        color: var(--blue);
+        background: var(--blue-s2);
+    }
 
 </style>
-<div id="years" click.setValue="selectedYear = $event.target.dataset.value">
+<div id="years" click.setValue="selectedYear = $event.target">
     <div data-value="2000">2000</div>
     <div data-value="2001">2001</div>
     <div data-value="2002">2002</div>

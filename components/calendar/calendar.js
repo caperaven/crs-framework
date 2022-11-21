@@ -49,12 +49,11 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     async selectedMonthChanged(newValue) {
-        this.#month = newValue == undefined ? this.#month = this.#month: newValue;
+        this.#month = newValue.dataset.value == undefined ? this.#month = this.#month: newValue.dataset.value;
         this.setProperty("month", new Date(this.#year, this.#month).toLocaleString('en-US', {month:'long'}));
     }
-
     async selectedYearChanged(newValue) {
-        this.#year = newValue == undefined ? this.#year = this.#year: newValue;
+        this.#year = newValue.dataset.value == undefined ? this.#year = this.#year: newValue.dataset.value;
         this.setProperty("year", this.#year);
     }
 
@@ -65,5 +64,6 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     async year() {
         this.setProperty("selectedView", this.getProperty("selectedView") == "years" ? "default" : "years");
     }
+    
 }
 customElements.define("calendar-component", Calendar);
