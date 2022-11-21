@@ -27194,6 +27194,111 @@ function localCompletionSource(context) {
         validFor: Identifier
     };
 }
+function pathFor(read, member, name) {
+    var _a;
+    let path = [];
+    for (;;) {
+        let obj = member.firstChild, prop;
+        if ((obj === null || obj === void 0 ? void 0 : obj.name) == "VariableName") {
+            path.push(read(obj));
+            return { path: path.reverse(), name };
+        }
+        else if ((obj === null || obj === void 0 ? void 0 : obj.name) == "MemberExpression" && ((_a = (prop = obj.lastChild)) === null || _a === void 0 ? void 0 : _a.name) == "PropertyName") {
+            path.push(read(prop));
+            member = obj;
+        }
+        else {
+            return null;
+        }
+    }
+}
+/**
+Helper function for defining JavaScript completion sources. It
+returns the completable name and object path for a completion
+context, or null if no name/property completion should happen at
+that position. For example, when completing after `a.b.c` it will
+return `{path: ["a", "b"], name: "c"}`. When completing after `x`
+it will return `{path: [], name: "x"}`. When not in a property or
+name, it will return null if `context.explicit` is false, and
+`{path: [], name: ""}` otherwise.
+*/
+function completionPath(context) {
+    let read = (node) => context.state.doc.sliceString(node.from, node.to);
+    let inner = syntaxTree(context.state).resolveInner(context.pos, -1);
+    if (inner.name == "PropertyName") {
+        return pathFor(read, inner.parent, read(inner));
+    }
+    else if (dontComplete.indexOf(inner.name) > -1) {
+        return null;
+    }
+    else if (inner.name == "VariableName" || inner.to - inner.from < 20 && Identifier.test(read(inner))) {
+        return { path: [], name: read(inner) };
+    }
+    else if ((inner.name == "." || inner.name == "?.") && inner.parent.name == "MemberExpression") {
+        return pathFor(read, inner.parent, "");
+    }
+    else if (inner.name == "MemberExpression") {
+        return pathFor(read, inner, "");
+    }
+    else {
+        return context.explicit ? { path: [], name: "" } : null;
+    }
+}
+function enumeratePropertyCompletions(obj, top) {
+    let options = [], seen = new Set;
+    for (let depth = 0;; depth++) {
+        for (let name of (Object.getOwnPropertyNames || Object.keys)(obj)) {
+            if (seen.has(name))
+                continue;
+            seen.add(name);
+            let value;
+            try {
+                value = obj[name];
+            }
+            catch (_) {
+                continue;
+            }
+            options.push({
+                label: name,
+                type: typeof value == "function" ? (/^[A-Z]/.test(name) ? "class" : top ? "function" : "method")
+                    : top ? "variable" : "property",
+                boost: -depth
+            });
+        }
+        let next = Object.getPrototypeOf(obj);
+        if (!next)
+            return options;
+        obj = next;
+    }
+}
+/**
+Defines a [completion source](https://codemirror.net/6/docs/ref/#autocomplete.CompletionSource) that
+completes from the given scope object (for example `globalThis`).
+Will enter properties of the object when completing properties on
+a directly-named path.
+*/
+function scopeCompletionSource(scope) {
+    let cache = new Map;
+    return (context) => {
+        let path = completionPath(context);
+        if (!path)
+            return null;
+        let target = scope;
+        for (let step of path.path) {
+            target = target[step];
+            if (!target)
+                return null;
+        }
+        let options = cache.get(target);
+        if (!options)
+            cache.set(target, options = enumeratePropertyCompletions(target, !path.path.length));
+        return {
+            from: context.pos - path.name.length,
+            options,
+            validFor: Identifier
+        };
+    };
+}
 
 /**
 A language provider based on the [Lezer JavaScript
@@ -27314,6 +27419,66 @@ const autoCloseTags$1 = /*@__PURE__*/EditorView.inputHandler.of((view, from, to,
     view.dispatch(changes, { userEvent: "input.type", scrollIntoView: true });
     return true;
 });
+
+/**
+Connects an [ESLint](https://eslint.org/) linter to CodeMirror's
+[lint](https://codemirror.net/6/docs/ref/#lint) integration. `eslint` should be an instance of the
+[`Linter`](https://eslint.org/docs/developer-guide/nodejs-api#linter)
+class, and `config` an optional ESLint configuration. The return
+value of this function can be passed to [`linter`](https://codemirror.net/6/docs/ref/#lint.linter)
+to create a JavaScript linting extension.
+
+Note that ESLint targets node, and is tricky to run in the
+browser. The
+[eslint-linter-browserify](https://github.com/UziTech/eslint-linter-browserify)
+package may help with that (see
+[example](https://github.com/UziTech/eslint-linter-browserify/blob/master/example/script.js)).
+*/
+function esLint(eslint, config) {
+    if (!config) {
+        config = {
+            parserOptions: { ecmaVersion: 2019, sourceType: "module" },
+            env: { browser: true, node: true, es6: true, es2015: true, es2017: true, es2020: true },
+            rules: {}
+        };
+        eslint.getRules().forEach((desc, name) => {
+            if (desc.meta.docs.recommended)
+                config.rules[name] = 2;
+        });
+    }
+    return (view) => {
+        let { state } = view, found = [];
+        for (let { from, to } of javascriptLanguage.findRegions(state)) {
+            let fromLine = state.doc.lineAt(from), offset = { line: fromLine.number - 1, col: from - fromLine.from, pos: from };
+            for (let d of eslint.verify(state.sliceDoc(from, to), config))
+                found.push(translateDiagnostic(d, state.doc, offset));
+        }
+        return found;
+    };
+}
+function mapPos(line, col, doc, offset) {
+    return doc.line(line + offset.line).from + col + (line == 1 ? offset.col - 1 : -1);
+}
+function translateDiagnostic(input, doc, offset) {
+    let start = mapPos(input.line, input.column, doc, offset);
+    let result = {
+        from: start,
+        to: input.endLine != null && input.endColumn != 1 ? mapPos(input.endLine, input.endColumn, doc, offset) : start,
+        message: input.message,
+        source: input.ruleId ? "eslint:" + input.ruleId : "eslint",
+        severity: input.severity == 1 ? "warning" : "error",
+    };
+    if (input.fix) {
+        let { range, text } = input.fix, from = range[0] + offset.pos - start, to = range[1] + offset.pos - start;
+        result.actions = [{
+                name: "fix",
+                apply(view, start) {
+                    view.dispatch({ changes: { from: start + from, to: start + to, insert: text }, scrollIntoView: true });
+                }
+            }];
+    }
+    return result;
+}
 
 const Targets = ["_blank", "_self", "_top", "_parent"];
 const Charsets = ["ascii", "utf-8", "utf-16", "latin1", "latin1"];
@@ -27785,6 +27950,13 @@ function htmlCompletionFor(schema, context) {
     }
 }
 /**
+HTML tag completion. Opens and closes tags and attributes in a
+context-aware way.
+*/
+function htmlCompletionSource(context) {
+    return htmlCompletionFor(Schema.default, context);
+}
+/**
 Create a completion source for HTML extended with additional tags
 or attributes.
 */
@@ -27875,6 +28047,8 @@ function html(config = {}) {
     let lang = htmlLanguage;
     if (config.matchClosingTags === false)
         lang = lang.configure({ dialect: "noMatch" });
+    if (config.selfClosingTags === true)
+        lang = lang.configure({ dialect: "selfClosing" });
     return new LanguageSupport(lang, [
         htmlLanguage.data.of({ autocomplete: htmlCompletionSourceWith(config) }),
         config.autoCloseTags !== false ? autoCloseTags : [],
@@ -28339,4 +28513,4 @@ function json() {
     return new LanguageSupport(jsonLanguage);
 }
 
-export { CompletionContext, EditorView, acceptCompletion, autocompletion, basicSetup, clearSnippet, closeBrackets, closeBracketsKeymap, closeCompletion, commonmarkLanguage, completeAnyWord, completeFromList, completionKeymap, completionStatus, currentCompletions, deleteBracketPair, deleteMarkupBackward, ifIn, ifNotIn, insertBracket, insertCompletionText, insertNewlineContinueMarkup, json, jsonLanguage, jsonParseLinter, markdown, markdownKeymap, markdownLanguage, minimalSetup, moveCompletionSelection, nextSnippetField, pickedCompletion, prevSnippetField, selectedCompletion, selectedCompletionIndex, setSelectedCompletion, snippet, snippetCompletion, snippetKeymap, startCompletion };
+export { CompletionContext, EditorView, acceptCompletion, autocompletion, basicSetup, clearSnippet, closeBrackets, closeBracketsKeymap, closeCompletion, commonmarkLanguage, completeAnyWord, completeFromList, completionKeymap, completionPath, completionStatus, css, cssCompletionSource, cssLanguage, currentCompletions, deleteBracketPair, deleteMarkupBackward, esLint, html, htmlCompletionSource, htmlCompletionSourceWith, htmlLanguage, ifIn, ifNotIn, insertBracket, insertCompletionText, insertNewlineContinueMarkup, javascript, javascriptLanguage, json, jsonLanguage, jsonParseLinter, jsxLanguage, localCompletionSource, markdown, markdownKeymap, markdownLanguage, minimalSetup, moveCompletionSelection, nextSnippetField, pickedCompletion, prevSnippetField, scopeCompletionSource, selectedCompletion, selectedCompletionIndex, setSelectedCompletion, snippet, snippetCompletion, snippetKeymap, snippets, startCompletion, tsxLanguage, typescriptLanguage };

@@ -37,7 +37,6 @@ export class SchemaEditor extends HTMLElement {
     async connectedCallback() {
         this.innerHTML = await fetch(import.meta.url.replace(".js", ".html")).then(result => result.text());
 
-
         requestAnimationFrame(async () => {
             this.editor.value = startTemplate;
             await this.update();
@@ -71,7 +70,7 @@ export class SchemaEditor extends HTMLElement {
                 clearTimeout(timeout);
                 this.update();
                 this.#waiting = false;
-            }, 16)
+            }, 32)
         }
     }
 
