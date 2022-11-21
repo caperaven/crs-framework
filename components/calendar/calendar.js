@@ -55,11 +55,17 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     async selectedMonthChanged(newValue) {
         this.#month = newValue.dataset.value === undefined ? this.#month = this.#month : newValue.dataset.value;
         await this.#setMonthProperty();
+        await crs.call("dom_collection", "toggle_selection", {
+            target: newValue
+        });
     }
 
     async selectedYearChanged(newValue) {
         this.#year = newValue.dataset.value === undefined ? this.#year = this.#year : newValue.dataset.value;
         this.setProperty("year", this.#year);
+        await crs.call("dom_collection", "toggle_selection", {
+            target: newValue
+        });
     }
 
     async month() {
