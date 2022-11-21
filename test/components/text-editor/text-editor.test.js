@@ -15,10 +15,10 @@ describe ("text-editor", async () => {
         await instance.connectedCallback();
     })
 
-    it ("value", async () => {
-        const value = "# Hello World";
-
-        instance.value = value;
-        assertEquals(instance.value, value);
-    })
+    // it ("value", async () => {
+    //     const value = "# Hello World";
+    //
+    //     instance.value = value;
+    //     assertEquals(instance.value, value);
+    // })
 })
