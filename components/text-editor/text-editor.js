@@ -34,7 +34,7 @@ class TextEditor extends HTMLElement {
     }
 
     async connectedCallback() {
-        const content = this.textContent.trim();
+        const content = this.innerHTML.trim();
         this.innerHTML = "";
 
         this.#update = EditorView.updateListener.of(update => {
