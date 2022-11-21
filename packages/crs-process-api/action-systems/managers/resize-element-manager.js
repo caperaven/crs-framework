@@ -1,1 +1,92 @@
-import{getDraggable as n}from"./dragdrop-manager/drag-utils.js";class o{#s;#o;#t;#h;#n;#m;#e;#i;#l;constructor(t,i,h){this.#s=t,this.#o=i,this.#t=h,this.#h=this.#d.bind(this),this.#n=this.#u.bind(this),this.#m=this.#r.bind(this),this.#s.addEventListener("mousedown",this.#h),t.__resizeManager=this}dispose(){this.#s.removeEventListener("mousedown",this.#h),this.#h=null,this.#n=null,this.#m=null,delete this.#s.__resizeManager,this.#s=null,this.#o=null,this.#t=null}#d(t){const i=n(t,{dragQuery:this.#o});i!=null&&(this.#e=i.parentElement,this.#i=this.#e.getBoundingClientRect(),this.#l={x:t.clientX,y:t.clientY},this.#t.min=this.#t.min||{},this.#t.min.width=this.#t.min.width||this.#i.width,this.#t.min.height=this.#t.min.height||this.#i.height,this.#t.max=this.#t.max||{},this.#t.max.width=this.#t.max.width||Number.MAX_VALUE,this.#t.max.height=this.#t.max.height||Number.MAX_VALUE,document.addEventListener("mousemove",this.#n),document.addEventListener("mouseup",this.#m))}#u(t){let i=t.clientX-this.#l.x,h=t.clientY-this.#l.y;this.#t.lock_axis=="x"&&(h=0),this.#t.lock_axis=="y"&&(i=0);let s=this.#i.width+i,e=this.#i.height+h;s=s<this.#t.min.width?this.#t.min.width:s>this.#t.max.width?this.#t.max.width:s,e=e<this.#t.min.height?this.#t.min.height:e>this.#t.max.height?this.#t.max.height:e,this.#e.style.width=`${s}px`,this.#e.style.height=`${e}px`}#r(t){document.removeEventListener("mousemove",this.#n),document.removeEventListener("mouseup",this.#m),this.#e=null,this.#i=null,this.#l=null}}export{o as ResizeElementManager};
+import {getDraggable} from "./dragdrop-manager/drag-utils.js";
+
+export class ResizeElementManager {
+    #element;
+    #region;
+    #resizeQuery;
+    #options;
+    #mouseDownHandler;
+    #mouseMoveHandler;
+    #mouseUpHandler;
+    #targetElement;
+    #bounds;
+    #startPos;
+
+    constructor(element, resizeQuery, options) {
+        this.#element = element;
+        this.#region = element.getBoundingClientRect();
+        this.#resizeQuery = resizeQuery;
+        this.#options = options;
+
+        this.#mouseDownHandler = this.#mouseDown.bind(this);
+        this.#mouseMoveHandler = this.#mouseMove.bind(this);
+        this.#mouseUpHandler = this.#mouseUp.bind(this);
+
+        this.#element.addEventListener("mousedown", this.#mouseDownHandler);
+        element.__resizeManager = this;
+    }
+
+    dispose() {
+        this.#element.removeEventListener("mousedown", this.#mouseDownHandler);
+        this.#mouseDownHandler = null;
+        this.#mouseMoveHandler = null;
+        this.#mouseUpHandler = null;
+
+        delete this.#element.__resizeManager;
+        this.#element = null;
+        this.#resizeQuery = null;
+        this.#options = null;
+        this.#region = null;
+    }
+
+    #mouseDown(event) {
+        const draggable = getDraggable(event, {dragQuery: this.#resizeQuery});
+        if (draggable == null) return;
+
+        this.#targetElement = draggable.parentElement;
+        this.#bounds = this.#targetElement.getBoundingClientRect();
+        this.#startPos = {x: event.clientX, y: event.clientY};
+
+        this.#options.min = this.#options.min || {};
+        this.#options.min.width = this.#options.min.width || this.#bounds.width;
+        this.#options.min.height = this.#options.min.height || this.#bounds.height;
+
+        this.#options.max = this.#options.max || {};
+        this.#options.max.width = this.#options.max.width || Number.MAX_VALUE;
+        this.#options.max.height = this.#options.max.height || Number.MAX_VALUE;
+
+        document.addEventListener("mousemove", this.#mouseMoveHandler);
+        document.addEventListener("mouseup", this.#mouseUpHandler);
+    }
+
+    #mouseMove(event) {
+        let offsetX = event.clientX - this.#startPos.x;
+        let offsetY = event.clientY - this.#startPos.y;
+
+        if (this.#options.lock_axis == "x") {
+            offsetY = 0;
+        }
+
+        if (this.#options.lock_axis == "y") {
+            offsetX = 0;
+        }
+
+        let width = this.#bounds.width + offsetX - this.#bounds.x - 4;
+        let height = this.#bounds.height + offsetY - this.#bounds.y - 4;
+
+        width = width < this.#options.min.width ? this.#options.min.width : width > this.#options.max.width ? this.#options.max.width : width;
+        height = height < this.#options.min.height ? this.#options.min.height : height > this.#options.max.height ? this.#options.max.height : height;
+
+        this.#targetElement.style.width = `${width}px`;
+        this.#targetElement.style.height = `${height}px`;
+    }
+
+    #mouseUp(event) {
+        document.removeEventListener("mousemove", this.#mouseMoveHandler);
+        document.removeEventListener("mouseup", this.#mouseUpHandler);
+
+        this.#targetElement = null;
+        this.#bounds = null;
+        this.#startPos = null;
+    }
+}

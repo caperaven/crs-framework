@@ -9,7 +9,7 @@ export function createMockChildren(element) {
 
     const jsonStr = parse(html.split(".").join("_"));
     const json = JSON.parse(jsonStr);
-    createChildren(element, element, json);
+    createChildren(element, element.shadowRoot || element, json);
 }
 
 function createChildren(context, element, json) {

@@ -1,4 +1,9 @@
-import {EditorView, basicSetup, markdown} from "./editor.js";
+import {EditorView, basicSetup, markdown, json, autocompletion} from "./editor.js";
+
+const LANGUAGES = Object.freeze({
+    "markdown": markdown,
+    "json": json
+});
 
 class TextEditor extends HTMLElement {
     #editor;
@@ -21,6 +26,10 @@ class TextEditor extends HTMLElement {
         }
     }
 
+    get language() {
+        return this.dataset.language || "markdown";
+    }
+
     async connectedCallback() {
         this.#update = EditorView.updateListener.of(update => {
             if (update.docChanged == true) {
@@ -29,7 +38,7 @@ class TextEditor extends HTMLElement {
         })
 
         this.#editor = new EditorView({
-            extensions: [basicSetup, markdown(), this.#update],
+            extensions: [basicSetup, LANGUAGES[this.language](), autocompletion(), this.#update],
             parent: this
         })
 

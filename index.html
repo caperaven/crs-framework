@@ -69,6 +69,8 @@
         import "./src/index.js";
         import IndexViewModel from "./index.js";
 
+        import {HTMLParser} from "./packages/crs-schema/html/crs-html-parser.js";
+
         window.addEventListener("load", async (event) => {
             await crs.modules.enableBinding([
                 ["data-grid", "/components/data-grid/data-grid.js"],
@@ -76,8 +78,16 @@
                 ["options-toolbar", "/components/options-toolbar/options-toolbar.js"],
                 ["color-picker", "/components/color-picker/color-picker.js"],
                 ["text-editor", "/components/text-editor/text-editor.js"],
-                ["markdown-editor", "/components/markdown-editor/markdown-editor.js"]
-            ])
+                ["markdown-editor", "/components/markdown/markdown-editor/markdown-editor.js"],
+                ["schema-editor", "/components/schema/schema-editor/schema-editor.js"]
+            ]);
+
+            await crs.call("schema", "register", {
+                id: "html",
+                parser: HTMLParser,
+                providers: []
+            })
+
             document.viewModel = new IndexViewModel(document.body);
             await document.viewModel.connectedCallback();
         });

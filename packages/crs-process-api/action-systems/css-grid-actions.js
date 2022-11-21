@@ -1,1 +1,311 @@
-class h{static async perform(e,t,s,a){await this[e.action](e,t,s,a)}static async init(e,t,s,a){const l=await crs.dom.get_element(e.args.element);l.style.display="grid"}static async auto_fill(e,t,s,a){const l=await crs.dom.get_element(e.args.element),n=await crs.process.getValue(e.args.columns,t,s,a),i=await crs.process.getValue(e.args.rows,t,s,a);await this.init(e,t,s,a),await this.set_columns(e,t,s,a),await this.set_rows(e,t,s,a);const o=n.split(" ").length,g=i.split(" ").length*o;for(let m=0;m<g;m++)await crs.call("dom","create_element",{parent:l,tag_name:"div",dataset:{id:m},styles:{border:"1px solid silver"},classes:["grid-cell"]}),await crs.call("dom","set_css_variable",{element:l,varRoot:"--grid-cell",rootStyle:"cell"+m})}static async set_columns(e,t,s,a){const l=await crs.dom.get_element(e.args.element),n=await crs.process.getValue(e.args.columns,t,s,a);l.style.gridTemplateColumns=n}static async set_rows(e,t,s,a){const l=await crs.dom.get_element(e.args.element),n=await crs.process.getValue(e.args.rows,t,s,a);l.style.gridTemplateRows=n}static async add_columns(e,t,s,a){await _(e,t,s,a,"gridTemplateColumns","width")}static async remove_columns(e,t,s,a){await y(e,t,s,a,"gridTemplateColumns")}static async set_column_width(e,t,s,a){await f(e,t,s,a,"gridTemplateColumns","width")}static async add_rows(e,t,s,a){await _(e,t,s,a,"gridTemplateRows","height")}static async remove_rows(e,t,s,a){await y(e,t,s,a,"gridTemplateRows")}static async set_row_height(e,t,s,a){await f(e,t,s,a,"gridTemplateRows","height")}static async set_regions(e,t,s,a){const l=await crs.dom.get_element(e.args.element),n=await crs.process.getValue(e.args.areas,t,s,a),i=await crs.process.getValue(e.args.auto_fill,t,s,a)||!1,o=await C(l);let c=[];for(let m of n)p(o,m),c.push(m.name);let g=[];for(let m of o)g.push(`"${m.join(" ")}"`);if(l.style.gridTemplateAreas=g.join(" "),i==!0){const m=await crs.process.getValue(e.args.tag_name,t,s,a)||"div";for(const u of c)await crs.call("dom","create_element",{parent:l,tag_name:m,dataset:{area:u},styles:{gridArea:u}})}}static async clear_region(e,t,s,a){const l=await crs.dom.get_element(e.args.element),n=await crs.process.getValue(e.args.area,t,s,a),i=l.querySelectorAll(`[data-area="${n}"]`);for(const o of i)o.parentElement.removeChild(o)}static async column_count(e){const t=await crs.dom.get_element(e.args.element);return w(t)}static async row_count(e){const t=await crs.dom.get_element(e.args.element);return d(t)}}function p(r,e){for(let t=e.start.row;t<=e.end.row;t++)for(let s=e.start.col;s<=e.end.col;s++)r[t][s]=e.name}function w(r){return r.style.gridTemplateColumns.split(" ").length}function d(r){return r.style.gridTemplateRows.split(" ").length}async function C(r){const e=w(r),t=d(r);let s=[];for(let a=0;a<t;a++){s[a]=[];for(let l=0;l<e;l++)s[a][l]="."}return s}async function f(r,e,t,s,a,l){const n=await crs.dom.get_element(r.args.element);let i=n.style[a].split(" ");if(i.length==0)return;let o=await crs.process.getValue(r.args[l],e,t,s);const c=await crs.process.getValue(r.args.position,e,t,s);i[c]=o,n.style[a]=i.join(" ")}async function _(r,e,t,s,a,l){const n=await crs.dom.get_element(r.args.element);let i=n.style[a].split(" ");if(i.length==0)return;let o=await crs.process.getValue(r.args[l],e,t,s),c=await crs.process.getValue(r.args.position,e,t,s);c==null&&(c="end"),Array.isArray(o)==!1&&(o=[o]),c=="front"?i=[...o,...i]:c=="end"?i.push(...o):i.splice(c,0,...o),n.style[a]=i.join(" ")}async function y(r,e,t,s,a){const l=await crs.dom.get_element(r.args.element);let n=l.style[a].split(" ");if(n.length==0)return;const i=await crs.process.getValue(r.args.position,e,t,s)||"end",o=await crs.process.getValue(r.args.count,e,t,s)||1;i=="front"?n.splice(0,o):i=="end"?n.splice(n.length-o,o):n.splice(i,o),l.style[a]=n.join(" ")}crs.intent.cssgrid=h;export{h as CssGridActions};
+export class CssGridActions {
+    static async perform(step, context, process, item) {
+        await this[step.action](step, context, process, item);
+    }
+
+    /**
+     * Enable a element to be a CSS grid
+     */
+    static async init(step, context, process, item) {
+        const element = await crs.dom.get_element(step.args.element);
+        element.style.display = "grid";
+    }
+
+    static async enable_resize(step, context, process, item) {
+        const element = await crs.dom.get_element(step.args.element, context, process, item);
+        const options = await crs.process.getValue(step.args.options, context, process, item);
+
+        const module = await import("./managers/grid-resize-manager.js");
+        const instance = new module.CSSGridResizeManager(element, options);
+        await instance.initialize();
+    }
+
+    static async disable_resize(step, context, process, item) {
+        const element = await crs.dom.get_element(step.args.element, context, process, item);
+        element.__cssGridResizeMananger?.dispose();
+    }
+
+    /**
+     * a function that will automatically fill/create a grid according to the number of columns and rows.
+     * @param step
+     * @param context
+     * @param process
+     * @param item
+     * @returns {Promise<void>}
+     */
+    static async auto_fill(step, context, process, item) {
+        const element = await crs.dom.get_element(step.args.element);
+        const columns = await crs.process.getValue(step.args.columns, context, process, item);
+        const rows = await crs.process.getValue(step.args.rows, context, process, item);
+
+        await this.init(step, context, process, item);
+        await this.set_columns(step, context, process, item);
+        await this.set_rows(step, context, process, item);
+
+        const columnCount = columns.split(" ").length;
+        const rowCount = rows.split(" ").length;
+        const cellCount = rowCount * columnCount;
+
+        for(let cell = 0; cell < cellCount; cell ++){
+            await crs.call("dom", "create_element",{
+                "parent" : element,
+                "tag_name" : "div",
+                "dataset" : {
+                    "id" : cell
+                },
+                "styles" : {
+                    "border" : "1px solid silver",
+                },
+                "classes" : ["grid-cell"]
+            })
+
+            // Attempt
+            await crs.call("dom", "set_css_variable", {
+                element : element,
+                "varRoot" : "--grid-cell",
+                "rootStyle" : "cell" + cell,
+            })
+
+        }
+    }
+
+    /**
+     * Set the columns of a grid
+     */
+    static async set_columns(step, context, process, item) {
+        const element = await crs.dom.get_element(step.args.element);
+        const columns = await crs.process.getValue(step.args.columns, context, process, item);
+        element.style.gridTemplateColumns = columns;
+    }
+
+    /**
+     * Set the rows of a grid
+     */
+    static async set_rows(step, context, process, item) {
+        const element = await crs.dom.get_element(step.args.element);
+        const rows = await crs.process.getValue(step.args.rows, context, process, item);
+        element.style.gridTemplateRows = rows;
+    }
+
+    /**
+     * Add a css column
+     */
+    static async add_columns(step, context, process, item) {
+        await add(step, context, process, item, "gridTemplateColumns", "width");
+    }
+
+    /**
+     * Remove a css column
+     */
+    static async remove_columns(step, context, process, item) {
+        await remove(step, context, process, item, "gridTemplateColumns");
+    }
+
+    /**
+     * set the width of a css column
+     */
+    static async set_column_width(step, context, process, item) {
+        await resize(step, context, process, item, "gridTemplateColumns", "width");
+    }
+
+    /**
+     * Add a css row
+     */
+    static async add_rows(step, context, process, item) {
+        await add(step, context, process, item, "gridTemplateRows", "height");
+    }
+
+    /**
+     * Remove a css row
+     */
+    static async remove_rows(step, context, process, item) {
+        await remove(step, context, process, item, "gridTemplateRows");
+    }
+
+    /**
+     * Set the height of a css row
+     */
+    static async set_row_height(step, context, process, item) {
+        await resize(step, context, process, item, "gridTemplateRows", "height");
+    }
+
+    /**
+     * Set css region
+     */
+    static async set_regions(step, context, process, item) {
+        const element   = await crs.dom.get_element(step.args.element);
+        const areas     = await crs.process.getValue(step.args.areas, context, process, item);
+        const auto_fill = (await crs.process.getValue(step.args.auto_fill, context, process, item)) || false;
+
+        const gridAreas = await areasToArray(element);
+
+        let names = [];
+        for (let area of areas) {
+            populateAreaIntent(gridAreas, area);
+            names.push(area.name);
+        }
+
+        let result = [];
+        for (let row of gridAreas) {
+            result.push(`"${row.join(" ")}"`);
+        }
+
+        element.style.gridTemplateAreas = result.join(" ");
+
+        if (auto_fill == true) {
+            const tag_name = (await crs.process.getValue(step.args.tag_name, context, process, item)) || "div";
+
+            for (const area of names) {
+                await crs.call("dom", "create_element", {
+                    parent: element,
+                    tag_name: tag_name,
+                    dataset: {
+                        area: area
+                    },
+                    styles: {
+                        gridArea: area
+                    }
+                })
+            }
+        }
+    }
+
+    /**
+     * Remove elements that occupy a defined region
+     * @returns {Promise<void>}
+     */
+    static async clear_region(step, context, process, item) {
+        const element   = await crs.dom.get_element(step.args.element);
+        const area      = await crs.process.getValue(step.args.area, context, process, item);
+
+        const elements = element.querySelectorAll(`[data-area="${area}"]`);
+        for (const element of elements) {
+            element.parentElement.removeChild(element);
+        }
+    }
+
+    /**
+     * for a css grid get the column count
+     */
+    static async column_count(step) {
+        const element = await crs.dom.get_element(step.args.element);
+        const result = getColumnCount(element);
+        return result;
+    }
+
+    /**
+     * for a css grid element get the row count
+     */
+    static async row_count(step) {
+        const element = await crs.dom.get_element(step.args.element);
+        const result = getRowCount(element);
+        return result;
+    }
+
+    static async get_column_sizes(step) {
+        const element = await crs.dom.get_element(step.args.element);
+        const sizes = getComputedStyle(element).gridTemplateColumns.split("px").join("").split(" ");
+
+        for (let i = 0; i < sizes.length; i++) {
+            sizes[i] = Number(sizes[i]);
+        }
+
+        return sizes;
+    }
+}
+
+function populateAreaIntent(collection, area) {
+    for (let row = area.start.row; row <= area.end.row; row++) {
+        for (let col = area.start.col; col <= area.end.col; col++) {
+            collection[row][col] = area.name;
+        }
+    }
+}
+
+function getColumnCount(element) {
+    return element.style.gridTemplateColumns.split(" ").length;
+}
+
+function getRowCount(element) {
+    return element.style.gridTemplateRows.split(" ").length;
+}
+
+async function areasToArray(element) {
+    const colCount = getColumnCount(element);
+    const rowCount = getRowCount(element);
+
+    let result = [];
+    for (let i = 0; i < rowCount; i++) {
+        result[i] = [];
+        for (let j = 0; j < colCount; j++) {
+            result[i][j] = ".";
+        }
+    }
+
+    return result;
+}
+
+async function resize(step, context, process, item, property, valueProperty) {
+    const element = await crs.dom.get_element(step.args.element);
+    let items = element.style[property].split(" ");
+    if (items.length == 0) return;
+
+    let value = await crs.process.getValue(step.args[valueProperty], context, process, item);
+    const position = await crs.process.getValue(step.args.position, context, process, item);
+
+    items[position] = value;
+
+    element.style[property] = items.join(" ");
+}
+
+async function add(step, context, process, item, property, valueProperty) {
+    const element = await crs.dom.get_element(step.args.element);
+    let items = element.style[property].split(" ");
+    if (items.length == 0) return;
+
+    let value = await crs.process.getValue(step.args[valueProperty], context, process, item);
+    let position = await crs.process.getValue(step.args.position, context, process, item);
+
+    if (position == null) {
+        position = "end";
+    }
+
+    if (Array.isArray(value) == false) {
+        value = [value];
+    }
+
+    if (position == "front") {
+        items = [...value, ...items];
+    }
+    else if (position == "end") {
+        items.push(...value)
+    }
+    else {
+        items.splice(position, 0, ...value);
+    }
+
+    element.style[property] = items.join(" ");
+}
+
+async function remove(step, context, process, item, property) {
+    const element = await crs.dom.get_element(step.args.element);
+    let items = element.style[property].split(" ");
+    if (items.length == 0) return;
+
+    const position = (await crs.process.getValue(step.args.position, context, process, item)) || "end";
+    const count = (await crs.process.getValue(step.args.count, context, process, item)) || 1;
+
+    if (position == "front") {
+        items.splice(0, count);
+    }
+    else if (position == "end") {
+        items.splice(items.length - count, count);
+    }
+    else {
+        items.splice(position, count);
+    }
+
+    element.style[property] = items.join(" ");
+}
+
+crs.intent.cssgrid = CssGridActions;
