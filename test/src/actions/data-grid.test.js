@@ -55,7 +55,7 @@ describe("data grid tests", () => {
         assertEquals(kbInstance.header.children.length, 1);
         assertEquals(kbInstance.container.children.length, 1);
 
-        const grid = gridInstance.querySelector('[role="grid"]');
+        const grid = gridInstance.shadowRoot.querySelector('[role="grid"]');
         assertEquals(grid.children.length, 2); // column + row container
     })
 });

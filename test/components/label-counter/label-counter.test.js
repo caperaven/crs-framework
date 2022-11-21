@@ -33,6 +33,9 @@ describe ("label-counter", async () => {
         minusMock.dataset.action = "decrement";
 
         await instance.clickedHandler(new EventMock(plusMock));
-        assertEquals(instance.value, 2)
+        assertEquals(instance.value, 2);
+
+        await instance.clickedHandler(new EventMock(minusMock));
+        assertEquals(instance.value, 1);
     })
 })
