@@ -20,11 +20,12 @@ export class LabelCounter extends HTMLElement {
         this.attachShadow({mode:"open"});
     }
 
-    async connectedCallback(preLoad) {
+    async connectedCallback() {
         this.shadowRoot.innerHTML = await fetch(this.html).then(result => result.text());
+        await this.load();
+    }
 
-        preLoad?.();
-
+    async load() {
         requestAnimationFrame(() => {
             this.shadowRoot.querySelector("[data-id='label']").textContent = this.dataset.label;
             this.shadowRoot.addEventListener("click", this.#clickHandler);
