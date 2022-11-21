@@ -61,6 +61,11 @@
       "view": "schema-editor"
     },
     {
+      "title": "Label-Counter",
+      "hash": "#label-counter",
+      "view": "label-counter"
+    },
+    {
       "title": "About",
       "hash": "#about",
       "view": "about",
