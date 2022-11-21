@@ -41,7 +41,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     async #setMonthProperty() {
-        this.setProperty("month", new Date(this.#year, this.#month).toLocaleString('en-US', {month:'long'}));
+        this.setProperty("month", new Date(this.#year, this.#month).toLocaleString('en-US', {month: 'long'}));
     }
 
     async viewLoaded() {
@@ -53,17 +53,17 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     async selectedMonthChanged(newValue) {
-        this.#month = newValue.dataset.value == undefined ? this.#month = this.#month: newValue.dataset.value;
+        this.#month = newValue.dataset.value === undefined ? this.#month = this.#month : newValue.dataset.value;
         await this.#setMonthProperty();
     }
 
     async selectedYearChanged(newValue) {
-        this.#year = newValue.dataset.value == undefined ? this.#year = this.#year: newValue.dataset.value;
+        this.#year = newValue.dataset.value === undefined ? this.#year = this.#year : newValue.dataset.value;
         this.setProperty("year", this.#year);
     }
 
     async month() {
-        this.setProperty("selectedView", this.getProperty("selectedView") == "months" ? "default" : "months");
+        this.setProperty("selectedView", this.getProperty("selectedView") === "months" ? "default" : "months");
     }
 
     async year() {
@@ -72,14 +72,14 @@ export default class Calendar extends crsbinding.classes.BindableElement {
 
     async goToNextMonth() {
         this.#month = parseInt(this.#month) + 1;
-        this.#month > 11 ? (this.#month = 0, this.#year += 1, this.setProperty("year", this.#year)): null;
+        this.#month > 11 ? (this.#month = 0, this.#year += 1, this.setProperty("year", this.#year)) : null;
         await this.#setMonthProperty();
         await this.#render();
     }
 
     async goToPreviousMonth() {
         this.#month = parseInt(this.#month) - 1;
-        this.#month < 0 ? (this.#month = 11, this.#year -= 1, this.setProperty("year", this.#year)): null;
+        this.#month < 0 ? (this.#month = 11, this.#year -= 1, this.setProperty("year", this.#year)) : null;
         await this.#setMonthProperty();
         await this.#render();
     }
