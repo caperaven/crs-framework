@@ -3,6 +3,44 @@
         height: 600px;
         width: 100%;
     }
+
+    strong {
+        display: block;
+        margin-top: 1rem;
+    }
 </style>
 
 <markdown-editor></markdown-editor>
+
+<strong>markdown</strong>
+<text-editor data-language="markdown">
+# Heading 1
+hello world paragraph
+</text-editor>
+
+<strong>javascript</strong>
+<text-editor data-language="javascript">
+function helloWorld() {
+    console.log("hello world")
+}
+</text-editor>
+
+<strong>html</strong>
+<text-editor data-language="html">
+<h1>Hello World</h1>
+<p>hello world paragraph</p>
+</text-editor>
+
+<strong>css</strong>
+<text-editor data-language="css">
+h1 {
+    background: silver;
+}
+</text-editor>
+
+<strong>json</strong>
+<text-editor data-language="json">
+{
+    "property": "value"
+}
+</text-editor>

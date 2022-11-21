@@ -1,8 +1,11 @@
-import {EditorView, basicSetup, markdown, json, autocompletion} from "./editor.js";
+import {EditorView, basicSetup, markdown, json, css, javascript, html, autocompletion} from "./editor.js";
 
 const LANGUAGES = Object.freeze({
     "markdown": markdown,
-    "json": json
+    "json": json,
+    "javascript": javascript,
+    "css": css,
+    "html": html
 });
 
 class TextEditor extends HTMLElement {
@@ -31,6 +34,9 @@ class TextEditor extends HTMLElement {
     }
 
     async connectedCallback() {
+        const content = this.textContent.trim();
+        this.innerHTML = "";
+
         this.#update = EditorView.updateListener.of(update => {
             if (update.docChanged == true) {
                 this.dispatchEvent(new CustomEvent("change",  { detail: this.#getValue() }));
@@ -44,6 +50,9 @@ class TextEditor extends HTMLElement {
 
         if (this.#value != null) {
             this.#setValue(this.#value);
+        }
+        else if (content.length > 0) {
+            this.#setValue(content);
         }
 
         await crs.call("component", "notify_ready", { element: this });

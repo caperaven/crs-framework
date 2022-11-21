@@ -1,6 +1,9 @@
 {
   "dependencies": {
     "@codemirror/autocomplete": "^6.3.2",
+    "@codemirror/lang-css": "^6.0.1",
+    "@codemirror/lang-html": "^6.2.0",
+    "@codemirror/lang-javascript": "^6.1.1",
     "@codemirror/lang-json": "^6.0.1",
     "@codemirror/lang-markdown": "^6.0.5",
     "@rollup/plugin-node-resolve": "^15.0.1",
