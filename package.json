@@ -7,5 +7,10 @@
         "bundle": "deno run --allow-read --allow-write --allow-env --allow-run  --allow-net ./build/build.js",
         "build-html-parser": "wasm-pack build rust/html_parser/ --target web --out-dir ../../test/mockups/bin",
         "run": "caddy run"
+    },
+    "dependencies": {
+        "@codemirror/lang-css": "^6.0.1",
+        "@codemirror/lang-html": "^6.2.0",
+        "@codemirror/lang-javascript": "^6.1.1"
     }
 }

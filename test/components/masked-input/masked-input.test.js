@@ -5,7 +5,7 @@ import {init} from "./../../../test/mockups/init.js";
 await init();
 
 beforeAll(async () => {
-    const module = await import("../../../components/markdown/masked-input/masked-input.js");
+    const module = await import("../../../components/masked-input/masked-input.js");
     globalThis.MaskManager = module.MaskManager;
     globalThis.maskToText = module.maskToText;
     globalThis.canEdit = module.canEdit;
