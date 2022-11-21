@@ -56,6 +56,11 @@
       "view": "schema-editor"
     },
     {
+      "title": "Custom Check Box",
+      "hash": "#check-box",
+      "view": "check-box"
+    },
+    {
       "title": "About",
       "hash": "#about",
       "view": "about",

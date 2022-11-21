@@ -1,0 +1,44 @@
+<style>
+  section {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 2rem;
+  }
+
+  label {
+    width: 5rem;
+  }
+
+  ul {
+    margin: 0;
+  }
+</style>
+<h2>${title}</h2>
+
+<section>
+  <label for="dual">Dual State</label>
+  <input id="dual" type="checkbox" is="check-box" data-status="true">
+</section>
+
+<fieldset>
+  <legend>Tri State Checkbox Example</legend>
+  <section>
+    <label for="tri">Tri State</label>
+    <input id="tri" type="checkbox" is="check-box" aria-controls="cond1 cond2 cond3">
+  </section>
+  <ul>
+    <section>
+      <label for="cond1">Cond 1</label>
+      <input id="cond1" type="checkbox" is="check-box">
+    </section>
+    <section>
+      <label for="cond2">Cond 2</label>
+      <input id="cond2" type="checkbox" is="check-box">
+    </section>
+    <section>
+      <label for="cond3">Cond 3</label>
+      <input id="cond3" type="checkbox" is="check-box">
+    </section>
+  </ul>
+</fieldset>
