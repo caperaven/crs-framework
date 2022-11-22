@@ -68,8 +68,8 @@
 
 <div id="calendar-toolbar" role="toolbar">
     <button id="previous-month" aria-label="previous month button" click.call="goToPreviousMonth"><</button>
-    <button id="month" value="months" click.call="setMonthView" classlist.if="selectedView == 'months' ? 'current-view'">${month}</button>
-    <button id="year" value="years" click.call="setYearView" classlist.if="selectedView == 'years' ? 'current-view'">${year}</button>
+    <button id="month" value="months" click.setValue="selectedView = selectedView === 'months' ? 'default' : 'months'" classlist.if="selectedView == 'months' ? 'current-view'">${month}</button>
+    <button id="year" value="years" click.setValue="selectedView = selectedView === 'years' ? 'default' : 'years'" classlist.if="selectedView == 'years' ? 'current-view'">${year}</button>
     <button id="next-month" aria-label="next month button" click.call="goToNextMonth">></button>
 </div>
 
