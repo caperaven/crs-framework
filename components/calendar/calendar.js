@@ -74,7 +74,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     async setMonthView() {
-        await this.setProperty("selectedView", this.getProperty("selectedView") === "months" ? "default" : "months");
+        this.setProperty("selectedView", this.getProperty("selectedView") === "months" ? "default" : "months");
     }
 
     async setYearView() {
@@ -110,5 +110,6 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         await this.#setMonthProperty();
         await this.#render();
     }
+
 }
 customElements.define("calendar-component", Calendar);
