@@ -15,9 +15,7 @@ describe ("label-counter", async () => {
     let instance;
     beforeEach(async () => {
         instance = document.createElement("label-counter");
-        await instance.connectedCallback(() =>{
-            createMockChildren(instance)
-        });
+        await instance.connectedCallback();
     })
 
     it ("init", async () => {
