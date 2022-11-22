@@ -61,6 +61,11 @@
       "view": "label-counter"
     },
     {
+      "title": "Template Loading",
+      "hash": "#template-loading",
+      "view": "template-loading"
+    },
+    {
       "title": "About",
       "hash": "#about",
       "view": "about",
