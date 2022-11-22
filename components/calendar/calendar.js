@@ -33,19 +33,17 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         this.#year = this.date.getFullYear();
         this.#month = this.date.getMonth();
 
-        this.setAttribute("data-month", this.#month);
-        this.setAttribute("data-year", this.#year);
-        this.setAttribute("data-start", this.date.toLocaleDateString());
-
+        this.setAttribute("data-start", this.date.toISOString());
         this.setProperty("selectedView", "default");
         await this.#setMonthProperty();
         await this.#setYearProperty();
     }
 
-    async attributeChangedCallback(name, oldValue,newValue){
-        const [month, day, year] = newValue.split('/');
-        this.#month = parseInt(month) - 1;
-        this.#year = parseInt(year);
+    async attributeChangedCallback(name, oldValue, newValue){
+        const date = new Date(newValue);
+        this.#month = date.getMonth();
+        this.#year = date.getFullYear();
+
         await this.#setMonthProperty();
         await this.#setYearProperty();
         await this.#render();
@@ -59,12 +57,12 @@ export default class Calendar extends crsbinding.classes.BindableElement {
 
     async #setMonthProperty() {
         this.setProperty("month", new Date(this.#year, this.#month).toLocaleString('en-US', {month: 'long'}));
-        this.setAttribute("data-month", this.#month);
+        this.setAttribute("data-month", parseInt(this.#month) + 1);
     }
 
     async #setYearProperty() {
         this.setProperty("year", this.#year);
-        this.setAttribute("data-year", this.#year);
+        this.setAttribute("data-year", parseInt(this.#year));
     }
 
     async viewLoaded() {
