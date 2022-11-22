@@ -15,7 +15,11 @@ class CheckBox extends HTMLInputElement {
 
     static get observedAttributes() { return ["data-status"]; }
 
-    connectedCallback() {
+    async connectedCallback() {
+        await this.load();
+    }
+
+    async load() {
         this.#setChecked();
         this.addEventListener("click", this.#clickHandler);
     }
