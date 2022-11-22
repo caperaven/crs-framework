@@ -1,0 +1,19 @@
+<style>
+    :host {
+        --cl-selected-fg: var(--blue);
+
+        display: flex;
+        flex-direction: row;
+        width: max-content;
+        height: max-content;
+        box-sizing: border-box;
+        padding: var(--padding);
+        position: relative;
+
+    }
+
+    ::slotted([aria-selected="true"]) {
+        color: var(--cl-selected-fg);
+    }
+</style>
+<slot></slot>
