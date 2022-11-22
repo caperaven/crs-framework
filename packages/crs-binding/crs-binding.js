@@ -1820,8 +1820,12 @@ async function parseElement(element, context, options) {
   if (nodeName != "template" && nodeName != "perspective-element" && element.children?.length > 0) {
     await parseElements(element.children, context, options);
   }
-  if (nodeName == "template" && element.getAttribute("src") != null) {
-    return await parseHTMLFragment(element, context, options);
+  if (nodeName == "template") {
+    for (const key of crsbinding.templateProviders.keys) {
+      if (element.getAttribute(key) != null) {
+        return await crsbinding.templateProviders.items[key](element, context, options);
+      }
+    }
   }
   const attributes = Array.from(element.attributes || []);
   const boundAttributes = attributes.filter(
@@ -1867,9 +1871,8 @@ async function parseAttribute(attr, context, ctxName, parentId) {
   return provider;
 }
 async function parseHTMLFragment(element, context, options) {
-  if (options?.folder == null)
-    return;
-  const file = crsbinding.utils.relativePathFrom(options.folder, element.getAttribute("src"));
+  const folder = options?.folder || "/";
+  const file = crsbinding.utils.relativePathFrom(folder, element.getAttribute("src"));
   const tpl = document.createElement("template");
   tpl.innerHTML = await fetch(file).then((result) => result.text());
   const instance = tpl.content.cloneNode(true);
@@ -4232,6 +4235,14 @@ var crsbinding2 = {
     flattenPropertyPath,
     getConverterParts
   },
+  templateProviders: {
+    keys: [],
+    items: {},
+    add: (key, fn) => {
+      crsbinding2.templateProviders.keys.push(key);
+      crsbinding2.templateProviders.items[key] = fn;
+    }
+  },
   templates: {
     data: {},
     load: loadTemplate,
@@ -4246,4 +4257,5 @@ var crsbinding2 = {
 globalThis.crsbinding = crsbinding2;
 crsbinding2.$globals = crsbinding2.data.addObject("globals");
 crsbinding2.data.globals = crsbinding2.data.getValue(crsbinding2.$globals);
+crsbinding2.templateProviders.add("src", parseHTMLFragment);
 globalThis.crsb = crsbinding2;
