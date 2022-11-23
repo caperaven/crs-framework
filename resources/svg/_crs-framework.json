@@ -1,160 +1,172 @@
 {
   "selection": [
     {
-      "order": 6,
+      "order": 84,
       "name": "drag-vert",
       "prevSize": 32,
       "ligatures": "move"
     },
     {
-      "order": 7,
+      "order": 85,
       "name": "add-circle-outline",
       "prevSize": 32,
       "ligatures": "add"
     },
     {
-      "order": 8,
+      "order": 86,
       "name": "approved",
       "prevSize": 32,
       "ligatures": "approved"
     },
     {
-      "order": 9,
+      "order": 87,
       "name": "browse",
       "prevSize": 32,
       "ligatures": "browse"
     },
     {
-      "order": 10,
+      "order": 88,
       "name": "calendar",
       "prevSize": 32,
       "ligatures": "calendar"
     },
     {
-      "order": 32,
+      "order": 89,
       "name": "cancel",
       "prevSize": 32,
       "ligatures": "cancel"
     },
     {
-      "order": 41,
+      "order": 90,
       "name": "check-circle",
       "prevSize": 32,
       "ligatures": "check"
     },
     {
-      "order": 40,
+      "order": 91,
       "name": "check-circle-outline",
       "prevSize": 32,
       "ligatures": "check-outline"
     },
     {
-      "order": 42,
+      "order": 92,
       "name": "chevron-down",
       "prevSize": 32,
       "ligatures": "chevron-down"
     },
     {
-      "order": 43,
+      "order": 93,
       "name": "chevron-up",
       "prevSize": 32,
       "ligatures": "chevron-up"
     },
     {
-      "order": 44,
+      "order": 94,
       "name": "clock-outline",
       "prevSize": 32,
       "ligatures": "clock-outline"
     },
     {
-      "order": 45,
+      "order": 95,
       "name": "condition",
       "prevSize": 32,
       "ligatures": "condition"
     },
     {
-      "order": 50,
+      "order": 96,
       "name": "date-and-time",
       "prevSize": 32,
       "ligatures": "date-time"
     },
     {
-      "order": 49,
+      "order": 97,
       "name": "error-outline",
       "prevSize": 32,
       "ligatures": "error-outline"
     },
     {
-      "order": 48,
+      "order": 98,
       "name": "filter",
       "prevSize": 32,
       "ligatures": "filter-outline"
     },
     {
-      "order": 47,
+      "order": 99,
       "name": "lookup",
       "prevSize": 32,
       "ligatures": "lookup"
     },
     {
-      "order": 17,
+      "order": 100,
       "name": "minus-circle",
       "prevSize": 32,
       "ligatures": "minus-fill"
     },
     {
-      "order": 16,
+      "order": 101,
       "name": "minus-circle-outline",
       "prevSize": 32,
       "ligatures": "minus-outline"
     },
     {
-      "order": 15,
+      "order": 102,
       "name": "preview",
       "prevSize": 32,
       "ligatures": "preview"
     },
     {
-      "order": 14,
+      "order": 103,
       "name": "required",
       "prevSize": 32,
       "ligatures": "required"
     },
     {
-      "order": 13,
+      "order": 104,
       "name": "resize-handle",
       "prevSize": 32,
       "ligatures": "resize"
     },
     {
-      "order": 12,
+      "order": 105,
       "name": "translations",
       "prevSize": 32,
       "ligatures": "translations-a"
     },
     {
-      "order": 11,
+      "order": 106,
       "name": "translations-raw",
       "prevSize": 32,
       "ligatures": "translations-b"
     },
     {
-      "order": 18,
+      "order": 107,
       "name": "default-status-outline",
       "prevSize": 32,
       "ligatures": "status"
     },
     {
-      "order": 5,
+      "order": 108,
       "name": "clock",
       "prevSize": 32,
       "ligatures": "clock"
     },
     {
-      "order": 52,
+      "order": 109,
       "name": "check",
       "prevSize": 32,
       "ligatures": "checkmark"
+    },
+    {
+      "order": 110,
+      "name": "list",
+      "prevSize": 32,
+      "ligatures": "list"
+    },
+    {
+      "order": 111,
+      "name": "grid",
+      "prevSize": 32,
+      "ligatures": "grid"
     }
   ],
   "metadata": {
@@ -163,7 +175,7 @@
       "width": 24,
       "height": 24
     },
-    "iconsHash": 1028007338
+    "iconsHash": 1680802819
   },
   "height": 1024,
   "prevSize": 32,
@@ -411,31 +423,51 @@
       "paths": [
         "M387.2 84.651c-70.692 0-128 57.308-128 128v0 599.296c0 70.692 57.308 128 128 128v0h249.301c70.692 0 128-57.308 128-128v0-599.296c0-70.692-57.308-128-128-128v0h-249.301zM344.533 212.651c0-23.564 19.103-42.667 42.667-42.667v0h249.301c23.564 0 42.667 19.103 42.667 42.667v0 599.296c0 23.564-19.103 42.667-42.667 42.667v0h-249.301c-23.564 0-42.667-19.103-42.667-42.667v0-599.296zM511.787 372.309c38.657 0 69.995-31.338 69.995-69.995s-31.338-69.995-69.995-69.995h-0c-38.657 0-69.995 31.338-69.995 69.995s31.338 69.995 69.995 69.995h-0zM581.803 512.299c0 38.645-31.328 69.973-69.973 69.973s-69.973-31.328-69.973-69.973l0-0c-0-38.645 31.328-69.973 69.973-69.973s69.973 31.328 69.973 69.973v-0zM511.829 792.32c38.669 0 70.016-31.347 70.016-70.016s-31.347-70.016-70.016-70.016v0c-38.669 0-70.016 31.347-70.016 70.016s31.347 70.016 70.016 70.016v0z"
       ],
-      "grid": 0,
       "tags": [
         "default-status-outline"
       ],
+      "grid": 0,
       "defaultCode": 59671
     },
     {
       "paths": [
         "M512 85.333c-234.667 0-426.667 192-426.667 426.667s192 426.667 426.667 426.667 426.667-192 426.667-426.667-192-426.667-426.667-426.667zM663.467 674.133l-174.080-107.093c-12.8-7.68-20.48-21.333-20.48-36.267v-200.107c0.471-17.629 14.76-31.769 32.405-32l0.022-0c17.493 0 32 14.507 32 32v189.867l163.84 98.56c15.36 9.387 20.48 29.44 11.093 44.8-9.387 14.933-29.44 19.627-44.8 10.24z"
       ],
-      "grid": 0,
       "tags": [
         "clock"
       ],
+      "grid": 0,
       "defaultCode": 59672
     },
     {
       "paths": [
         "M348.757 730.539l-176.725-176.597c-9.261-9.674-22.278-15.687-36.7-15.687-28.041 0-50.773 22.732-50.773 50.773 0 14.411 6.004 27.42 15.647 36.662l0.018 0.017 212.907 212.736c9.188 9.189 21.882 14.873 35.904 14.873s26.716-5.684 35.904-14.873l538.795-538.453c9.661-9.259 15.665-22.268 15.665-36.679 0-28.041-22.732-50.773-50.773-50.773-14.422 0-27.44 6.013-36.682 15.669l-0.018 0.019-503.168 502.315z"
       ],
-      "grid": 0,
       "tags": [
         "check"
       ],
+      "grid": 0,
       "defaultCode": 59673
+    },
+    {
+      "paths": [
+        "M83.029 426.667c-45.952 0-83.029 38.101-83.029 85.333s37.12 85.333 83.029 85.333c45.952 0 83.029-38.101 83.029-85.333s-37.12-85.333-83.029-85.333zM83.029 85.333c-45.952 0-83.029 38.101-83.029 85.333s37.12 85.333 83.029 85.333c45.952 0 83.029-38.101 83.029-85.333s-37.12-85.333-83.029-85.333zM83.029 768c-45.952 0-83.029 38.699-83.029 85.333s37.632 85.333 83.029 85.333 83.029-38.699 83.029-85.333-37.12-85.333-83.029-85.333zM304.469 910.208h664.192c30.421 0 55.339-25.6 55.339-56.875s-24.917-56.875-55.339-56.875h-664.235c-30.421 0-55.339 25.6-55.339 56.875s24.917 56.875 55.339 56.875zM304.469 568.875h664.192c30.421 0 55.339-25.6 55.339-56.875s-24.917-56.875-55.339-56.875h-664.235c-30.421 0-55.339 25.6-55.339 56.875s24.917 56.875 55.339 56.875zM249.045 170.667c0 31.275 24.917 56.875 55.339 56.875h664.235c30.464 0 55.381-25.6 55.381-56.875s-24.917-56.875-55.339-56.875h-664.235c-30.421 0-55.339 25.6-55.339 56.875z"
+      ],
+      "grid": 0,
+      "tags": [
+        "list"
+      ],
+      "defaultCode": 59674
+    },
+    {
+      "paths": [
+        "M1024 910.208v-796.416c0-62.592-51.2-113.792-113.792-113.792h-796.416c-62.768 0.193-113.599 51.024-113.792 113.773l-0 0.019v796.416c0 62.592 51.2 113.792 113.792 113.792h796.416c62.592 0 113.792-51.2 113.792-113.792zM335.659 624.64l119.467 143.915 176.341-226.987c5.28-6.721 13.409-10.999 22.536-10.999 9.391 0 17.724 4.528 22.936 11.52l0.054 0.076 199.68 266.24c3.556 4.693 5.696 10.63 5.696 17.067 0 15.694-12.722 28.416-28.416 28.416-0.023 0-0.045-0-0.068-0l0.004 0h-682.069c-0.031 0-0.068 0-0.105 0-15.647 0-28.331-12.684-28.331-28.331 0-6.744 2.357-12.938 6.291-17.803l-0.042 0.053 141.653-182.016c5.168-6.985 13.377-11.463 22.633-11.463 8.743 0 16.553 3.997 21.702 10.262l0.039 0.049z"
+      ],
+      "grid": 0,
+      "tags": [
+        "grid"
+      ],
+      "defaultCode": 59675
     }
   ],
   "colorThemes": [],
@@ -458,10 +490,6 @@
         "whitespace": 50
       },
       "embed": false,
-      "showSelector": true,
-      "showMetrics": true,
-      "showMetadata": true,
-      "showVersion": true,
       "noie8": true,
       "ie7": false
     },

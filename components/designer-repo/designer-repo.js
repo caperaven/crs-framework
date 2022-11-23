@@ -1,9 +1,16 @@
+import "./../filter-header/filter-header.js";
+
 export class DesignerRepo extends crsbinding.classes.BindableElement{
     static get observedAttribute() {return ["data-repo"]};
 
     get html() {
         return import.meta.url.replace(".js", ".html");
     }
+
+    // constructor() {
+    //     super();
+    //     this.attachShadow({mode:"open"})
+    // }
 
     async connectedCallback() {
         await super.connectedCallback();

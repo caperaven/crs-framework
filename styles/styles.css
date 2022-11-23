@@ -42,3 +42,7 @@
 i {
     font-style: normal;
 }
+
+[aria-hidden = true] {
+    display: none !important;
+}
