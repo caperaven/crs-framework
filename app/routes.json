@@ -76,6 +76,11 @@
       "view": "tab-list"
     },
     {
+      "title": "checklist-box",
+      "hash": "#checklist-box",
+      "view": "checklist-box"
+    },
+    {
       "title": "About",
       "hash": "#about",
       "view": "about",

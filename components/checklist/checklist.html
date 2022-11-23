@@ -1,0 +1,15 @@
+<style>
+    :host {
+    }
+
+    ::slotted(li) {
+        list-style: none;
+    }
+
+    li[aria-selected="true"]::after {
+        content: "checkmark";
+        font-family: crsfrw;
+    }
+</style>
+
+<slot></slot>
