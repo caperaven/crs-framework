@@ -1,19 +1,42 @@
 <style>
     :host {
-        --cl-selected-fg: var(--blue);
+        --cl-selected-fg: var(--cl-primary);
+        --cl-bg: var(--grey-surface);
+        --cl-active-bg: var(--alt-fg);
 
         display: flex;
         flex-direction: row;
-        width: max-content;
+        width: 100%;
         height: max-content;
         box-sizing: border-box;
-        padding: var(--padding);
         position: relative;
+        background: var(--cl-bg);
+    }
 
+    ::slotted(*) {
+        height: 2.5rem;
+        width: fit-content;
+        left: 0;
+        top: 0;
+        padding: 0.5rem 0.625rem 0.75rem 0.625rem;
+        border-radius: 0.25rem 0.25rem 0 0;
+        text-align: center;
+    }
+
+    ::slotted(:first-child) {
+        margin-left: 0.25rem;
     }
 
     ::slotted([aria-selected="true"]) {
+        margin-top: 0.25rem;
+        border-bottom: 0.2rem solid var(--cl-selected-fg);
         color: var(--cl-selected-fg);
+        background: var(--cl-active-bg);
+        font-weight: bold;
+    }
+
+    ::slotted(:not([aria-selected="true"])) {
+        padding-top: 0.75rem;
     }
 </style>
 <slot></slot>
