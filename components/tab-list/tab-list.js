@@ -1,12 +1,13 @@
 export class TabList extends HTMLElement {
     //TODO KR:
-    // - set keyboard interaction NOTE: will be handled by process API
+    // - Set keyboard interaction NOTE: will be handled by process API
+    // - Overflow capabilities
+    // - Status icon on tabs
 
     #clickHandler = this.#clicked.bind(this);
     #target;
     #selected;
 
-    // Required for testing
     get clickedHandler() {
         return this.#clickHandler;
     }
@@ -37,6 +38,7 @@ export class TabList extends HTMLElement {
         await this.shadowRoot.removeEventListener("click", this.#clickHandler);
         this.#clickHandler = null;
         this.#target = null;
+        this.#selected = null;
     }
 
     async load() {
@@ -46,7 +48,6 @@ export class TabList extends HTMLElement {
             this.shadowRoot.addEventListener("click", this.#clickHandler);
             this.#target = document.querySelector(`#${this.getAttribute("for")}`);
             this.#initAccessibility();
-
         })
     }
 
