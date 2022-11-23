@@ -40,7 +40,7 @@ class OptionsToolbar extends HTMLElement {
 
         this.style.setProperty("--width", `${bounds.width}px`);
         this.style.setProperty("--height", `${bounds.height}px`);
-        this.#marker.style.translate = `${bounds.left - this.#bounds.left}px 8px`;
+        this.#marker.style.translate = `${bounds.left - this.#bounds.left}px 4px`;
 
         this.#previouslySelected?.removeAttribute("aria-selected");
         element.setAttribute("aria-selected", true);

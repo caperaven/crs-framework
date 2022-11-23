@@ -11,6 +11,11 @@
       "hasStyle": true
     },
     {
+      "title": "Icons",
+      "hash": "#icons",
+      "view": "icons"
+    },
+    {
       "title": "Form",
       "hash": "#form",
       "view": "form"
@@ -69,6 +74,11 @@
       "title": "Template Loading",
       "hash": "#template-loading",
       "view": "template-loading"
+    },
+    {
+      "title": "Tab List",
+      "hash": "#tab-list",
+      "view": "tab-list"
     },
     {
       "title": "About",
