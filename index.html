@@ -68,8 +68,10 @@
         import {initialize} from "./packages/crs-process-api/crs-process-api.js";
         import "./src/index.js";
         import IndexViewModel from "./index.js";
-
         import {HTMLParser} from "./packages/crs-schema/html/crs-html-parser.js";
+        import "/src/binding-extensions/markdown-template.js";
+        import "/src/binding-extensions/schema-template.js";
+
 
         window.addEventListener("load", async (event) => {
             await crs.modules.enableBinding([
