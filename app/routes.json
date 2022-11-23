@@ -11,6 +11,11 @@
       "hasStyle": true
     },
     {
+      "title": "Icons",
+      "hash": "#icons",
+      "view": "icons"
+    },
+    {
       "title": "Form",
       "hash": "#form",
       "view": "form"

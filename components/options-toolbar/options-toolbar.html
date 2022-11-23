@@ -1,17 +1,17 @@
 <style>
     :host {
-        --cl-selected-bg: white;
-        --cl-selected-fg: var(--blue);
+        --cl-bg: white;
+        --cl-selected-bg: var(--blue);
+        --cl-selected-fg: white;
         --width: 0;
         --height: 0;
 
         display: flex;
-        background: var(--grey-surface);
+        background: var(--cl-bg);
         border-radius: var(--radius);
         width: max-content;
         height: max-content;
         box-sizing: border-box;
-        padding: var(--padding);
         position: relative;
         user-select: none;
         border: var(--border);
@@ -22,16 +22,19 @@
         border: 0 !important;
         outline: none !important;
         background: transparent !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        font-weight: normal !important;
     }
 
     ::slotted(button:active) {
         color: var(--blue) !important;
+
     }
 
     ::slotted([aria-selected="true"]) {
-        background: var(--cl-selected-bg);
-        color: var(--cl-selected-fg);
-        font-weight: bold;
+        color: var(--cl-selected-fg) !important;
+        font-weight: bold !important;
     }
 
     .marker {
@@ -40,7 +43,7 @@
         left: 0;
         display: block;
         border-radius: var(--radius);
-        background: var(--cl-primary-alt);
+        background: var(--cl-selected-bg);
         height: var(--height);
         width: var(--width);
         filter: var(--drop-shadow);
@@ -48,6 +51,7 @@
 
     .parent {
         z-index: 1;
+        padding: var(--half-padding);
     }
 </style>
 
