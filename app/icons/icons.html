@@ -34,6 +34,12 @@
         display: none;
     }
 
+    #copy-text {
+        padding: var(--padding);
+        background: var(--green-s1);
+        border: var(--border);
+        border-color: var(--green);
+    }
 </style>
 
 <filter-header for="ul"></filter-header>
@@ -45,3 +51,5 @@
         </li>
     </template>
 </ul>
+
+<div id="copy-text">${copyText}</div>
