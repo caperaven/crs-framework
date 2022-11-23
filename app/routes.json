@@ -66,6 +66,11 @@
       "view": "template-loading"
     },
     {
+      "title": "Tab List",
+      "hash": "#tab-list",
+      "view": "tab-list"
+    },
+    {
       "title": "About",
       "hash": "#about",
       "view": "about",
