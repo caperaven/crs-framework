@@ -43,8 +43,10 @@ class OptionsToolbar extends HTMLElement {
         this.style.setProperty("--height", `${bounds.height}px`);
         this.#marker.style.translate = `${bounds.left - this.#bounds.left}px 4px`;
 
-        this.#previouslySelected?.removeAttribute("aria-selected");
-        element.setAttribute("aria-selected", true);
+        await crs.call("dom_collection", "toggle_selection", {
+           target: element
+        });
+
         this.dataset.value = element.dataset.value;
         this.#previouslySelected = element;
 
