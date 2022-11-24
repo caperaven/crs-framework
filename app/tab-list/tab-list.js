@@ -15,8 +15,8 @@ export default class TabList extends crsbinding.classes.ViewBase {
         await crsbinding.translations.add(translations, "tab");
     }
 
-    async connectedCallback() {
-        await super.connectedCallback();
+    async disconnectedCallback() {
         await crsbinding.translations.delete("tab");
+        await super.disconnectedCallback();
     }
 }
