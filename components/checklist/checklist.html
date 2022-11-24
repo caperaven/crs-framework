@@ -1,14 +1,42 @@
 <style>
     :host {
+        --tick-color: var(--cl-li-hover);
+        --check-selected-bg: var(--blue);
+        --check-unselected-border: var(--cl-text);
     }
 
     ::slotted(li) {
         list-style: none;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        user-select: none;
     }
 
-    li[aria-selected="true"]::after {
-        content: "checkmark";
+    ::slotted(li)::before {
+        display: inline-block;
+        margin-right: var(--padding);
         font-family: crsfrw;
+        height: 15px;
+        width: 15px;
+        border: var(--double-border-width) solid;
+        border-radius: var(--radius);
+    }
+
+    ::slotted(li[aria-selected="true"]) {
+        cursor: default;
+    }
+
+    ::slotted(li[aria-selected="true"])::before {
+        content: "checkmark";
+        color: var(--tick-color);
+        background: var(--check-selected-bg);
+        border-color: var(--check-selected-bg);
+    }
+
+    ::slotted(li:not([aria-selected="true"]))::before {
+        content: "";
+        border-color: var(--check-unselected-border);
     }
 </style>
 

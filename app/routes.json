@@ -76,9 +76,9 @@
       "view": "tab-list"
     },
     {
-      "title": "checklist-box",
-      "hash": "#checklist-box",
-      "view": "checklist-box"
+      "title": "checklist",
+      "hash": "#checklist",
+      "view": "checklist"
     },
     {
       "title": "About",

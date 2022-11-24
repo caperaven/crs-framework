@@ -9,10 +9,6 @@ export class Checklist extends HTMLElement {
         return import.meta.url.replace(".js", ".html");
     }
 
-    get selected() {
-        //returns all selected items
-    }
-
     constructor() {
         super();
         this.attachShadow({mode:"open"});
@@ -21,7 +17,6 @@ export class Checklist extends HTMLElement {
     async connectedCallback() {
         this.shadowRoot.innerHTML = await fetch(this.html).then(result => result.text());
         await this.load();
-
     }
 
     async disconnectedCallback() {
@@ -30,15 +25,14 @@ export class Checklist extends HTMLElement {
     }
 
     async load() {
-        await crsbinding.translations.parseElement(this);
-
-        requestAnimationFrame(() => {
+        requestAnimationFrame(async () => {
+            await crsbinding.translations.parseElement(this);
             this.shadowRoot.addEventListener("click", this.#clickHandler);
         })
     }
 
     async #clicked(event) {
-
+        event.target.setAttribute("aria-selected", !(event.target.getAttribute("aria-selected") === "true"));
     }
 }
 
