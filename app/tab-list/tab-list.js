@@ -12,12 +12,11 @@ export default class TabList extends crsbinding.classes.ViewBase {
             view3: "View 3"
         }
 
-        await crsbinding.translations.add(translations);
+        await crsbinding.translations.add(translations, "tab");
     }
 
     async connectedCallback() {
-        requestAnimationFrame( async () => {
-            await super.connectedCallback();
-        })
+        await super.connectedCallback();
+        await crsbinding.translations.delete("tab");
     }
 }
