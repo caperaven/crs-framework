@@ -76,6 +76,11 @@
       "view": "tab-list"
     },
     {
+      "title": "Training Shadow Dom",
+      "hash": "#training",
+      "view": "training"
+    },
+    {
       "title": "About",
       "hash": "#about",
       "view": "about",
