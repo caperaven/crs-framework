@@ -13,10 +13,11 @@ export default class TabList extends crsbinding.classes.ViewBase {
         }
 
         await crsbinding.translations.add(translations);
-        await crsbinding.translations.add(translations, "context");
     }
 
     async connectedCallback() {
-        await super.connectedCallback();
+        requestAnimationFrame( async () => {
+            await super.connectedCallback();
+        })
     }
 }
