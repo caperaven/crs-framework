@@ -1,6 +1,4 @@
-import "./../../components/checklist/checklist.js";
-
-export default class Checklist extends crsbinding.classes.ViewBase {
+export default class CheckList extends crsbinding.classes.ViewBase {
     async preLoad() {
         const translations = {
             item1: "Item 1",
@@ -15,5 +13,11 @@ export default class Checklist extends crsbinding.classes.ViewBase {
     async disconnectedCallback() {
         await crsbinding.translations.delete("checklist");
         await super.disconnectedCallback();
+    }
+
+    async getAll() {
+        const result = Array.from(this.checklist.querySelectorAll("[aria-selected='true']"));
+        const dataValues = result.map(item => item.dataset.value);
+        console.log(dataValues);
     }
 }

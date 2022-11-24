@@ -1,8 +1,8 @@
 <style>
     :host {
-        --tick-color: var(--cl-li-hover);
+        --tick-color: white;
         --check-selected-bg: var(--blue);
-        --check-unselected-border: var(--cl-text);
+        --check-default-border: var(--grey);
     }
 
     ::slotted(li) {
@@ -11,20 +11,18 @@
         align-items: center;
         cursor: pointer;
         user-select: none;
+        margin: 0.5rem 0;
     }
 
     ::slotted(li)::before {
-        display: inline-block;
-        margin-right: var(--padding);
+        content: "";
         font-family: crsfrw;
-        height: 15px;
-        width: 15px;
+        height: 1rem;
+        width:  1rem;
         border: var(--double-border-width) solid;
         border-radius: var(--radius);
-    }
-
-    ::slotted(li[aria-selected="true"]) {
-        cursor: default;
+        border-color: var(--check-default-border);
+        margin-right: var(--padding);
     }
 
     ::slotted(li[aria-selected="true"])::before {
@@ -32,11 +30,6 @@
         color: var(--tick-color);
         background: var(--check-selected-bg);
         border-color: var(--check-selected-bg);
-    }
-
-    ::slotted(li:not([aria-selected="true"]))::before {
-        content: "";
-        border-color: var(--check-unselected-border);
     }
 </style>
 
