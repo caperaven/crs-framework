@@ -1,5 +1,6 @@
 <style>
     :host {
+        --close-display: none;
         display: flex;
         flex-direction: row;
         width: 100%;
@@ -36,6 +37,10 @@
         border-left: var(--border);
         cursor: pointer;
     }
+
+    #btnClose {
+        display: var(--close-display);
+    }
 </style>
 
 <svg style="display: none">
@@ -49,5 +54,5 @@
 
 <svg class="filter-icon"><use href="#filter"></use></svg>
 <input placeholder="Type here to filter" keyup.call="filter"/>
-<button aria-label="close" click.call="close"><svg><use href="#close"></use></svg></button>
+<button id="btnClose" aria-label="close" click.call="close"><svg><use href="#close"></use></svg></button>
 
