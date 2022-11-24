@@ -17,8 +17,8 @@ class OptionsToolbar extends HTMLElement {
             this.#bounds = this.getBoundingClientRect();
             this.#marker = this.shadowRoot.querySelector(".marker");
 
-            const selectedItem = this.querySelector(`[data-value=${this.dataset.value}]`) ?? this.firstElementChild;
-            this.#setSelected(selectedItem);
+            const selectedItem = this.querySelector(`[aria-selected='true']`) ?? this.firstElementChild;
+            this.#setSelected(selectedItem, false);
             this.addEventListener("click", this.#clickHandler);
 
             const timeout = setTimeout(() => {
@@ -36,7 +36,7 @@ class OptionsToolbar extends HTMLElement {
         this.#previouslySelected = null;
     }
 
-    async #setSelected(element) {
+    async #setSelected(element, dispatchEvent= true) {
         const bounds = element.getBoundingClientRect();
 
         this.style.setProperty("--width", `${bounds.width}px`);
@@ -48,7 +48,9 @@ class OptionsToolbar extends HTMLElement {
         this.dataset.value = element.dataset.value;
         this.#previouslySelected = element;
 
-        this.dispatchEvent(new CustomEvent("change", {detail: element.dataset.value}));
+        if (dispatchEvent === true) {
+            this.dispatchEvent(new CustomEvent("change", {detail: element.dataset.value}));
+        }
     }
 
     async #click(event) {
