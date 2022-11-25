@@ -140,6 +140,11 @@ function getAttribute(attr) {
     if (this.attributes.length == 0) return;
 
     const result = this.attributes.find(item => item.name == attr);
+
+    if (result) {
+        result.nodeValue = result.value;
+    }
+
     return result?.value;
 }
 

@@ -1,1 +1,46 @@
-class n{static async perform(e,a,t,i){await this[e.action]?.(e,a,t,i)}static async filter_children(e,a,t,i){const s=await crs.process.getValue(e.args.filter,a,t,i);await l(e.args.element,s)}static async toggle_selection(e,a,t,i){const s=await crs.dom.get_element(e.args.target,a,t,i),c=s.parentElement.querySelector("[aria-selected='true']");c?.removeAttribute("aria-selected"),s.setAttribute("aria-selected","true")}}async function l(r,e){r=await crs.dom.get_element(r);const a=e.length>0;for(let t of r.children){if(t.removeAttribute("aria-hidden"),t.tagName=="HR"&&a){t.setAttribute("aria-hidden","true");continue}t.dataset.tags&&a&&t.dataset.tags.indexOf(e)==-1&&t.setAttribute("aria-hidden","true")}}crs.intent.dom_collection=n;export{n as DomCollectionActions};
+/**
+ * This contains actions for working with lists.
+ * Filtering, sorting ...
+ */
+
+export class DomCollectionActions {
+    static async perform(step, context, process, item) {
+        await this[step.action]?.(step, context, process, item);
+    }
+
+    static async filter_children(step, context, process, item) {
+        const filterString = await crs.process.getValue(step.args.filter, context, process, item);
+        await filter(step.args.element, filterString);
+    }
+
+    static async toggle_selection(step, context, process, item) {
+        const target = await crs.dom.get_element(step.args.target, context, process, item);
+        const selectedElement = target.parentElement.querySelector("[aria-selected='true']");
+
+        if(selectedElement != null) {
+            selectedElement.removeAttribute("aria-selected");
+        }
+
+        target.setAttribute("aria-selected", "true");
+    }
+}
+
+async function filter(element, filter) {
+    element = await crs.dom.get_element(element);
+    const hasFilter = filter.length > 0;
+
+    for (let child of element.children) {
+        child.removeAttribute("aria-hidden");
+
+        if (child.tagName == "HR" && hasFilter) {
+            child.setAttribute("aria-hidden", "true");
+            continue;
+        }
+
+        if (child.dataset.tags && hasFilter && child.dataset.tags.indexOf(filter) == -1) {
+            child.setAttribute("aria-hidden", "true");
+        }
+    }
+}
+
+crs.intent.dom_collection = DomCollectionActions;
