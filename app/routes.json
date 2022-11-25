@@ -81,6 +81,11 @@
       "view": "tab-list"
     },
     {
+      "title": "Check List",
+      "hash": "#check-list",
+      "view": "check-list"
+    },
+    {
       "title": "About",
       "hash": "#about",
       "view": "about",
