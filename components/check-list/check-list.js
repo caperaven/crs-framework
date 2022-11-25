@@ -19,11 +19,6 @@ export class Checklist extends HTMLElement {
         await this.load();
     }
 
-    async disconnectedCallback() {
-        await this.shadowRoot.removeEventListener("click",this.#clickHandler);
-        this.#clickHandler = null;
-    }
-
     async load() {
         requestAnimationFrame(async () => {
             await crsbinding.translations.parseElement(this);
@@ -31,8 +26,15 @@ export class Checklist extends HTMLElement {
         })
     }
 
+    async disconnectedCallback() {
+        await this.shadowRoot.removeEventListener("click",this.#clickHandler);
+        this.#clickHandler = null;
+    }
+
     async #clicked(event) {
-        event.target.setAttribute("aria-selected", !(event.target.getAttribute("aria-selected") === "true"));
+        const target = event.target;
+        await crs.call("dom_collection", "toggle_selection", {target: target, multiple: true});
+        this.dispatchEvent(new CustomEvent('selection-changed', {detail: {value: target.dataset.value, selected: target.getAttribute("aria-selected") == "true"}}));
     }
 }
 

@@ -1,8 +1,7 @@
 <style>
     :host {
-        --tick-color: white;
         --check-selected-bg: var(--blue);
-        --check-default-border: var(--grey);
+        user-select: none;
     }
 
     ::slotted(li) {
@@ -10,26 +9,20 @@
         display: flex;
         align-items: center;
         cursor: pointer;
-        user-select: none;
-        margin: 0.5rem 0;
+        margin: var(--padding) 0;
     }
 
     ::slotted(li)::before {
-        content: "";
+        content: "check-box-blank";
         font-family: crsfrw;
         height: 1rem;
         width:  1rem;
-        border: var(--double-border-width) solid;
-        border-radius: var(--radius);
-        border-color: var(--check-default-border);
         margin-right: var(--padding);
     }
 
     ::slotted(li[aria-selected="true"])::before {
-        content: "checkmark";
-        color: var(--tick-color);
-        background: var(--check-selected-bg);
-        border-color: var(--check-selected-bg);
+        content: "check-box";
+        color: var(--check-selected-bg);
     }
 </style>
 

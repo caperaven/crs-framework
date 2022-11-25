@@ -10,14 +10,17 @@ export default class CheckList extends crsbinding.classes.ViewBase {
         await crsbinding.translations.add(translations, "checklist");
     }
 
+    async connectedCallback() {
+        await super.connectedCallback();
+    }
+
     async disconnectedCallback() {
         await crsbinding.translations.delete("checklist");
         await super.disconnectedCallback();
     }
 
     async getAll() {
-        const result = Array.from(this.checklist.querySelectorAll("[aria-selected='true']"));
-        const dataValues = result.map(item => item.dataset.value);
-        console.log(dataValues);
+        const dataValues = await crs.call("dom_collection", "get_selected_state", {target:  document.querySelector("check-list")});
+        console.log(dataValues)
     }
 }
