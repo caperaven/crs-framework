@@ -72,7 +72,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
             requestAnimationFrame(async () => await this.#render());
         }
     }
-    
+
     async selectedMonthChanged(newValue) {
         this.#month = newValue.dataset.value === undefined ? this.#month = this.#month : newValue.dataset.value;
         await this.#setMonthProperty();
