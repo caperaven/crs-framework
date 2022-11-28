@@ -2,13 +2,13 @@
   "selection": [
     {
       "order": 6,
-      "name": "drag-vert",
+      "name": "move",
       "prevSize": 32,
       "ligatures": "move"
     },
     {
       "order": 7,
-      "name": "add-circle-outline",
+      "name": "add",
       "prevSize": 32,
       "ligatures": "add"
     },
@@ -44,7 +44,7 @@
     },
     {
       "order": 40,
-      "name": "check-circle-outline",
+      "name": "check-outline",
       "prevSize": 32,
       "ligatures": "check-outline"
     },
@@ -86,7 +86,7 @@
     },
     {
       "order": 48,
-      "name": "filter",
+      "name": "filter-outline",
       "prevSize": 32,
       "ligatures": "filter-outline"
     },
@@ -98,13 +98,13 @@
     },
     {
       "order": 17,
-      "name": "minus-circle",
+      "name": "minus-fill",
       "prevSize": 32,
       "ligatures": "minus-fill"
     },
     {
       "order": 16,
-      "name": "minus-circle-outline",
+      "name": "minus-outline",
       "prevSize": 32,
       "ligatures": "minus-outline"
     },
@@ -122,25 +122,25 @@
     },
     {
       "order": 13,
-      "name": "resize-handle",
+      "name": "resize",
       "prevSize": 32,
       "ligatures": "resize"
     },
     {
       "order": 12,
-      "name": "translations",
+      "name": "translations-a",
       "prevSize": 32,
       "ligatures": "translations-a"
     },
     {
       "order": 11,
-      "name": "translations-raw",
+      "name": "translations-b",
       "prevSize": 32,
       "ligatures": "translations-b"
     },
     {
       "order": 18,
-      "name": "default-status-outline",
+      "name": "status",
       "prevSize": 32,
       "ligatures": "status"
     },
@@ -152,7 +152,7 @@
     },
     {
       "order": 52,
-      "name": "check",
+      "name": "checkmark",
       "prevSize": 32,
       "ligatures": "checkmark"
     },
@@ -169,7 +169,7 @@
       "ligatures": "list"
     },
     {
-      "order": 56,
+      "order": 59,
       "name": "grid",
       "prevSize": 32,
       "ligatures": "grid"
