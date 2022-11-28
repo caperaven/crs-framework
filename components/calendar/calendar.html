@@ -57,11 +57,25 @@
     }
 
     #calendar-toolbar #year {
+        position: relative;
         width: 5rem;
     }
 
     #calendar-toolbar #month{
-        width: 7rem;
+        position:relative;
+        width: 8rem;
+    }
+
+    #calendar-toolbar #month:after{
+        content: url("./../../resources/svg/chevron-down.svg");
+        position: absolute;
+        top: 10px;
+    }
+
+    #calendar-toolbar #year:after{
+        content: url("./../../resources/svg/chevron-down.svg");
+        position: absolute;
+        top: 10px;
     }
 
     .current-view {
