@@ -74,7 +74,7 @@
     },
     {
       "order": 50,
-      "name": "date-and-time",
+      "name": "date-time",
       "prevSize": 32,
       "ligatures": "date-time"
     },
@@ -151,7 +151,7 @@
       "ligatures": "clock"
     },
     {
-      "order": 52,
+      "order": 60,
       "name": "checkmark",
       "prevSize": 32,
       "ligatures": "checkmark"
