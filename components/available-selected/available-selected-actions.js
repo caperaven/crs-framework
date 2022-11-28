@@ -1,5 +1,3 @@
-import "./available-selected.js";
-
 export class AvailableSelectedActions {
     static async perform(step, context, process, item) {
         await this[step.action](step, context, process, item);
@@ -24,7 +22,7 @@ export class AvailableSelectedActions {
     }
 
     static async get_records(step, context, process, item) {
-        const element = crs.dom.getElement(step.args.element)
+        const element = crs.dom.get_element(step.args.element)
         return element.data
     }
 }

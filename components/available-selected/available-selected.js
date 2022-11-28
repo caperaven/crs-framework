@@ -18,6 +18,7 @@ export class AvailableSelected extends HTMLElement {
 
     set data(newValue) {
         this.#data = newValue;
+        this.update();
     }
 
     get data() {
