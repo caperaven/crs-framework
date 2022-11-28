@@ -1,0 +1,39 @@
+<style>
+    :host {
+        --remove: var(--red);
+        --add: var(--green);
+    }
+
+    :host li {
+        list-style: none;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: var(--input-height);
+        padding-left: var(--padding);
+        user-select: none;
+    }
+
+    :host .selected:after, :host .available:after {
+        font-family: crsfrw;
+        height: 1rem;
+        width:  1rem;
+        padding-right: var(--padding);
+        user-select: none;
+        cursor: pointer;
+    }
+
+    :host .selected:after {
+        content: "minus-outline";
+        color: var(--remove);
+    }
+
+    :host .available:after {
+        content: "add-circle-outline";
+        color: var(--add);
+    }
+</style>
+<tab-list aria-role="tablist" for="#available-selected">
+    <tab data-view="selected" aria-selected="true">Selected</tab>
+    <tab data-view="available">Available</tab>
+</tab-list>
