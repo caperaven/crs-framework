@@ -7,6 +7,10 @@
         --size: 3rem;
         --text-size: 1.0625rem;
         --margin-size: 0.59rem;
+        --chevron-padding: 0.3rem;
+        --chevron-down-icon: "\e907";
+        --chevron-up-icon: "\e908";
+        --icon-font-family: crsfrw;
 
         display: grid;
         grid-template-rows: auto 1fr;
@@ -63,20 +67,15 @@
     }
 
     #calendar-toolbar #year:after {
-        font-family: crsfrw;
-        content: "\e907";
-        padding-left: 0.2rem;
+        font-family: var(--icon-font-family);
+        content: var(--chevron-down-icon);
+        padding-left: var(--chevron-padding);
     }
 
     #calendar-toolbar #month:after {
-        font-family: crsfrw;
-        content: "\e907";
-        padding-left: 0.2rem;
-    }
-
-    .icon {
-        font-family: crsfrw;
-        font-size: 1.5rem;
+        font-family: var(--icon-font-family);
+        content: var(--chevron-down-icon);
+        padding-left: var(--chevron-padding);
     }
 
     .current-view {
@@ -85,7 +84,7 @@
     }
 
     .current-view:after {
-        content: "\e908" !important;
+        content: var(--chevron-up-icon) !important;
     }
 
     #chevron-right, #chevron-left {

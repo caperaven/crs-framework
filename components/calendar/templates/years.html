@@ -35,9 +35,16 @@
     #years > div:hover {
         border: var(--border);
     }
+
     #years > [aria-selected = "true"]{
         color: var(--blue);
         background: var(--blue-s2);
+    }
+
+    #years > [aria-selected = "true"]:after {
+        content: '\e919';
+        font-family: var(--icon-font-family);
+        padding-left: var(--chevron-padding);
     }
 
 </style>

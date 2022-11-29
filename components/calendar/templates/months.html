@@ -24,17 +24,16 @@
     #months > div:hover {
         border: var(--border);
     }
-    #months > [aria-selected = "true"]:after
-    {
-        content: '\2713';
-        display: inline-block;
-        color: var(--blue);
-        padding: 0 6px 0 6px;
-    }
 
     #months > [aria-selected = "true"] {
         color: var(--blue);
         background: var(--blue-s2);
+    }
+
+    #months > [aria-selected = "true"]:after {
+        content: '\e919';
+        font-family: var(--icon-font-family);
+        padding-left: var(--chevron-padding);
     }
 </style>
 
