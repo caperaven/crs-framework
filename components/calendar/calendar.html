@@ -31,8 +31,6 @@
         background: transparent;
         width: var(--size);
         height: var(--size);
-        font-size: 1.875rem;
-        font-weight: bold;
         cursor: pointer;
         border: none;
     }
@@ -57,25 +55,28 @@
     }
 
     #calendar-toolbar #year {
-        position: relative;
         width: 5rem;
     }
 
-    #calendar-toolbar #month{
-        position:relative;
+    #calendar-toolbar #month {
         width: 8rem;
     }
 
-    #calendar-toolbar #month:after{
-        content: url("./../../resources/svg/chevron-down.svg");
-        position: absolute;
-        top: 10px;
+    #calendar-toolbar #year:after {
+        font-family: crsfrw;
+        content: "\e907";
+        padding-left: 0.2rem;
     }
 
-    #calendar-toolbar #year:after{
-        content: url("./../../resources/svg/chevron-down.svg");
-        position: absolute;
-        top: 10px;
+    #calendar-toolbar #month:after {
+        font-family: crsfrw;
+        content: "\e907";
+        padding-left: 0.2rem;
+    }
+
+    .icon {
+        font-family: crsfrw;
+        font-size: 1.5rem;
     }
 
     .current-view {
@@ -83,7 +84,7 @@
         background: var(--blue) !important;
     }
 
-    #chevron-right, #chevron-left{
+    #chevron-right, #chevron-left {
         width: 24px;
         height: 24px;
         rotate: 90deg;
@@ -102,7 +103,10 @@
 </svg>
 
 <template id="tplCell">
-    <div role="cell" data-date="${date}" classlist.case="current == false: 'non-current-day', new Date().toLocaleDateString() == date.toLocaleDateString(): 'today'">${number}</div>
+    <div role="cell" data-date="${date}"
+         classlist.case="current == false: 'non-current-day', new Date().toLocaleDateString() == date.toLocaleDateString(): 'today'">
+        ${number}
+    </div>
 </template>
 
 <div id="calendar-toolbar" role="toolbar">
