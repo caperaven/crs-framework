@@ -194,7 +194,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         const option = this.#optionById(li.id);
 
         if (option.type != null) {
-            await crs.call(option.type, option.action, option.args);
+            crs.call(option.type, option.action, option.args);
         }
 
         this.dataset.value = option.id;
