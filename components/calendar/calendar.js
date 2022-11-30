@@ -43,7 +43,6 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         const date = new Date(newValue);
         this.#month = date.getMonth();
         this.#year = date.getFullYear();
-
         await this.#setMonthProperty();
         await this.#setYearProperty();
         await this.#render();
@@ -57,12 +56,14 @@ export default class Calendar extends crsbinding.classes.BindableElement {
 
     async #setMonthProperty() {
         this.setProperty("month", new Date(this.#year, this.#month).toLocaleString('en-US', {month: 'long'}));
-        this.setAttribute("data-month", parseInt(this.#month) + 1);
     }
 
     async #setYearProperty() {
         this.setProperty("year", this.#year);
-        this.setAttribute("data-year", parseInt(this.#year));
+    }
+
+    async #setMonthAndYearStyle(newValue) {
+        this.shadowRoot.querySelector(`[data-value = '${newValue}']`).setAttribute("aria-selected", "true");
     }
 
     async viewLoaded() {
@@ -71,6 +72,9 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         if (currentView === "default") {
             requestAnimationFrame(async () => await this.#render());
         }
+
+        currentView === "months" ? await this.#setMonthAndYearStyle(this.#month) : null;
+        currentView === "years" ? await this.#setMonthAndYearStyle(this.#month) : null;
     }
 
     async selectedMonthChanged(newValue) {
@@ -102,6 +106,5 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         await this.#setMonthProperty();
         await this.#render();
     }
-
 }
 customElements.define("calendar-component", Calendar);
