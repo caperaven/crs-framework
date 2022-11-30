@@ -39,6 +39,7 @@ export class AvailableSelected extends HTMLElement {
         requestAnimationFrame( async () => {
             this.shadowRoot.addEventListener("click", this.#clickHandler);
             this.#tablist = this.shadowRoot.querySelector("tab-list");
+            await crs.call("component", "notify_ready", {element: this});
 
             if (this.data != null) await this.update("selected");
             await crsbinding.translations.parseElement(this);
@@ -55,9 +56,8 @@ export class AvailableSelected extends HTMLElement {
     }
 
     async update(defaultView) {
-        if (this.#perspectiveElement != null) {
-            this.shadowRoot.removeChild(this.#perspectiveElement);
-            this.#perspectiveElement = await this.#perspectiveElement.dispose();
+        if (this.dataset.ready != "true") {
+            await this.load();
         }
 
         const selectedTemplate = await this.#getTemplate("selected");
@@ -67,21 +67,23 @@ export class AvailableSelected extends HTMLElement {
         const perspectiveElement = document.createElement("perspective-element");
         perspectiveElement.appendChild(selectedTemplate);
         perspectiveElement.appendChild(availableTemplate);
-        this.shadowRoot.appendChild(perspectiveElement);
 
-        this.#perspectiveElement = this.shadowRoot.querySelector("perspective-element");
+        if (this.#perspectiveElement != null) {
+            this.shadowRoot.removeChild(this.#perspectiveElement);
+            this.#perspectiveElement = await this.#perspectiveElement.dispose();
+        }
+
+        this.shadowRoot.appendChild(perspectiveElement);
+        this.#perspectiveElement = perspectiveElement;
         this.#tablist.target = this.#perspectiveElement;
     }
 
     async #getTemplate(collection) {
-        const template = document.createElement("template");
-        const frag = await ItemsFactory.createElements({
+        const templateToCreate = this.querySelector(`[data-id='${collection}']`);
+        const template = await ItemsFactory.createElements({
             template_id: collection,
-            template: this.querySelector(`[data-id='${collection}']`),
+            template: templateToCreate,
         }, this.data[collection]);
-        template.content.appendChild(frag);
-
-        template.setAttribute("data-id", collection);
 
         return template;
     }

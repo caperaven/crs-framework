@@ -24,6 +24,6 @@ export default class AvailableSelected extends crsbinding.classes.ViewBase {
         ]
 
         const availableSelected = document.querySelector("available-selected");
-        await crs.call("available_selected", "set_records", {element: availableSelected, items: data, id: "title"});
+        await crs.call("available_selected", "set_records", {element: availableSelected, items: data});
     }
 }

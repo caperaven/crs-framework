@@ -6,7 +6,7 @@ export class AvailableSelectedActions {
     static async set_records(step, context, process, item) {
         const element = await crs.dom.get_element(step.args.element, context, process, item);
         const items = await crs.process.getValue(step.args.items);
-        const idField = await crs.process.getValue(step.args.id || "id");
+        const idField = element.dataset.idField || "id";
 
         const data = {
             available: [],
@@ -18,7 +18,16 @@ export class AvailableSelectedActions {
             item.selected === true ? data.selected.push(item) : data.available.push(item);
         }
 
-        element.data = data;
+        const ready = async () => {
+            element.removeEventListener("ready", ready);
+            element.data = data;
+        }
+
+        if (element.dataset.ready == "true") {
+            await ready();
+        } else {
+            element.addEventListener("ready", ready);
+        }
     }
 
     static async get_records(step, context, process, item) {

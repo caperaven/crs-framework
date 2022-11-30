@@ -12,12 +12,15 @@ export class ItemsFactory {
     }
 
     static async createElements(options, records) {
+        const template = document.createElement("template");
         const docFrag = document.createDocumentFragment();
         for (const record of records) {
             const elementFrag = await this.createElement(options, record);
             docFrag.appendChild(elementFrag);
         }
+        template.content.appendChild(docFrag);
+        template.dataset.id = options.template.dataset.id;
 
-        return docFrag;
+        return template;
     }
 }
