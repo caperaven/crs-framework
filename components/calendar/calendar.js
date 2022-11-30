@@ -10,7 +10,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         return import.meta.url.replace(".js", ".html");
     }
 
-    static get observedAttributes(){
+    static get observedAttributes() {
         return ["data-start"];
     }
 
@@ -39,7 +39,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         await this.#setYearProperty();
     }
 
-    async attributeChangedCallback(name, oldValue, newValue){
+    async attributeChangedCallback(name, oldValue, newValue) {
         const date = new Date(newValue);
         this.#month = date.getMonth();
         this.#year = date.getFullYear();
@@ -62,8 +62,10 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         this.setProperty("year", this.#year);
     }
 
-    async #setMonthAndYearStyle(newValue) {
-        this.shadowRoot.querySelector(`[data-value = '${newValue}']`).setAttribute("aria-selected", "true");
+    async #setMonthAndYearAria(newValue) {
+        const tempElement = this.shadowRoot.querySelector(`[data-value = '${newValue}']`);
+        await crs.call("dom_collection", "toggle_selection", {target: tempElement});
+        newValue === this.#year ? tempElement.scrollIntoView() : null;
     }
 
     async viewLoaded() {
@@ -72,25 +74,20 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         if (currentView === "default") {
             requestAnimationFrame(async () => await this.#render());
         }
-
-        currentView === "months" ? await this.#setMonthAndYearStyle(this.#month) : null;
-        currentView === "years" ? await this.#setMonthAndYearStyle(this.#month) : null;
+        currentView === "months" ? await this.#setMonthAndYearAria(this.#month) : null;
+        currentView === "years" ? await this.#setMonthAndYearAria(this.#year) : null;
     }
 
     async selectedMonthChanged(newValue) {
-        this.#month = newValue.dataset.value === undefined ? this.#month = this.#month : newValue.dataset.value;
+        this.#month = newValue == null ? this.#month = this.#month : newValue;
         await this.#setMonthProperty();
-        await crs.call("dom_collection", "toggle_selection", {
-            target: newValue
-        });
+        await this.#setMonthAndYearAria(this.#month);
     }
 
     async selectedYearChanged(newValue) {
-        this.#year = newValue.dataset.value === undefined ? this.#year = parseInt(this.#year) : parseInt(newValue.dataset.value);
+        this.#year = newValue == null ? this.#year = parseInt(this.#year) : parseInt(newValue);
         await this.#setYearProperty();
-        await crs.call("dom_collection", "toggle_selection", {
-            target: newValue
-        });
+        await this.#setMonthAndYearAria(this.#year);
     }
 
     async goToNextMonth() {
