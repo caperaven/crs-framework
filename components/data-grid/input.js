@@ -20,7 +20,7 @@ async function click(event) {
 
     // click on selection header
     if (event.target.classList.contains("selection")) {
-        const checked = event.target.textContent == "check";
+        const checked = event.target.textContent == "check-box-blank";
         await markAllSelected(this, !checked);
         return event.target.textContent = checked ? "uncheck" : "check";
     }
