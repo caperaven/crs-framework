@@ -11,7 +11,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     static get observedAttributes() {
-        return ["data-start"];
+        return ["data-start", "data-month", "data-year", "selectedView"];
     }
 
     async connectedCallback() {
@@ -40,12 +40,16 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     async attributeChangedCallback(name, oldValue, newValue) {
-        const date = new Date(newValue);
-        this.#month = date.getMonth();
-        this.#year = date.getFullYear();
-        await this.#setMonthProperty();
-        await this.#setYearProperty();
-        await this.#render();
+       if (name === "data-start") {
+           const date = new Date(newValue);
+           this.#month = date.getMonth();
+           this.#year = date.getFullYear();
+           await this.#setMonthProperty();
+           await this.#setYearProperty();
+           await this.#render();
+       }
+       name === "data-month" && this.getProperty("selectedView") === "months" ? await this.#setMonthAndYearAria(this.#month) : null;
+       name === "data-year" && this.getProperty("selectedView") === "years" ? await this.#setMonthAndYearAria(this.#year) : null;
     }
 
     async #render() {
@@ -56,10 +60,12 @@ export default class Calendar extends crsbinding.classes.BindableElement {
 
     async #setMonthProperty() {
         this.setProperty("month", new Date(this.#year, this.#month).toLocaleString('en-US', {month: 'long'}));
+        this.setAttribute("data-month", this.#month + 1);
     }
 
     async #setYearProperty() {
         this.setProperty("year", this.#year);
+        this.setAttribute("data-year", this.#year);
     }
 
     async #setMonthAndYearAria(newValue) {
@@ -81,13 +87,11 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     async selectedMonthChanged(newValue) {
         this.#month = newValue == null ? this.#month = this.#month : newValue;
         await this.#setMonthProperty();
-        await this.#setMonthAndYearAria(this.#month);
     }
 
     async selectedYearChanged(newValue) {
         this.#year = newValue == null ? this.#year = parseInt(this.#year) : parseInt(newValue);
         await this.#setYearProperty();
-        await this.#setMonthAndYearAria(this.#year);
     }
 
     async goToNextMonth() {
