@@ -16,8 +16,9 @@ class OptionsToolbar extends HTMLElement {
         requestAnimationFrame(() => {
             this.#bounds = this.getBoundingClientRect();
             this.#marker = this.shadowRoot.querySelector(".marker");
-            const firstItem = this.firstElementChild;
-            this.#setSelected(firstItem);
+
+            const selectedItem = this.querySelector(`[aria-selected='true']`) ?? this.firstElementChild;
+            this.#setSelected(selectedItem, false);
             this.addEventListener("click", this.#clickHandler);
 
             const timeout = setTimeout(() => {
@@ -35,19 +36,23 @@ class OptionsToolbar extends HTMLElement {
         this.#previouslySelected = null;
     }
 
-    async #setSelected(element) {
+    async #setSelected(element, dispatchEvent= true) {
         const bounds = element.getBoundingClientRect();
 
         this.style.setProperty("--width", `${bounds.width}px`);
         this.style.setProperty("--height", `${bounds.height}px`);
         this.#marker.style.translate = `${bounds.left - this.#bounds.left}px 4px`;
 
-        this.#previouslySelected?.removeAttribute("aria-selected");
-        element.setAttribute("aria-selected", true);
+        await crs.call("dom_collection", "toggle_selection", {
+           target: element
+        });
+
         this.dataset.value = element.dataset.value;
         this.#previouslySelected = element;
 
-        this.dispatchEvent(new CustomEvent("change", { detail: element.dataset.value }));
+        if (dispatchEvent === true) {
+            this.dispatchEvent(new CustomEvent("change", {detail: element.dataset.value}));
+        }
     }
 
     async #click(event) {

@@ -27,11 +27,11 @@ export default class ContextMenu extends crsbinding.classes.ViewBase {
                 { id: "item3", title: "Calendar", tags: "calendar", icon: "calendar", type: "console", action: "log", args: { message: "Calendar "} },
                 { title: "-" },
                 { id: "item4", title: "Condition", tags: "condition", icon: "condition", type: "console", action: "log", args: { message: "Condition "} },
-                { id: "item5", title: "Date and Time", tags: "date time", icon: "date-time", type: "console", action: "log", args: { message: "Date and Time "} },
+                { id: "item5", title: "Date and Time", tags: "date time", icon: "date-and-time", type: "console", action: "log", args: { message: "Date and Time "} },
                 { id: "item6", title: "Lookup", tags: "lookup", icon: "lookup", type: "console", action: "log", args: { message: "Lookup "} },
                 { title: "-" },
                 { id: "item4", title: "Condition", tags: "condition", icon: "condition", type: "console", action: "log", args: { message: "Condition "} },
-                { id: "item5", title: "Date and Time", tags: "date time", icon: "date-time", type: "console", action: "log", args: { message: "Date and Time "} },
+                { id: "item5", title: "Date and Time", tags: "date time", icon: "date-and-time", type: "console", action: "log", args: { message: "Date and Time "} },
                 { id: "item6", title: "Lookup", tags: "lookup", icon: "lookup", type: "console", action: "log", args: { message: "Lookup "} }
             ],
         }, { status: "a" });

@@ -140,6 +140,11 @@ function getAttribute(attr) {
     if (this.attributes.length == 0) return;
 
     const result = this.attributes.find(item => item.name == attr);
+
+    if (result) {
+        result.nodeValue = result.value;
+    }
+
     return result?.value;
 }
 
@@ -217,8 +222,18 @@ function cloneNode() {
 }
 
 function appendChild(element) {
-    this.children.push(element);
-    element.parentElement = this;
+    if (element.nodeName != "DOCUMENT-FRAGMENT") {
+        this.children.push(element);
+        element.parentElement = this;
+        return element;
+    }
+
+    // move children of document fragment to this children
+    for (const child of element.children) {
+        this.children.push(child);
+        child.parentElement = this;
+    }
+
     //TODO: We need functionality like this to truly represent some test scenarios
     // if (element.connectedCallback != null) {
     //     element.connectedCallback();

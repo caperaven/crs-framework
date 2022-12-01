@@ -4,7 +4,7 @@ export async function addSelectionFeature(grid) {
     await crs.call("grid_columns", "add_columns", {
         element: grid,
         columns: [
-            { title: "uncheck", field: "_selected:selected()", width: 34, classes: ["selection"]}
+            { title: "check-box-blank", field: "_selected:selected()", width: 34, classes: ["selection"]}
         ],
     });
 }
@@ -14,7 +14,7 @@ export async function markSelected(grid, cell) {
     const columnIndex = Array.from(cell.parentNode.children).indexOf(cell);
     const column = grid.columns[columnIndex];
 
-    cell.textContent = cell.textContent == "check" ? "uncheck" : "check";
+    cell.textContent = cell.textContent == "check" ? "check-box-blank" : "check";
     await grid.modifyRecord(rowIndex, column.field, cell.textContent, column.convert);
 }
 

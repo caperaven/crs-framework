@@ -33,11 +33,10 @@ export class TabList extends HTMLElement {
     }
 
     async load() {
-        await crsbinding.translations.parseElement(this);
-
-        requestAnimationFrame(() => {
+        requestAnimationFrame( async () => {
             this.shadowRoot.addEventListener("click", this.#clickHandler);
-            this.#target = document.querySelector(`#${this.getAttribute("for")}`);
+            this.#target = document.querySelector(this.getAttribute("for"));
+            await crsbinding.translations.parseElement(this);
         })
     }
 
