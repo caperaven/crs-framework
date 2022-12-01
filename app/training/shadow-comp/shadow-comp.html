@@ -1,0 +1,14 @@
+<style>
+    ::slotted(*) {
+        background-color: red !important;
+    }
+
+    :host {
+        display: flex;
+        height: 10rem !important;
+        background-color: green;
+    }
+</style>
+<button id='my-button'>Hello Shadow</button>
+<slot></slot>
+<slot name="named"></slot>

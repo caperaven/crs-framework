@@ -1,7 +1,12 @@
 <style>
-
+    crs-router {
+        display: flex;
+    }
 </style>
 
 
-<non-shadow-comp></non-shadow-comp>
-<shadow-comp></shadow-comp>
+<non-shadow-comp title="hello"></non-shadow-comp>
+<shadow-comp>
+    <button id="slotted-button">Im Slotted</button>
+    <button slot="named">Named</button>
+</shadow-comp>
