@@ -4,31 +4,60 @@
         --add: var(--green);
     }
 
+    :host tab-list tab {
+        padding: var(--half-padding);
+    }
+
     :host li {
         list-style: none;
+        user-select: none;
+    }
+
+    :host li label {
+        width: 100%;
+    }
+
+    :host li button {
+        font-family: crsfrw;
+        font-size: 1rem;
+        justify-content: center;
+        box-sizing: border-box;
+        cursor: pointer;
+        padding: var(--padding);
+        height: var(--input-height);
+        min-width: var(--input-height);
+        background: 0;
+        border: 0;
+        border-radius: var(--radius);
+        outline: none;
+    }
+
+    :host li, :host li label {
+        height: var(--input-height);
+        justify-content: space-between;
+    }
+
+    :host li, :host li label, :host li button {
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        height: var(--input-height);
-        padding-left: var(--padding);
-        user-select: none;
     }
 
-    :host .selected:after, :host .available:after {
-        font-family: crsfrw;
-        padding-right: var(--padding);
-        user-select: none;
-        cursor: pointer;
+    :host li button:hover, :host li:hover {
+        background-color: var(--cl-li-hover);
     }
 
-    :host .selected:after {
-        content: "minus-circle-outline";
-        color: var(--remove);
+    :host li button:active:not([disabled]) {
+        background-color: var(--blue);
+        color: var(--alt-fg);
+        fill: var(--alt-fg);
     }
 
-    :host .available:after {
-        content: "add-circle-outline";
-        color: var(--add);
+    :host li button[data-action="toggle"] {
+        color: var(--red);
+    }
+
+    :host .available button[data-action="toggle"] {
+        color: var(--green);
     }
 </style>
 <tab-list aria-role="tablist" for="#available-selected">

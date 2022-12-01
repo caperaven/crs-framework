@@ -14,25 +14,19 @@ export class AvailableSelectedActions {
         }
 
         for (const item of items) {
-            item[idField] = item[idField] || items.indexOf(item); //NOTE KR: could be problematic
+            item[idField] = item[idField] || items.indexOf(item);
             item.selected === true ? data.selected.push(item) : data.available.push(item);
         }
 
-        const ready = async () => {
-            element.removeEventListener("ready", ready);
-            element.data = data;
+        const onReady = async () => {
+            await element.update(data);
         }
-
-        if (element.dataset.ready == "true") {
-            await ready();
-        } else {
-            element.addEventListener("ready", ready);
-        }
+        await crs.call("component", "on_ready", {element: element, callback: onReady, caller: this});
     }
 
-    static async get_records(step, context, process, item) {
-        const element = crs.dom.get_element(step.args.element)
-        return element.data
+    static async get_selected_records(step, context, process, item) {
+        const element = await crs.dom.get_element(step.args.element);
+        return await element?.getSelectedItems();
     }
 }
 
