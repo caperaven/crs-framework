@@ -16,6 +16,10 @@ export default class Calendar extends crsbinding.classes.BindableElement {
 
     async connectedCallback() {
         await super.connectedCallback();
+        await this.load();
+    }
+
+    async load() {
         const tplCell = this.shadowRoot.querySelector("#tplCell");
         await crsbinding.inflationManager.register("calendar-cell", tplCell);
     }
