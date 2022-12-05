@@ -52,8 +52,8 @@ export default class Calendar extends crsbinding.classes.BindableElement {
            await this.#setYearProperty();
            await this.#render();
        }
-       name === "data-month" && this.getProperty("selectedView") === "months" ? await this.#setMonthAndYearAria(this.#month) : null;
-       name === "data-year" && this.getProperty("selectedView") === "years" ? await this.#setMonthAndYearAria(this.#year) : null;
+       name === "data-month" && this.getProperty("selectedView") === "months" ? await this.#setMonthAndYearAria((newValue - 1)) : null;
+       name === "data-year" && this.getProperty("selectedView") === "years" ? await this.#setMonthAndYearAria(newValue) : null;
     }
 
     async #render() {
@@ -74,7 +74,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
 
     async #setMonthAndYearAria(newValue) {
         const tempElement = this.shadowRoot.querySelector(`[data-value = '${newValue}']`);
-        await crs.call("dom_collection", "toggle_selection", {target: tempElement});
+        await crs.call("dom_collection", "toggle_selection", {target: tempElement, multiple: false});
         newValue === this.#year ? tempElement.scrollIntoView() : null;
     }
 
