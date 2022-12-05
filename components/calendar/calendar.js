@@ -36,7 +36,6 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         this.date = new Date();
         this.#year = this.date.getFullYear();
         this.#month = this.date.getMonth();
-
         this.setAttribute("data-start", this.date.toISOString());
         this.setProperty("selectedView", "default");
         await this.#setMonthProperty();
@@ -44,16 +43,16 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     async attributeChangedCallback(name, oldValue, newValue) {
-       if (name === "data-start") {
-           const date = new Date(newValue);
-           this.#month = date.getMonth();
-           this.#year = date.getFullYear();
-           await this.#setMonthProperty();
-           await this.#setYearProperty();
-           await this.#render();
-       }
-       name === "data-month" && this.getProperty("selectedView") === "months" ? await this.#setMonthAndYearAria((newValue - 1)) : null;
-       name === "data-year" && this.getProperty("selectedView") === "years" ? await this.#setMonthAndYearAria(newValue) : null;
+        if (name === "data-start") {
+            const date = new Date(newValue);
+            this.#month = date.getMonth();
+            this.#year = date.getFullYear();
+            await this.#setMonthProperty();
+            await this.#setYearProperty();
+            await this.#render();
+        }
+        name === "data-month" && this.getProperty("selectedView") === "months" ? await this.#setMonthAndYearAria((newValue - 1)) : null;
+        name === "data-year" && this.getProperty("selectedView") === "years" ? await this.#setMonthAndYearAria(newValue) : null;
     }
 
     async #render() {
@@ -89,7 +88,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     async selectedMonthChanged(newValue) {
-        this.#month = newValue == null ? this.#month = this.#month : newValue;
+        this.#month = newValue == null ? this.#month = parseInt(this.#month) : newValue;
         await this.#setMonthProperty();
     }
 
