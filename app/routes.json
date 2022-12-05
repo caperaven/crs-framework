@@ -86,6 +86,11 @@
       "view": "check-list"
     },
     {
+      "title": "Available Selected",
+      "hash": "#available-selected",
+      "view": "available-selected"
+    },
+    {
       "title": "About",
       "hash": "#about",
       "view": "about",

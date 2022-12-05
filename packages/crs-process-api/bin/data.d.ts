@@ -102,16 +102,14 @@ export interface InitOutput {
   readonly __wbindgen_add_to_stack_pointer: (a: number) => number;
 }
 
-export type SyncInitInput = BufferSource | WebAssembly.Module;
 /**
-* Instantiates the given `module`, which can either be bytes or
-* a precompiled `WebAssembly.Module`.
+* Synchronously compiles the given `bytes` and instantiates the WebAssembly module.
 *
-* @param {SyncInitInput} module
+* @param {BufferSource} bytes
 *
 * @returns {InitOutput}
 */
-export function initSync(module: SyncInitInput): InitOutput;
+export function initSync(bytes: BufferSource): InitOutput;
 
 /**
 * If `module_or_path` is {RequestInfo} or {URL}, makes a request and

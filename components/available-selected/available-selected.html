@@ -1,0 +1,67 @@
+<style>
+    :host {
+        --remove: var(--red);
+        --add: var(--green);
+    }
+
+    :host tab-list tab {
+        padding: var(--half-padding);
+    }
+
+    :host li {
+        list-style: none;
+        user-select: none;
+    }
+
+    :host li label {
+        width: 100%;
+        padding-left: var(--padding);
+    }
+
+    :host li button {
+        font-family: crsfrw;
+        font-size: 1rem;
+        justify-content: center;
+        box-sizing: border-box;
+        cursor: pointer;
+        padding: var(--padding);
+        height: var(--input-height);
+        min-width: var(--input-height);
+        background: 0;
+        border: 0;
+        border-radius: var(--radius);
+        outline: none;
+    }
+
+    :host li, :host li label {
+        height: var(--input-height);
+        justify-content: space-between;
+    }
+
+    :host li, :host li label, :host li button {
+        display: flex;
+        align-items: center;
+    }
+
+    :host li button:hover, :host li:hover {
+        background-color: var(--cl-li-hover);
+    }
+
+    :host li button:active:not([disabled]) {
+        background-color: var(--blue);
+        color: var(--alt-fg);
+        fill: var(--alt-fg);
+    }
+
+    :host li button[data-action="toggle"] {
+        color: var(--red);
+    }
+
+    :host .available button[data-action="toggle"] {
+        color: var(--green);
+    }
+</style>
+<tab-list aria-role="tablist" for="#available-selected">
+    <tab data-view="selected" aria-selected="true">Selected</tab>
+    <tab data-view="available">Available</tab>
+</tab-list>
