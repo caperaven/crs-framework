@@ -88,12 +88,12 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     async selectedMonthChanged(newValue) {
-        this.#month = newValue ||= parseInt(this.#month);
+        this.#month = newValue || parseInt(this.#month);
         await this.#setMonthProperty();
     }
 
     async selectedYearChanged(newValue) {
-        this.#year = newValue ||= parseInt(this.#year);
+        this.#year = newValue || parseInt(this.#year);
         await this.#setYearProperty();
     }
 
