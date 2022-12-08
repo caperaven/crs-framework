@@ -54,6 +54,7 @@ describe("Calendar Component", async () => {
 
         // Assert
         assertEquals(instance.getProperty("month"), "January");
+        assertEquals(instance.getAttribute("data-month"), 1);
     });
 
     it('should have correct year property name based on the value passed in selectedYearChanged(value)', async () => {
@@ -66,5 +67,15 @@ describe("Calendar Component", async () => {
 
         // Assert
         assertEquals(instance.getProperty("year"), 2022);
+        assertEquals(instance.getAttribute("data-year"),2022);
+    });
+
+    it('should ', async () => {
+        // Arrange
+
+        // Act
+
+        // Assert
+        
     });
 });
