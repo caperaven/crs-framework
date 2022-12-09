@@ -62,11 +62,14 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     async #setMonthProperty() {
+        this.setProperty("selectedMonth", this.#month);
+        //Todo: cml investigate converter
         this.setProperty("month", new Date(this.#year, this.#month).toLocaleString('en-US', {month: 'long'}));
         this.setAttribute("data-month", this.#month + 1);
     }
 
     async #setYearProperty() {
+        this.setProperty("selectedMonth", this.#year);
         this.setProperty("year", this.#year);
         this.setAttribute("data-year", this.#year);
     }
