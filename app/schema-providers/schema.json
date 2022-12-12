@@ -1,0 +1,16 @@
+{
+  "body": {
+    "elements": [
+      {
+        "element": "div",
+        "content": "Hello",
+        "attributes": {
+          "click.call": "click('my message', $event)"
+        }
+      },
+      {
+        "element": "button"
+      }
+    ]
+  }
+}

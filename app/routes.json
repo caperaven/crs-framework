@@ -86,6 +86,11 @@
       "view": "available-selected"
     },
     {
+      "title": "Schema Providers",
+      "hash": "#schema-providers",
+      "view": "schema-providers"
+    },
+    {
       "title": "About",
       "hash": "#about",
       "view": "about",

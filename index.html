@@ -91,7 +91,7 @@
             await crs.call("schema", "register", {
                 id: "html",
                 parser: HTMLParser,
-                providers: []
+                providers: ["/src/schema-providers/button.js"]
             })
 
             document.viewModel = new IndexViewModel(document.body);
