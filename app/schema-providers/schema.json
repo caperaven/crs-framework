@@ -3,13 +3,14 @@
     "elements": [
       {
         "element": "div",
-        "content": "Hello",
-        "attributes": {
-          "click.call": "click('my message', $event)"
-        }
+        "content": "Hello"
       },
       {
-        "element": "button"
+        "element": "button",
+        "title": "My button",
+        "attributes": {
+          "click.call": "click('button message', $event)"
+        }
       }
     ]
   }

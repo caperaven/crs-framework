@@ -6,6 +6,7 @@ export default class ButtonProvider extends BaseProvider{
     }
 
     async process(item) {
-        return `<button>Hello World</button>`;
+        const parts = await super.process(item);
+        return `<button ${parts.attributes}>Hello World</button>`;
     }
 }
