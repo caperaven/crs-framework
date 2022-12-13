@@ -24,6 +24,8 @@ export default class Test extends crsbinding.classes.ViewBase {
             fields: ["site", "isActive"]
         });
 
+        console.log(result);
+
         this.json.innerText = JSON.stringify(result);
     }
 }
