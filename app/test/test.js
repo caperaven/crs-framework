@@ -21,7 +21,7 @@ export default class Test extends crsbinding.classes.ViewBase {
 
         const result = await crs.call("data", "group", {
             source: data,
-            fields: ["site", "isActive"]
+            fields: ["site"] // ,"isActive"
         });
 
         console.log(result);
