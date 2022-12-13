@@ -86,6 +86,11 @@
       "view": "available-selected"
     },
     {
+      "title": "Andre",
+      "hash": "#test",
+      "view": "test"
+    },
+    {
       "title": "About",
       "hash": "#about",
       "view": "about",
