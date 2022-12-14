@@ -70,12 +70,73 @@ describe("Calendar Component", async () => {
         assertEquals(instance.getAttribute("data-year"),2022);
     });
 
-    it('should ', async () => {
+    it('should set month property to next month', async () => {
         // Arrange
+        const instance = document.createElement("calendar-component");
+        await instance.connectedCallback();
 
+        // Act
+        await instance.goToNextMonth();
+        const monthValue = instance.getProperty("selectedMonth");
+        const yearValue = instance.getProperty("selectedYear");
+        const month = new Date(yearValue,monthValue).toLocaleString('en-US', {month: 'long'});
+
+        // Assert
+        assertEquals(instance.getProperty("month"), month);
+    });
+
+    it('should set month property to previous month', async () => {
+        // Arrange
+        const instance = document.createElement("calendar-component");
+        await instance.connectedCallback();
+
+        // Act
+        await instance.goToPreviousMonth();
+        const monthValue = instance.getProperty("selectedMonth");
+        const yearValue = instance.getProperty("selectedYear");
+        const month = new Date(yearValue,monthValue).toLocaleString('en-US', {month: 'long'});
+
+        // Assert
+        assertEquals(instance.getProperty("month"), month);
+    });
+
+    it('should set data-month to month passed through data-start attribute', async () => {
+        // Arrange
+        const instance = document.createElement("calendar-component");
+        await instance.connectedCallback();
+        const dateISO = new Date(2022,1).toISOString();
+
+        // Act
+        instance.setAttribute("data-start", dateISO);
+
+        // Assert
+        assertEquals(instance.getAttribute("data-month"), 2);
+        assertEquals(instance.getProperty("month"), "February");
+    });
+
+    it('should set data-year to year passed through attributeChangedCallback method', async () => {
+        // Arrange
+        const instance = document.createElement("calendar-component");
+        await instance.connectedCallback();
+        const dateISO = new Date().toISOString();
+        const newDateISO = new Date(2023,1).toISOString();
+
+        // Act
+        await instance.attributeChangedCallback("data-start", dateISO, newDateISO);
+
+        // Assert
+        assertEquals(instance.getAttribute("data-year"), 2023);
+        assertEquals(instance.getProperty("year"), 2023);
+    });
+});
+
+describe('Calendar Component Edge Cases', async () => {
+    it('should return defualt selected month if selected month value is null or empty', async () => {
+        // Arrange
+        
         // Act
 
         // Assert
-        
+
     });
 });
