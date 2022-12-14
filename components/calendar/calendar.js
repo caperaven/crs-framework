@@ -96,7 +96,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     async selectedYearChanged(newValue) {
-        this.#year = newValue || parseInt(this.#year);
+        this.#year = (newValue == null || (newValue.toString().length < 4)) ? parseInt(this.#year) : newValue;
         await this.#setYearProperty();
     }
 

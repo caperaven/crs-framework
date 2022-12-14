@@ -131,12 +131,44 @@ describe("Calendar Component", async () => {
 });
 
 describe('Calendar Component Edge Cases', async () => {
-    it('should return defualt selected month if selected month value is null or empty', async () => {
+    it('should return default selected month if selected month value is null', async () => {
         // Arrange
-        
+        const instance = document.createElement("calendar-component");
+        await instance.connectedCallback();
+        const month = new Date().getMonth();
+
         // Act
+        await instance.selectedMonthChanged(null);
+        // Assert
+        assertEquals(instance.getProperty("selectedMonth"), month);
+        assertEquals(instance.getAttribute("data-month"), month + 1);
+    });
+
+    it('should return default selected year if selected year value is invalid', async () => {
+        // Arrange
+        const instance = document.createElement("calendar-component");
+        await instance.connectedCallback();
+        const year = new Date().getFullYear();
+
+        // Act
+        await instance.selectedYearChanged(2);
 
         // Assert
+        assertEquals(instance.getProperty("selectedYear"), year);
+        assertEquals(instance.getAttribute("data-year"), year);
+    });
 
+    it('should return default selected year if selected year value is null', async () => {
+        // Arrange
+        const instance = document.createElement("calendar-component");
+        await instance.connectedCallback();
+        const year = new Date().getFullYear();
+
+        // Act
+        await instance.selectedYearChanged(null);
+
+        // Assert
+        assertEquals(instance.getProperty("selectedYear"), year);
+        assertEquals(instance.getAttribute("data-year"), year);
     });
 });
