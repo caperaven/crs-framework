@@ -25,11 +25,19 @@ class TreeView extends crsbinding.classes.BindableElement {
                 approved: "Approved"
             });
 
-            this.data = {
-                "name": "Andre"
-            }
+            this.data = [
+                {title:"title 1", site: "A21", isActive: true},
+                {title:"title 2", site: "A21", isActive: true},
+                {title:"title 3", site: "A11", isActive: true},
+                {title:"title 4", site: "A11", isActive: false},
+                {title:"title 5", site: "A11", isActive: false},
+                {title:"title 6", site: "A11", isActive: true},
+                {title:"title 7", site: "A31", isActive: false}
+            ]
+
 
             await this.sortData();
+            // await this.testAction()
 
 
 
@@ -57,9 +65,16 @@ class TreeView extends crsbinding.classes.BindableElement {
     }
 
     async sortData() {
-        await crs.call("tree_view", "show", {
-            target: this.element
+        const dataResult = await crs.call("tree_view", "show", {
+            target: this.element,
+            data : this.data
         })
+
+        await crs.call("tree_view", "sort_data", {data: this.data})
+    }
+
+    async testAction() {
+        await crs.call("tree_view", "test")
     }
 
 

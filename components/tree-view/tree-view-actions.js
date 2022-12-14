@@ -8,13 +8,33 @@ export class TreeViewActions {
 
     static async show(step, context, process, item) {
         const target = await crs.dom.get_element(step.args.element, context, process, item);
-        const instance = new Test()
-        const data = instance.data
-        // const data = await crs.process.getValue(step.args.data, context, process, item);
+        // const instance = new Test()
+        // const data = instance.data
+        const data = await crs.process.getValue(step.args.data, context, process, item);
 
-        console.log(data)
+        // console.log(instance)
+        const result = await crs.call("data", "group", {
+            source: data,
+            fields: ["site"] // ,"isActive"
+        });
 
+        console.log(result);
 
+    }
+
+    static async sort_data(step, context, process, item) {
+        const titles = []
+        const keys = []
+        const data = await crs.process.getValue(step.args.data, context, process, item);
+
+        console.log(typeof data)
+        for(let entry of Object.entries(data)) {
+            // console.log(entry[1].site)
+            titles.push(entry[1].title)
+            keys.push(entry[1].site)
+        }
+        console.log(titles)
+        console.log(keys)
     }
 
     static async test() {
