@@ -69,7 +69,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     async #setYearProperty() {
-        this.setProperty("selectedMonth", this.#year);
+        this.setProperty("selectedYear", this.#year);
         this.setProperty("year", this.#year);
         this.setAttribute("data-year", this.#year);
     }
