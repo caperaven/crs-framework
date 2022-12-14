@@ -1,4 +1,14 @@
+import "./../../components/tree-view/tree-view.js"
+import "./../../components/tree-view/tree-view-actions.js"
+
 export default class Test extends crsbinding.classes.ViewBase {
+    #data;
+
+    get data(){
+        return this.#data
+    }
+
+
     async connectedCallback() {
         await super.connectedCallback();
         await this.groupData();
@@ -24,7 +34,10 @@ export default class Test extends crsbinding.classes.ViewBase {
             fields: ["site"] // ,"isActive"
         });
 
-        console.log(result);
+        // console.log(result);
+
+        this.#data = result
+        // console.log(this.#data)
 
         this.json.innerText = JSON.stringify(result);
     }

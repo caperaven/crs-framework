@@ -15,7 +15,7 @@ describe ("label-counter", async () => {
     let instance;
     beforeEach(async () => {
         instance = document.createElement("label-counter");
-        await instance.connectedCallback();
+        await instance.connectedCallback();3.06
     })
 
     it ("init", async () => {
