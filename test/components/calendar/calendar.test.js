@@ -144,6 +144,19 @@ describe('Calendar Component Edge Cases', async () => {
         assertEquals(instance.getAttribute("data-month"), month + 1);
     });
 
+    it('should return default selected month if selected month value is an empty string', async () => {
+        // Arrange
+        const instance = document.createElement("calendar-component");
+        await instance.connectedCallback();
+        const month = new Date().getMonth();
+
+        // Act
+        await instance.selectedMonthChanged("");
+        // Assert
+        assertEquals(instance.getProperty("selectedMonth"), month);
+        assertEquals(instance.getAttribute("data-month"), month + 1);
+    });
+
     it('should return default selected year if selected year value is invalid', async () => {
         // Arrange
         const instance = document.createElement("calendar-component");
@@ -165,7 +178,7 @@ describe('Calendar Component Edge Cases', async () => {
         const year = new Date().getFullYear();
 
         // Act
-        await instance.selectedYearChanged(null);
+        await instance.selectedYearChanged("");
 
         // Assert
         assertEquals(instance.getProperty("selectedYear"), year);
