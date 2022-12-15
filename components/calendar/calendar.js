@@ -91,13 +91,14 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     async selectedMonthChanged(newValue) {
-        this.#month = newValue == null || newValue === "" ? this.#month = parseInt(this.#month) : newValue;
+        this.#month = newValue == null || isNaN(parseInt(newValue)) || parseInt(newValue) > 11 ? parseInt(this.#month) : newValue;
         await this.#setMonthProperty();
     }
 
-    async selectedYearChanged(newValue) {
-        this.#year = newValue == null || (newValue.toString().length < 4 && isNaN(newValue) === false) ? parseInt(this.#year) : newValue;
+    async selectedYearChanged(newValue){
+        this.#year = newValue == null || isNaN(parseInt(newValue)) || newValue.toString().length < 4 ? parseInt(this.#year) : newValue;
         await this.#setYearProperty();
+
     }
 
     async goToNextMonth() {

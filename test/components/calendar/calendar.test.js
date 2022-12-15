@@ -67,7 +67,7 @@ describe("Calendar Component", async () => {
 
         // Assert
         assertEquals(instance.getProperty("year"), 2022);
-        assertEquals(instance.getAttribute("data-year"),2022);
+        assertEquals(instance.getAttribute("data-year"), 2022);
     });
 
     it('should set month property to next month', async () => {
@@ -79,7 +79,7 @@ describe("Calendar Component", async () => {
         await instance.goToNextMonth();
         const monthValue = instance.getProperty("selectedMonth");
         const yearValue = instance.getProperty("selectedYear");
-        const month = new Date(yearValue,monthValue).toLocaleString('en-US', {month: 'long'});
+        const month = new Date(yearValue, monthValue).toLocaleString('en-US', {month: 'long'});
 
         // Assert
         assertEquals(instance.getProperty("month"), month);
@@ -94,7 +94,7 @@ describe("Calendar Component", async () => {
         await instance.goToPreviousMonth();
         const monthValue = instance.getProperty("selectedMonth");
         const yearValue = instance.getProperty("selectedYear");
-        const month = new Date(yearValue,monthValue).toLocaleString('en-US', {month: 'long'});
+        const month = new Date(yearValue, monthValue).toLocaleString('en-US', {month: 'long'});
 
         // Assert
         assertEquals(instance.getProperty("month"), month);
@@ -104,7 +104,7 @@ describe("Calendar Component", async () => {
         // Arrange
         const instance = document.createElement("calendar-component");
         await instance.connectedCallback();
-        const dateISO = new Date(2022,1).toISOString();
+        const dateISO = new Date(2022, 1).toISOString();
 
         // Act
         instance.setAttribute("data-start", dateISO);
@@ -119,7 +119,7 @@ describe("Calendar Component", async () => {
         const instance = document.createElement("calendar-component");
         await instance.connectedCallback();
         const dateISO = new Date().toISOString();
-        const newDateISO = new Date(2023,1).toISOString();
+        const newDateISO = new Date(2023, 1).toISOString();
 
         // Act
         await instance.attributeChangedCallback("data-start", dateISO, newDateISO);
@@ -139,6 +139,7 @@ describe('Calendar Component Edge Cases', async () => {
 
         // Act
         await instance.selectedMonthChanged(null);
+
         // Assert
         assertEquals(instance.getProperty("selectedMonth"), month);
         assertEquals(instance.getAttribute("data-month"), month + 1);
@@ -152,12 +153,27 @@ describe('Calendar Component Edge Cases', async () => {
 
         // Act
         await instance.selectedMonthChanged("");
+
         // Assert
         assertEquals(instance.getProperty("selectedMonth"), month);
         assertEquals(instance.getAttribute("data-month"), month + 1);
     });
 
-    it('should return default selected year if selected year value is invalid', async () => {
+    it('should return default selected month if selected month value is an invalid value', async () => {
+        // Arrange
+        const instance = document.createElement("calendar-component");
+        await instance.connectedCallback();
+        const month = new Date().getMonth();
+
+        // Act
+        await instance.selectedMonthChanged("Jan");
+
+        // Assert
+        assertEquals(instance.getProperty("selectedMonth"), month);
+        assertEquals(instance.getAttribute("data-month"), month + 1);
+    });
+
+    it('should return default selected year if selected year value has length less than 4', async () => {
         // Arrange
         const instance = document.createElement("calendar-component");
         await instance.connectedCallback();
@@ -178,10 +194,39 @@ describe('Calendar Component Edge Cases', async () => {
         const year = new Date().getFullYear();
 
         // Act
+        await instance.selectedYearChanged(null);
+
+        // Assert
+        assertEquals(instance.getProperty("selectedYear"), year);
+        assertEquals(instance.getAttribute("data-year"), year);
+    });
+
+    it('should return default selected year if selected year value is empty string', async () => {
+        // Arrange
+        const instance = document.createElement("calendar-component");
+        await instance.connectedCallback();
+        const year = new Date().getFullYear();
+
+        // Act
         await instance.selectedYearChanged("");
 
         // Assert
         assertEquals(instance.getProperty("selectedYear"), year);
         assertEquals(instance.getAttribute("data-year"), year);
     });
+
+    it('should return default selected year if selected year value is non-degit string', async () => {
+        // Arrange
+        const instance = document.createElement("calendar-component");
+        await instance.connectedCallback();
+        const year = new Date().getFullYear();
+
+        // Act
+        await instance.selectedYearChanged("word");
+
+        // Assert
+        assertEquals(instance.getProperty("selectedYear"), year);
+        assertEquals(instance.getAttribute("data-year"), year);
+    });
+
 });
