@@ -36,7 +36,7 @@ class TreeView extends crsbinding.classes.BindableElement {
             ]
 
 
-            await this.sortData();
+            // await this.sortData();
             // await this.testAction()
 
 
@@ -64,18 +64,18 @@ class TreeView extends crsbinding.classes.BindableElement {
         }
     }
 
-    async sortData() {
-        const dataResult = await crs.call("tree_view", "show", {
-            target: this.element,
-            data : this.data
-        })
-
-        await crs.call("tree_view", "sort_data", {data: this.data})
-    }
-
-    async testAction() {
-        await crs.call("tree_view", "test")
-    }
+    // async sortData() {
+    //     const dataResult = await crs.call("tree_view", "show", {
+    //         target: this.element,
+    //         data : this.data
+    //     })
+    //
+    //     await crs.call("tree_view", "sort_data", {data: this.data})
+    // }
+    //
+    // async testAction() {
+    //     await crs.call("tree_view", "test")
+    // }
 
 
 

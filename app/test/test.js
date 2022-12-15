@@ -29,15 +29,20 @@ export default class Test extends crsbinding.classes.ViewBase {
             {title:"title 7", site: "A31", isActive: false}
         ]
 
-        const result = await crs.call("data", "group", {
-            source: data,
-            fields: ["site"] // ,"isActive"
-        });
+        let  result = await crs.call("tree_view", "show", {
+            target: this.tree,
+            data: data
+        })
 
-
-        this.#data = result
-        // console.log("test.js file = ", this.#data)
-
-        this.json.innerText = JSON.stringify(result);
+        // const result = await crs.call("data", "group", {
+        //     source: data,
+        //     fields: ["site"] // ,"isActive"
+        // });
+        //
+        //
+        // this.#data = result
+        // // console.log("test.js file = ", this.#data)
+        //
+        // this.json.innerText = JSON.stringify(result);
     }
 }
