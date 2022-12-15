@@ -63,7 +63,6 @@ export default class Calendar extends crsbinding.classes.BindableElement {
 
     async #setMonthProperty() {
         this.setProperty("selectedMonth", this.#month);
-        //Todo: cml investigate converter
         this.setProperty("month", new Date(this.#year, this.#month).toLocaleString('en-US', {month: 'long'}));
         this.setAttribute("data-month", this.#month + 1);
     }
@@ -98,19 +97,18 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     async selectedYearChanged(newValue){
         this.#year = newValue == null || isNaN(parseInt(newValue)) || newValue.toString().length < 4 ? parseInt(this.#year) : newValue;
         await this.#setYearProperty();
-
     }
 
     async goToNextMonth() {
         this.#month = parseInt(this.#month) + 1;
-        this.#month > 11 ? (this.#month = 0, this.#year += 1, await this.#setYearProperty()) : null;
+        this.#month > 11 ? (this.#month = 0, this.#year += 1, await this.#setYearProperty()) : this.#month;
         await this.#setMonthProperty();
         await this.#render();
     }
 
     async goToPreviousMonth() {
         this.#month = parseInt(this.#month) - 1;
-        this.#month < 0 ? (this.#month = 11, this.#year -= 1, await this.#setYearProperty()) : null;
+        this.#month < 0 ? (this.#month = 11, this.#year -= 1, await this.#setYearProperty()) : this.#month;
         await this.#setMonthProperty();
         await this.#render();
     }
