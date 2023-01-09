@@ -17,52 +17,72 @@ export class TreeViewActions {
 
         console.log(result);
 
+
+
+
         let A11 = [];
         let A21 = [];
         let A31 = [];
+        let sites = [];
+        let sitesNames = [];
 
-        function calculate(data) {
-            let arr = []
-            arr.push(data)
-            for(item of arr) {
-                // returns obj with site values as obj
-                console.log(item.root.children)
-                if (typeof item.root.children === "object") {
-                    console.log("true")
-                }
-                // returns obj with site values as string
-                Object.keys(item.root.children).forEach((key)=>{
-                    console.log(typeof key)
-                })
-
-            }
-
-        }
-
-        // const endResult = calculate(result);
-        // console.log(calculate(result));
-        calculate(result);
-
-
-        // function calculateSum(object) {
-        //     for(let item in object) {
-        //         if(item === "A11") {
-        //             console.log("Object returned : ", object[item].children)
-        //             let titles = object[item].children
-        //             console.log(Object.entries(titles))
+        // function calculate(data) {
+        //     let arr = []
+        //     arr.push(data)
+        //     let count = 0;
         //
-        //             console.log(object[item])
-        //             A11.push(object[item].rows)
-        //         }
+        //     // let mainContainer = document.createElement('ul');
+        //     // let mainTitle = document.createElement('li');
+        //     // let mainHeading = document.createElement('span')
+        //     // mainHeading.innerHTML = "Main"
+        //     // mainTitle.appendChild(mainHeading)
+        //     // mainContainer.append(mainTitle)
+        //     // document.body.append(mainContainer)
         //
+        //     for(item of arr) {
+        //         // returns obj with site values as obj
+        //         console.log(item.root.children)
+        //         sites.push(item.root.children)
+        //         // returns array of string values of sites  -- add  .length for num
+        //         console.log(Object.keys(item.root.children))
         //
-        //         if(typeof(object[item]) == "object") {
-        //             calculateSum(object[item])
-        //         }
+        //         // returns obj with site values as string
+        //         Object.keys(item.root.children).forEach((key)=>{
+        //             count = count +=1;
+        //             // let obj = document.createElement('p')
+        //             // obj.innerHTML = `this is  ${key}`
+        //             // mainTitle.append(obj)
+        //             sitesNames.push(key)
+        //         })
+        //         console.log(count)
+        //         console.log("The site names  are", sitesNames)
+        //         console.log("The site Objects are", sites)
         //     }
         // }
-        // calculateSum(result)
-        // console.log(A11)
+        // calculate(result);
+
+
+        function calculate(data) {
+            // loop through all the items in the data structure recursively.
+            // if an element has an "amount" value, add it to the count.
+            // the function must return you the count of all the amounts.
+            // you may only use this function to process the data.
+            // the expected result is 89
+            let count = 0;
+            let arr = []
+            arr.push(data)
+
+            for (const child of arr) {
+                // count += child.amount || 0;
+                console.log(child.root.children)
+                child.children != null ? count += calculate(child.children) : count;
+            }
+
+            return count;
+        }
+
+        const count = calculate(result);
+        console.log(count);
 
     }
 
