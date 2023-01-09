@@ -1,4 +1,25 @@
+<style>
+    crs-router li[aria-hidden="true"] {
+        display: none;
+    }
+
+    .container {
+        background: var(--grey-surface);
+        border: var(--border);
+        border-radius: var(--radius);
+        width: max-content;
+        padding: var(--padding);
+    }
+</style>
+
 <h2>${title}</h2>
 
-<color-picker value="#ff0090"></color-picker>
+<div class="container">
+    <input id="edtSearch" type="search" is="filter-input" data-for="collection" placeholder="filter text...">
 
+    <ul id="collection" is="filter-collection">
+        <li data-tags="apple">Apple</li>
+        <li data-tags="orange">Orange</li>
+        <li data-tags="lemon">Lemon</li>
+    </ul>
+</div>
