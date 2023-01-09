@@ -49,7 +49,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
             this.#year = date.getFullYear();
             await this.#setMonthProperty();
             await this.#setYearProperty();
-            await this.#render();
+            // await this.#render();
         }
         name === "data-month" && this.getProperty("selectedView") === "months" ? await this.#setMonthAndYearAria((newValue - 1)) : null;
         name === "data-year" && this.getProperty("selectedView") === "years" ? await this.#setMonthAndYearAria(newValue) : null;
@@ -94,9 +94,20 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         await this.#setMonthProperty();
     }
 
-    async selectedYearChanged(newValue){
+    async selectedYearChanged(newValue) {
         this.#year = newValue == null || isNaN(parseInt(newValue)) || newValue.toString().length < 4 ? parseInt(this.#year) : newValue;
         await this.#setYearProperty();
+    }
+
+    async selectedDateChanged(newValue) {
+        if (newValue.getAttribute("role") === 'cell') {
+            await crs.call("dom_collection", "toggle_selection", {target: newValue, multiple: false});
+            const offset = new Date().getTimezoneOffset() * 60 * 1000;
+            const dateObject = new Date(Date.parse(newValue.dataset.date) - offset).toISOString();
+            this.setAttribute("data-start", dateObject)
+            console.log(dateObject);  
+
+        }
     }
 
     async goToNextMonth() {

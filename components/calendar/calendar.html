@@ -17,11 +17,8 @@
         grid-template-rows: auto 1fr;
         width: 27rem;
         height: 27rem;
-        margin: 3rem;
-        box-shadow: var(--grey-s2) 0 0.125rem 0.5rem 0;
         border: var(--border);
-        border-radius: 2%;
-        outline: none;
+        user-select: none
     }
 
     #calendar-toolbar {
@@ -94,6 +91,7 @@
         rotate: 90deg;
     }
 
+
 </style>
 
 <svg style="display: none" viewBox="0 0 24 24">
@@ -107,14 +105,14 @@
 </svg>
 
 <template id="tplCell">
-    <div role="cell" data-date="${date}" classlist.case="current == false: 'non-current-day', new Date().toLocaleDateString() === date.toLocaleDateString(): 'today'">${number}</div>
+    <div role="cell" tabindex="-1" data-date="${date}" classlist.case="current == false: 'non-current-day', new Date().toLocaleDateString() === date.toLocaleDateString(): 'today'">${number}</div>
 </template>
 
-<div id="calendar-toolbar" role="toolbar">
-    <button id="previous-month" aria-label="previous month button" click.call="goToPreviousMonth"><svg id="chevron-left"><use href="#chevron-down"></use></svg></button>
-    <button id="month" value="months" click.setValue="selectedView = selectedView === 'months' ? 'default' : 'months'" classlist.if="selectedView == 'months' ? 'current-view'">${month}</button>
-    <button id="year" value="years" click.setValue="selectedView = selectedView === 'years' ? 'default' : 'years'" classlist.if="selectedView == 'years' ? 'current-view'">${year}</button>
-    <button id="next-month" aria-label="next month button" click.call="goToNextMonth"><svg id="chevron-right"><use href="#chevron-up"></use></svg></button>
+<div id="calendar-toolbar" role="toolbar" ref="tools">
+    <button id="previous-month" aria-label="previous month" click.call="goToPreviousMonth"><svg id="chevron-left"><use href="#chevron-down"></use></svg></button>
+    <button id="month" aria-label="${month}" value="months" click.setValue="selectedView = selectedView === 'months' ? 'default' : 'months'" classlist.if="selectedView == 'months' ? 'current-view'">${month}</button>
+    <button id="year" aria-label="${year}" value="years" click.setValue="selectedView = selectedView === 'years' ? 'default' : 'years'" classlist.if="selectedView == 'years' ? 'current-view'">${year}</button>
+    <button id="next-month" aria-label="next month" click.call="goToNextMonth"><svg id="chevron-right"><use href="#chevron-up"></use></svg></button>
 </div>
 
 <perspective-element view.bind="selectedView" ctx.once="contextId" data-folder="/components/calendar/" view-loaded.call="viewLoaded">
