@@ -61,14 +61,12 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     async #setMonthProperty() {
-        this.setProperty("selectedMonth", this.#month);
         this.setProperty("month", new Date(this.#year, this.#month).toLocaleString('en-US', {month: 'long'}));
         this.getProperty("selectedView") === "months" ? await this.#setMonthAndYearAria(this.#month) : null;
     }
 
     async #setYearProperty() {
         this.setProperty("year", this.#year);
-        this.setProperty("selectedYear", this.#year);
         this.getProperty("selectedView") === "years" ? await this.#setMonthAndYearAria(this.#year) : null;
     }
 
@@ -92,12 +90,14 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     async selectMonthChanged(newValue) {
         this.#month = newValue == null || isNaN(parseInt(newValue)) || parseInt(newValue) > 11 ? parseInt(this.#month) : newValue;
         await this.#setMonthProperty();
+        this.setProperty("selectMonth", this.#month);
         this.getProperty("selectedView") !== "default" ? this.setProperty("selectedView", "default") : null;
     }
 
     async selectYearChanged(newValue) {
         this.#year = newValue == null || isNaN(parseInt(newValue)) || newValue.toString().length < 4 ? parseInt(this.#year) : newValue;
         await this.#setYearProperty();
+        this.setProperty("selectYear", this.#year);
         this.getProperty("selectedView") !== "default" ? this.setProperty("selectedView", "default") : null;
     }
 
