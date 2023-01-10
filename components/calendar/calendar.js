@@ -1,7 +1,6 @@
 export default class Calendar extends crsbinding.classes.BindableElement {
     #month;
     #year;
-    #selectedDate;
 
     get shadowDom() {
         return true;
@@ -52,7 +51,6 @@ export default class Calendar extends crsbinding.classes.BindableElement {
             await this.#setMonthProperty();
             await this.#setYearProperty();
             this.#month !== oldMonth ? await this.#render() : null;
-
         }
     }
 
@@ -91,14 +89,16 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         currentView === "years" ? await this.#setMonthAndYearAria(this.#year) : null;
     }
 
-    async selectedMonthChanged(newValue) {
+    async selectMonthChanged(newValue) {
         this.#month = newValue == null || isNaN(parseInt(newValue)) || parseInt(newValue) > 11 ? parseInt(this.#month) : newValue;
         await this.#setMonthProperty();
+        this.getProperty("selectedView") !== "default" ? this.setProperty("selectedView", "default") : null;
     }
 
-    async selectedYearChanged(newValue) {
+    async selectYearChanged(newValue) {
         this.#year = newValue == null || isNaN(parseInt(newValue)) || newValue.toString().length < 4 ? parseInt(this.#year) : newValue;
         await this.#setYearProperty();
+        this.getProperty("selectedView") !== "default" ? this.setProperty("selectedView", "default") : null;
     }
 
     async selectedDateChanged(event) {
@@ -120,7 +120,6 @@ export default class Calendar extends crsbinding.classes.BindableElement {
             this.#year = parseInt(this.#year) + 1;
             await this.#setYearProperty();
         }
-
         await this.#render();
     }
 

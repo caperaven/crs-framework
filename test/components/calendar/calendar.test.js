@@ -44,26 +44,26 @@ describe("Calendar Component", async () => {
         assertEquals(instance.getProperty("selectedView"), "years");
     });
 
-    it('should have correct month property name based on the value passed in selectedMonthChanged(value)', async () => {
+    it('should have correct month property name based on the value passed in selectMonthChanged(value)', async () => {
         // Arrange
         const instance = document.createElement("calendar-component");
         await instance.connectedCallback();
 
         // Act
-        await instance.selectedMonthChanged(0);
+        await instance.selectMonthChanged(0);
 
         // Assert
         assertEquals(instance.getProperty("month"), "January");
         assertEquals(instance.getAttribute("data-month"), 1);
     });
 
-    it('should have correct year property name based on the value passed in selectedYearChanged(value)', async () => {
+    it('should have correct year property name based on the value passed in selectYearChanged(value)', async () => {
         // Arrange
         const instance = document.createElement("calendar-component");
         await instance.connectedCallback();
 
         // Act
-        await instance.selectedYearChanged(2022);
+        await instance.selectYearChanged(2022);
 
         // Assert
         assertEquals(instance.getProperty("year"), 2022);
@@ -138,7 +138,7 @@ describe('Calendar Component Edge Cases', async () => {
         const month = new Date().getMonth();
 
         // Act
-        await instance.selectedMonthChanged(null);
+        await instance.selectMonthChanged(null);
 
         // Assert
         assertEquals(instance.getProperty("selectedMonth"), month);
@@ -152,7 +152,7 @@ describe('Calendar Component Edge Cases', async () => {
         const month = new Date().getMonth();
 
         // Act
-        await instance.selectedMonthChanged("");
+        await instance.selectMonthChanged("");
 
         // Assert
         assertEquals(instance.getProperty("selectedMonth"), month);
@@ -166,7 +166,7 @@ describe('Calendar Component Edge Cases', async () => {
         const month = new Date().getMonth();
 
         // Act
-        await instance.selectedMonthChanged("Jan");
+        await instance.selectMonthChanged("Jan");
 
         // Assert
         assertEquals(instance.getProperty("selectedMonth"), month);
@@ -180,7 +180,7 @@ describe('Calendar Component Edge Cases', async () => {
         const year = new Date().getFullYear();
 
         // Act
-        await instance.selectedYearChanged(2);
+        await instance.selectYearChanged(2);
 
         // Assert
         assertEquals(instance.getProperty("selectedYear"), year);
@@ -194,7 +194,7 @@ describe('Calendar Component Edge Cases', async () => {
         const year = new Date().getFullYear();
 
         // Act
-        await instance.selectedYearChanged(null);
+        await instance.selectYearChanged(null);
 
         // Assert
         assertEquals(instance.getProperty("selectedYear"), year);
@@ -208,7 +208,7 @@ describe('Calendar Component Edge Cases', async () => {
         const year = new Date().getFullYear();
 
         // Act
-        await instance.selectedYearChanged("");
+        await instance.selectYearChanged("");
 
         // Assert
         assertEquals(instance.getProperty("selectedYear"), year);
@@ -222,7 +222,7 @@ describe('Calendar Component Edge Cases', async () => {
         const year = new Date().getFullYear();
 
         // Act
-        await instance.selectedYearChanged("word");
+        await instance.selectYearChanged("word");
 
         // Assert
         assertEquals(instance.getProperty("selectedYear"), year);
