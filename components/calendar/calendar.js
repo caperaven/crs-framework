@@ -44,13 +44,13 @@ export default class Calendar extends crsbinding.classes.BindableElement {
 
     async attributeChangedCallback(name, oldValue, newValue) {
         if (name === "data-start") {
-            const oldMonth = this.#month;
+            // const oldMonth = this.#month;
             const date = new Date(newValue);
             this.#month = date.getMonth();
             this.#year = date.getFullYear();
             await this.#setMonthProperty();
             await this.#setYearProperty();
-            this.#month !== oldMonth ? await this.#render() : null;
+            // this.#month !== oldMonth ? await this.#render() : null;
         }
         name === "data-month" && this.getProperty("selectedView") === "months" ? await this.#setMonthAndYearAria((newValue - 1)) : null;
         name === "data-year" && this.getProperty("selectedView") === "years" ? await this.#setMonthAndYearAria(newValue) : null;
@@ -102,9 +102,8 @@ export default class Calendar extends crsbinding.classes.BindableElement {
 
     async selectedDateChanged(newValue) {
         if (newValue.getAttribute("role") === 'cell') {
-            const dateObject = new Date(Date.parse(newValue.dataset.date) - new Date().getTimezoneOffset() * 60 * 1000).toISOString();
             await crs.call("dom_collection", "toggle_selection", {target: newValue, multiple: false});
-            this.setAttribute("data-start", dateObject)
+            this.setAttribute("data-start", newValue.dataset.date );
         }
     }
 
