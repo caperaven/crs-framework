@@ -1,5 +1,5 @@
 <style>
-    designer-repo {
+    :host {
         display: grid;
         grid-template-rows: 60px auto;
         height: 450px;
@@ -12,7 +12,8 @@
         filter: drop-shadow(0px 0px 5px #00000080);
     }
 
-    designer-repo [role="toolbar"] {
+
+    :host [role="toolbar"] {
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -20,7 +21,7 @@
         border-bottom: 1px solid silver;
     }
 
-    designer-repo [role="toolbar"] .spacer {
+    :host [role="toolbar"] .spacer {
         display: flex;
         height: 100%;
         width: 2px;
@@ -28,7 +29,7 @@
         margin: 0.25rem;
     }
 
-    designer-repo .text-input {
+    :host .text-input {
         height: 24px;
         font-size: 18px;
         border: none;
@@ -45,67 +46,67 @@
         opacity: 0.5;
     }
 
-    designer-repo input:focus {
+    :host input:focus {
         border: none;
     }
 
-    designer-repo .icon {
+    :host .icon {
         width: 24px;
         height: 24px;
         border: none;
     }
 
-    designer-repo .filter {
+    :host .filter {
         scale: 0.8;
     }
 
-    designer-repo [role="toolbar"] button {
+    :host [role="toolbar"] button {
         border: 0;
         width: 3rem;
         padding-top: 0.2rem;
         height: 80% ;
     }
 
-    designer-repo [aria-pressed="true"] {
+    :host [aria-pressed="true"] {
         /*background: #267FD8;*/
         background-color: #F4F4F4;
         fill: white;
         color: #267FD8;
     }
 
-    designer-repo [aria-pressed="false"] {
+    :host [aria-pressed="false"] {
         /*background: #267FD8;*/
         background-color: #F4F4F4;
         fill: none;
         color: black;
     }
 
-    designer-repo .round-left {
+    :host .round-left {
         border-radius: 5px 0 0 5px ;
     }
 
-    designer-repo .round-right {
+    :host .round-right {
         border-radius: 0 5px 5px 0 ;
     }
 
-    designer-repo ul {
+    :host ul {
         padding: 0.7rem;
         overflow: auto;
         background-color: white;
     }
 
-    designer-repo ul.list {
+    :host ul.list {
         margin: 0 5px 0 0;
     }
 
-    designer-repo ul.list li {
+    :host ul.list li {
         border-bottom: 1px solid #D5D5D5;
         padding: 0.5rem 0 ;
         margin: 0 0.5rem;
         list-style: none;
     }
 
-    designer-repo ul.grid {
+    :host ul.grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, 110px);
         grid-template-rows: repeat(auto-fill, 110px);
@@ -113,7 +114,7 @@
         margin: 0 5px 0 0;
     }
 
-    designer-repo ul.grid li:not([hidden]) {
+    :host ul.grid li:not([hidden]) {
         display: flex;
         flex-direction: column;
         border: 1px solid #D5D5D5;
@@ -122,28 +123,28 @@
         background-color: white;
     }
 
-    designer-repo .scrollbar::-webkit-scrollbar-track {
+    :host .scrollbar::-webkit-scrollbar-track {
         padding: 2px 0;
         background-color: transparent;
     }
 
-    designer-repo .scrollbar::-webkit-scrollbar {
+    :host .scrollbar::-webkit-scrollbar {
         width: 5px;
     }
 
-    designer-repo .scrollbar::-webkit-scrollbar-thumb {
+    :host .scrollbar::-webkit-scrollbar-thumb {
         border-radius: 10px;
         box-shadow: inset 0 0 6px rgba(0,0,0,.3);
         background-color: transparent;
     }
 
-    designer-repo ul.grid img {
+    :host ul.grid img {
         display: flex;
         height: 100px;
         width: 100px;
     }
 
-    designer-repo .resize {
+    :host .resize {
         position: absolute;
         right: 0.5rem;
         bottom: 0.5rem;
@@ -151,7 +152,7 @@
         scale: 0.6;
     }
 
-    .icon-test {
+    ::slotted(.icon-test) {
         font-family: crsfrw;
         font-size: 1.5rem;
     }
@@ -206,35 +207,37 @@
     </symbol>
 </svg>
 
-<!--<div role="toolbar">-->
-<!--    <svg id="filter-btn" class="icon filter" >-->
-<!--        <use href="#filter"></use>-->
-<!--    </svg>-->
-<!--    <input data-id="text-input" class="text-input" type="text" aria-label="filter-text" placeholder="Type To Filter Widget"-->
-<!--           value.bind="filter"/>-->
-<!--    <div class="spacer"></div>-->
-<!--    <button data-id="grid-btn" class="round-left" aria-pressed.if="displayStatus == 'grid' ? true : false"-->
-<!--            click.setvalue="displayStatus = 'grid'">-->
-<!--        <svg class="icon">-->
-<!--            <use href="#grid"></use>-->
-<!--        </svg>-->
-<!--    </button>-->
-<!--    <button data-id="list-btn" class="round-right" click.setvalue="displayStatus = 'list'"-->
-<!--            aria-pressed.if="displayStatus == 'list' ? true : false">-->
-<!--        <svg class="icon">-->
-<!--            <use href="#list"></use>-->
-<!--        </svg>-->
-<!--    </button>-->
-<!--</div>-->
-<filter-header for="ul">
-    <options-toolbar slot="actions">
-        <button  data-id="grid-btn" class="icon-test round-left" aria-pressed.if="displayStatus == 'grid' ? true : false" click.setvalue="displayStatus = 'grid'">grid</button>
-        <button  data-id="list-btn" class="icon-test round-right" click.setvalue="displayStatus = 'list'" aria-pressed.if="displayStatus == 'list' ? true : false">list</button>
-    </options-toolbar>
-</filter-header>
+<template id="filter-header">
+    <filter-header for="ul" slot="filter">
+        <options-toolbar slot="actions">
+            <button  data-id="grid-btn" class="icon-test round-left" aria-pressed.if="displayStatus == 'grid' ? true : false" click.setvalue="displayStatus = 'grid'">grid</button>
+            <button  data-id="list-btn" class="icon-test round-right" click.setvalue="displayStatus = 'list'" aria-pressed.if="displayStatus == 'list' ? true : false">list</button>
+        </options-toolbar>
+    </filter-header>
+</template>
 
-<ul data-id="display" ref="container" classList.if="displayStatus == 'grid' ? 'grid' : 'list'" class="scrollbar">
-</ul>
+<slot id="filter-slot" name="filter"></slot>
+
+<template id="ul-template">
+    <ul slot="main-ul" data-id="display" ref="container" classList.if="displayStatus == 'grid' ? 'grid' : 'list'" class="scrollbar container">
+    </ul>
+</template>
+
+
+<slot id="ul-slot" name="main-ul"></slot>
+
+<!--    <filter-header for="ul" slot="filter">-->
+<!--        <options-toolbar slot="actions">-->
+<!--            <button  data-id="grid-btn" class="icon-test round-left" aria-pressed.if="displayStatus == 'grid' ? true : false" click.setvalue="displayStatus = 'grid'">grid</button>-->
+<!--            <button  data-id="list-btn" class="icon-test round-right" click.setvalue="displayStatus = 'list'" aria-pressed.if="displayStatus == 'list' ? true : false">list</button>-->
+<!--        </options-toolbar>-->
+<!--    </filter-header>-->
+
+
+<!--    <ul slot="main-ul" data-id="display" ref="container" classList.if="displayStatus == 'grid' ? 'grid' : 'list'" class="scrollbar container">-->
+<!--    </ul>-->
+
+
 <svg class="icon resize">
     <use href="#resize"></use>
 </svg>
