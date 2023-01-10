@@ -41,8 +41,16 @@
         margin-left: var(--margin-size);
     }
 
+    #calendar-toolbar #previous-month:hover,#next-month:hover {
+        border: var(--border);
+    }
+
     #calendar-toolbar #next-month {
         margin-right: var(--margin-size);
+    }
+
+    #calendar-toolbar #month:hover, #year:hover {
+        border: var(--border);
     }
 
     #calendar-toolbar #month, #year {
@@ -64,13 +72,7 @@
         width: 8rem;
     }
 
-    #calendar-toolbar #year:after {
-        font-family: var(--icon-font-family);
-        content: var(--chevron-down-icon);
-        padding-left: var(--chevron-padding);
-    }
-
-    #calendar-toolbar #month:after {
+    #calendar-toolbar #year:after,#month:after {
         font-family: var(--icon-font-family);
         content: var(--chevron-down-icon);
         padding-left: var(--chevron-padding);
@@ -91,7 +93,6 @@
         rotate: 90deg;
     }
 
-
 </style>
 
 <svg style="display: none" viewBox="0 0 24 24">
@@ -109,10 +110,10 @@
 </template>
 
 <div id="calendar-toolbar" role="toolbar" ref="tools">
-    <button id="previous-month" aria-label="previous month" click.call="goToPreviousMonth"><svg id="chevron-left"><use href="#chevron-down"></use></svg></button>
+    <button id="previous-month" aria-label="previous" click.call="goToPrevious"><svg id="chevron-left"><use href="#chevron-down"></use></svg></button>
     <button id="month" aria-label="${month}" value="months" click.setValue="selectedView = selectedView === 'months' ? 'default' : 'months'" classlist.if="selectedView == 'months' ? 'current-view'">${month}</button>
     <button id="year" aria-label="${year}" value="years" click.setValue="selectedView = selectedView === 'years' ? 'default' : 'years'" classlist.if="selectedView == 'years' ? 'current-view'">${year}</button>
-    <button id="next-month" aria-label="next month" click.call="goToNextMonth"><svg id="chevron-right"><use href="#chevron-up"></use></svg></button>
+    <button id="next-month" aria-label="next" click.call="goToNext"><svg id="chevron-right"><use href="#chevron-up"></use></svg></button>
 </div>
 
 <perspective-element view.bind="selectedView" ctx.once="contextId" data-folder="/components/calendar/" view-loaded.call="viewLoaded">

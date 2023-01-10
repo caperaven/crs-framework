@@ -1,6 +1,7 @@
 export default class Calendar extends crsbinding.classes.BindableElement {
     #month;
     #year;
+    #selectedDate;
 
     get shadowDom() {
         return true;
@@ -11,7 +12,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     static get observedAttributes() {
-        return ["data-start", "data-month", "data-year", "selectedView"];
+        return ["data-start"];
     }
 
     async connectedCallback() {
@@ -44,16 +45,15 @@ export default class Calendar extends crsbinding.classes.BindableElement {
 
     async attributeChangedCallback(name, oldValue, newValue) {
         if (name === "data-start") {
-            // const oldMonth = this.#month;
+            const oldMonth = this.#month;
             const date = new Date(newValue);
             this.#month = date.getMonth();
             this.#year = date.getFullYear();
             await this.#setMonthProperty();
             await this.#setYearProperty();
-            // this.#month !== oldMonth ? await this.#render() : null;
+            this.#month !== oldMonth ? await this.#render() : null;
+
         }
-        name === "data-month" && this.getProperty("selectedView") === "months" ? await this.#setMonthAndYearAria((newValue - 1)) : null;
-        name === "data-year" && this.getProperty("selectedView") === "years" ? await this.#setMonthAndYearAria(newValue) : null;
     }
 
     async #render() {
@@ -65,13 +65,13 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     async #setMonthProperty() {
         this.setProperty("selectedMonth", this.#month);
         this.setProperty("month", new Date(this.#year, this.#month).toLocaleString('en-US', {month: 'long'}));
-        this.setAttribute("data-month", this.#month + 1);
+        this.getProperty("selectedView") === "months" ? await this.#setMonthAndYearAria(this.#month) : null;
     }
 
     async #setYearProperty() {
-        this.setProperty("selectedYear", this.#year);
         this.setProperty("year", this.#year);
-        this.setAttribute("data-year", this.#year);
+        this.setProperty("selectedYear", this.#year);
+        this.getProperty("selectedView") === "years" ? await this.#setMonthAndYearAria(this.#year) : null;
     }
 
     async #setMonthAndYearAria(newValue) {
@@ -85,6 +85,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
 
         if (currentView === "default") {
             requestAnimationFrame(async () => await this.#render());
+            // this.#selectedDate != null ? await crs.call("dom_collection", "toggle_selection", {target: this.#selectedDate, multiple: false}):null;
         }
         currentView === "months" ? await this.#setMonthAndYearAria(this.#month) : null;
         currentView === "years" ? await this.#setMonthAndYearAria(this.#year) : null;
@@ -100,24 +101,39 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         await this.#setYearProperty();
     }
 
-    async selectedDateChanged(newValue) {
+    async selectedDateChanged(event) {
+        const newValue = event.target;
         if (newValue.getAttribute("role") === 'cell') {
+            const dateObject = newValue.dataset.date;
             await crs.call("dom_collection", "toggle_selection", {target: newValue, multiple: false});
-            this.setAttribute("data-start", newValue.dataset.date );
+            this.setAttribute("data-start", dateObject);
         }
     }
 
-    async goToNextMonth() {
-        this.#month = parseInt(this.#month) + 1;
-        this.#month > 11 ? (this.#month = 0, this.#year += 1, await this.#setYearProperty()) : this.#month;
-        await this.#setMonthProperty();
+    async goToNext() {
+        if (this.getProperty("selectedView") === "months" || this.getProperty("selectedView") === "default") {
+            this.#month = parseInt(this.#month) + 1;
+            this.#month > 11 ? (this.#month = 0, this.#year += 1, await this.#setYearProperty()) : this.#month;
+            await this.#setMonthProperty();
+        }
+        if (this.getProperty("selectedView") === "years") {
+            this.#year = parseInt(this.#year) + 1;
+            await this.#setYearProperty();
+        }
+
         await this.#render();
     }
 
-    async goToPreviousMonth() {
-        this.#month = parseInt(this.#month) - 1;
-        this.#month < 0 ? (this.#month = 11, this.#year -= 1, await this.#setYearProperty()) : this.#month;
-        await this.#setMonthProperty();
+    async goToPrevious() {
+        if (this.getProperty("selectedView") === "months" || this.getProperty("selectedView") === "default") {
+            this.#month = parseInt(this.#month) - 1;
+            this.#month < 0 ? (this.#month = 11, this.#year -= 1, await this.#setYearProperty()) : this.#month;
+            await this.#setMonthProperty();
+        }
+        if (this.getProperty("selectedView") === "years") {
+            this.#year = parseInt(this.#year) - 1;
+            await this.#setYearProperty();
+        }
         await this.#render();
     }
 }

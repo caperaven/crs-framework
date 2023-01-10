@@ -76,7 +76,7 @@ describe("Calendar Component", async () => {
         await instance.connectedCallback();
 
         // Act
-        await instance.goToNextMonth();
+        await instance.goToNext();
         const monthValue = instance.getProperty("selectedMonth");
         const yearValue = instance.getProperty("selectedYear");
         const month = new Date(yearValue, monthValue).toLocaleString('en-US', {month: 'long'});
@@ -91,7 +91,7 @@ describe("Calendar Component", async () => {
         await instance.connectedCallback();
 
         // Act
-        await instance.goToPreviousMonth();
+        await instance.goToPrevious();
         const monthValue = instance.getProperty("selectedMonth");
         const yearValue = instance.getProperty("selectedYear");
         const month = new Date(yearValue, monthValue).toLocaleString('en-US', {month: 'long'});
