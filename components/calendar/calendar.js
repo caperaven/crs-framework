@@ -1,15 +1,23 @@
 export default class Calendar extends crsbinding.classes.BindableElement {
     #month;
     #year;
-    #selectedDate;
+    #dateSelected;
 
     get shadowDom() {
         return true;
     }
 
-    // get month() {
-    //     return this.getProperty("selectedMonth");
-    // }
+    get month() {
+        return this.getProperty("selectedMonth");
+    }
+
+    get year() {
+        return this.getProperty("selectedYear");
+    }
+
+    get selectedView() {
+        return this.getProperty("selectedView");
+    }
 
     get html() {
         return import.meta.url.replace(".js", ".html");
@@ -17,11 +25,6 @@ export default class Calendar extends crsbinding.classes.BindableElement {
 
     static get observedAttributes() {
         return ["data-start"];
-    }
-
-    async connectedCallback() {
-        await super.connectedCallback();
-        await this.load();
     }
 
     async load() {
@@ -32,142 +35,128 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     async disconnectedCallback() {
         await super.disconnectedCallback();
         await crsbinding.inflationManager.unregister("calendar-cell");
-        this.date = null;
         this.#month = null;
         this.#year = null;
+        this.#dateSelected = null;
     }
 
     async preLoad() {
-        this.date = new Date();
-        this.#year = this.date.getFullYear();
-        this.#month = this.date.getMonth();
-        this.setAttribute("data-start", this.date.toISOString());
+        const date = new Date();
+        this.#year = date.getFullYear();
+        this.#month = date.getMonth();
+        this.setAttribute("data-start", date.toISOString());
         this.setProperty("selectedView", "default");
-        await this.#setMonthProperty();
-        await this.#setYearProperty();
+        await Promise.all([this.#setYearProperty(), this.#setMonthProperty()]);
     }
 
     async attributeChangedCallback(name, oldValue, newValue) {
-        if (name === "data-start") {
-            const oldMonth = this.#month;
-            const date = new Date(newValue);
-            this.#month = date.getMonth();
-            this.#year = date.getFullYear();
-            await this.#setMonthProperty();
-            await this.#setYearProperty();
-            if (this.#month !== oldMonth) {
-                await this.#render();
-            }
-        }
+        const previouslySetMonth = this.#month;
+        const date = new Date(newValue);
+        this.#month = date.getMonth();
+        this.#year = date.getFullYear();
+        await Promise.all([this.#setYearProperty(), this.#setMonthProperty()]);
+        this.#month !== previouslySetMonth && await this.set_default();
     }
 
     async #render() {
         const data = await crs.call("date", "get_days", {month: this.#month, year: this.#year, only_current: false});
         const cells = this.shadowRoot.querySelectorAll("[role='cell']");
+        const date = new Date(this.dataset.start);
+        for (const item of data) {
+            if (item.date.getDate() === this.#dateSelected  && item.date.getMonth() === date.getMonth() && item.date.getFullYear() === date.getFullYear()) {
+                item.selected = true;
+            }
+        }
         crsbinding.inflationManager.get("calendar-cell", data, cells);
     }
 
     async #setMonthProperty() {
-        this.setProperty("month", new Date(this.#year, this.#month).toLocaleString('en-US', {month: 'long'}));
-        this.setProperty("selectMonth", this.#month);
-        if (this.getProperty("selectedView") === "months") {
-            await this.#setMonthAndYearAria(this.#month)
-        }
+        this.setProperty("selectedMonthText", new Date(this.#year, this.#month).toLocaleString('en-US', {month: 'long'}));
+        this.setProperty("selectedMonth", this.#month);
+        this.selectedView === "months" && await this.set_months();
     }
 
     async #setYearProperty() {
-        this.setProperty("year", this.#year);
-        this.setProperty("selectYear", this.#year);
-        if (this.getProperty("selectedView") === "years") {
-            await this.#setMonthAndYearAria(this.#year)
-        }
+        this.setProperty("selectedYearText", this.#year);
+        this.setProperty("selectedYear", this.#year);
+        this.selectedView === "years" && await this.set_years();
     }
 
     async #setMonthAndYearAria(newValue) {
-        const tempElement = this.shadowRoot.querySelector(`[data-value = '${newValue}']`);
-        await crs.call("dom_collection", "toggle_selection", {target: tempElement, multiple: false});
-        if (newValue === this.#year) {
-            tempElement.scrollIntoView();
-        }
+        const element = this.shadowRoot.querySelector(`[data-value = '${newValue}']`);
+        await crs.call("dom_collection", "toggle_selection", {target: element, multiple: false});
+        return element;
+    }
+
+    async #set_default_view() {
+        this.setProperty("selectedView", "default");
     }
 
     async viewLoaded() {
-        const currentView = this.getProperty("selectedView");
-
-        if (currentView === "default") {
-            requestAnimationFrame(async () => await this.#render());
-        }
-
-        if (currentView === "months") {
-            await this.#setMonthAndYearAria(this.#month)
-        }
-
-        if (currentView === "years") {
-            await this.#setMonthAndYearAria(this.#year)
+        const currentView = this.selectedView;
+        if (this[`set_${currentView}`]) {
+            await this[`set_${currentView}`]()
         }
     }
 
-    async selectMonthChanged(newValue) {
-        if (this.getProperty("selectMonth") !== this.#month) {
+    async set_years() {
+        const element = await this.#setMonthAndYearAria(this.#year);
+        element.scrollIntoView();
+    }
+
+    async set_months() {
+        await this.#setMonthAndYearAria(this.#month);
+    }
+
+    async set_default() {
+        requestAnimationFrame(async () => await this.#render());
+    }
+
+    async selectedMonthChanged(newValue) {
+        if (this.month !== this.#month) {
             this.#month = newValue == null || parseInt(newValue) > 11 ? parseInt(this.#month) : newValue;
             await this.#setMonthProperty();
-            if (this.getProperty("selectedView") !== "default") {
-                this.setProperty("selectedView", "default")
-            }
+            newValue != null && await this.#set_default_view();
         }
     }
 
-    async selectYearChanged(newValue) {
-        if (this.getProperty("selectYear") !== this.#year) {
-            this.#year = newValue == null || newValue.toString().length < 4 ? parseInt(this.#year) : newValue;
+    async selectedYearChanged(newValue) {
+        if (this.year !== this.#year) {
+            this.#year = newValue == null || toString().length < 4 ? parseInt(this.#year) : newValue;
             await this.#setYearProperty();
-            if (this.getProperty("selectedView") !== "default") {
-                this.setProperty("selectedView", "default")
-            }
+            newValue != null && await this.#set_default_view();
         }
     }
 
-    async selectedDateChanged(event) {
+    async selectedDate(event) {
         const newValue = event.target;
         if (newValue.getAttribute("role") === 'cell') {
             const dateObject = newValue.dataset.date;
             await crs.call("dom_collection", "toggle_selection", {target: newValue, multiple: false});
             this.setAttribute("data-start", dateObject);
-            this.Date = newValue;
+            this.#dateSelected = new Date(this.dataset.start).getDate();
         }
     }
 
     async goToNext() {
-        if (this.getProperty("selectedView") === "months" || this.getProperty("selectedView") === "default") {
-            this.#month = parseInt(this.#month) + 1;
-            if (this.#month > 11) {
-                this.#month = 0;
-                this.#year += 1;
-                await this.#setYearProperty();
-            }
-            await this.#setMonthProperty();
+        if (["months", "default"].includes(this.selectedView)) {
+            this.#month++;
+            this.#month > 11 && (this.#month = 0, this.#year++);
+        } else {
+            this.#year++;
         }
-        if (this.getProperty("selectedView") === "years") {
-            this.#year = parseInt(this.#year) + 1;
-            await this.#setYearProperty();
-        }
+        await Promise.all([this.#setYearProperty(), this.#setMonthProperty()]);
         await this.#render();
     }
 
     async goToPrevious() {
-        if (this.getProperty("selectedView") === "months" || this.getProperty("selectedView") === "default") {
-            this.#month = parseInt(this.#month) - 1;
-            if (this.#month < 0) {
-                this.#month = 11;
-                this.#year -= 1;
-                await this.#setYearProperty();
-            }
-            await this.#setMonthProperty();
+        if (["months", "default"].includes(this.selectedView)) {
+            this.#month--;
+            this.#month < 0 && (this.#month = 11, this.#year--);
+        } else {
+            this.#year--;
         }
-        if (this.getProperty("selectedView") === "years") {
-            this.#year = parseInt(this.#year) - 1;
-            await this.#setYearProperty();
-        }
+        await Promise.all([this.#setYearProperty(), this.#setMonthProperty()]);
         await this.#render();
     }
 }

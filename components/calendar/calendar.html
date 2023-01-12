@@ -106,13 +106,13 @@
 </svg>
 
 <template id="tplCell">
-    <div role="cell" tabindex="-1" data-date="${new Date((date.getTime()) - ((new Date().getTimezoneOffset()) * 60 * 1000)).toISOString()}" classlist.case="current == false: 'non-current-day', new Date().toLocaleDateString() === date.toLocaleDateString(): 'today'">${number}</div>
+    <div role="cell" tabindex="-1" aria-selected="${selected}" data-date="${new Date((date.getTime()) - ((new Date().getTimezoneOffset()) * 60 * 1000)).toISOString()}" classlist.case="current == false: 'non-current-day', new Date().toLocaleDateString() === date.toLocaleDateString(): 'today'">${number}</div>
 </template>
 
 <div id="calendar-toolbar" role="toolbar" ref="tools">
     <button id="previous-month" aria-label="previous" click.call="goToPrevious"><svg id="chevron-left"><use href="#chevron-down"></use></svg></button>
-    <button id="month" aria-label="${month}" value="months" click.setValue="selectedView = selectedView === 'months' ? 'default' : 'months'" classlist.if="selectedView == 'months' ? 'current-view'">${month}</button>
-    <button id="year" aria-label="${year}" value="years" click.setValue="selectedView = selectedView === 'years' ? 'default' : 'years'" classlist.if="selectedView == 'years' ? 'current-view'">${year}</button>
+    <button id="month" aria-label="${month}" value="months" click.setValue="selectedView = selectedView === 'months' ? 'default' : 'months'" classlist.if="selectedView == 'months' ? 'current-view'">${selectedMonthText}</button>
+    <button id="year" aria-label="${year}" value="years" click.setValue="selectedView = selectedView === 'years' ? 'default' : 'years'" classlist.if="selectedView == 'years' ? 'current-view'">${selectedYearText}</button>
     <button id="next-month" aria-label="next" click.call="goToNext"><svg id="chevron-right"><use href="#chevron-up"></use></svg></button>
 </div>
 
