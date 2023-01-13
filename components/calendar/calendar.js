@@ -50,22 +50,24 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     async attributeChangedCallback(name, oldValue, newValue) {
+        if (!newValue) return;
         const date = new Date(newValue);
-        if (!isNaN(date.getTime())) {
-            this.#month = date.getMonth();
-            this.#year = date.getFullYear();
-            await this.#setMonthProperty();
-            await this.#setYearProperty();
-            newValue !== oldValue && await this.set_default();
-        }
+        this.#month = date.getMonth();
+        this.#year = date.getFullYear();
+        await this.#setMonthProperty();
+        await this.#setYearProperty();
+        newValue !== oldValue && await this.set_default();
     }
 
     async #render() {
         const data = await crs.call("date", "get_days", {month: this.#month, year: this.#year, only_current: false});
         const cells = this.shadowRoot.querySelectorAll("[role='cell']");
         const date = new Date(this.dataset.start);
+        const year = date.getFullYear();
+        const month = date.getMonth();
+        const day = date.getDate();
         for (const item of data) {
-            if (item.date.getDate() === date.getDate() && item.date.getMonth() === date.getMonth() && item.date.getFullYear() === date.getFullYear()) {
+            if (item.date.getDate() === day && item.date.getMonth() === month && item.date.getFullYear() === year) {
                 item.selected = true;
             }
         }
