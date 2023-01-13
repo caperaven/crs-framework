@@ -44,18 +44,20 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         const date = new Date();
         this.#year = date.getFullYear();
         this.#month = date.getMonth();
-        this.setAttribute("data-start", date.toISOString());
         this.setProperty("selectedView", "default");
-        await Promise.all([this.#setYearProperty(), this.#setMonthProperty()]);
+        await this.#setMonthProperty();
+        await this.#setYearProperty();
     }
 
     async attributeChangedCallback(name, oldValue, newValue) {
-        const previouslySetMonth = this.#month;
         const date = new Date(newValue);
-        this.#month = date.getMonth();
-        this.#year = date.getFullYear();
-        await Promise.all([this.#setYearProperty(), this.#setMonthProperty()]);
-        this.#month !== previouslySetMonth && await this.set_default();
+        if (!isNaN(date.getTime())) {
+            this.#month = date.getMonth();
+            this.#year = date.getFullYear();
+            await this.#setMonthProperty();
+            await this.#setYearProperty();
+            newValue !== oldValue && await this.set_default();
+        }
     }
 
     async #render() {
@@ -63,7 +65,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         const cells = this.shadowRoot.querySelectorAll("[role='cell']");
         const date = new Date(this.dataset.start);
         for (const item of data) {
-            if (item.date.getDate() === this.#dateSelected  && item.date.getMonth() === date.getMonth() && item.date.getFullYear() === date.getFullYear()) {
+            if (item.date.getDate() === date.getDate() && item.date.getMonth() === date.getMonth() && item.date.getFullYear() === date.getFullYear()) {
                 item.selected = true;
             }
         }
@@ -131,32 +133,33 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     async selectedDate(event) {
         const newValue = event.target;
         if (newValue.getAttribute("role") === 'cell') {
-            const dateObject = newValue.dataset.date;
+            const dateObject = new Date((new Date(this.#year, newValue.dataset.month, newValue.dataset.day).getTime()) - ((new Date().getTimezoneOffset()) * 60 * 1000));
             await crs.call("dom_collection", "toggle_selection", {target: newValue, multiple: false});
-            this.setAttribute("data-start", dateObject);
-            this.#dateSelected = new Date(this.dataset.start).getDate();
+            this.setAttribute("data-start", dateObject.toISOString().slice(0, 10));
         }
     }
 
     async goToNext() {
-        if (["months", "default"].includes(this.selectedView)) {
+        if (this.selectedView === "years") {
+            this.#year++;
+        } else {
             this.#month++;
             this.#month > 11 && (this.#month = 0, this.#year++);
-        } else {
-            this.#year++;
         }
-        await Promise.all([this.#setYearProperty(), this.#setMonthProperty()]);
+        await this.#setMonthProperty();
+        await this.#setYearProperty();
         await this.#render();
     }
 
     async goToPrevious() {
-        if (["months", "default"].includes(this.selectedView)) {
+        if (this.selectedView === "years") {
+            this.#year--;
+        } else {
             this.#month--;
             this.#month < 0 && (this.#month = 11, this.#year--);
-        } else {
-            this.#year--;
         }
-        await Promise.all([this.#setYearProperty(), this.#setMonthProperty()]);
+        await this.#setMonthProperty();
+        await this.#setYearProperty();
         await this.#render();
     }
 }
