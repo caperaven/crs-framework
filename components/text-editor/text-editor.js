@@ -1,4 +1,4 @@
-import {EditorView, basicSetup, markdown, json, css, javascript, html, autocompletion} from "./editor.js";
+import {EditorView, basicSetup, markdown, json, css, javascript, html, autocompletion, keymap, indentWithTab} from "./editor.js";
 
 const LANGUAGES = Object.freeze({
     "markdown": markdown,
@@ -44,7 +44,7 @@ class TextEditor extends HTMLElement {
         })
 
         this.#editor = new EditorView({
-            extensions: [basicSetup, LANGUAGES[this.language](), autocompletion(), this.#update],
+            extensions: [basicSetup, LANGUAGES[this.language](), autocompletion(), this.#update, keymap.of([indentWithTab])],
             parent: this
         })
 
