@@ -2,6 +2,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     #month;
     #year;
     #dateSelected;
+    #tabHandler;
 
     get shadowDom() {
         return true;
@@ -30,11 +31,15 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     async load() {
         const tplCell = this.shadowRoot.querySelector("#tplCell");
         await crsbinding.inflationManager.register("calendar-cell", tplCell);
+        this.#tabHandler = this.#tabNavigation.bind(this);
+        this.shadowRoot.addEventListener('keydown', this.#tabHandler);
     }
 
     async disconnectedCallback() {
         await super.disconnectedCallback();
         await crsbinding.inflationManager.unregister("calendar-cell");
+        this.shadowRoot.removeEventListener('keydown', this.#tabHandler);
+        this.#tabHandler = null;
         this.#month = null;
         this.#year = null;
         this.#dateSelected = null;
@@ -94,6 +99,38 @@ export default class Calendar extends crsbinding.classes.BindableElement {
 
     async #set_default_view() {
         this.setProperty("selectedView", "default");
+    }
+
+    //Todo: implement keyboard navigation code
+    async #tabNavigation(event) {
+        const keys = event.key;
+        if (this[`press${keys}`]) {
+            await this[`press${keys}`]();
+        }
+    }
+
+    async pressTab() {
+        console.log("tab-key");
+    }
+
+    async pressEnter() {
+        console.log("enter key has been pressed");
+    }
+
+    async pressArrowUp() {
+        console.log("arrow-up")
+    }
+
+    async pressArrowDown() {
+        console.log("arrow-down")
+    }
+
+    async pressArrowLeft() {
+        console.log("arrow-left")
+    }
+
+    async pressArrowRight() {
+        console.log("arrow-right")
     }
 
     async viewLoaded() {
