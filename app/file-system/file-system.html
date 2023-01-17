@@ -1,0 +1,35 @@
+<style>
+    crs-router {
+        display: grid;
+        grid-template-rows: max-content 1fr;
+        grid-template-columns: 20rem 1fr;
+    }
+
+    .header {
+        grid-column: 1 / span 2;
+    }
+
+    .header h2 {
+        flex: 1;
+    }
+
+    file-system, text-editor {
+        grid-row: 2;
+    }
+
+    file-system {
+        grid-column: 1;
+        border: 1px solid silver;
+    }
+
+    text-editor {
+        grid-column: 2;
+    }
+</style>
+
+<header class="header">
+    <h2>${title}</h2>
+    <button click.call="open">Open Folder</button>
+</header>
+<file-system></file-system>
+<text-editor></text-editor>
