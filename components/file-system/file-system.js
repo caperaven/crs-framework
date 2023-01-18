@@ -35,6 +35,11 @@ export default class FileSystem extends crsbinding.classes.BindableElement {
     }
 
     async #expandFolder(element) {
+        this.dispatchEvent(new CustomEvent("change", { detail: {
+            kind: "directory",
+            name: element.textContent
+        }}));
+
         if (element.matches('[aria-expanded="true"]')) {
             return await this.#collapseFolder(element);
         }
@@ -72,7 +77,17 @@ export default class FileSystem extends crsbinding.classes.BindableElement {
     }
 
     async #loadFile(element) {
+        const path = element.dataset.path;
+        const handle = this.#data.find(item => item.path == path);
+        const result = await crs.call("fs", "read_file", { handle });
 
+        this.dispatchEvent(new CustomEvent("change", {
+            detail: {
+                kind: 'file',
+                name: element.textContent,
+                content: result
+            }
+        }))
     }
 
     async #prefixPaths(data, path) {
