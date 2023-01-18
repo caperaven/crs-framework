@@ -31,5 +31,5 @@
     <h2>${title}</h2>
     <button click.call="open">Open Folder</button>
 </header>
-<file-system></file-system>
-<text-editor></text-editor>
+<file-system change.call="filesChanged"></file-system>
+<text-editor ref="textEditor"></text-editor>

@@ -37,7 +37,7 @@ export default class FileSystem extends crsbinding.classes.BindableElement {
     async #expandFolder(element) {
         this.dispatchEvent(new CustomEvent("change", { detail: {
             kind: "directory",
-            name: element.textContent
+            name: element.textContent.split("\n").join("")
         }}));
 
         if (element.matches('[aria-expanded="true"]')) {
@@ -84,7 +84,7 @@ export default class FileSystem extends crsbinding.classes.BindableElement {
         this.dispatchEvent(new CustomEvent("change", {
             detail: {
                 kind: 'file',
-                name: element.textContent,
+                name: element.textContent.split("\n").join(""),
                 content: result
             }
         }))
