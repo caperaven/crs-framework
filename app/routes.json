@@ -91,6 +91,11 @@
       "view": "available-selected"
     },
     {
+      "title": "File System",
+      "hash": "#file-system",
+      "view": "file-system"
+    },
+    {
       "title": "About",
       "hash": "#about",
       "view": "about",

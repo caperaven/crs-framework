@@ -1,0 +1,34 @@
+<style>
+    :host {
+        display: block;
+    }
+
+    ul {
+        width: 100%;
+        height: 100%;
+        padding: var(--padding);
+        margin: 0;
+        overflow: auto;
+    }
+
+    li {
+        cursor: pointer;
+        padding: 0.25rem;
+    }
+
+    li * {
+        pointer-events: none;
+    }
+</style>
+
+<template id="tplFolder">
+    <li data-type="directory" data-path.attr="path">${name}</li>
+</template>
+
+<template id="tplFile">
+    <li data-type="file">${name}</li>
+</template>
+
+<ul dblclick.call="dblclick">
+
+</ul>
