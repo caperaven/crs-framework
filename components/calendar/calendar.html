@@ -106,7 +106,7 @@
 </svg>
 
 <template id="tplCell">
-    <div role="cell" tabindex="-1" aria-selected="${selected}" data-day="${date.getDate()}" data-month="${date.getMonth()}" classlist.case="current == false: 'non-current-day', new Date().toLocaleDateString() === date.toLocaleDateString(): 'today'">${number}</div>
+    <div role="cell" tabindex.if="new Date().toLocaleDateString() === date.toLocaleDateString() ? '0': '-1'" aria-selected="${selected}" data-day="${date.getDate()}" data-month="${date.getMonth()}" classlist.case="current == false: 'non-current-day', new Date().toLocaleDateString() === date.toLocaleDateString(): 'today'">${number}</div>
 </template>
 
 <div id="calendar-toolbar" role="toolbar" ref="tools">

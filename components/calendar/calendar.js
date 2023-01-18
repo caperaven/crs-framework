@@ -94,6 +94,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     async #setMonthAndYearAria(newValue) {
         const element = this.shadowRoot.querySelector(`[data-value = '${newValue}']`);
         await crs.call("dom_collection", "toggle_selection", {target: element, multiple: false});
+        element.setAttribute("tabindex", "0");
         return element;
     }
 
@@ -105,12 +106,12 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     async #tabNavigation(event) {
         const keys = event.key;
         if (this[`press${keys}`]) {
-            await this[`press${keys}`]();
+            await this[`press${keys}`](event);
         }
     }
 
     async pressTab() {
-        console.log("tab-key");
+        console.log("tab-key: ", this.calendar);
     }
 
     async pressEnter() {
@@ -125,12 +126,12 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         console.log("arrow-down")
     }
 
-    async pressArrowLeft() {
-        console.log("arrow-left")
+    async pressArrowLeft(event) {
+        console.log("arrow-left: ", event.target)
     }
 
-    async pressArrowRight() {
-        console.log("arrow-right")
+    async pressArrowRight(event) {
+        console.log("arrow-right: ", event.target)
     }
 
     async viewLoaded() {
