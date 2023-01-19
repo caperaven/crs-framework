@@ -85,7 +85,8 @@ export default class FileSystem extends crsbinding.classes.BindableElement {
             detail: {
                 kind: 'file',
                 name: element.textContent.split("\n").join(""),
-                content: result
+                content: result,
+                path: element.dataset.path
             }
         }))
     }
@@ -166,6 +167,13 @@ export default class FileSystem extends crsbinding.classes.BindableElement {
         if (element.dataset.type === "file") {
             await this.#loadFile(element);
         }
+    }
+
+    async save(key, content) {
+        const handle = this.#data?.find(item => item.path == key);
+        if (handle == null) return;
+
+        await crs.call("fs", "save_file", { handle, content });
     }
 }
 
