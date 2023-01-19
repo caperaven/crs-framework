@@ -1,1 +1,147 @@
-class f{static async perform(t,e,a,s){await this[t.action](t,e,a,s)}static async select_folder(t,e,a,s){}static async create_folder(t,e,a,s){}static async select_file(t,e,a,s){let i;return[i]=await window.showOpenFilePicker(),i}static async read_file(t,e,a,s){return await(await(await crs.process.getValue(t.args?.handle,e,a,s)||await this.select_file(t,e,a,s)).getFile()).text()}static async read_json(t,e,a,s){const i=await this.read_file(t,e,a,s);return JSON.parse(i)}static async save_file(t,e,a,s){const i=await crs.process.getValue(t.args.file_handle,e,a,s),n=await crs.process.getValue(t.args.content,e,a,s);await l(i,n)}static async write_new_file(t,e,a,s){const i=await crs.process.getValue(t.args.file_types,e,a,s),n=await crs.process.getValue(t.args.default_name,e,a,s),r=await w(i,n),o=await crs.process.getValue(t.args.content,e,a,s);await l(r,o)}static async write_new_json(t,e,a,s){const i=await crs.process.getValue(t.args.content,e,a,s),o=await w([{description:"JSON Files",accept:{"text/json":[".json"]}}],"untitled.json");await l(o,JSON.stringify(i,null,"	"))}static async open_folder(t,e,a,s){const n=await crs.process.getValue(t.args?.handle,e,a,s)||await window.showDirectoryPicker();await d(n,!0);const r=[];for await(const o of n.values())r.push(o);return r}}async function l(c,t){const e=await c.createWritable();await e.write(t),await e.close()}async function w(c,t){const e={suggestedName:t||"Untitled.txt",types:c||[]};return await window.showSaveFilePicker(e)}async function d(c,t){const e={};return t&&(e.mode="readwrite"),await c.queryPermission(e)==="granted"||await c.requestPermission(e)==="granted"}crs.intent.fs=f;export{f as FsActions};
+/**
+ * https://web.dev/file-system-access/#transparency
+ */
+
+export class FsActions {
+    static async perform(step, context, process, item) {
+        await this[step.action](step, context, process, item);
+    }
+
+    /**
+     * select folder and return handle
+     * @returns {Promise<void>}
+     */
+    static async select_folder(step, context, process, item) {
+    }
+
+    /**
+     * read the content of a file
+     * @returns {Promise<void>}
+     */
+    static async create_folder(step, context, process, item) {
+    }
+
+    /**
+     * using the file picker select a file, read it's content and pass it back
+     * @returns {Promise<void>}
+     */
+    static async select_file(step, context, process, item) {
+        let fileHandle;
+        [fileHandle] = await window.showOpenFilePicker();
+        return fileHandle;
+    }
+
+    /**
+     * read the content of a file
+     * @returns {Promise<void>}
+     */
+    static async read_file(step, context, process, item) {
+        const handle = await crs.process.getValue(step.args?.handle, context, process, item);
+        const fileHandle = handle || await this.select_file(step, context, process, item);
+        const file = await fileHandle.getFile();
+        return await file.text();
+    }
+
+    /**
+     * read the content of a file and convert it to json
+     * @returns {Promise<void>}
+     */
+    static async read_json(step, context, process, item) {
+        const text = await this.read_file(step, context, process, item);
+        return JSON.parse(text);
+    }
+
+    /**
+     * save a existing file
+     * @returns {Promise<void>}
+     */
+    static async save_file(step, context, process, item) {
+        const fileHandle = await crs.process.getValue(step.args.handle, context, process, item);
+        const content = await crs.process.getValue(step.args.content, context, process, item);
+        await writeFile(fileHandle, content);
+    }
+
+    /**
+     * save text as utf8 in a file
+     * @returns {Promise<void>}
+     */
+    static async write_new_file(step, context, process, item) {
+        const fileTypes = await crs.process.getValue(step.args.file_types, context, process, item);
+        const defaultName = await crs.process.getValue(step.args.default_name, context, process, item);
+        const fileHandle = await getSaveHandle(fileTypes, defaultName);
+        const content = await crs.process.getValue(step.args.content, context, process, item);
+        await writeFile(fileHandle, content);
+    }
+
+    /**
+     * save a json file to a utf8 file with a json extension
+     * @returns {Promise<void>}
+     */
+    static async write_new_json(step, context, process, item) {
+        const json = await crs.process.getValue(step.args.content, context, process, item);
+        const defaultName = "untitled.json";
+        const fileTypes = [
+            {
+                description: 'JSON Files',
+                accept: {
+                    'text/json': ['.json'],
+                },
+            }
+        ]
+        const fileHandle = await getSaveHandle(fileTypes, defaultName);
+        await writeFile(fileHandle, JSON.stringify(json, null, '\t'));
+    }
+
+    /**
+     * Get a list of files in a selected folder
+     * @returns {Promise<void>}
+     */
+    static async open_folder(step, context, process, item) {
+        const handle = await crs.process.getValue(step.args?.handle, context, process, item);
+        const dirHandle = handle || await window.showDirectoryPicker();
+        await verifyPermission(dirHandle, true);
+
+        const results = [];
+
+        for await (const entry of dirHandle.values()) {
+            results.push(entry);
+        }
+
+        return results;
+    }
+}
+
+async function writeFile(fileHandle, contents) {
+    const writable = await fileHandle.createWritable();
+    await writable.write(contents);
+    await writable.close();
+}
+
+async function getSaveHandle(types, defaultName) {
+    const options = {
+        suggestedName: defaultName || 'Untitled.txt',
+        types: types || []
+    };
+
+    return await window.showSaveFilePicker(options);
+}
+
+async function verifyPermission(fileHandle, readWrite) {
+    const options = {};
+
+    if (readWrite) {
+        options.mode = 'readwrite';
+    }
+
+    if ((await fileHandle.queryPermission(options)) === 'granted') {
+        return true;
+    }
+
+    if ((await fileHandle.requestPermission(options)) === 'granted') {
+        return true;
+    }
+
+    return false;
+}
+
+crs.intent.fs = FsActions;

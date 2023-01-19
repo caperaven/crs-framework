@@ -9,4 +9,9 @@ export default class FileSystemViewModel extends crsbinding.classes.ViewBase {
     async open() {
         await document.querySelector("file-system").selectFolder();
     }
+
+    async filesChanged(event) {
+        const text = event.detail.content || "";
+        this.textEditor.value = text;
+    }
 }
