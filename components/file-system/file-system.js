@@ -28,9 +28,7 @@ export default class FileSystem extends crsbinding.classes.BindableElement {
 
     #setPath(array, root) {
         for (const item of array) {
-            if (item.kind === "directory") {
-                item.path = root.length == 0 ? item.name : `${root}/${item.name}`;
-            }
+            item.path = root.length == 0 ? item.name : `${root}/${item.name}`;
         }
     }
 
@@ -174,6 +172,14 @@ export default class FileSystem extends crsbinding.classes.BindableElement {
         if (handle == null) return;
 
         await crs.call("fs", "save_file", { handle, content });
+    }
+
+    async saveNew(content, fileTypes) {
+        await crs.call("fs", "write_new_file", {
+            file_types: fileTypes,
+            default_name: "undefined",
+            content
+        })
     }
 }
 
