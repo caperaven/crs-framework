@@ -155,6 +155,18 @@ export default class FileSystem extends crsbinding.classes.BindableElement {
 
         await this.#loadFile(element);
     }
+
+    async click(event) {
+        const element = event.composedPath()[0];
+
+        const selected = element.parentElement.querySelector("[aria-selected]");
+        selected?.removeAttribute("aria-selected");
+        element.setAttribute("aria-selected", "true");
+
+        if (element.dataset.type === "file") {
+            await this.#loadFile(element);
+        }
+    }
 }
 
 function sortArray(array) {
