@@ -110,13 +110,13 @@
 </template>
 
 <div id="calendar-toolbar" role="toolbar" ref="tools">
-    <button id="previous-month" aria-label="previous" click.call="goToPrevious"><svg id="chevron-left"><use href="#chevron-down"></use></svg></button>
-    <button id="month" aria-label="${month}" value="months" click.setValue="selectedView = selectedView === 'months' ? 'default' : 'months'" classlist.if="selectedView == 'months' ? 'current-view'">${selectedMonthText}</button>
-    <button id="year" aria-label="${year}" value="years" click.setValue="selectedView = selectedView === 'years' ? 'default' : 'years'" classlist.if="selectedView == 'years' ? 'current-view'">${selectedYearText}</button>
-    <button id="next-month" aria-label="next" click.call="goToNext"><svg id="chevron-right"><use href="#chevron-up"></use></svg></button>
+    <button id="previous-month" aria-label="previous" tooltip="Previous" click.call="goToPrevious"><svg id="chevron-left"><use href="#chevron-down"></use></svg></button>
+    <button id="month" aria-label="${selectedMonthText}" value="months" tooltip="Months" click.setValue="selectedView = selectedView === 'months' ? 'default' : 'months'" classlist.if="selectedView == 'months' ? 'current-view'">${selectedMonthText}</button>
+    <button id="year" aria-label="${selectedYearText}" value="years" tooltip="Years" click.setValue="selectedView = selectedView === 'years' ? 'default' : 'years'" classlist.if="selectedView == 'years' ? 'current-view'">${selectedYearText}</button>
+    <button id="next-month" aria-label="next" tooltip="Next" click.call="goToNext"><svg id="chevron-right"><use href="#chevron-up"></use></svg></button>
 </div>
 
-<perspective-element view.bind="selectedView" ctx.once="contextId" data-folder="/components/calendar/" view-loaded.call="viewLoaded">
+<perspective-element ref="perspectiveContainer" view.bind="selectedView" ctx.once="contextId" data-folder="/components/calendar/" view-loaded.call="viewLoaded">
     <template data-id="default" data-default="true">
         <template src="./templates/days.html"></template>
     </template>

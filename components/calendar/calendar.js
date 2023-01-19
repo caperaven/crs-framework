@@ -2,7 +2,9 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     #month;
     #year;
     #dateSelected;
+    #currentIndex;
     #tabHandler;
+    #columns;
 
     get shadowDom() {
         return true;
@@ -32,17 +34,20 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         const tplCell = this.shadowRoot.querySelector("#tplCell");
         await crsbinding.inflationManager.register("calendar-cell", tplCell);
         this.#tabHandler = this.#tabNavigation.bind(this);
-        this.shadowRoot.addEventListener('keydown', this.#tabHandler);
+        this.perspectiveContainer.addEventListener('keydown', this.#tabHandler);
     }
 
     async disconnectedCallback() {
         await super.disconnectedCallback();
         await crsbinding.inflationManager.unregister("calendar-cell");
-        this.shadowRoot.removeEventListener('keydown', this.#tabHandler);
+        this.perspectiveContainer.removeEventListener('keydown', this.#tabHandler);
         this.#tabHandler = null;
         this.#month = null;
         this.#year = null;
         this.#dateSelected = null;
+        this.#currentIndex = null;
+        this.#columns = null;
+
     }
 
     async preLoad() {
@@ -102,56 +107,68 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         this.setProperty("selectedView", "default");
     }
 
-    //Todo: implement keyboard navigation code
-    async #tabNavigation(event) {
-        const keys = event.key;
-        if (this[`press${keys}`]) {
-            await this[`press${keys}`](event);
-        }
+    async #updateFocus(elements) {
+        elements[this.#currentIndex].tabIndex = 0;
+        elements[this.#currentIndex].focus();
     }
 
-    async pressTab() {
-        console.log("tab-key: ", this.calendar);
+    //Todo: implement keyboard navigation code
+    async #tabNavigation(event) {
+        const elements = this.perspectiveContainer.querySelectorAll("[role='cell']");
+        this.#currentIndex = Array.prototype.findIndex.call(elements, el => el.tabIndex === 0);
+        const keys = event.key;
+        if (this[`press${keys}`]) {
+            elements[this.#currentIndex].tabIndex = -1;
+            await this[`press${keys}`](elements);
+        }
+
     }
 
     async pressEnter() {
         console.log("enter key has been pressed");
     }
 
-    async pressArrowUp() {
-        console.log("arrow-up")
+    async pressArrowUp(elements) {
+        this.#currentIndex = (this.#currentIndex - this.#columns) < 0 ? elements.length - (this.#columns - this.#currentIndex) : this.#currentIndex - this.#columns;
+        await this.#updateFocus(elements);
     }
 
-    async pressArrowDown() {
-        console.log("arrow-down")
+    async pressArrowDown(elements) {
+        this.#currentIndex = (this.#currentIndex + this.#columns) >= elements.length ? (this.#currentIndex + this.#columns) - elements.length : this.#currentIndex + this.#columns;
+        await this.#updateFocus(elements);
     }
 
-    async pressArrowLeft(event) {
-        console.log("arrow-left: ", event.target)
+    async pressArrowLeft(elements) {
+        this.#currentIndex = this.#currentIndex === 0 ? elements.length - 1 : this.#currentIndex - 1;
+        await this.#updateFocus(elements);
     }
 
-    async pressArrowRight(event) {
-        console.log("arrow-right: ", event.target)
+    async pressArrowRight(elements) {
+        this.#currentIndex = (this.#currentIndex + 1) % elements.length;
+        await this.#updateFocus(elements);
     }
 
     async viewLoaded() {
         const currentView = this.selectedView;
         if (this[`set_${currentView}`]) {
-            await this[`set_${currentView}`]()
+            await this[`set_${currentView}`]();
         }
     }
 
     async set_years() {
         const element = await this.#setMonthAndYearAria(this.#year);
         element.scrollIntoView();
+        this.#columns = 4;
     }
 
     async set_months() {
         await this.#setMonthAndYearAria(this.#month);
+        this.#columns = 3;
     }
 
     async set_default() {
         requestAnimationFrame(async () => await this.#render());
+        this.#columns = 7;
     }
 
     async selectedMonthChanged(newValue) {

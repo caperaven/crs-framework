@@ -1,8 +1,7 @@
 <style>
     #calendar {
         display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        grid-template-rows: repeat(7, 1fr);
+        grid-template: repeat(7, 1fr)/repeat(7, 1fr);
         justify-items: center;
         align-items: center;
         padding: 0 0.7rem 1rem 0.7rem;
@@ -50,7 +49,7 @@
     }
 </style>
 
-<div id="calendar" ref="calendar" role="grid" click.call="selectedDate">
+<div id="calendar" ref="calendars" role="grid" click.call="selectedDate">
     <div role="columnheader">SU</div><div role="columnheader">MO</div><div role="columnheader">TU</div>
     <div role="columnheader">WE</div><div role="columnheader">TH</div><div role="columnheader">FR</div><div role="columnheader">SA</div>
 
