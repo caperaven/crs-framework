@@ -110,6 +110,8 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     async #updateFocus(elements) {
         elements[this.#currentIndex].tabIndex = 0;
         elements[this.#currentIndex].focus();
+        this.#currentIndex === 0 && await this.goToPrevious();
+        this.#currentIndex === elements.length - 1 && await this.goToNext();
     }
 
     //Todo: implement keyboard navigation code
@@ -121,7 +123,6 @@ export default class Calendar extends crsbinding.classes.BindableElement {
             elements[this.#currentIndex].tabIndex = -1;
             await this[`press${keys}`](elements);
         }
-
     }
 
     async pressEnter() {
@@ -139,7 +140,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     async pressArrowLeft(elements) {
-        this.#currentIndex = this.#currentIndex === 0 ? elements.length - 1 : this.#currentIndex - 1;
+        this.#currentIndex = (this.#currentIndex - 1) < 0 ? elements.length - 1 : this.#currentIndex - 1;
         await this.#updateFocus(elements);
     }
 
