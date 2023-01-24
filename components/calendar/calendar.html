@@ -116,7 +116,7 @@
     <button id="next-month" aria-label="next" tooltip="Next" click.call="goToNext"><svg id="chevron-right"><use href="#chevron-up"></use></svg></button>
 </div>
 
-<perspective-element ref="perspectiveContainer" view.bind="selectedView" ctx.once="contextId" data-folder="/components/calendar/" view-loaded.call="viewLoaded">
+<perspective-element view.bind="selectedView" ctx.once="contextId" data-folder="/components/calendar/" view-loaded.call="viewLoaded" ref="perspectiveContainer">
     <template data-id="default" data-default="true">
         <template src="./templates/days.html"></template>
     </template>

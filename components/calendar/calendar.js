@@ -34,7 +34,9 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         const tplCell = this.shadowRoot.querySelector("#tplCell");
         await crsbinding.inflationManager.register("calendar-cell", tplCell);
         this.#tabHandler = this.#tabNavigation.bind(this);
-        this.perspectiveContainer.addEventListener('keydown', this.#tabHandler);
+        if(this.perspectiveContainer) {
+            this.perspectiveContainer.addEventListener('keydown', this.#tabHandler);
+        }
     }
 
     async disconnectedCallback() {
@@ -120,7 +122,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         this.#currentIndex = Array.prototype.findIndex.call(elements, el => el.tabIndex === 0);
         const keys = event.key;
         if (this[`press${keys}`]) {
-            elements[this.#currentIndex].tabIndex = -1;
+            keys !== 'Enter' && (elements[this.#currentIndex].tabIndex = -1);
             await this[`press${keys}`](elements);
         }
     }
