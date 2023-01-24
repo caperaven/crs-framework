@@ -193,7 +193,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     async selectedDate(event) {
         const newValue = event.target;
         if (newValue.getAttribute("role") === 'cell') {
-            const dateObject = new Date((new Date(this.#year, newValue.dataset.month, newValue.dataset.day).getTime()) - ((new Date().getTimezoneOffset()) * 60 * 1000));
+            const dateObject = new Date((new Date(newValue.dataset.year, newValue.dataset.month, newValue.dataset.day).getTime()) - ((new Date().getTimezoneOffset()) * 60 * 1000));
             await crs.call("dom_collection", "toggle_selection", {target: newValue, multiple: false});
             this.setAttribute("data-start", dateObject.toISOString().slice(0, 10));
         }
