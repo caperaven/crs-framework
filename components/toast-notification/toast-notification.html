@@ -1,0 +1,60 @@
+<style>
+    @import "/styles/lib/variables.css";
+    @import "/styles/lib/buttons.css";
+
+    :host {
+        position: fixed;
+        height: max-content;
+        width: 30rem;
+        display: flex;
+        flex-direction: column;
+        gap: var(--padding);
+        transition: all 0.2s ease-out 0s;
+    }
+
+    toast-notification-item {
+        display: flex;
+        flex-direction: row;
+        box-sizing: border-box;
+        padding: var(--padding);
+        width: 100%;
+        height: max-content;
+        border-radius: var(--radius);
+        border: var(--border);
+        align-items: center;
+        box-shadow: var(--box-shadow);
+        background: #ffffff;
+    }
+
+    toast-notification-item #message {
+        flex: 1;
+        margin-left: var(--padding);
+    }
+
+    toast-notification-item[data-severity="success"] {
+        background-color: var(--green-s2);
+        border-color: var(--green);
+        border-left-width: 0.4rem
+    }
+
+    toast-notification-item[data-severity="error"] {
+        background-color: var(--red-s3);
+        border-color: var(--red);
+        border-left-width: 0.4rem
+    }
+
+    toast-notification-item[data-severity="info"] {
+        background-color: var(--blue-s2);
+        border-color: var(--blue);
+        border-left-width: 0.4rem
+    }
+</style>
+
+<template id="toast-notification-item">
+    <toast-notification-item>
+        <div id="icon"></div>
+        <div id="message"></div>
+        <button id="btnAction"></button>
+        <button id="btnClose" class="icon transparent">close</button>
+    </toast-notification-item>
+</template>
