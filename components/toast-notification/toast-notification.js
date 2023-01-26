@@ -28,6 +28,10 @@ class ToastNotification extends HTMLElement {
         requestAnimationFrame(() => this.load());
     }
 
+    /**
+     * Load resources and add event listeners
+     * @returns {Promise<void>}
+     */
     async load() {
         this.shadowRoot.addEventListener("click", this.#clickHandler);
     }
@@ -67,6 +71,11 @@ class ToastNotification extends HTMLElement {
         await crs.call("fixed_position", "set", { element: this, position: this.dataset.position });
     }
 
+    /**
+     * After a period of time remove the element from the DOM
+     * @param element {HTMLElement} - element to remove
+     * @param duration {number} - duration in milliseconds
+     */
     #setTimeout(element, duration) {
         const timeout = setTimeout(async() => {
             clearTimeout(timeout);
@@ -76,9 +85,9 @@ class ToastNotification extends HTMLElement {
 
     /**
      * Show a toast notification
-     * @param duration - duration in milliseconds that the toast will be displayed
-     * @param message - message to display
-     * @param severity - severity of the toast notification
+     * @param duration {number} - duration in milliseconds that the toast will be displayed
+     * @param message {string} - message to display
+     * @param severity {string} - severity of the toast notification, "info"|"error"|"warning|"success"
      * @param action - action to perform when the action button is clicked
      * @returns {Promise<void>}
      */

@@ -97,7 +97,7 @@ class ToastNotificationActions {
      * await crs.call("toast_notification", "show", {
      *    duration: 5000,
      *    message: "This is a toast notification",
-     *    severity: "info",
+     *    severity: "info", "success", "warning", "error"
      *    action: () => { console.log("done") }
      * }, context, process, item);
      *
