@@ -3,6 +3,7 @@
     @import "/styles/lib/buttons.css";
 
     :host {
+        box-sizing: border-box;
         position: fixed;
         height: max-content;
         width: 30rem;
@@ -10,7 +11,7 @@
         flex-direction: column;
         gap: var(--padding);
         outline: none;
-        border: none;
+        border-width: 0;
         transition: all 0.2s ease-out 0s;
     }
 

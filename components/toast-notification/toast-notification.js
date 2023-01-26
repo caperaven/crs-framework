@@ -51,7 +51,6 @@ class ToastNotification extends HTMLElement {
         }
     }
 
-
     /**
      * It removes the element from the DOM and then calls the fixed_position set function to update the position of the
      * element
@@ -66,6 +65,13 @@ class ToastNotification extends HTMLElement {
 
         element.remove();
         await crs.call("fixed_position", "set", { element: this, position: this.dataset.position });
+    }
+
+    #setTimeout(element, duration) {
+        const timeout = setTimeout(async() => {
+            clearTimeout(timeout);
+            await this.#removeElement(element);
+        }, duration);
     }
 
     /**
@@ -103,6 +109,8 @@ class ToastNotification extends HTMLElement {
 
         this.shadowRoot.append(toast);
         await crs.call("fixed_position", "set", { element: this, position: this.dataset.position });
+
+        this.#setTimeout(toast, duration);
     }
 }
 
