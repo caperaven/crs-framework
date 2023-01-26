@@ -1,4 +1,4 @@
-import "./../../components/toast-notification/toat-notification-actions.js";
+import "../../components/toast-notification/toast-notification-actions.js";
 
 export default class ToastNotification extends crsbinding.classes.ViewBase {
     async connectedCallback() {

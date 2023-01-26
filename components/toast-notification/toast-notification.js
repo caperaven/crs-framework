@@ -77,10 +77,13 @@ class ToastNotification extends HTMLElement {
      * @param duration {number} - duration in milliseconds
      */
     #setTimeout(element, duration) {
-        const timeout = setTimeout(async() => {
-            clearTimeout(timeout);
-            await this.#removeElement(element);
-        }, duration);
+        return new Promise(resolve => {
+            const timeout = setTimeout(async() => {
+                clearTimeout(timeout);
+                await this.#removeElement(element);
+                resolve();
+            }, duration);
+        })
     }
 
     /**
@@ -116,10 +119,10 @@ class ToastNotification extends HTMLElement {
             icon.style.alignSelf = "flex-start";
         }
 
-        this.shadowRoot.append(toast);
+        this.shadowRoot.appendChild(toast);
         await crs.call("fixed_position", "set", { element: this, position: this.dataset.position });
 
-        this.#setTimeout(toast, duration);
+        await this.#setTimeout(toast, duration);
     }
 }
 
