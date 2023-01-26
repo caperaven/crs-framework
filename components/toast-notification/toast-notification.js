@@ -5,6 +5,12 @@
  */
 class ToastNotification extends HTMLElement {
     #clickHandler = this.#click.bind(this);
+    #icons = Object.freeze({
+        "success" : "check-circle",
+        "warning" : "warning",
+        "error"   : "error-fill",
+        "info"    : "info"
+    })
 
     /**
      * @constructor
@@ -13,7 +19,6 @@ class ToastNotification extends HTMLElement {
         super();
         this.attachShadow({ mode: 'open' });
     }
-
 
     /**
      * Standard connected callback lifecycle method
@@ -36,7 +41,6 @@ class ToastNotification extends HTMLElement {
         this.#clickHandler = null;
     }
 
-
     /**
      * Click handler for interacting with the toast notification
      * @param event - The event that triggered the function.
@@ -54,6 +58,12 @@ class ToastNotification extends HTMLElement {
      * @param element - The element to remove.
      */
     async #removeElement(element) {
+        const btnAction = element.querySelector('#btnAction');
+
+        if (btnAction != null) {
+            btnAction.onclick = null;
+        }
+
         element.remove();
         await crs.call("fixed_position", "set", { element: this, position: this.dataset.position });
     }
@@ -69,17 +79,29 @@ class ToastNotification extends HTMLElement {
     async show(duration, message, severity, action) {
         const toast = this.shadowRoot.querySelector('#toast-notification-item').content.cloneNode(true).children[0];
         toast.dataset.severity = severity;
-        toast.querySelector('#message').innerText = message;
+        toast.querySelector("#message").innerText = message;
 
         const btnAction = toast.querySelector('#btnAction');
         if (action == null) {
             btnAction.remove();
         }
         else {
-            btnAction.onclick = action;
+            btnAction.textContent = action.caption;
+            btnAction.onclick = action.callback;
+
+            const btnClose = toast.querySelector('#btnClose');
+            btnClose.style.borderLeft = "var(--border)";
         }
 
-        this.shadowRoot.insertBefore(toast, this.shadowRoot.firstElementChild);
+        const icon = toast.querySelector("icon");
+        icon.textContent = this.#icons[severity];
+        icon.dataset.severity = severity;
+
+        if (message.indexOf("\n") !== -1) {
+            icon.style.alignSelf = "flex-start";
+        }
+
+        this.shadowRoot.append(toast);
         await crs.call("fixed_position", "set", { element: this, position: this.dataset.position });
     }
 }
