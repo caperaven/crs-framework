@@ -5,6 +5,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     #currentIndex;
     #tabHandler;
     #columns;
+    #elements;
 
     get shadowDom() {
         return true;
@@ -34,9 +35,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         const tplCell = this.shadowRoot.querySelector("#tplCell");
         await crsbinding.inflationManager.register("calendar-cell", tplCell);
         this.#tabHandler = this.#tabNavigation.bind(this);
-        if(this.perspectiveContainer) {
-            this.perspectiveContainer.addEventListener('keydown', this.#tabHandler);
-        }
+        this.perspectiveContainer.addEventListener('keydown', this.#tabHandler);
     }
 
     async disconnectedCallback() {
@@ -49,7 +48,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         this.#dateSelected = null;
         this.#currentIndex = null;
         this.#columns = null;
-
+        this.elements = null;
     }
 
     async preLoad() {
@@ -57,6 +56,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         this.#year = date.getFullYear();
         this.#month = date.getMonth();
         this.setProperty("selectedView", "default");
+        this.setProperty("tabindex", "-1");
         await this.#setMonthProperty();
         await this.#setYearProperty();
     }
@@ -81,6 +81,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         for (const item of data) {
             if (item.date.getDate() === day && item.date.getMonth() === month && item.date.getFullYear() === year) {
                 item.selected = true;
+                item.tabindex = 0;
             }
         }
         crsbinding.inflationManager.get("calendar-cell", data, cells);
@@ -112,18 +113,20 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     async #updateFocus(elements) {
         elements[this.#currentIndex].tabIndex = 0;
         elements[this.#currentIndex].focus();
-        this.#currentIndex === 0 && await this.goToPrevious();
-        this.#currentIndex === elements.length - 1 && await this.goToNext();
+    }
+
+    async #get_elements() {
+        this.elements = this.perspectiveContainer.querySelectorAll("[role='cell'],[data-type='month-cell'],[data-type='year-cell']");
+        this.#currentIndex = Array.prototype.findIndex.call(this.elements, el => el.tabIndex === 0);
     }
 
     //Todo: implement keyboard navigation code
     async #tabNavigation(event) {
-        const elements = this.perspectiveContainer.querySelectorAll("[role='cell']");
-        this.#currentIndex = Array.prototype.findIndex.call(elements, el => el.tabIndex === 0);
+        await this.#get_elements();
         const keys = event.key;
         if (this[`press${keys}`]) {
-            keys !== 'Enter' && (elements[this.#currentIndex].tabIndex = -1);
-            await this[`press${keys}`](elements);
+            keys !== 'Enter' && (this.elements[this.#currentIndex].tabIndex = -1);
+            await this[`press${keys}`](this.elements);
         }
     }
 
@@ -144,11 +147,13 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     async pressArrowLeft(elements) {
         this.#currentIndex = (this.#currentIndex - 1) < 0 ? elements.length - 1 : this.#currentIndex - 1;
         await this.#updateFocus(elements);
+        (this.#currentIndex === elements.length - 1) && await this.goToPrevious();
     }
 
     async pressArrowRight(elements) {
         this.#currentIndex = (this.#currentIndex + 1) % elements.length;
         await this.#updateFocus(elements);
+        (this.#currentIndex === 0) && await this.goToNext();
     }
 
     async viewLoaded() {
