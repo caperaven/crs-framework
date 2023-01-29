@@ -126,33 +126,33 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         const keys = event.key;
         if (this[`press${keys}`]) {
             keys !== 'Enter' && (this.elements[this.#currentIndex].tabIndex = -1);
-            await this[`press${keys}`](this.elements);
+            await this[`press${keys}`](event);
         }
     }
 
-    async pressEnter() {
-        console.log("enter key has been pressed");
+    async pressEnter(event) {
+        await this.selectedDate(event);
     }
 
-    async pressArrowUp(elements) {
-        this.#currentIndex = (this.#currentIndex - this.#columns) < 0 ? elements.length - (this.#columns - this.#currentIndex) : this.#currentIndex - this.#columns;
-        await this.#updateFocus(elements);
+    async pressArrowUp() {
+        this.#currentIndex = (this.#currentIndex - this.#columns) < 0 ? this.elements.length - (this.#columns - this.#currentIndex) : this.#currentIndex - this.#columns;
+        await this.#updateFocus(this.elements);
     }
 
-    async pressArrowDown(elements) {
-        this.#currentIndex = (this.#currentIndex + this.#columns) >= elements.length ? (this.#currentIndex + this.#columns) - elements.length : this.#currentIndex + this.#columns;
-        await this.#updateFocus(elements);
+    async pressArrowDown() {
+        this.#currentIndex = (this.#currentIndex + this.#columns) >= this.elements.length ? (this.#currentIndex + this.#columns) - this.elements.length : this.#currentIndex + this.#columns;
+        await this.#updateFocus(this.elements);
     }
 
-    async pressArrowLeft(elements) {
-        this.#currentIndex = (this.#currentIndex - 1) < 0 ? elements.length - 1 : this.#currentIndex - 1;
-        await this.#updateFocus(elements);
-        (this.#currentIndex === elements.length - 1) && await this.goToPrevious();
+    async pressArrowLeft() {
+        this.#currentIndex = (this.#currentIndex - 1) < 0 ? this.elements.length - 1 : this.#currentIndex - 1;
+        await this.#updateFocus(this.elements);
+        (this.#currentIndex === this.elements.length - 1) && await this.goToPrevious();
     }
 
-    async pressArrowRight(elements) {
-        this.#currentIndex = (this.#currentIndex + 1) % elements.length;
-        await this.#updateFocus(elements);
+    async pressArrowRight() {
+        this.#currentIndex = (this.#currentIndex + 1) % this.elements.length;
+        await this.#updateFocus(this.elements);
         (this.#currentIndex === 0) && await this.goToNext();
     }
 
