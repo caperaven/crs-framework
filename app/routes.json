@@ -96,6 +96,11 @@
       "view": "file-system"
     },
     {
+      "title": "Toast Notifications",
+      "hash": "#toast-notification",
+      "view": "toast-notification"
+    },
+    {
       "title": "About",
       "hash": "#about",
       "view": "about",

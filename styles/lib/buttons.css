@@ -95,3 +95,7 @@ button.icon svg {
     width: 2rem;
     height: 2rem;
 }
+
+button.transparent {
+    background: transparent;
+}
