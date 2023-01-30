@@ -43,13 +43,16 @@ class ToastNotificationActions {
     static async enable(step, context, process, item) {
         return new Promise(async resolve => {
             const position = await crs.process.getValue(step.args.position ?? "bottom-center", context, process, item);
+            const margin = await crs.process.getValue(step.args.margin ?? 0, context, process, item);
 
             const element = document.createElement('toast-notification');
+
             element.dataset.position = position;
+            element.dataset.margin = margin;
             document.body.appendChild(element);
 
             element.style.visibility = "hidden";
-            await crs.call("fixed_position", "set", { element: element, position: position });
+            await crs.call("fixed_position", "set", { element, position, margin });
 
             const timeout = setTimeout(() => {
                 clearTimeout(timeout);
@@ -125,7 +128,8 @@ class ToastNotificationActions {
             console.error("toast-notification element not found");
         }
 
-        await element.show(duration, message, severity, action);
+        // don't await this because we don't want to wait for the toast notification to be displayed
+        element.show(duration, message, severity, action).catch(e => console.error(e));
     }
 }
 

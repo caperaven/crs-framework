@@ -172,6 +172,7 @@ export default class FileSystem extends crsbinding.classes.BindableElement {
         if (handle == null) return;
 
         await crs.call("fs", "save_file", { handle, content });
+        await crs.call("toast_notification", "show", { message: "successfully saved", severity: "info" });
     }
 
     async saveNew(content, fileTypes) {
