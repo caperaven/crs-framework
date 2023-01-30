@@ -1,5 +1,5 @@
 export default class FileSystem extends crsbinding.classes.BindableElement {
-    #data;
+    #data = [];
 
     get shadowDom() {
         return true;
@@ -176,11 +176,15 @@ export default class FileSystem extends crsbinding.classes.BindableElement {
     }
 
     async saveNew(content, fileTypes) {
-        await crs.call("fs", "write_new_file", {
+        const handle = await crs.call("fs", "write_new_file", {
             file_types: fileTypes,
             default_name: "undefined",
             content
         })
+
+        handle.path = handle.name;
+        this.#data.push(handle);
+        return handle.name;
     }
 }
 
