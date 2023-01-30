@@ -110,9 +110,9 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         this.setProperty("selectedView", "default");
     }
 
-    async #updateFocus(elements) {
-        elements[this.#currentIndex].tabIndex = 0;
-        elements[this.#currentIndex].focus();
+    async #updateFocus() {
+        this.elements[this.#currentIndex].tabIndex = 0;
+        this.elements[this.#currentIndex].focus();
     }
 
     async #get_elements() {
@@ -136,23 +136,23 @@ export default class Calendar extends crsbinding.classes.BindableElement {
 
     async pressArrowUp() {
         this.#currentIndex = (this.#currentIndex - this.#columns) < 0 ? this.elements.length - (this.#columns - this.#currentIndex) : this.#currentIndex - this.#columns;
-        await this.#updateFocus(this.elements);
+        await this.#updateFocus();
     }
 
     async pressArrowDown() {
         this.#currentIndex = (this.#currentIndex + this.#columns) >= this.elements.length ? (this.#currentIndex + this.#columns) - this.elements.length : this.#currentIndex + this.#columns;
-        await this.#updateFocus(this.elements);
+        await this.#updateFocus();
     }
 
     async pressArrowLeft() {
         this.#currentIndex = (this.#currentIndex - 1) < 0 ? this.elements.length - 1 : this.#currentIndex - 1;
-        await this.#updateFocus(this.elements);
+        await this.#updateFocus();
         (this.#currentIndex === this.elements.length - 1) && await this.goToPrevious();
     }
 
     async pressArrowRight() {
         this.#currentIndex = (this.#currentIndex + 1) % this.elements.length;
-        await this.#updateFocus(this.elements);
+        await this.#updateFocus();
         (this.#currentIndex === 0) && await this.goToNext();
     }
 
