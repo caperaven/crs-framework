@@ -1,0 +1,20 @@
+<style>
+    :host {
+
+    }
+
+    :host[aria-expanded="false"] main {
+        display: none;
+    }
+</style>
+
+<header>
+    <button id="btnToggleExpand" class="icon">chevron-down</button>
+    <slog name="header"></slog>
+    <h2 id="group-header"></h2>
+    <slot name="actions"></slot>
+</header>
+
+<div id="main">
+    <slot></slot>
+</div>

@@ -96,6 +96,11 @@
       "view": "toast-notification"
     },
     {
+      "title": "Dialog",
+      "hash": "#dialog",
+      "view": "dialog"
+    },
+    {
       "title": "About",
       "hash": "#about",
       "view": "about",
