@@ -72,6 +72,7 @@ export class GroupBox extends HTMLElement {
      */
     async #load() {
         requestAnimationFrame(async () => {
+            this.setAttribute("aria-expanded", "true");
         })
     }
 
