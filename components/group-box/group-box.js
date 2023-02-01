@@ -43,6 +43,16 @@
  * </group-box>
  */
 export class GroupBox extends HTMLElement {
+
+    /**
+     * Todo: @Andre
+     * 1. Get the examples page up and running
+     * 2. Do styling of the component
+     * 3. Add the click events for the expand and collapse on btnToggleExpand.
+     * 4. Write tests
+     * @returns {string}
+     */
+
     get html() { return import.meta.url.replace('.js', '.html') }
 
     constructor() {
