@@ -130,6 +130,14 @@ export class Dialog extends HTMLElement {
         if (options.target == null) {
             return await crs.call("fixed_position", "set", { element: this, position: "center-screen", margin: 10});
         }
+
+        await crs.call("fixed_layout", "set", {
+            target: options.target,
+            element: this,
+            at: options.position.toLowerCase(),
+            anchor: options.anchor.toLowerCase(),
+            margin: options.margin
+        })
     }
 
     /**

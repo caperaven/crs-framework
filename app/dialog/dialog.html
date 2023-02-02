@@ -1,6 +1,24 @@
+<style>
+    [role="toolbar"] {
+        display: flex;
+        flex-direction: row;
+        padding: var(--padding);
+        border-bottom: var(--border);
+    }
+</style>
 <h2>${title}</h2>
 
-<button click.call="show">Show Dialog</button>
+<div role="toolbar">
+    <button click.call="show">Show Dialog</button>
+
+    <select id="positionOptions">
+        <option>bottom</option>
+        <option>left</option>
+        <option>right</option>
+    </select>
+
+    <button click.call="showRelative">Show Dialog Relative</button>
+</div>
 
 <template id="dialog-content">
     <label>

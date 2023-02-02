@@ -48,6 +48,7 @@ class DialogActions {
      * @param step.args.header {HTMLElement} - the header element to show in the dialog header.
      * @param step.args.main {HTMLElement} - the main element to show as the dialog main content.
      * @param step.args.footer {HTMLElement} - the footer element to show in the dialog footer, normally toolbar actions.
+     * @param step.args.title {string} - the title to show in the dialog header.
      *
      * Optional:
      * @param step.args.target {HTMLElement} - the element to show the dialog relative to this target, if not defined it shows in the middle of screen.
@@ -60,6 +61,10 @@ class DialogActions {
      *
      * @param step.args.size {string} - the size of the dialog - based on the sizes registered with the defineSizes action.
      * Use the key of the size. "auto" is default even if not defined.
+     *
+     * @param step.args.margin {number} - the margin between the dialog and the target element.
+     * @param step.args.close {boolean} - if true, the dialog is closed before showing the new content.
+     *
      * @returns {Promise<void>}
      *
      * @example <caption>javascript example</caption>
@@ -69,6 +74,7 @@ class DialogActions {
      *     position: "left",
      *     anchor: "top",
      *     size: "auto",
+     *     margin: 10,
      *
      *     // required
      *     header: headerElement - if null, default header is shown.
@@ -90,6 +96,7 @@ class DialogActions {
      *        "position": "left",
      *        "anchor": "top",
      *        "size": "auto",
+     *        "margin": 10
      *
      *        "header": "$context.header",
      *        "main": "$context.main",
@@ -105,12 +112,13 @@ class DialogActions {
         // if we are on mobile, ignore these options.
         // todo: check for mobile
         const target = await crs.process.getValue(step.args.target, context, process, item);
-        const position = await crs.process.getValue(step.args.position, context, process, item);
-        const anchor = await crs.process.getValue(step.args.anchor, context, process, item);
+        const position = await crs.process.getValue(step.args.position ?? "left", context, process, item);
+        const anchor = await crs.process.getValue(step.args.anchor ?? "top", context, process, item);
         const size = await crs.process.getValue(step.args.size, context, process, item);
+        const margin = await crs.process.getValue(step.args.margin ?? 0, context, process, item);
         const close = await crs.process.getValue(step.args.close ?? true, context, process, item);
 
-        const options = {target, position, anchor, size};
+        const options = {target, position, anchor, size, margin};
 
         const dialog = await ensureDialog(close);
         dialog.show(headerElement, mainElement, footerElement, options);
