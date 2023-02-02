@@ -6,7 +6,7 @@ export default class Dialog extends crsbinding.classes.ViewBase {
     }
 
     async show() {
-        const instance = this._element.querySelector("dialog-content").content.cloneNode(true);
+        const instance = this._element.querySelector("#dialog-content").content.cloneNode(true);
 
         await crs.call("dialog", "show", {
             title: "My Title",

@@ -77,6 +77,8 @@ class DialogActions {
      *
      *     // optional
      *     title: "My Title" - used instead of the header element as an alternative
+     *     close: true - by default this is true and the old dialog is closed and a new one opened..
+     *     if close is false, the new content is added to the stack and closing the dialog will return to the previous one.
      * })
      *
      * @example <caption>json example</caption>
@@ -91,7 +93,7 @@ class DialogActions {
      *
      *        "header": "$context.header",
      *        "main": "$context.main",
-     *        "footer": "$context.footer"
+     *        "footer": "$context.footer",
      *    }
      */
     static async show(step, context, process, item) {
@@ -106,9 +108,11 @@ class DialogActions {
         const position = await crs.process.getValue(step.args.position, context, process, item);
         const anchor = await crs.process.getValue(step.args.anchor, context, process, item);
         const size = await crs.process.getValue(step.args.size, context, process, item);
+        const close = await crs.process.getValue(step.args.close ?? true, context, process, item);
+
         const options = {target, position, anchor, size};
 
-        const dialog = await ensureDialog();
+        const dialog = await ensureDialog(close);
         dialog.show(headerElement, mainElement, footerElement, options);
     }
 
@@ -127,7 +131,11 @@ class DialogActions {
     }
 }
 
-async function ensureDialog() {
+async function ensureDialog(close) {
+    if (close == true) {
+        await crs.call("dialog", "force_close", {});
+    }
+
     if (!globalThis.dialog) {
         globalThis.dialog = document.createElement('dialog-component');
         document.body.appendChild(globalThis.dialog);
