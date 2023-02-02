@@ -26,17 +26,28 @@ export class Dialog extends HTMLElement {
         "btnResize": this.#resizeClicked.bind(this),
     }
 
+    /**
+     * @constructor
+     */
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
     }
 
+    /**
+     * @method connectedCallback - called when the element is added to the DOM.
+     * @returns {Promise<void>}
+     */
     async connectedCallback() {
         this.shadowRoot.innerHTML = await fetch(import.meta.url.replace(".js", ".html")).then(response => response.text());
         await this.#load();
         await crs.call("component", "notify_ready", {element: this});
     }
 
+    /**
+     * @method #load - load the component and it's dependencies including events
+     * @returns {Promise<unknown>}
+     */
     #load() {
         return new Promise(resolve => {
             this.shadowRoot.addEventListener("click", this.#clickHandler);
@@ -44,6 +55,10 @@ export class Dialog extends HTMLElement {
         });
     }
 
+    /**
+     * @method disconnectedCallback - called when the element is removed from the DOM.
+     * @returns {Promise<void>}
+     */
     async disconnectedCallback() {
         this.shadowRoot.removeEventListener("click", this.#clickHandler);
         this.#clickHandler = null;
@@ -99,6 +114,12 @@ export class Dialog extends HTMLElement {
         });
     }
 
+    /**
+     * @method push - set the content of the dialog header
+     * @param header
+     * @param title
+     * @returns {Promise<void>}
+     */
     async #setHeader(header, title) {
         const headerElement = this.shadowRoot.querySelector("#header");
 
@@ -111,12 +132,22 @@ export class Dialog extends HTMLElement {
         }
     }
 
+    /**
+     * @method #setBody - set the content of the dialog body
+     * @param body
+     * @returns {Promise<void>}
+     */
     async #setBody(body) {
         const bodyElement = this.shadowRoot.querySelector("#body");
         bodyElement.innerHTML = "";
         bodyElement.appendChild(body);
     }
 
+    /**
+     * @method #setFooter - set the content of the dialog footer
+     * @param footer
+     * @returns {Promise<void>}
+     */
     async #setFooter(footer) {
         const footerElement = this.shadowRoot.querySelector("footer");
         footerElement.innerHTML = "";
@@ -126,6 +157,11 @@ export class Dialog extends HTMLElement {
         }
     }
 
+    /**
+     * @method #setPosition - set the position of the dialog relative to target or center screen
+     * @param options
+     * @returns {Promise<*>}
+     */
     async #setPosition(options) {
         if (options.target == null) {
             return await crs.call("fixed_position", "set", { element: this, position: "center-screen", margin: 10});
