@@ -1,7 +1,7 @@
 import "../../src/actions/columns-actions.js";
 import {data} from "./../../data/static.js";
 import {createRowInflation, createRowElement} from "./../../components/data-grid/rows.js";
-import "../../src/data-manager/data-manager.js"
+import "../../src/data-manager/data-manager-memory-provider.js"
 
 export default class Grid extends crsbinding.classes.ViewBase {
     async connectedCallback() {
