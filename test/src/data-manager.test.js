@@ -5,7 +5,7 @@ import {init} from "./../../test/mockups/init.js";
 await init();
 
 beforeAll(async () => {
-    await import("./../../src/data-manager.js");
+    await import("../../src/data-manager/data-manager.js");
 })
 
 describe("data manager tests", () => {

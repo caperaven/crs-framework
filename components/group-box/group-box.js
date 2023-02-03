@@ -49,7 +49,7 @@ export class GroupBox extends HTMLElement {
      * 1. Get the examples page up and running
      * 2. Do styling of the component
      * 3. Add the click events for the expand and collapse on btnToggleExpand.
-     * 4. Write tests
+     * 4. Write tests.
      * @returns {string}
      */
 

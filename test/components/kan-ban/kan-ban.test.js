@@ -8,7 +8,7 @@ await init();
 
 beforeAll(async () => {
     await import("./../../../src/index.js");
-    await import("./../../../src/data-manager.js");
+    await import("../../../src/data-manager/data-manager.js");
     await import("./../../../src/actions/columns-actions.js");
     await import("../../../components/kan-ban/kan-ban.js");
 

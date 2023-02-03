@@ -1,5 +1,5 @@
 import "/src/actions/columns-actions.js";
-import "/src/data-manager.js";
+import "/src/data-manager/data-manager.js";
 import {records} from "./data.js";
 import {schema} from "./schema.js";
 
