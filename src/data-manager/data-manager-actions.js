@@ -1,190 +1,73 @@
-class BaseDataManager {
-    #id;
-    #dataField;
-    #count;
-    #events = [];
+import {CHANGE_TYPES, MANAGER_TYPES} from "./data-manager-types.js";
 
-    get count() {
-        return this.#count;
-    }
-
-    get dataField() {
-        return this.#dataField;
-    }
-
-    get eventCount() {
-        return this.#events.length;
-    }
-
-    constructor(id, dataField) {
-        this.#id = id;
-        this.#dataField = dataField;
-    }
-
-    dispose() {
-        this.#dataField = null;
-        this.#events = null;
-        this.#count = null;
-    }
-
-    setRecords(records) {
-        this.#count = records?.length || 0;
-    }
-
-    append(count) {
-        this.#count = count;
-    }
-
-    removeIndexes(count) {
-        this.#count = count;
-    }
-
-    removeIds(count) {
-        this.#count = count;
-    }
-
-    beginTransaction() {
-        return null;
-    }
-
-    commit() {
-        return null;
-    }
-
-    addChangeCallback(callback) {
-        const index = this.#events.indexOf(callback);
-        if (index == -1) {
-            this.#events.push(callback);
-        }
-    }
-
-    removeChangeCallback(callback) {
-        const index = this.#events.indexOf(callback);
-
-        if (index != -1) {
-            this.#events.splice(index, 1);
-        }
-    }
-
-    async notifyChanges(args) {
-        args.managerId = this.#id;
-        for (let event of this.#events) {
-            await event(args);
-        }
-    }
-}
-
-class MemoryDataManager extends BaseDataManager {
-    #records;
-
-    setRecords(records) {
-        this.#records = records;
-        super.setRecords(records);
-    }
-
-    append(...record) {
-        this.#records.push(...record);
-        super.append(this.#records.length);
-    }
-
-    getAll() {
-        return this.#records;
-    }
-
-    getPage(from, to) {
-        return this.#records.slice(from, to);
-    }
-
-    getByIndex(index) {
-        return this.#records[index];
-    }
-
-    getById(id) {
-        return this.#records.find(item => item[this.dataField] == id);
-    }
-
-    getIds(indexes) {
-        const ids = [];
-        for (const index of indexes) {
-            ids.push(this.#records[index][this.dataField]);
-        }
-        return ids;
-    }
-
-    removeIndexes(indexes) {
-        indexes.sort((a, b) => a > b ? -1 : 1);
-        const ids = [];
-
-        for (const index of indexes) {
-            ids.push(this.#records[index][this.dataField]);
-            this.#records.splice(index, 1);
-        }
-
-        super.removeIndexes(this.#records.length);
-        return {indexes, ids};
-    }
-
-    removeIds(ids) {
-        const indexes = [];
-        for (const id of ids) {
-            const index = this.#records.findIndex(item => item[this.dataField] == id);
-            indexes.push(index);
-            this.#records.splice(index, 1);
-        }
-
-        indexes.sort((a, b) => a > b ? -1 : 1);
-        super.removeIds(this.#records.length);
-        return {indexes, ids};
-    }
-
-    updateIndex(index, changes) {
-        const record = this.#records[index];
-        const id = record[this.dataField];
-
-        const keys = Object.keys(changes);
-        for (const key of keys) {
-            record[key] = changes[key];
-        }
-
-        return {id, index, changes};
-    }
-
-    updateId(id, changes) {
-        const index = this.#records.findIndex(item => item[this.dataField] == id);
-        const record = this.#records[index];
-
-        const keys = Object.keys(changes);
-        for (const key of keys) {
-            record[key] = changes[key];
-        }
-
-        return {id, index, changes};
-    }
-}
-
-class IndexDBDataManager extends BaseDataManager {
-    setRecords(records) {
-        super.setRecords(records);
-    }
-}
-
-const MANAGER_TYPES = Object.freeze({
-    memory: MemoryDataManager,
-    indexdb: IndexDBDataManager
-});
-
-const CHANGE_TYPES = Object.freeze({
-    add: "add",
-    update: "update",
-    delete: "delete",
-    refresh: "refresh"
-});
-
-class DataManagerStore {
+/**
+ * @class DataManagerActions - This class contains all the actions that can be performed on a data manager.
+ * It is the main interface for working with data managers via the process-api
+ *
+ * Features:
+ * - Register a data manager
+ * - Dispose a data manager
+ * - Set records for a data manager
+ * - Append records to a data manager
+ * - Remove records from a data manager
+ * - Get records from a data manager
+ * - Get record by id from a data manager
+ * - Get record by index from a data manager
+ * - Get ids from a data manager
+ * - Get indexes from a data manager
+ * - Get count from a data manager
+ * - Get page from a data manager
+ * - Get all records from a data manager
+ * - Get all ids from a data manager
+ * - Get all indexes from a data manager
+ * - Get all records from a data manager
+ */
+class DataManagerActions {
+    /**
+     * @method perform - Perform an action on a data manager. Main interface for working with data managers via the process-api
+     * @param step {object} - The step that contains the action to perform
+     * @param context {object} - The context of the process
+     * @param process {object} - The process
+     * @param item {object} - Current item in a process loop
+     * @returns {Promise<void>}
+     */
     static async perform(step, context, process, item) {
         await this[step.action]?.(step, context, process, item);
     }
 
+    /**
+     * @method register - Register a data manager that can be accessed by other UI or process components
+     * @param step  {object} - The step that contains the action to perform
+     * @param context {object} - The context of the process
+     * @param process {object} - The process
+     * @param item {object} - Current item in a process loop
+     *
+     * @param step.args.manager {string} - The name of the data manager. You will use this when performing operations on the data manager.
+     * @param step.args.id_field {string} - The name of the field that contains the id of the record. Default is "id"
+     * @param step.args.type {string} - The type of data manager to use. Default is "indexdb" but you can also use "memory"
+     *
+     * @example <caption>javascript example</caption>
+     * await crs.call("data_manager", "register" {
+     *     manager: "my_data_manager",
+     *     id_field: "id",
+     *     type: "memory",
+     *     records: []
+     * });
+     *
+     * @example <caption>json example</caption>
+     * {
+     *     "type": "data_manager",
+     *     "action": "register",
+     *     "args": {
+     *         "manager": "my_data_manager",
+     *         "id_field": "id",
+     *         "type": "memory",
+     *         "records": "$context.data.records
+     *     }
+     * }
+     *
+     * @returns {Promise<*>}
+     */
     static async register(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
         const dataField = await crs.process.getValue(step.args.id_field || "id", context, process, item);
@@ -201,12 +84,45 @@ class DataManagerStore {
         return globalThis.dataManagers[manager];
     }
 
+    /**
+     * @method dispose - Dispose a data manager that can be accessed by other UI or process components and remove it from the global data manager list
+     * @param step {object} - The step that contains the action to perform
+     * @param context {object} - The context of the process
+     * @param process {object} - The process
+     * @param item {object} - Current item in a process loop
+     *
+     * @param step.args.manager {string} - The name of the data manager. You will use this when performing operations on the data manager.
+     *
+     * @returns {Promise<void>}
+     *
+     * @example <caption>javascript example</caption>
+     * await crs.call("data_manager", "dispose" {
+     *     manager: "my_data_manager",
+     * })
+     *
+     * @example <caption>json example</caption>
+     * {
+     *    "type": "data_manager",
+     *    "action": "dispose",
+     *        "args": {
+     *        "manager": "my_data_manager"
+     *    }
+     * }
+     */
     static async dispose(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
         globalThis.dataManagers[manager].dispose();
         delete globalThis.dataManagers[manager];
     }
 
+    /**
+     * @method set_records - Set records for a data manager
+     * @param step
+     * @param context
+     * @param process
+     * @param item
+     * @returns {Promise<void>}
+     */
     static async set_records(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
         if (manager == null) return;
@@ -389,4 +305,4 @@ class DataManagerStore {
     }
 }
 
-crs.intent.data_manager = DataManagerStore;
+crs.intent.data_manager = DataManagerActions;

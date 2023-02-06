@@ -28,6 +28,10 @@ class ToastNotification extends HTMLElement {
         requestAnimationFrame(() => this.load());
     }
 
+    /**
+     * Load resources and add event listeners
+     * @returns {Promise<void>}
+     */
     async load() {
         this.shadowRoot.addEventListener("click", this.#clickHandler);
     }
@@ -51,7 +55,6 @@ class ToastNotification extends HTMLElement {
         }
     }
 
-
     /**
      * It removes the element from the DOM and then calls the fixed_position set function to update the position of the
      * element
@@ -65,14 +68,29 @@ class ToastNotification extends HTMLElement {
         }
 
         element.remove();
-        await crs.call("fixed_position", "set", { element: this, position: this.dataset.position });
+        await crs.call("fixed_position", "set", { element: this, position: this.dataset.position, margin: this.dataset.margin });
+    }
+
+    /**
+     * After a period of time remove the element from the DOM
+     * @param element {HTMLElement} - element to remove
+     * @param duration {number} - duration in milliseconds
+     */
+    #setTimeout(element, duration) {
+        return new Promise(resolve => {
+            const timeout = setTimeout(async() => {
+                clearTimeout(timeout);
+                await this.#removeElement(element);
+                resolve();
+            }, duration);
+        })
     }
 
     /**
      * Show a toast notification
-     * @param duration - duration in milliseconds that the toast will be displayed
-     * @param message - message to display
-     * @param severity - severity of the toast notification
+     * @param duration {number} - duration in milliseconds that the toast will be displayed
+     * @param message {string} - message to display
+     * @param severity {string} - severity of the toast notification, "info"|"error"|"warning|"success"
      * @param action - action to perform when the action button is clicked
      * @returns {Promise<void>}
      */
@@ -101,8 +119,10 @@ class ToastNotification extends HTMLElement {
             icon.style.alignSelf = "flex-start";
         }
 
-        this.shadowRoot.append(toast);
-        await crs.call("fixed_position", "set", { element: this, position: this.dataset.position });
+        this.shadowRoot.appendChild(toast);
+        await crs.call("fixed_position", "set", { element: this, position: this.dataset.position, margin: this.dataset.margin });
+
+        await this.#setTimeout(toast, duration);
     }
 }
 

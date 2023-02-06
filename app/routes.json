@@ -101,6 +101,11 @@
       "view": "checkbox"
     },
     {
+      "title": "Dialog",
+      "hash": "#dialog",
+      "view": "dialog"
+    },
+    {
       "title": "About",
       "hash": "#about",
       "view": "about",

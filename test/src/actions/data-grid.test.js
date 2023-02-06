@@ -9,7 +9,7 @@ let gridInstance;
 let kbInstance;
 
 beforeAll(async () => {
-    await import("./../../../src/data-manager.js");
+    await import("../../../src/data-manager/data-manager-memory-provider.js");
     await import("./../../../src/actions/columns-actions.js");
     await import("./../../../components/data-grid/data-grid.js");
     await import("./../../../components/kan-ban/kan-ban.js");
