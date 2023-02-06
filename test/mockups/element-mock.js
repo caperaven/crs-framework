@@ -154,6 +154,7 @@ function setAttribute(attr, value) {
     let hasAttr = true;
     let attrObj = this.attributes.find(item => item.name == attr);
     let oldValue = "";
+    value = String(value);
 
     if (attrObj == null) {
         attrObj = {

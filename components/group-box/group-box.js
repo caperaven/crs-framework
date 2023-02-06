@@ -53,7 +53,12 @@ export class GroupBox extends HTMLElement {
      * @returns {string}
      */
 
+    #clickHandler = this.#click.bind(this);
+
     get html() { return import.meta.url.replace('.js', '.html') }
+
+    // Required for testing
+    get clickHandler() { return this.#clickHandler }
 
     constructor() {
         super();
@@ -76,17 +81,24 @@ export class GroupBox extends HTMLElement {
         })
     }
 
+    async disconnectedCallback() {
+
+    }
+
+    async #click(event) {
+        const target = event.composedPath()[0];
+        if (target.id === 'btnToggleExpand') {
+            await this.#toggleExpanded();
+        }
+    }
+
     /**
      * @method toggleExpanded - toggle the expanded state of the group bo.
      * @returns {Promise<void>}
      */
     async #toggleExpanded() {
         const expanded = this.getAttribute('aria-expanded') === 'true';
-        expanded.setAttribute('aria-expanded', !expanded);
-    }
-
-    async disconnectedCallback() {
-
+        this.setAttribute('aria-expanded', !expanded);
     }
 }
 
