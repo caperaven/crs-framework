@@ -46,11 +46,11 @@ export class Checkbox extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({mode: "open"});
-        this.setAttribute("aria-checked", "false");
-        this.setAttribute("role", "checkbox");
     }
 
     async connectedCallback() {
+        this.setAttribute("aria-checked", this.dataset.nullable === "true" ? "mixed" : "false");
+        this.setAttribute("role", "checkbox");
         this.shadowRoot.innerHTML = await fetch(this.html).then(result => result.text());
         await this.load();
     }
@@ -91,7 +91,6 @@ export class Checkbox extends HTMLElement {
         this.setAttribute("data-state", state[value]);
         this.#iconElement.innerText = this.#stateText[state[value]];
         this.#iconElement.setAttribute("aria-checked", state[value]);
-
     }
 
     /**
@@ -111,7 +110,6 @@ export class Checkbox extends HTMLElement {
         }[state];
         this.#setState(nextState);
     }
-
 }
 
 customElements.define("check-box", Checkbox);

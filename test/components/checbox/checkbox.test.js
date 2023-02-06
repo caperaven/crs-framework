@@ -7,99 +7,66 @@ import {EventMock} from "../../mockups/event-mock.js";
 import {afterEach} from "../../dependencies.js";
 
 await init();
+let instance;
 
+async function createInstance(nullable = false) {
+    instance = document.createElement("check-box");
+    if(nullable === true) {
+        instance.dataset.nullable = "true";
+    }
+    instance.setAttribute("aria-label", "my-checkbox");
+    await instance.connectedCallback();
+    let loadFn = instance.load;
+    instance.load = async () => {
+        createMockChildren(instance);
+        await loadFn();
+    }
+}
 
 beforeAll(async () => {
     await import("../../../components/checkbox/checkbox.js");
 });
 
 describe ("checkbox", async () => {
-    let instance;
-
-    beforeEach(async () => {
-        instance = document.createElement("check-box");
-        instance.setAttribute("aria-label", "my-checkbox");
-        await instance.connectedCallback();
-        let loadFn = instance.load;
-        instance.load = async () => {
-            createMockChildren(instance);
-            await loadFn();
-        }
-    });
 
     afterEach(async () => {
         await instance.disconnectedCallback();
     });
 
     it("check instance not null", async () => {
+        await createInstance();
         assertEquals(instance != null, true);
         assertEquals(instance.getAttribute("aria-checked"), "false");
         assertEquals(instance.getAttribute("aria-label"), "my-checkbox");
         assertEquals(instance.shadowRoot.querySelector("#btnCheck").innerText, "check-box-blank");
     });
+
+    it("normal state click", async () => {
+        await createInstance();
+        instance.shadowRoot.dispatchEvent(new EventMock("click"));
+        assertEquals(instance.getAttribute("aria-checked"), "true");
+        assertEquals(instance.shadowRoot.querySelector("#btnCheck").innerText, "check-box");
+
+        instance.shadowRoot.dispatchEvent(new EventMock("click"));
+        assertEquals(instance.getAttribute("aria-checked"), "false");
+        assertEquals(instance.shadowRoot.querySelector("#btnCheck").innerText, "check-box-blank");
+    });
+
+    it("tristate state click", async () => {
+        await createInstance(true);
+        assertEquals(instance.getAttribute("aria-checked"), "mixed");
+        assertEquals(instance.shadowRoot.querySelector("#btnCheck").innerText, "check-box-mixed");
+
+        instance.shadowRoot.dispatchEvent(new EventMock("click"));
+        assertEquals(instance.getAttribute("aria-checked"), "true");
+        assertEquals(instance.shadowRoot.querySelector("#btnCheck").innerText, "check-box");
+
+        instance.shadowRoot.dispatchEvent(new EventMock("click"));
+        assertEquals(instance.getAttribute("aria-checked"), "false");
+        assertEquals(instance.shadowRoot.querySelector("#btnCheck").innerText, "check-box-blank");
+    });
 })
 
-
-
-// describe("check-box", () => {
-//     let checkbox;
-//     let tristateCheckbox;
-//
-//     beforeEach(async () => {
-//         checkbox = new checkboxModule.Checkbox();
-//         checkbox.shadowRoot = new ElementMock("shadow-root");
-//         checkbox.shadowRoot.queryResults["#btnCheck"] = new ElementMock("button", "#btnCheck");
-//         checkbox.shadowRoot.queryResults["#lblText"] = new ElementMock("div", "#lblText");
-//         checkbox.shadowRoot.querySelector("#btnCheck").innerText = "check-box";
-//         checkbox.setAttribute("aria-label", "my-checkbox");
-//         checkbox.setAttribute("aria-checked", "true");
-//
-//         tristateCheckbox = new checkboxModule.Checkbox();
-//         tristateCheckbox.shadowRoot = new ElementMock("shadow-root");
-//         tristateCheckbox.shadowRoot.queryResults["#btnCheck"] = new ElementMock("button", "#btnCheck");
-//         tristateCheckbox.shadowRoot.queryResults["#lblText"] = new ElementMock("div", "#lblText");
-//         tristateCheckbox.shadowRoot.querySelector("#btnCheck").innerText = "check-box-mixed";
-//         tristateCheckbox.setAttribute("aria-label", "my-tristate-checkbox");
-//         tristateCheckbox.setAttribute("aria-checked", "mixed");
-//         tristateCheckbox.setAttribute("data-nullable", "true");
-//     });
-//
-//     it("initial state for normal checkbox", () => {
-//         assertEquals(checkbox.getAttribute("aria-checked"), "true");
-//         assertEquals(checkbox.getAttribute("aria-label"), "my-checkbox");
-//         assertEquals(checkbox.shadowRoot.querySelector("#btnCheck").innerText, "check-box");
-//     });
-//
-//     it("change state for normal checkbox on click", async () => {
-//         assertEquals(checkbox.getAttribute("aria-checked"), "true");
-//         assertEquals(checkbox.getAttribute("aria-label"), "my-checkbox");
-//         checkbox.load();
-//         checkbox.shadowRoot.dispatchEvent("click");
-//
-//         assertEquals(checkbox.getAttribute("aria-checked"), "false");
-//         assertEquals(checkbox.shadowRoot.querySelector("#btnCheck").innerText, "check-box-blank");
-//     });
-//
-//     it("initial state for tristate checkbox", async () => {
-//         assertEquals(tristateCheckbox.getAttribute("aria-checked"), "mixed");
-//         assertEquals(tristateCheckbox.getAttribute("aria-label"), "my-tristate-checkbox");
-//         assertEquals(tristateCheckbox.shadowRoot.querySelector("#btnCheck").innerText, "check-box-mixed");
-//     });
-//
-//     it("change state for tristate checkbox on click", async () => {
-//         assertEquals(tristateCheckbox.getAttribute("aria-checked"), "mixed");
-//         assertEquals(tristateCheckbox.getAttribute("aria-label"), "my-tristate-checkbox");
-//         tristateCheckbox.load();
-//         tristateCheckbox.shadowRoot.dispatchEvent("click");
-//
-//         assertEquals(tristateCheckbox.getAttribute("aria-checked"), "true");
-//         assertEquals(tristateCheckbox.shadowRoot.querySelector("#btnCheck").innerText, "check-box");
-//
-//         tristateCheckbox.shadowRoot.dispatchEvent("click");
-//         assertEquals(tristateCheckbox.getAttribute("aria-checked"), "false");
-//         assertEquals(tristateCheckbox.shadowRoot.querySelector("#btnCheck").innerText, "check-box-blank");
-//     });
-// });
 
 
 
