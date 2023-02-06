@@ -43,28 +43,29 @@ export class Checkbox extends HTMLElement {
         this.#setState(newValue);
     }
 
-
     constructor() {
         super();
         this.attachShadow({mode: "open"});
+        this.setAttribute("aria-checked", "false");
+        this.setAttribute("role", "checkbox");
     }
 
     async connectedCallback() {
         this.shadowRoot.innerHTML = await fetch(this.html).then(result => result.text());
         await this.load();
-
-
-
     }
 
-    async load() {
-        requestAnimationFrame(async () => {
-            this.shadowRoot.addEventListener("click", this.#clickHandler);
-            this.#iconElement = this.shadowRoot.querySelector("#btnCheck");
-            this.#titleElement = this.shadowRoot.querySelector("#lblText");
+    load() {
+        return new Promise(resolve => {
+            requestAnimationFrame(async () => {
+                this.shadowRoot.addEventListener("click", this.#clickHandler);
+                this.#iconElement = this.shadowRoot.querySelector("#btnCheck");
+                this.#titleElement = this.shadowRoot.querySelector("#lblText");
 
-            this.#setState(this.getAttribute("aria-checked"))
-            this.#titleElement.innerText = this.getAttribute("aria-label");
+                this.#setState(this.getAttribute("aria-checked"))
+                this.#titleElement.innerText = this.getAttribute("aria-label");
+                resolve();
+            })
         })
     }
 
