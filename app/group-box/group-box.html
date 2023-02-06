@@ -1,0 +1,36 @@
+<style>
+    group-box {
+        margin-bottom: 100px;
+        text-decoration: none;
+        padding: var(--padding) ;
+    }
+
+    group-box div {
+        margin-top: 20px;
+    }
+
+    .icon {
+        font-family: crsfrw;
+        font-size: 1.5rem;
+    }
+</style>
+
+<h1>Hello Group-Box</h1>
+
+<group-box id="box-1" data-title="Simple Box">
+    <div slot="body">Body Content</div>
+</group-box>
+<hr>
+<group-box id="box-2" data-title="Custom Header Box">
+    <h3 slot="header"><icon class="icon">home</icon> Custom Header </h3>
+    <div slot="body">Body Content</div>
+</group-box>
+<hr>
+<group-box id="box-3">
+    <h3 slot="header">Custom Header with Actions</h3>
+    <div slot="actions"></div>
+    <div slot="body">
+        <input>
+        <button>Submit form</button>
+    </div>
+</group-box>

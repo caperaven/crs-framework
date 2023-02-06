@@ -1,20 +1,76 @@
 <style>
     :host {
+        display: block !important;
+        width: auto;
+        height: auto;
+    }
 
+    :host header {
+        display:flex;
+        height: 48px;
+        background-color: var(--grey-s3);
+        border-left: 4px solid var(--blue);
+        align-items: center;
     }
 
     :host[aria-expanded="false"] main {
         display: none;
     }
+
+
+
+    :host .icon {
+        font-family: crsfrw;
+        font-size: 1.5rem;
+        transition: 300ms ease-in-out;
+        /*animation: rotate 1s ease-in-out;*/
+    }
+
+    :host .icon.collapsed {
+        /*transform: rotate(180deg);*/
+        transition: 300ms ease-out;
+        rotate: 180deg;
+        /*animation: rotate 1s ease-in-out*/
+    }
+
+
+    /*@keyframes rotate {*/
+    /*    0% {*/
+    /*        transform: rotate(0deg);*/
+    /*    }*/
+    /*    100% {*/
+    /*        transform: rotate(180deg);*/
+    /*    }*/
+    /*}*/
+
+    :host button {
+        border: none;
+        background: none;
+        outline: none;
+        cursor: pointer;
+        height: 48px;
+    }
+
+    :host button:hover {
+        background-color: var(--grey-s2);
+    }
+
+    :host button:focus {
+        border: var(--double-border-width) solid var(--blue);
+    }
+
+    :host #main {
+        height: max-content;
+    }
 </style>
 
 <header>
     <button id="btnToggleExpand" class="icon">chevron-down</button>
-    <slog name="header"></slog>
+    <slot name="header"></slot>
     <h2 id="group-header"></h2>
     <slot name="actions"></slot>
 </header>
 
 <div id="main">
-    <slot></slot>
+    <slot name="body"></slot>
 </div>

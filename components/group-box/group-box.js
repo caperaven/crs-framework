@@ -54,6 +54,7 @@ export class GroupBox extends HTMLElement {
      */
 
     #clickHandler = this.#click.bind(this);
+    #toggleBtn;
 
     get html() { return import.meta.url.replace('.js', '.html') }
 
@@ -78,11 +79,14 @@ export class GroupBox extends HTMLElement {
     async #load() {
         requestAnimationFrame(async () => {
             this.setAttribute("aria-expanded", "true");
+            this.shadowRoot.addEventListener("click", this.#clickHandler);
+            this.#toggleBtn = this.shadowRoot.querySelector('#btnToggleExpand');
         })
     }
 
     async disconnectedCallback() {
-
+        this.shadowRoot.removeEventListener("click", this.#clickHandler);
+        this.#clickHandler = null;
     }
 
     async #click(event) {
@@ -99,6 +103,18 @@ export class GroupBox extends HTMLElement {
     async #toggleExpanded() {
         const expanded = this.getAttribute('aria-expanded') === 'true';
         this.setAttribute('aria-expanded', !expanded);
+        const content = this.shadowRoot.querySelector('#main');
+        this.#toggleBtn.classList.toggle('collapsed');
+        if (expanded === true) {
+            content.style.display = 'none';
+            // this.shadowRoot.querySelector('#btnToggleExpand').innerHTML = "chevron-up";
+            // this.#toggleBtn.classList.add('collapsed');
+        }
+        else {
+            content.style.display = 'block';
+            // this.shadowRoot.querySelector('#btnToggleExpand').innerHTML = "chevron-down";
+            // this.#toggleBtn.classList.remove('collapsed');
+        }
     }
 }
 
