@@ -1,18 +1,14 @@
 <style>
-    group-box {
-        margin-bottom: 100px;
-        text-decoration: none;
-        padding: var(--padding) ;
-    }
-
-    group-box div {
-        margin-top: 20px;
-    }
 
     .icon {
         font-family: crsfrw;
         font-size: 1.5rem;
     }
+
+    #submit-random{
+        width: fit-content;
+    }
+
 </style>
 
 <h1>Hello Group-Box</h1>
@@ -28,9 +24,22 @@
 <hr>
 <group-box id="box-3">
     <h3 slot="header">Custom Header with Actions</h3>
-    <div slot="actions"></div>
+    <div id="custom-actions" slot="actions">
+        <button class="primary">Save</button>
+        <button class="secondary">Delete</button>
+    </div>
     <div slot="body">
-        <input>
-        <button>Submit form</button>
+        <label for="random-input">Random Input</label>
+        <input id="random-input">
+
+        <div id="input-2">Input 2</div>
+        <input id="random-input 2">
+
+        <button class="primary" id="submit-random">Submit form</button>
     </div>
 </group-box>
+<hr>
+<group-box id="box-1" data-title="Test For Title">
+    <div slot="body">Body Content</div>
+</group-box>
+

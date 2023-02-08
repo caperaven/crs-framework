@@ -55,6 +55,11 @@ export class GroupBox extends HTMLElement {
 
     #clickHandler = this.#click.bind(this);
     #toggleBtn;
+    #headerSlot;
+
+    static get observedAttributes() {
+        return ["data-title"];
+    }
 
     get html() { return import.meta.url.replace('.js', '.html') }
 
@@ -68,7 +73,28 @@ export class GroupBox extends HTMLElement {
 
     async connectedCallback() {
         this.shadowRoot.innerHTML = await fetch(this.html).then(result => result.text());
-        await this.#load()
+        await this.#load();
+
+        this.#headerSlot = this.shadowRoot.querySelector('[slot="header"]');
+        if (!this.#headerSlot) {
+            // const header = document.createElement('h3');
+            // header.innerHTML = this.getAttribute('data-title');
+            // this.shadowRoot.querySelector('#group-header').appendChild(header);
+
+            const header = await crs.call("dom", "create_element", {
+                tag_name: "h3",
+                text_content: this.getAttribute('data-title'),
+                id: "",
+                attributes: {
+                    role: "header"
+                }
+            })
+
+            this.shadowRoot.querySelector('#group-header').appendChild(header);
+
+        } else {
+            this.shadowRoot.querySelector('#group-header').innerHTML = this.#headerSlot.innerHTML;
+        }
     }
 
     /**
@@ -114,6 +140,14 @@ export class GroupBox extends HTMLElement {
             content.style.display = 'block';
             // this.shadowRoot.querySelector('#btnToggleExpand').innerHTML = "chevron-down";
             // this.#toggleBtn.classList.remove('collapsed');
+        }
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (name === 'data-title') {
+            if (this.#headerSlot) {
+                this.#headerSlot.innerHTML = newValue;
+            }
         }
     }
 }

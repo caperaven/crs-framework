@@ -3,13 +3,19 @@
         display: block !important;
         width: auto;
         height: auto;
+        --header-bg: var(--grey-s3);
+        --header-height: 48px;
+        --header-left-border: 4px solid var(--blue);
+        --header-dropdown-btn: 48px;
+        --header-hover-bg: var(--grey-s2);
+        --header-dropdown-focus: 2px solid var(--blue);
     }
 
     :host header {
         display:flex;
-        height: 48px;
-        background-color: var(--grey-s3);
-        border-left: 4px solid var(--blue);
+        height: var(--header-height);
+        background-color: var(--header-bg);
+        border-left: var(--header-left-border);
         align-items: center;
     }
 
@@ -17,57 +23,63 @@
         display: none;
     }
 
-
-
     :host .icon {
         font-family: crsfrw;
         font-size: 1.5rem;
-        transition: 300ms ease-in-out;
-        /*animation: rotate 1s ease-in-out;*/
     }
-
-    :host .icon.collapsed {
-        /*transform: rotate(180deg);*/
-        transition: 300ms ease-out;
-        rotate: 180deg;
-        /*animation: rotate 1s ease-in-out*/
-    }
-
-
-    /*@keyframes rotate {*/
-    /*    0% {*/
-    /*        transform: rotate(0deg);*/
-    /*    }*/
-    /*    100% {*/
-    /*        transform: rotate(180deg);*/
-    /*    }*/
-    /*}*/
 
     :host button {
         border: none;
         background: none;
         outline: none;
         cursor: pointer;
-        height: 48px;
+        height: var(--header-dropdown-btn);
+        width: var(--header-dropdown-btn);
     }
 
     :host button:hover {
-        background-color: var(--grey-s2);
+        background-color: var(--header-hover-bg);
     }
 
     :host button:focus {
-        border: var(--double-border-width) solid var(--blue);
+        border: var(--header-dropdown-focus);
+    }
+
+    :host button:after {
+        content: "chevron-down";
+        display: block;
+        transition: 300ms ease-in-out;
+    }
+
+    :host button.collapsed:after {
+       rotate: -180deg;
     }
 
     :host #main {
         height: max-content;
     }
+
+    ::slotted([slot="actions"]) {
+        display: flex;
+        height: var(--header-height);
+        align-items: center;
+    }
+
+    :host header ::slotted([slot="header"]) {
+       flex: 1
+    }
+
+    ::slotted([slot="body"]) {
+        display: flex;
+        flex-flow: column;
+        margin-top: 20px;
+        width: auto;
+    }
 </style>
 
 <header>
-    <button id="btnToggleExpand" class="icon">chevron-down</button>
-    <slot name="header"></slot>
-    <h2 id="group-header"></h2>
+    <button id="btnToggleExpand" class="icon"></button>
+    <slot id="group-header" name="header"></slot>
     <slot name="actions"></slot>
 </header>
 
