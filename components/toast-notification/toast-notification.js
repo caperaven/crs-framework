@@ -68,7 +68,7 @@ class ToastNotification extends HTMLElement {
         }
 
         element.remove();
-        await crs.call("fixed_position", "set", { element: this, position: this.dataset.position });
+        await crs.call("fixed_position", "set", { element: this, position: this.dataset.position, margin: this.dataset.margin });
     }
 
     /**
@@ -120,7 +120,7 @@ class ToastNotification extends HTMLElement {
         }
 
         this.shadowRoot.appendChild(toast);
-        await crs.call("fixed_position", "set", { element: this, position: this.dataset.position });
+        await crs.call("fixed_position", "set", { element: this, position: this.dataset.position, margin: this.dataset.margin });
 
         await this.#setTimeout(toast, duration);
     }

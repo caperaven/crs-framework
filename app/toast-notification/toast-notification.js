@@ -4,9 +4,7 @@ export default class ToastNotification extends crsbinding.classes.ViewBase {
     async connectedCallback() {
         await super.connectedCallback();
 
-        await crs.call("toast_notification", "enable", { position: "bottom-center" });
-
-        requestAnimationFrame(() => this.showToast());
+        await crs.call("toast_notification", "enable", { position: "bottom-center", margin: 10 });
     }
 
     async showToast() {

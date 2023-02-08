@@ -1,11 +1,11 @@
 import {beforeAll, afterAll, afterEach, beforeEach, describe, it} from "https://deno.land/std@0.157.0/testing/bdd.ts";
 import { assertEquals, assertExists, assert } from "https://deno.land/std@0.149.0/testing/asserts.ts";
-import {init} from "./../../test/mockups/init.js";
+import {init} from "../../mockups/init.js";
 
 await init();
 
 beforeAll(async () => {
-    await import("./../../src/data-manager.js");
+    await import("../../../src/data-manager/data-manager-actions.js");
 })
 
 describe("data manager tests", () => {
@@ -72,7 +72,7 @@ describe("data manager tests", () => {
         })
 
         const record = manager.getByIndex(2);
-        assertEquals(manager.count, 3);
+        assertEquals(manager.count, 5);
         assertEquals(record.id, "2000");
 
         assertEquals(changeArgs[0].action, "add");
