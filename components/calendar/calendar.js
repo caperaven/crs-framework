@@ -70,7 +70,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         this.#year = date.getFullYear();
         await this.#setMonthProperty();
         await this.#setYearProperty();
-        (newValue !== oldValue && this.#month != currentMonth) && await this.set_default();
+        (newValue !== oldValue) && await this.set_default();
     }
 
     /**
@@ -82,7 +82,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         const cells = this.shadowRoot.querySelectorAll("[role='cell']");
         await this.#setAriaSelectedAttribute(data);
         crsbinding.inflationManager.get("calendar-cell", data, cells);
-        await this.setTabFocusOnRender();
+        await this.setFocusOnRender();
     }
 
     /**
@@ -144,13 +144,14 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     /**
      * @method When the user presses the tab key, the focus moves to the next element in the list.
      */
-    async #updateFocus(event) {
+    async #updateFocus() {
         await crs.call("dom_collection", "toggle_selection", {
             target: this.#elements[this.#currentIndex],
             multiple: false
         });
         this.#elements[this.#currentIndex].tabIndex = 0;
         this.#elements[this.#currentIndex].focus();
+        this.selectedView ==="default" && await this.set_dataStart(this.#elements[this.#currentIndex]);
     }
 
     /**
@@ -184,7 +185,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      * @param event - The event that triggered the function.
      */
     async pressEnter(event) {
-        await this.set_dataStart(event.target.dataset.year, event.target.dataset.month, event.target.dataset.day);
+        //Todo:Enter selection of month and year functionality
     }
 
     /**
@@ -192,10 +193,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      */
     async pressArrowUp(event) {
         this.#currentIndex = (this.#currentIndex - this.#columns) < 0 ? this.#elements.length - (this.#columns - this.#currentIndex) : this.#currentIndex - this.#columns;
-        await this.#updateFocus(event);
-        const target = event.composedPath()[0];
-        const action = target.dataset.month;
-        console.log(action)
+        await this.#updateFocus();
     }
 
     /**
@@ -203,7 +201,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      */
     async pressArrowDown(event) {
         this.#currentIndex = (this.#currentIndex + this.#columns) >= this.#elements.length ? (this.#currentIndex + this.#columns) - this.#elements.length : this.#currentIndex + this.#columns;
-        await this.#updateFocus(event);
+        await this.#updateFocus();
     }
 
     /**
@@ -211,9 +209,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      */
     async pressArrowLeft(event) {
         this.#currentIndex = (this.#currentIndex - 1) < 0 ? this.#elements.length - 1 : this.#currentIndex - 1;
-        this.day = parseInt(event.target.dataset.day) - 1;
-        await this.#updateFocus(event);
-        await this.set_dataStart(event.target.dataset.year, event.target.dataset.month, this.day);
+        await this.#updateFocus();
     }
 
     /**
@@ -221,9 +217,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      */
     async pressArrowRight(event) {
         this.#currentIndex = (this.#currentIndex + 1) % this.#elements.length;
-        this.day = parseInt(event.target.dataset.day) + 1;
-        await this.#updateFocus(event);
-        await this.set_dataStart(event.target.dataset.year, event.target.dataset.month, this.day);
+        await this.#updateFocus();
     }
 
     async viewLoaded() {
@@ -281,8 +275,8 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         const newValue = event.target;
         if (newValue.getAttribute("role") === 'cell') {
             await crs.call("dom_collection", "toggle_selection", {target: newValue, multiple: false});
-            await this.set_dataStart(newValue.dataset.year, newValue.dataset.month, newValue.dataset.day);
-            await this.setTabFocusOnRender();
+            await this.set_dataStart(newValue);
+            await this.setFocusOnRender();
         }
     }
 
@@ -290,8 +284,8 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      * @function It sets the data-start attribute to the date selected by the user.
      * @param newValue - The new value of the attribute.
      */
-    async set_dataStart(year, month, day) {
-        const dateObject = new Date((new Date(year,month,day).getTime()) - ((new Date().getTimezoneOffset()) * 60 * 1000));
+    async set_dataStart(newValue) {
+        const dateObject = new Date((new Date(newValue.dataset.year,newValue.dataset.month,newValue.dataset.day).getTime()) - ((new Date().getTimezoneOffset()) * 60 * 1000));
         this.setAttribute("data-start", dateObject.toISOString().slice(0, 10));
     }
 
@@ -299,7 +293,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      * @function The function gets the currently selected tab, then gets all the tabs, then sets the tabIndex of the currently
      * selected tab to -1, and the tabIndex of the newly selected tab to 0
      */
-    async setTabFocusOnRender() {
+    async setFocusOnRender() {
         const element = this.shadowRoot.querySelector("[aria-selected='true']");
         if (element) {
             await this.#get_elements();
