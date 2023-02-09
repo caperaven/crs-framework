@@ -77,22 +77,33 @@ describe ("group box tests", async () => {
         assertEquals(instance.getAttribute("aria-expanded"), "true");
     })
 
-    // it("check for header content", async () => {
-    //     await createInstance();
-    //     // Create a data-title for the component
-    //     instance.dataset.title = "My title";
-    //     assertEquals(instance.dataset.title, "My title");
-    //     const header = new ElementMock("div");
-    //     header.id = "header";
-    //     header.innerText = "My title";
-    //     console.log(header.innerText);
-    //     //get handle on slot element
-    //     const slot = instance.querySelector("slot[name='header']");
-    //     console.log(slot);
-    //
-    //
-    // });
+    it("check for header content", async () => {
+        await createInstance();
+        instance.dataset.title = "test title";
+        assertEquals(instance.dataset.title, "test title");
 
+        const header = new ElementMock("header");
+        header.id = "group-header";
+        instance.appendChild(header);
+        const groupHeader = instance.querySelector("#group-header");
+        // console.log(groupHeader.id);
+
+        assert(instance.header !== null);
+        assert(instance.getAttribute("aria-expanded") === "true");
+
+        // instance.headerKeyHandler(new EventMock(header, "keyup", {key: "ArrowUp"}));
+        // instance.headerKeyHandler(new EventMock(groupHeader, "keyup", {key: "ArrowUp"}));
+        instance.activeElement = header;
+        instance.headerKeyHandler(new EventMock(header,  {key: "ArrowUp"}));
+        // instance.headerKeyHandler(new EventMock(groupHeader));
+        // instance.headerKeyHandler(new EventMock(header, "ArrowUp", {key: "ArrowUp"}));
+
+
+        assertEquals(instance.getAttribute("aria-expanded"), "false");
+
+        instance.headerKeyHandler(new EventMock(header,  {key: "ArrowDown"}));
+        assertEquals(instance.getAttribute("aria-expanded"), "true");
+    });
 
 
 });

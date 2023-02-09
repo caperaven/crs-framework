@@ -85,15 +85,23 @@ export class GroupBox extends HTMLElement {
         requestAnimationFrame(async () => {
             this.setAttribute("aria-expanded", "true");
             this.shadowRoot.addEventListener("click", this.#clickHandler);
-            this.shadowRoot.querySelector("header").addEventListener("keyup", this.#headerKeyHandler);
-
-            this.shadowRoot.querySelector("#title").textContent = this.dataset.title;
+            if(this.shadowRoot.querySelector("header") != null){
+                this.shadowRoot.querySelector("header").addEventListener("keyup", this.#headerKeyHandler);
+            }
+            // this.shadowRoot.querySelector("header").addEventListener("keyup", this.#headerKeyHandler);
+            if(this.shadowRoot.querySelector("#title") != null){
+                this.shadowRoot.querySelector("#title").textContent = this.dataset.title;
+            }
+            // this.shadowRoot.querySelector("#title").textContent = this.dataset.title;
         });
     }
 
     async disconnectedCallback() {
         this.shadowRoot.removeEventListener("click", this.#clickHandler);
-        this.shadowRoot.querySelector("header").removeEventListener("keyup", this.#headerKeyHandler);
+        // this.shadowRoot.querySelector("header").removeEventListener("keyup", this.#headerKeyHandler);
+        if(this.shadowRoot.querySelector("header") != null){
+            this.shadowRoot.querySelector("header").removeEventListener("keyup", this.#headerKeyHandler);
+        }
 
         this.#clickHandler = null;
         this.#headerKeyHandler = null;
@@ -116,13 +124,20 @@ export class GroupBox extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #headerKeyUp(event) {
-        // if you press any key other than up or down, ignore it and return;
-        if (event.key !== "ArrowUp" && event.key !== "ArrowDown") {
-            return;
+        const target = event.composedPath()[0];
+        // Added the check for header ID
+        if(target.id === "group-header") {
+            // console.log(event)
+            // if you press any key other than up or down, ignore it and return;
+            if (event.key !== "ArrowUp" && event.key !== "ArrowDown") {
+                return;
+            }
+
+            // if you press up or down, toggle the expanded state.
+            this.setAttribute('aria-expanded', event.key === "ArrowUp" ? "false" : "true");
+            // await this.#toggleExpanded();
         }
 
-        // if you press up or down, toggle the expanded state.
-        this.setAttribute('aria-expanded', event.key == "ArrowUp" ? "false" : "true");
     }
 
     /**
