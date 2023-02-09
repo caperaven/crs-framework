@@ -14,10 +14,7 @@
         --icon-font-family: crsfrw;
 
         display: grid;
-        grid-template-rows: auto 1fr;
-        width: 27rem;
-        height: 27rem;
-        border: var(--border);
+        grid-template-rows: auto auto;
         user-select: none
     }
 
@@ -30,7 +27,7 @@
         justify-content: space-between;
         align-items: center;
         height: 5rem;
-        padding: var(--padding);
+        padding: 0.3rem;
     }
 
     #calendar-toolbar #previous-month, #next-month {
@@ -41,16 +38,8 @@
         border: none;
     }
 
-    #calendar-toolbar #previous-month {
-        margin-left: var(--margin-size);
-    }
-
     #calendar-toolbar #previous-month:hover,#next-month:hover {
         border: var(--border);
-    }
-
-    #calendar-toolbar #next-month {
-        margin-right: var(--margin-size);
     }
 
     #calendar-toolbar #month:hover, #year:hover {

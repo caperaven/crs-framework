@@ -8,6 +8,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     #elements;
 
     //Todo: do a complete name check and refactor method names to be more descriptive
+    //Todo: check what happens when you get to a month where the 1st day is exactly on sunday?
     get shadowDom() {
         return true;
     }
@@ -145,13 +146,12 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      * @method When the user presses the tab key, the focus moves to the next element in the list.
      */
     async #updateFocus() {
-        await crs.call("dom_collection", "toggle_selection", {
-            target: this.#elements[this.#currentIndex],
-            multiple: false
-        });
         this.#elements[this.#currentIndex].tabIndex = 0;
         this.#elements[this.#currentIndex].focus();
-        this.selectedView ==="default" && await this.set_dataStart(this.#elements[this.#currentIndex]);
+        if (this.selectedView === "default") {
+            await this.set_dataStart(this.#elements[this.#currentIndex]);
+            await crs.call("dom_collection", "toggle_selection", {target: this.#elements[this.#currentIndex], multiple: false});
+        }
     }
 
     /**
@@ -185,9 +185,22 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      * @param event - The event that triggered the function.
      */
     async pressEnter(event) {
-        //Todo:Enter selection of month and year functionality
+        const view = this.selectedView;
+        if (view !== "default") {
+            const value = parseInt(event.target.dataset.value);
+            this[`${view}Enter`](value);
+        }
     }
 
+    async monthsEnter(value) {
+        this.#month = value;
+        await this.selectedMonthChanged(this.#month)
+    }
+
+    async yearsEnter(value) {
+        this.#year = value;
+        await this.selectedYearChanged(this.#year);
+    }
     /**
      * @method The function is called when the user presses the arrow up key.
      */
@@ -221,20 +234,22 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     async viewLoaded() {
-        const currentView = this.selectedView;
-        if (this[`set_${currentView}`]) {
-            await this[`set_${currentView}`]();
+        const view = this.selectedView;
+        if (this[`set_${view}`]) {
+            await this[`set_${view}`]();
         }
     }
 
     async set_years() {
         const element = await this.#setMonthAndYearAria(this.#year);
         element.scrollIntoView();
+        element.focus();
         this.#columns = 4;
     }
 
     async set_months() {
-        await this.#setMonthAndYearAria(this.#month);
+        const element = await this.#setMonthAndYearAria(this.#month);
+        element.focus();
         this.#columns = 3;
     }
 
@@ -285,7 +300,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      * @param newValue - The new value of the attribute.
      */
     async set_dataStart(newValue) {
-        const dateObject = new Date((new Date(newValue.dataset.year,newValue.dataset.month,newValue.dataset.day).getTime()) - ((new Date().getTimezoneOffset()) * 60 * 1000));
+        const dateObject = new Date((new Date(newValue.dataset.year, newValue.dataset.month, newValue.dataset.day).getTime()) - ((new Date().getTimezoneOffset()) * 60 * 1000));
         this.setAttribute("data-start", dateObject.toISOString().slice(0, 10));
     }
 
@@ -295,12 +310,19 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      */
     async setFocusOnRender() {
         const element = this.shadowRoot.querySelector("[aria-selected='true']");
+        await this.#get_elements();
+
         if (element) {
-            await this.#get_elements();
             this.#elements[this.#currentIndex].tabIndex = -1;
             element.tabIndex = 0;
             element.focus();
         }
+        //Todo:check what happens when you switch to the previous month from the current month does it select the first
+        // date or the current date?
+        if (element == null && this.#elements[this.#currentIndex] == null){
+            this.shadowRoot.querySelector(`[data-month = '${this.#month}']`).tabIndex = 0;
+        }
+
     }
 
     async goToNext() {

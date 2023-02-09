@@ -2,10 +2,16 @@
      *{
         margin-bottom: 0.5rem;
     }
+     #container{
+         width: 27rem;
+         height: 27rem;
+         border: var(--border);
+     }
 </style>
 <h2>${title}</h2>
-<calendar-component id="calendar-container" ref="calendar"></calendar-component>
-
+<div id="container">
+    <calendar-component id="calendar-container" ref="calendar"></calendar-component>
+</div>
 
 <input id="dateEntered" ref="dateInput" type="date"  placeholder="2023-01-01" required>
 <button id="btn-1" click.call="setStartDate">Set Start Date</button>
