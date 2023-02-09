@@ -54,8 +54,6 @@ export class GroupBox extends HTMLElement {
      */
 
     #clickHandler = this.#click.bind(this);
-    #toggleBtn;
-    #headerSlot;
 
     static get observedAttributes() {
         return ["data-title"];
@@ -64,7 +62,7 @@ export class GroupBox extends HTMLElement {
     get html() { return import.meta.url.replace('.js', '.html') }
 
     // Required for testing
-    get clickHandler() { return this.#clickHandler }
+    get clickHandler() { return this.#clickHandler}
 
     constructor() {
         super();
@@ -74,27 +72,6 @@ export class GroupBox extends HTMLElement {
     async connectedCallback() {
         this.shadowRoot.innerHTML = await fetch(this.html).then(result => result.text());
         await this.#load();
-
-        this.#headerSlot = this.shadowRoot.querySelector('[slot="header"]');
-        if (!this.#headerSlot) {
-            // const header = document.createElement('h3');
-            // header.innerHTML = this.getAttribute('data-title');
-            // this.shadowRoot.querySelector('#group-header').appendChild(header);
-
-            const header = await crs.call("dom", "create_element", {
-                tag_name: "h3",
-                text_content: this.getAttribute('data-title'),
-                id: "",
-                attributes: {
-                    role: "header"
-                }
-            })
-
-            this.shadowRoot.querySelector('#group-header').appendChild(header);
-
-        } else {
-            this.shadowRoot.querySelector('#group-header').innerHTML = this.#headerSlot.innerHTML;
-        }
     }
 
     /**
@@ -106,8 +83,8 @@ export class GroupBox extends HTMLElement {
         requestAnimationFrame(async () => {
             this.setAttribute("aria-expanded", "true");
             this.shadowRoot.addEventListener("click", this.#clickHandler);
-            this.#toggleBtn = this.shadowRoot.querySelector('#btnToggleExpand');
-        })
+            this.shadowRoot.querySelector("#title").textContent = this.dataset.title;
+        });
     }
 
     async disconnectedCallback() {
@@ -129,24 +106,36 @@ export class GroupBox extends HTMLElement {
     async #toggleExpanded() {
         const expanded = this.getAttribute('aria-expanded') === 'true';
         this.setAttribute('aria-expanded', !expanded);
-        const content = this.shadowRoot.querySelector('#main');
-        this.#toggleBtn.classList.toggle('collapsed');
-        if (expanded === true) {
-            content.style.display = 'none';
-            // this.shadowRoot.querySelector('#btnToggleExpand').innerHTML = "chevron-up";
-            // this.#toggleBtn.classList.add('collapsed');
-        }
-        else {
-            content.style.display = 'block';
-            // this.shadowRoot.querySelector('#btnToggleExpand').innerHTML = "chevron-down";
-            // this.#toggleBtn.classList.remove('collapsed');
-        }
+        // const content = this.shadowRoot.querySelector('#main');
+
+        // this.#toggleBtn.classList.toggle('collapsed');
+        // if (this.#toggleBtn) {
+        //     this.#toggleBtn.classList.toggle('collapsed');
+        // }
+        // if (expanded === true) {
+        //     // content.style.display = 'none';
+        //     // this.shadowRoot.querySelector('#btnToggleExpand').innerHTML = "chevron-up";
+        //     // this.#toggleBtn.classList.add('collapsed');
+        //     if (content) {
+        //         content.style.display = 'none';
+        //     }
+        // }
+        // else {
+        //     // content.style.display = 'block';
+        //     // this.shadowRoot.querySelector('#btnToggleExpand').innerHTML = "chevron-down";
+        //     // this.#toggleBtn.classList.remove('collapsed');
+        //     if (content) {
+        //         content.style.display = 'block';
+        //     }
+        // }
+
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
         if (name === 'data-title') {
-            if (this.#headerSlot) {
-                this.#headerSlot.innerHTML = newValue;
+            const titleElement = this.shadowRoot.querySelector("#title");
+            if(titleElement != null) {
+                titleElement.textContent = this.dataset.title;
             }
         }
     }

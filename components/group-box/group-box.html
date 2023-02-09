@@ -11,7 +11,7 @@
         --header-dropdown-focus: 2px solid var(--blue);
     }
 
-    :host header {
+     header {
         display:flex;
         height: var(--header-height);
         background-color: var(--header-bg);
@@ -19,16 +19,21 @@
         align-items: center;
     }
 
-    :host[aria-expanded="false"] main {
+     :host[aria-expanded="true"] {
+         background-color: red;
+
+     }
+
+    :host[aria-expanded="false"] #main {
         display: none;
     }
 
-    :host .icon {
+    .icon {
         font-family: crsfrw;
         font-size: 1.5rem;
     }
 
-    :host button {
+    button {
         border: none;
         background: none;
         outline: none;
@@ -37,25 +42,17 @@
         width: var(--header-dropdown-btn);
     }
 
-    :host button:hover {
-        background-color: var(--header-hover-bg);
-    }
-
-    :host button:focus {
-        border: var(--header-dropdown-focus);
-    }
-
-    :host button:after {
+    button:after {
         content: "chevron-down";
         display: block;
         transition: 300ms ease-in-out;
     }
 
-    :host button.collapsed:after {
+    button.collapsed:after {
        rotate: -180deg;
     }
 
-    :host #main {
+    #main {
         height: max-content;
     }
 
@@ -63,9 +60,11 @@
         display: flex;
         height: var(--header-height);
         align-items: center;
+        gap: var(--padding);
+        padding-right: var(--padding);
     }
 
-    :host header ::slotted([slot="header"]) {
+    #title {
        flex: 1
     }
 
@@ -80,6 +79,7 @@
 <header>
     <button id="btnToggleExpand" class="icon"></button>
     <slot id="group-header" name="header"></slot>
+    <h3 id="title"></h3>
     <slot name="actions"></slot>
 </header>
 
