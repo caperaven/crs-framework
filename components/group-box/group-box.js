@@ -54,6 +54,7 @@ export class GroupBox extends HTMLElement {
      */
 
     #clickHandler = this.#click.bind(this);
+    #headerKeyHandler = this.#headerKeyUp.bind(this);
 
     static get observedAttributes() {
         return ["data-title"];
@@ -62,7 +63,8 @@ export class GroupBox extends HTMLElement {
     get html() { return import.meta.url.replace('.js', '.html') }
 
     // Required for testing
-    get clickHandler() { return this.#clickHandler}
+    get clickHandler() { return this.#clickHandler }
+    get headerKeyHandler() { return this.#headerKeyHandler }
 
     constructor() {
         super();
@@ -83,13 +85,18 @@ export class GroupBox extends HTMLElement {
         requestAnimationFrame(async () => {
             this.setAttribute("aria-expanded", "true");
             this.shadowRoot.addEventListener("click", this.#clickHandler);
+            this.shadowRoot.querySelector("header").addEventListener("keyup", this.#headerKeyHandler);
+
             this.shadowRoot.querySelector("#title").textContent = this.dataset.title;
         });
     }
 
     async disconnectedCallback() {
         this.shadowRoot.removeEventListener("click", this.#clickHandler);
+        this.shadowRoot.querySelector("header").removeEventListener("keyup", this.#headerKeyHandler);
+
         this.#clickHandler = null;
+        this.#headerKeyHandler = null;
     }
 
     async #click(event) {
@@ -97,6 +104,25 @@ export class GroupBox extends HTMLElement {
         if (target.id === 'btnToggleExpand') {
             await this.#toggleExpanded();
         }
+    }
+
+    /**
+     * @method headerKeyUp - handle key up events on the header.
+     * This in particular handles the aria keyboard shortcuts to expand or collapse the group box.
+     * Options:
+     * 1. ArrowUp - collapse the group box.
+     * 2. ArrowDown - expand the group box.
+     * @param event {MouseEvent} - standard event
+     * @returns {Promise<void>}
+     */
+    async #headerKeyUp(event) {
+        // if you press any key other than up or down, ignore it and return;
+        if (event.key !== "ArrowUp" && event.key !== "ArrowDown") {
+            return;
+        }
+
+        // if you press up or down, toggle the expanded state.
+        this.setAttribute('aria-expanded', event.key == "ArrowUp" ? "false" : "true");
     }
 
     /**
