@@ -106,29 +106,6 @@ export class GroupBox extends HTMLElement {
     async #toggleExpanded() {
         const expanded = this.getAttribute('aria-expanded') === 'true';
         this.setAttribute('aria-expanded', !expanded);
-        // const content = this.shadowRoot.querySelector('#main');
-
-        // this.#toggleBtn.classList.toggle('collapsed');
-        // if (this.#toggleBtn) {
-        //     this.#toggleBtn.classList.toggle('collapsed');
-        // }
-        // if (expanded === true) {
-        //     // content.style.display = 'none';
-        //     // this.shadowRoot.querySelector('#btnToggleExpand').innerHTML = "chevron-up";
-        //     // this.#toggleBtn.classList.add('collapsed');
-        //     if (content) {
-        //         content.style.display = 'none';
-        //     }
-        // }
-        // else {
-        //     // content.style.display = 'block';
-        //     // this.shadowRoot.querySelector('#btnToggleExpand').innerHTML = "chevron-down";
-        //     // this.#toggleBtn.classList.remove('collapsed');
-        //     if (content) {
-        //         content.style.display = 'block';
-        //     }
-        // }
-
     }
 
     attributeChangedCallback(name, oldValue, newValue) {

@@ -1,31 +1,46 @@
 <style>
     :host {
-        display: block !important;
-        width: auto;
-        height: auto;
         --header-bg: var(--grey-s3);
         --header-height: 48px;
         --header-left-border: 4px solid var(--blue);
         --header-dropdown-btn: 48px;
         --header-hover-bg: var(--grey-s2);
         --header-dropdown-focus: 2px solid var(--blue);
+
+        display: block;
+        width: auto;
+        height: auto;
     }
 
-     header {
+    :host([aria-expanded="false"]) #main {
+        display: none;
+    }
+
+    :host([aria-expanded="false"]) #btnToggleExpand:after {
+        rotate: -180deg;
+    }
+
+    ::slotted([slot="actions"]) {
+        display: flex;
+        height: var(--header-height);
+        align-items: center;
+        gap: var(--padding);
+        padding-right: var(--padding);
+    }
+
+    ::slotted([slot="body"]) {
+        display: flex;
+        flex-flow: column;
+        margin-top: 20px;
+        width: auto;
+    }
+
+    header {
         display:flex;
         height: var(--header-height);
         background-color: var(--header-bg);
         border-left: var(--header-left-border);
         align-items: center;
-    }
-
-     :host[aria-expanded="true"] {
-         background-color: red;
-
-     }
-
-    :host[aria-expanded="false"] #main {
-        display: none;
     }
 
     .icon {
@@ -48,31 +63,13 @@
         transition: 300ms ease-in-out;
     }
 
-    button.collapsed:after {
-       rotate: -180deg;
-    }
-
     #main {
         height: max-content;
-    }
-
-    ::slotted([slot="actions"]) {
-        display: flex;
-        height: var(--header-height);
-        align-items: center;
-        gap: var(--padding);
-        padding-right: var(--padding);
+        padding: var(--padding);
     }
 
     #title {
-       flex: 1
-    }
-
-    ::slotted([slot="body"]) {
-        display: flex;
-        flex-flow: column;
-        margin-top: 20px;
-        width: auto;
+        flex: 1
     }
 </style>
 
