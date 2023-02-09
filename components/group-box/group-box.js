@@ -134,6 +134,14 @@ export class GroupBox extends HTMLElement {
         this.setAttribute('aria-expanded', !expanded);
     }
 
+    /**
+     * @method attributeChangedCallback - handle attribute changes.
+     * In particular, we are looking for the data-title attribute.
+     * If it changes, we update the title element.
+     * @param name {string} - name of the attribute
+     * @param oldValue {string} - old value of the attribute
+     * @param newValue {string} - new value of the attribute
+     */
     attributeChangedCallback(name, oldValue, newValue) {
         if (name === 'data-title') {
             const titleElement = this.shadowRoot.querySelector("#title");
