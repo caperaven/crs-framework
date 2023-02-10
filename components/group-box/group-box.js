@@ -107,6 +107,11 @@ export class GroupBox extends HTMLElement {
         this.#headerKeyHandler = null;
     }
 
+    /**
+     * @method click - When the user clicks on the button, toggle the expanded state of the card
+     * This is the event handler for the click event.
+     * @param event {MouseEvent} - The event object that was triggered.
+     */
     async #click(event) {
         const target = event.composedPath()[0];
         if (target.id === 'btnToggleExpand') {
@@ -125,18 +130,13 @@ export class GroupBox extends HTMLElement {
      */
     async #headerKeyUp(event) {
         const target = event.composedPath()[0];
-        // Added the check for header ID
-        if(target.id === "group-header") {
-            // console.log(event)
-            // if you press any key other than up or down, ignore it and return;
-            if (event.key !== "ArrowUp" && event.key !== "ArrowDown") {
-                return;
-            }
 
-            // if you press up or down, toggle the expanded state.
-            this.setAttribute('aria-expanded', event.key === "ArrowUp" ? "false" : "true");
-            // await this.#toggleExpanded();
+        // if you press any key other than up or down, ignore it and return;
+        if (event.key !== "ArrowUp" && event.key !== "ArrowDown") {
+            return;
         }
+        // if you press up or down, toggle the expanded state.
+        this.setAttribute('aria-expanded', event.key === "ArrowUp" ? "false" : "true")
 
     }
 
@@ -147,6 +147,9 @@ export class GroupBox extends HTMLElement {
     async #toggleExpanded() {
         const expanded = this.getAttribute('aria-expanded') === 'true';
         this.setAttribute('aria-expanded', !expanded);
+        if (this.shadowRoot.querySelector("#btnToggleExpand") != null){
+            this.shadowRoot.querySelector("#btnToggleExpand").setAttribute('aria-expanded', !expanded);
+        }
     }
 
     /**

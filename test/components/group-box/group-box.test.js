@@ -21,22 +21,6 @@ async function createInstance() {
         createMockChildren(instance);
         await loadFn();
     }
-
-    // let fetchFn = instance.fetch;
-    // instance.fetch = async () => {
-    //     createMockChildren(instance);
-    //     // await fetchFn();
-    //     return `<header>
-    //         <button id="btnToggleExpand" class="icon"></button>
-    //         <slot id="group-header" name="header"></slot>
-    //         <slot name="actions"></slot>
-    //         </header>
-    //
-    //         <div id="main">
-    //         <slot name="body"></slot>
-    //         </div>   ` ;
-    //
-    // }
 }
 
 beforeAll(async () => {
@@ -44,14 +28,6 @@ beforeAll(async () => {
 })
 
 describe ("group box tests", async () => {
-    // let instance;
-
-
-
-    // beforeEach(async () => {
-    //     instance = document.createElement("group-box");
-    //     await instance.connectedCallback();
-    // })
 
     afterEach(async () => {
         await instance.disconnectedCallback();
@@ -86,24 +62,20 @@ describe ("group box tests", async () => {
         header.id = "group-header";
         instance.appendChild(header);
         const groupHeader = instance.querySelector("#group-header");
-        // console.log(groupHeader.id);
 
         assert(instance.header !== null);
         assert(instance.getAttribute("aria-expanded") === "true");
 
-        // instance.headerKeyHandler(new EventMock(header, "keyup", {key: "ArrowUp"}));
-        // instance.headerKeyHandler(new EventMock(groupHeader, "keyup", {key: "ArrowUp"}));
         instance.activeElement = header;
         instance.headerKeyHandler(new EventMock(header,  {key: "ArrowUp"}));
-        // instance.headerKeyHandler(new EventMock(groupHeader));
-        // instance.headerKeyHandler(new EventMock(header, "ArrowUp", {key: "ArrowUp"}));
-
 
         assertEquals(instance.getAttribute("aria-expanded"), "false");
 
         instance.headerKeyHandler(new EventMock(header,  {key: "ArrowDown"}));
         assertEquals(instance.getAttribute("aria-expanded"), "true");
     });
+
+
 
 
 });
