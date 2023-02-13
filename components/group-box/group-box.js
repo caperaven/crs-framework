@@ -74,6 +74,7 @@ export class GroupBox extends HTMLElement {
     async connectedCallback() {
         this.shadowRoot.innerHTML = await fetch(this.html).then(result => result.text());
         await this.#load();
+        await this.#setTabIndex()
     }
 
     /**
@@ -130,7 +131,7 @@ export class GroupBox extends HTMLElement {
      */
     async #headerKeyUp(event) {
         const target = event.composedPath()[0];
-
+        console.log(document.activeElement)
         // if you press any key other than up or down, ignore it and return;
         if (event.key !== "ArrowUp" && event.key !== "ArrowDown") {
             return;
@@ -150,6 +151,7 @@ export class GroupBox extends HTMLElement {
         if (this.shadowRoot.querySelector("#btnToggleExpand") != null){
             this.shadowRoot.querySelector("#btnToggleExpand").setAttribute('aria-expanded', !expanded);
         }
+        await this.#setTabIndex();
     }
 
     /**
@@ -168,6 +170,37 @@ export class GroupBox extends HTMLElement {
             }
         }
     }
+
+    async #setTabIndex() {
+        const main = this.shadowRoot.querySelector("#main");
+        const ariaExpanded = this.shadowRoot.querySelector("#btnToggleExpand").getAttribute("aria-expanded");
+        const children = Array.from(main.children);
+
+        if (ariaExpanded === "true") {
+            children.forEach(child => child.setAttribute("tabindex", "0"));
+        } else {
+            children.forEach(child => child.setAttribute("tabindex", "-1"));
+        }
+    }
+
+    // async #setTabIndex() {
+    //     const btnToggleExpand = this.shadowRoot.querySelector("#btnToggleExpand");
+    //     const ariaExpanded = btnToggleExpand.getAttribute("aria-expanded");
+    //     const bodySlot = this.shadowRoot.querySelector("#main > slot[name='body']");
+    //     const bodyElements = bodySlot.assignedNodes({ flatten: true });
+    //
+    //     function setTabIndexForChildren(element, value) {
+    //         element.setAttribute("tabindex", value);
+    //         const childElements = Array.from(element.children);
+    //         childElements.forEach(child => setTabIndexForChildren(child, value));
+    //     }
+    //
+    //     if (ariaExpanded === "true") {
+    //         bodyElements.forEach(bodyElement => setTabIndexForChildren(bodyElement, "0"));
+    //     } else {
+    //         bodyElements.forEach(bodyElement => setTabIndexForChildren(bodyElement, "-1"));
+    //     }
+    // }
 }
 
 customElements.define('group-box', GroupBox);

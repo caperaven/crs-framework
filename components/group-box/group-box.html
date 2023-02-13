@@ -92,16 +92,6 @@
     }
 </style>
 
-<!--<header id="group-header" tabindex="0" aria-label="main-header-element">-->
-<!--    <button id="btnToggleExpand" class="icon" aria-label="expand-toggle-button"></button>-->
-<!--    <slot name="header"></slot>-->
-<!--    <h3 id="title" aria-label="custom-header"></h3>-->
-<!--    <slot name="actions"></slot>-->
-<!--</header>-->
-
-<!--<div id="main" aria-labelby="body-content">-->
-<!--    <slot name="body"></slot>-->
-<!--</div>-->
 
 <header id="group-header" tabindex="0" aria-labelledby="title" role="group">
     <button id="btnToggleExpand" class="icon" aria-expanded="true" aria-controls="main"></button>
@@ -109,6 +99,6 @@
     <h3 id="title" aria-label="custom-header">Custom Header</h3>
     <slot name="actions"></slot>
 </header>
-<div id="main" aria-labelby="body-content" role="region">
+<div id="main" aria-label="group-content" role="region">
     <slot name="body"></slot>
 </div>
