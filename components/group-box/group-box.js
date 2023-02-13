@@ -131,7 +131,6 @@ export class GroupBox extends HTMLElement {
      */
     async #headerKeyUp(event) {
         const target = event.composedPath()[0];
-        console.log(document.activeElement)
         // if you press any key other than up or down, ignore it and return;
         if (event.key !== "ArrowUp" && event.key !== "ArrowDown") {
             return;
@@ -171,15 +170,29 @@ export class GroupBox extends HTMLElement {
         }
     }
 
+    // async #setTabIndex() {
+    //     const main = this.shadowRoot.querySelector("#main");
+    //     const ariaExpanded = this.shadowRoot.querySelector("#btnToggleExpand").getAttribute("aria-expanded");
+    //     const children = Array.from(main.children);
+    //
+    //     if (ariaExpanded === "true") {
+    //         children.forEach(child => child.setAttribute("tabindex", "0"));
+    //     } else {
+    //         children.forEach(child => child.setAttribute("tabindex", "-1"));
+    //     }
+    // }
+
     async #setTabIndex() {
         const main = this.shadowRoot.querySelector("#main");
-        const ariaExpanded = this.shadowRoot.querySelector("#btnToggleExpand").getAttribute("aria-expanded");
-        const children = Array.from(main.children);
-
-        if (ariaExpanded === "true") {
-            children.forEach(child => child.setAttribute("tabindex", "0"));
-        } else {
-            children.forEach(child => child.setAttribute("tabindex", "-1"));
+        const btnToggleExpand = this.shadowRoot.querySelector("#btnToggleExpand");
+        if (main && btnToggleExpand) {
+            const ariaExpanded = btnToggleExpand.getAttribute("aria-expanded");
+            const children = Array.from(main.children);
+            if (ariaExpanded === "true") {
+                children.forEach(child => child.setAttribute("tabindex", "0"));
+            } else {
+                children.forEach(child => child.setAttribute("tabindex", "-1"));
+            }
         }
     }
 
