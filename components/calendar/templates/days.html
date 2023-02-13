@@ -4,31 +4,32 @@
         grid-template: repeat(7, 1fr)/repeat(7, 1fr);
         justify-items: center;
         align-items: center;
-        padding: 0 0.3rem 0.3rem 0.3rem;
+        grid-gap: 8px;
     }
-
-    #calendar [role = 'columnheader'] {
-        font-weight: 600;
-        font-size: 1.15rem;
-        color: var(--grey-s1);
-        opacity: 0.8;
-        padding-bottom: var(--padding);
-    }
-
-    #calendar [role = 'cell'] {
+    [role = 'columnheader'],[role = 'cell'] {
         display: flex;
         justify-content: center;
         align-items: center;
         width: var(--size);
         height: var(--size);
+        padding: 0.3rem;
+    }
+
+    #calendar [role = 'columnheader'] {
+        font-size: 1.15rem;
+        color: var(--grey-s1);
+        opacity: 0.8;
+    }
+
+    #calendar [role = 'cell'] {
         font-size: var(--text-size);
-        font-weight: bold;
         color: var(--grey);
         border-radius: var(--radius);
     }
 
-    #calendar [role = 'cell']:hover {
-        border: var(--border);
+    #calendar [role = 'cell']:hover:not([aria-selected = "true"]){
+        background: var(--grey-s3);
+        color: var(--grey) !important;
         opacity: 1;
         cursor: pointer;
     }

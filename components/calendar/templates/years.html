@@ -11,34 +11,35 @@
 
     #years {
         display: grid;
-        grid-template: repeat(5, 1fr)/repeat(4, 1fr);
+        grid-template: repeat(4, 1fr)/repeat(4, 1fr);
         justify-items: center;
         align-items: center;
-        margin: 0.25rem;
-        height: 19rem;
-        row-gap: 1rem;
-        overflow-y: scroll;
+        height: 75%;
+        grid-gap: 0.5rem;
+        overflow-y: auto;
         scroll-behavior: smooth;
+        margin-top: 1rem;
     }
 
-    #years > div {
+    [data-type = "year-cell"]{
         display: flex;
         justify-content: center;
         align-items: center;
-        width: 5rem;
-        height: 3rem;
+        width: 4rem;
+        height: var(--size);
         font-size: var(--text-size);
-        font-weight: bold;
         border-radius: var(--radius);
         cursor: pointer;
     }
 
-    #years > div:hover {
-        border: var(--border);
+    #years > div:hover:not([aria-selected = "true"]) {
+        background: var(--grey-s3);
+        cursor: pointer;
     }
 
     #years > [aria-selected = "true"] {
         color: var(--blue);
+        font-weight: bold;
         background: var(--blue-s2);
     }
 
