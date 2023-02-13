@@ -1,0 +1,46 @@
+<style>
+    @import "/styles/lib/buttons.css";
+
+    :host {
+        position: fixed;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        background: var(--window);
+        min-width: 18.75rem;
+        border: var(--border);
+        box-shadow: var(--box-shadow);
+        border-radius: var(--radius);
+    }
+
+    header {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: var(--padding);
+        border-bottom: var(--border);
+    }
+
+    header h2 {
+        flex: 1;
+        margin: 0;
+        font-size: 1.2rem;
+    }
+
+    #body {
+        padding: var(--padding);
+    }
+
+    button.icon {
+        font-size: 1.2rem;
+    }
+</style>
+
+<header>
+    <h2 id="headerText">Header Text</h2>
+    <button class="icon" id="btnResize">open-fullscreen</button>
+    <button class="icon" id="btnClose">close</button>
+</header>
+
+<div id="body"></div>
+
+<footer></footer>

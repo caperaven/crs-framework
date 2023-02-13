@@ -6,6 +6,11 @@ class MarkdownViewer extends HTMLElement {
 
     async connectedCallback() {
         this.shadowRoot.innerHTML = await fetch(import.meta.url.replace(".js", ".html")).then(result => result.text());
+        requestAnimationFrame(async () => {
+            await crs.call("component", "notify_ready", {
+               element: this
+            });
+        });
     }
 
     async set_markdown(markdown, parameters = null) {

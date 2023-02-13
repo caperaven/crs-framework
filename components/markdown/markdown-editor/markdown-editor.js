@@ -27,7 +27,11 @@ class MarkdownEditor extends HTMLElement {
                 options: {
                     columns: [0]
                 }
-            })
+            });
+
+            await crs.call("component", "notify_ready", {
+                element: this
+            });
         })
     }
 
@@ -38,6 +42,11 @@ class MarkdownEditor extends HTMLElement {
         this.#textEditor = null;
         this.#viewer = null;
         this.#markdown = null;
+    }
+
+    async set_markdown(markdown, parameters = null) {
+        this.#textEditor.value = markdown;
+        await this.#viewer.set_markdown(markdown, parameters);
     }
 
     #checkChange() {

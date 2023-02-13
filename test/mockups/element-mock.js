@@ -22,6 +22,9 @@ export class ElementMock {
 }
 
 export function mockElement(instance, tag, id) {
+    instance.nodeName = (tag || "div").toUpperCase();
+    instance.tagName = instance.nodeName;
+
     if (instance.__events != null) {
         return instance;
     }
@@ -29,10 +32,8 @@ export function mockElement(instance, tag, id) {
     instance.__events = [];
     instance.queryResults = {};
 
-    instance.nodeName = (tag || "div").toUpperCase();
     instance.id = id;
     instance.name = id;
-    instance.tagName = instance.nodeName;
 
     instance.textContent = "";
     instance.innerText = "";
@@ -60,6 +61,7 @@ export function mockElement(instance, tag, id) {
     instance.performEvent = performEvent.bind(instance);
     instance.attachShadow = attachShadow.bind(instance);
     instance.getBoundingClientRect = getBoundingClientRect.bind(instance);
+    instance.remove = remove.bind(instance);
 
     Object.defineProperty(instance, "firstElementChild", {
         get() {
@@ -140,6 +142,11 @@ function getAttribute(attr) {
     if (this.attributes.length == 0) return;
 
     const result = this.attributes.find(item => item.name == attr);
+
+    if (result) {
+        result.nodeValue = result.value;
+    }
+
     return result?.value;
 }
 
@@ -147,6 +154,7 @@ function setAttribute(attr, value) {
     let hasAttr = true;
     let attrObj = this.attributes.find(item => item.name == attr);
     let oldValue = "";
+    value = String(value);
 
     if (attrObj == null) {
         attrObj = {
@@ -217,8 +225,18 @@ function cloneNode() {
 }
 
 function appendChild(element) {
-    this.children.push(element);
-    element.parentElement = this;
+    if (element.nodeName != "DOCUMENT-FRAGMENT") {
+        this.children.push(element);
+        element.parentElement = this;
+        return element;
+    }
+
+    // move children of document fragment to this children
+    for (const child of element.children) {
+        this.children.push(child);
+        child.parentElement = this;
+    }
+
     //TODO: We need functionality like this to truly represent some test scenarios
     // if (element.connectedCallback != null) {
     //     element.connectedCallback();
@@ -299,4 +317,8 @@ function getBoundingClientRect() {
         this.bounds = {}
     }
     return this.bounds;
+}
+
+function remove() {
+    this.parentElement.removeChild(this);
 }

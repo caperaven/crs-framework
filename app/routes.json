@@ -11,6 +11,11 @@
       "hasStyle": true
     },
     {
+      "title": "Icons",
+      "hash": "#icons",
+      "view": "icons"
+    },
+    {
       "title": "Form",
       "hash": "#form",
       "view": "form"
@@ -61,9 +66,44 @@
       "view": "label-counter"
     },
     {
-      "title": "Designer Repo Test",
-      "hash": "#designer-repo-test",
-      "view": "designer-repo-test"
+      "title": "Template Loading",
+      "hash": "#template-loading",
+      "view": "template-loading"
+    },
+    {
+      "title": "Tab List",
+      "hash": "#tab-list",
+      "view": "tab-list"
+    },
+    {
+      "title": "Check List",
+      "hash": "#check-list",
+      "view": "check-list"
+    },
+    {
+      "title": "Available Selected",
+      "hash": "#available-selected",
+      "view": "available-selected"
+    },
+    {
+      "title": "File System",
+      "hash": "#file-system",
+      "view": "file-system"
+    },
+    {
+      "title": "Toast Notifications",
+      "hash": "#toast-notification",
+      "view": "toast-notification"
+    },
+    {
+      "title": "Checkbox",
+      "hash": "#checkbox",
+      "view": "checkbox"
+    },
+    {
+      "title": "Dialog",
+      "hash": "#dialog",
+      "view": "dialog"
     },
     {
       "title": "About",

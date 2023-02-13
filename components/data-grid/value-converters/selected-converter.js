@@ -1,6 +1,6 @@
 export const selectedConverter = {
     get (value, args) {
-        return value == "true" || value == true ? "check" : "uncheck";
+        return value == "true" || value == true ? "check" : "check-box-blank";
     },
 
     set (value, args) {

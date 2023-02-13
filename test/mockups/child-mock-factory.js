@@ -7,6 +7,10 @@ export function createMockChildren(element) {
     const html = element.shadowRoot?.innerHTML.trim() || element.innerHTML.trim();
     if (html.length == 0) return;
 
+    createChildrenFromHtml(element, html);
+}
+
+export function createChildrenFromHtml(element, html) {
     const jsonStr = parse(html.split(".").join("_"));
     const json = JSON.parse(jsonStr);
     createChildren(element, element.shadowRoot || element, json);

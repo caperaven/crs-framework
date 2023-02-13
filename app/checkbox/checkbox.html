@@ -1,0 +1,20 @@
+<style>
+    check-box {
+        margin-bottom: 100px;
+        text-decoration: none;
+        border-bottom: 1px groove var(--grey-s1);
+    }
+
+    check-box:focus {
+        outline: none;
+        text-decoration: none;
+    }
+</style>
+
+<h2>${title}</h2>
+
+<check-box checked.bind="model.checked" aria-label="My Checked Checkbox"></check-box>
+
+<check-box checked.bind="model.checked" aria-label="My Unchecked Box"></check-box>
+
+<check-box checked.bind="model.checked" aria-label="My Null Checkbox" data-nullable="true"></check-box>

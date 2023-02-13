@@ -32,4 +32,8 @@ export class EventMock {
     stopImmediatePropagation() {
         this.actionsCalled.stopImmediatePropagation = true;
     }
+
+    composedPath() {
+        return [this.target];
+    }
 }

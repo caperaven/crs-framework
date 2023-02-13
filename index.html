@@ -62,22 +62,28 @@
     </footer>
 
     <script type="module">
+        import "./packages/crs-schema/crs-schema.js";
         import "./packages/crs-binding/crs-binding.js";
         import "./packages/crs-modules/crs-modules.js";
         import "./packages/crs-router/crs-router.js";
         import {initialize} from "./packages/crs-process-api/crs-process-api.js";
         import "./src/index.js";
         import IndexViewModel from "./index.js";
-
         import {HTMLParser} from "./packages/crs-schema/html/crs-html-parser.js";
+        import "/src/binding-extensions/markdown-template.js";
+        import "/src/binding-extensions/schema-template.js";
+
 
         window.addEventListener("load", async (event) => {
             await crs.modules.enableBinding([
                 ["data-grid", "/components/data-grid/data-grid.js"],
                 ["kan-ban", "/components/kan-ban/kan-ban.js"],
                 ["options-toolbar", "/components/options-toolbar/options-toolbar.js"],
+                ["tab-list", "/components/tab-list/tab-list.js"],
+                ["check-list", "/components/check-list/check-list.js"],
                 ["color-picker", "/components/color-picker/color-picker.js"],
                 ["text-editor", "/components/text-editor/text-editor.js"],
+                ["available-selected", "/components/available-selected/available-selected.js"],
                 ["markdown-editor", "/components/markdown/markdown-editor/markdown-editor.js"],
                 ["schema-editor", "/components/schema/schema-editor/schema-editor.js"]
             ]);
