@@ -35,27 +35,15 @@ export default class Dialog extends crsbinding.classes.ViewBase {
     }
 
     async showError(target, position, anchor) {
-        const div = await crs.call("dom", "create_element", {
-            "tag_name": "div",
-            "text_content": "My cool message"
-        });
-
-        const args = {
-            title: "Could not update Work Order",
-            main: div,
+        await crs.call("dialog", "show", {
+            title: "Error",
+            main: "This is an error message",
+            target: target,
+            position: position,
+            anchor: anchor,
+            margin: 10,
             severity: "error"
-        }
-
-        if (position != null) {
-            Object.assign(args, {
-                target: target,
-                position: position,
-                anchor: anchor,
-                margin: 2
-            });
-        }
-
-        await crs.call("dialog", "show_severity", args);
+        });
     }
 
     async showInfo(target, position, anchor) {

@@ -39,7 +39,8 @@ export class Dialog extends HTMLElement {
      * @returns {Promise<void>}
      */
     async connectedCallback() {
-        this.shadowRoot.innerHTML = await fetch(import.meta.url.replace(".js", ".html")).then(response => response.text());
+        this.shadowRoot.innerHTML = await fetch(this.#getFilePath()).then(response => response.text());
+        console.log(this.dataset);
         await this.#load();
         await crs.call("component", "notify_ready", {element: this});
     }
@@ -81,6 +82,13 @@ export class Dialog extends HTMLElement {
     async #click(event) {
         const id = event.target.id;
         this.#actions[id]?.();
+    }
+
+    #getFilePath() {
+        if (this.dataset.severity != null) {
+            const path = `/types/${this.dataset.severity}.html`;
+            const html = import.meta.url.replace("dialog.js", path);
+        }
     }
 
     /**
@@ -139,6 +147,12 @@ export class Dialog extends HTMLElement {
      */
     async #setBody(body) {
         const bodyElement = this.shadowRoot.querySelector("#body");
+
+        if (typeof body == "string") {
+            bodyElement.textContent = body;
+            return;
+        }
+
         bodyElement.innerHTML = "";
         bodyElement.appendChild(body);
     }
@@ -153,7 +167,7 @@ export class Dialog extends HTMLElement {
         footerElement.innerHTML = "";
 
         if (footer != null) {
-            footerElement.appendChild(options.footer);
+            footerElement.appendChild(footer);
         }
     }
 
