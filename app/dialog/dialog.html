@@ -20,6 +20,19 @@
     <button click.call="showRelative">Show Dialog Relative</button>
 </div>
 
+<h2>Message ${title}</h2>
+<div role="toolbar" click.call="handleMessage">
+    <select id="position">
+        <option>none</option>
+        <option>bottom</option>
+        <option>left</option>
+        <option>right</option>
+    </select>
+    <button data-action="showError">Error</button>
+    <button data-action="showWarning">Warning</button>
+    <button data-action="showInfo">Info</button>
+</div>
+
 <template id="dialog-content">
     <label>
         <div>First Name</div>

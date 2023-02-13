@@ -1,5 +1,6 @@
 <style>
     @import "/styles/lib/buttons.css";
+    @import "/styles/lib/variables.css";
 
     :host {
         position: fixed;
@@ -10,6 +11,18 @@
         border: var(--border);
         box-shadow: var(--box-shadow);
         border-radius: var(--radius);
+    }
+
+    :host([data-severity="error"]) header {
+        border-left: 0.5rem solid var(--red);
+        background-color: var(--red-s3);
+    }
+    :host([data-severity="error"]) header:before {
+        font-family: crsfrw;
+        content:"icon-error-fill";
+        color: var(--red);
+        margin-right: 0.4rem;
+        font-size: 1.5rem;
     }
 
     header {

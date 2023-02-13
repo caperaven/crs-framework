@@ -122,6 +122,50 @@ class DialogActions {
 
         const dialog = await ensureDialog(close);
         dialog.show(headerElement, mainElement, footerElement, options);
+        return dialog;
+    }
+
+    /**
+     * @method show_severity - show the dialog with a severity dataset property.
+     * @param step {object} - the process step.
+     * @param context {object} - the binding context.
+     * @param process {object} - the current process.
+     * @param item {object} - the current item in the process if in a loop.
+     *
+     * @param step.args.severity {string} - the severity to show in the dialog header.
+     *
+     * @returns {Promise<void>}
+     *
+     * @example <caption>javascript example</caption>
+     * await crs.call("dialog", "show", {
+     *    ...
+     *    severity: "error",
+     *    ...
+     * })
+     *
+     * @example <caption>json example</caption>
+     * {
+     *    "type": "dialog",
+     *    "action": "show",
+     *    "args": {
+     *         ...
+     *        "severity": "error",
+     *        ...
+     *    }
+     * }
+     */
+    static async show_severity(step, context, process, item) {
+        const severity = await crs.process.getValue(step.args.severity, context, process, item);
+
+        // Add default footer
+        if (step.args.footer == null) {
+            step.args.footer = await crs.call("dom", "create_element", {
+                text_content: "Close"
+            });
+        }
+
+        const dialog = await this.show(step, context, process, item);
+        dialog.dataset.severity = severity;
     }
 
     /**

@@ -33,4 +33,53 @@ export default class Dialog extends crsbinding.classes.ViewBase {
             margin: 10
         });
     }
+
+    async showError(target, position, anchor) {
+        const div = await crs.call("dom", "create_element", {
+            "tag_name": "div",
+            "text_content": "My cool message"
+        });
+
+        const args = {
+            title: "Could not update Work Order",
+            main: div,
+            severity: "error"
+        }
+
+        if (position != null) {
+            Object.assign(args, {
+                target: target,
+                position: position,
+                anchor: anchor,
+                margin: 2
+            });
+        }
+
+        await crs.call("dialog", "show_severity", args);
+    }
+
+    async showInfo(target, position, anchor) {
+
+    }
+
+    async showWarning(target, position, anchor) {
+
+    }
+
+
+    async handleMessage(event) {
+        const target = event.target;
+        const action = target.dataset.action;
+        if (action == null) return;
+
+        const anchor = {
+            left: "top",
+            right: "top",
+            bottom: "left",
+        }
+
+        let position = this.element.querySelector("#position").value;
+        position = position === "none" ? null : position;
+        await this[action](target, position, anchor[position]);
+    }
 }
