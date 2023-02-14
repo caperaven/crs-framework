@@ -15,13 +15,6 @@ describe ("combobox tests", async () => {
 
     beforeEach(async () => {
         instance = document.createElement("combo-box");
-
-        const loadFn = instance.load;
-        instance.load = async () => {
-            createMockChildren(instance);
-            await loadFn();
-        };
-
         await instance.connectedCallback();
     });
 

@@ -210,8 +210,25 @@ async function createListItems(parentElement, collection, templates) {
                 html: template
             });
             li.appendChild(fragment);
-        } else {
-            li.textContent = option.title;
+        }
+        else {
+            if (option.children == null) {
+                li.textContent = option.title;
+            }
+            else {
+                await crs.call("dom", "create_element", {
+                    parent: li,
+                    tag_name: "div",
+                    text_content: option.title
+                });
+
+                const ul = await crs.call("dom", "create_element", {
+                    parent: li,
+                    tag_name: "ul"
+                });
+
+                await createListItems(ul, option.children, templates);
+            }
         }
     }
 }

@@ -5,41 +5,29 @@ import {createMockChildren, ElementMock} from "../../mockups/element-mock.js";
 import {EventMock} from "../../mockups/event-mock.js";
 
 await init();
-let instance;
-
-function createInstance() {
-    return new Promise(async resolve => {
-        instance = document.createElement("group-box");
-
-        const loadFn = instance.load;
-        instance.load = async () => {
-            createMockChildren(instance);
-            await loadFn();
-        }
-
-        await instance.connectedCallback();
-        resolve(instance);
-    })
-}
 
 beforeAll(async () => {
     await import("../../../components/group-box/group-box.js");
 })
 
 describe ("group box tests", async () => {
+    let instance;
+
+    beforeEach(async () => {
+        instance = document.createElement("group-box");
+        await instance.connectedCallback();
+    })
 
     afterEach(async () => {
         await instance.disconnectedCallback();
     })
 
     it("instance is not null", async () => {
-        await createInstance();
         assert(instance !== null);
         assertEquals(instance.getAttribute("aria-expanded"), "true");
     });
 
     it("expand and collapse on click", async () => {
-        await createInstance();
         // when I click on this button (with id="btnToggleExpand") then toggle the aria-expanded attribute
         // by calling #toggleExpanded
         const btnToggleExpandMock = new ElementMock("button");
@@ -53,7 +41,6 @@ describe ("group box tests", async () => {
     })
 
     it("check for header content", async () => {
-        await createInstance();
         instance.dataset.title = "test title";
         assertEquals(instance.dataset.title, "test title");
 

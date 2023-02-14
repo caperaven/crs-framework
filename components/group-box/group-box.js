@@ -73,7 +73,7 @@ export class GroupBox extends HTMLElement {
 
     async connectedCallback() {
         this.shadowRoot.innerHTML = await fetch(this.html).then(result => result.text());
-        await this.#load();
+        await this.load();
         await this.#setTabIndex()
     }
 
@@ -82,19 +82,23 @@ export class GroupBox extends HTMLElement {
      * set up event listeners and set aria attributes.
      * @returns {Promise<void>}
      */
-    async #load() {
-        requestAnimationFrame(async () => {
-            this.setAttribute("aria-expanded", "true");
-            this.shadowRoot.addEventListener("click", this.#clickHandler);
-            if(this.shadowRoot.querySelector("header") != null){
-                this.shadowRoot.querySelector("header").addEventListener("keyup", this.#headerKeyHandler);
-            }
-            // this.shadowRoot.querySelector("header").addEventListener("keyup", this.#headerKeyHandler);
-            if(this.shadowRoot.querySelector("#title") != null){
-                this.shadowRoot.querySelector("#title").textContent = this.dataset.title;
-            }
-            // this.shadowRoot.querySelector("#title").textContent = this.dataset.title;
-        });
+    load() {
+        return new Promise(resolve => {
+            requestAnimationFrame(async () => {
+                this.setAttribute("aria-expanded", "true");
+                this.shadowRoot.addEventListener("click", this.#clickHandler);
+
+                if(this.shadowRoot.querySelector("header") != null){
+                    this.shadowRoot.querySelector("header").addEventListener("keyup", this.#headerKeyHandler);
+                }
+
+                if(this.shadowRoot.querySelector("#title") != null){
+                    this.shadowRoot.querySelector("#title").textContent = this.dataset.title;
+                }
+            });
+
+            resolve();
+        })
     }
 
     async disconnectedCallback() {
