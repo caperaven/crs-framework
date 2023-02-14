@@ -45,7 +45,7 @@ class ComboBox extends HTMLElement {
     }
 
     async disconnectedCallback() {
-
+        this.shadowRoot.removeEventListener("click", this.#clickHandler);
     }
 
     /**
