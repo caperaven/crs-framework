@@ -74,6 +74,7 @@ export class GroupBox extends HTMLElement {
     async connectedCallback() {
         this.shadowRoot.innerHTML = await fetch(this.html).then(result => result.text());
         await this.#load();
+        await this.#setTabIndex()
     }
 
     /**
@@ -85,20 +86,33 @@ export class GroupBox extends HTMLElement {
         requestAnimationFrame(async () => {
             this.setAttribute("aria-expanded", "true");
             this.shadowRoot.addEventListener("click", this.#clickHandler);
-            this.shadowRoot.querySelector("header").addEventListener("keyup", this.#headerKeyHandler);
-
-            this.shadowRoot.querySelector("#title").textContent = this.dataset.title;
+            if(this.shadowRoot.querySelector("header") != null){
+                this.shadowRoot.querySelector("header").addEventListener("keyup", this.#headerKeyHandler);
+            }
+            // this.shadowRoot.querySelector("header").addEventListener("keyup", this.#headerKeyHandler);
+            if(this.shadowRoot.querySelector("#title") != null){
+                this.shadowRoot.querySelector("#title").textContent = this.dataset.title;
+            }
+            // this.shadowRoot.querySelector("#title").textContent = this.dataset.title;
         });
     }
 
     async disconnectedCallback() {
         this.shadowRoot.removeEventListener("click", this.#clickHandler);
-        this.shadowRoot.querySelector("header").removeEventListener("keyup", this.#headerKeyHandler);
+        // this.shadowRoot.querySelector("header").removeEventListener("keyup", this.#headerKeyHandler);
+        if(this.shadowRoot.querySelector("header") != null){
+            this.shadowRoot.querySelector("header").removeEventListener("keyup", this.#headerKeyHandler);
+        }
 
         this.#clickHandler = null;
         this.#headerKeyHandler = null;
     }
 
+    /**
+     * @method click - When the user clicks on the button, toggle the expanded state of the card
+     * This is the event handler for the click event.
+     * @param event {MouseEvent} - The event object that was triggered.
+     */
     async #click(event) {
         const target = event.composedPath()[0];
         if (target.id === 'btnToggleExpand') {
@@ -116,13 +130,14 @@ export class GroupBox extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #headerKeyUp(event) {
+        const target = event.composedPath()[0];
         // if you press any key other than up or down, ignore it and return;
         if (event.key !== "ArrowUp" && event.key !== "ArrowDown") {
             return;
         }
-
         // if you press up or down, toggle the expanded state.
-        this.setAttribute('aria-expanded', event.key == "ArrowUp" ? "false" : "true");
+        this.setAttribute('aria-expanded', event.key === "ArrowUp" ? "false" : "true")
+
     }
 
     /**
@@ -132,6 +147,10 @@ export class GroupBox extends HTMLElement {
     async #toggleExpanded() {
         const expanded = this.getAttribute('aria-expanded') === 'true';
         this.setAttribute('aria-expanded', !expanded);
+        if (this.shadowRoot.querySelector("#btnToggleExpand") != null){
+            this.shadowRoot.querySelector("#btnToggleExpand").setAttribute('aria-expanded', !expanded);
+        }
+        await this.#setTabIndex();
     }
 
     /**
@@ -150,6 +169,51 @@ export class GroupBox extends HTMLElement {
             }
         }
     }
+
+    // async #setTabIndex() {
+    //     const main = this.shadowRoot.querySelector("#main");
+    //     const ariaExpanded = this.shadowRoot.querySelector("#btnToggleExpand").getAttribute("aria-expanded");
+    //     const children = Array.from(main.children);
+    //
+    //     if (ariaExpanded === "true") {
+    //         children.forEach(child => child.setAttribute("tabindex", "0"));
+    //     } else {
+    //         children.forEach(child => child.setAttribute("tabindex", "-1"));
+    //     }
+    // }
+
+    async #setTabIndex() {
+        const main = this.shadowRoot.querySelector("#main");
+        const btnToggleExpand = this.shadowRoot.querySelector("#btnToggleExpand");
+        if (main && btnToggleExpand) {
+            const ariaExpanded = btnToggleExpand.getAttribute("aria-expanded");
+            const children = Array.from(main.children);
+            if (ariaExpanded === "true") {
+                children.forEach(child => child.setAttribute("tabindex", "0"));
+            } else {
+                children.forEach(child => child.setAttribute("tabindex", "-1"));
+            }
+        }
+    }
+
+    // async #setTabIndex() {
+    //     const btnToggleExpand = this.shadowRoot.querySelector("#btnToggleExpand");
+    //     const ariaExpanded = btnToggleExpand.getAttribute("aria-expanded");
+    //     const bodySlot = this.shadowRoot.querySelector("#main > slot[name='body']");
+    //     const bodyElements = bodySlot.assignedNodes({ flatten: true });
+    //
+    //     function setTabIndexForChildren(element, value) {
+    //         element.setAttribute("tabindex", value);
+    //         const childElements = Array.from(element.children);
+    //         childElements.forEach(child => setTabIndexForChildren(child, value));
+    //     }
+    //
+    //     if (ariaExpanded === "true") {
+    //         bodyElements.forEach(bodyElement => setTabIndexForChildren(bodyElement, "0"));
+    //     } else {
+    //         bodyElements.forEach(bodyElement => setTabIndexForChildren(bodyElement, "-1"));
+    //     }
+    // }
 }
 
 customElements.define('group-box', GroupBox);

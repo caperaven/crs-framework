@@ -6,10 +6,19 @@
         --header-dropdown-btn: 48px;
         --header-hover-bg: var(--grey-s2);
         --header-dropdown-focus: 2px solid var(--blue);
+        --border-radius: var(--radius);
+        --header-font-size: 16px;
+        --header-font-weight:bold;
+        --icon-size: 20px;
+
 
         display: block;
         width: auto;
         height: auto;
+    }
+
+    :host(:focus-within) {
+        border: none !important;
     }
 
     :host([aria-expanded="false"]) #main {
@@ -20,12 +29,22 @@
         rotate: -180deg;
     }
 
+    ::slotted([slot="header"]) {
+        display: flex;
+        height: var(--header-height);
+        align-items: center;
+        gap: var(--padding);
+        padding-left: var(--padding);
+        margin-right: var(--padding);
+    }
+
     ::slotted([slot="actions"]) {
         display: flex;
         height: var(--header-height);
         align-items: center;
         gap: var(--padding);
         padding-right: var(--padding);
+        padding-left: var(--padding);
     }
 
     ::slotted([slot="body"]) {
@@ -45,7 +64,7 @@
 
     .icon {
         font-family: crsfrw;
-        font-size: 1.5rem;
+        font-size: var(--icon-size);
     }
 
     button {
@@ -69,17 +88,17 @@
     }
 
     #title {
-        flex: 1
+        flex: 1;
     }
 </style>
 
-<header tabindex="0">
-    <button id="btnToggleExpand" class="icon"></button>
-    <slot id="group-header" name="header"></slot>
-    <h3 id="title"></h3>
+
+<header id="group-header" tabindex="0" aria-labelledby="title" role="group">
+    <button id="btnToggleExpand" class="icon" aria-expanded="true" aria-controls="main"></button>
+    <slot name="header"></slot>
+    <h3 id="title" aria-label="custom-header">Custom Header</h3>
     <slot name="actions"></slot>
 </header>
-
-<div id="main">
+<div id="main" aria-label="group-content" role="region">
     <slot name="body"></slot>
 </div>
