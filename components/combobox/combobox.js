@@ -37,6 +37,7 @@ class ComboBox extends HTMLElement {
         return new Promise(resolve => {
             requestAnimationFrame(() => {
                 this.#toggleExpanded(true);
+                this.shadowRoot.addEventListener("click", this.#clickHandler);
                 // put your events and element pointers here.
                 resolve();
             })
