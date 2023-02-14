@@ -7,20 +7,19 @@ import {EventMock} from "../../mockups/event-mock.js";
 await init();
 let instance;
 
-async function createInstance() {
-    instance = document.createElement("group-box");
-    await instance.connectedCallback();
-    await new Promise((resolve) => {
-        setTimeout(() => {
-            resolve(instance);
-        }, 0);
-    });
+function createInstance() {
+    return new Promise(async resolve => {
+        instance = document.createElement("group-box");
 
-    let loadFn = instance.load;
-    instance.load = async () => {
-        createMockChildren(instance);
-        await loadFn();
-    }
+        const loadFn = instance.load;
+        instance.load = async () => {
+            createMockChildren(instance);
+            await loadFn();
+        }
+
+        await instance.connectedCallback();
+        resolve(instance);
+    })
 }
 
 beforeAll(async () => {
@@ -74,8 +73,4 @@ describe ("group box tests", async () => {
         instance.headerKeyHandler(new EventMock(header,  {key: "ArrowDown"}));
         assertEquals(instance.getAttribute("aria-expanded"), "true");
     });
-
-
-
-
 });
