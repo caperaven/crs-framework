@@ -6,6 +6,10 @@
         align-items: center;
     }
 
+    :host * {
+        user-select: none;
+    }
+
     :host #btnCheck {
         border: var(--border);
         border-radius: var(--radius);
@@ -39,6 +43,6 @@
 
 </style>
 
-<button class="icon" id="btnCheck"></button>
+<button class="icon" id="btnCheck" role="checkbox"></button>
 <div id="lblText"></div>
 

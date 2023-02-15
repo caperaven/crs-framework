@@ -11,16 +11,13 @@ let instance;
 
 async function createInstance(nullable = false) {
     instance = document.createElement("check-box");
+
     if(nullable === true) {
         instance.dataset.nullable = "true";
     }
+
     instance.setAttribute("aria-label", "my-checkbox");
     await instance.connectedCallback();
-    let loadFn = instance.load;
-    instance.load = async () => {
-        createMockChildren(instance);
-        await loadFn();
-    }
 }
 
 beforeAll(async () => {
