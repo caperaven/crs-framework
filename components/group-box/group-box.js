@@ -84,9 +84,13 @@ export class GroupBox extends HTMLElement {
 
                 this.shadowRoot.querySelector("header").addEventListener("keyup", this.#headerKeyHandler);
                 this.shadowRoot.querySelector("#title").textContent = this.dataset.title;
-            });
 
-            resolve();
+                await crs.call("component", "notify_ready", {
+                    element: this
+                });
+
+                resolve();
+            });
         })
     }
 
@@ -124,7 +128,7 @@ export class GroupBox extends HTMLElement {
             return;
         }
 
-        this.setAttribute('aria-expanded', event.key === "ArrowUp" ? "false" : "true")
+        this.setAttribute('aria-expanded', event.key === "ArrowUp" ? "false" : "true");
     }
 
     /**
@@ -159,21 +163,13 @@ export class GroupBox extends HTMLElement {
 
     /**
      * @method #setTabIndex - If the main element is visible, set its tabindex to 0, otherwise set it to -1
-     *
-     * @const main {HTMLElement} - the main element
-     * @const btnToggleExpand {HTMLElement} - the button to toggle the expanded state
      */
     async #setTabIndex() {
+        if (this.dataset.ready !== "true") return;
+
+        const ariaExpanded = this.getAttribute("aria-expanded");
         const main = this.shadowRoot.querySelector("#main");
-        const btnToggleExpand = this.shadowRoot.querySelector("#btnToggleExpand");
-        if (main != null && btnToggleExpand !=null) {
-            const ariaExpanded = btnToggleExpand.getAttribute("aria-expanded");
-            if (ariaExpanded === "true") {
-                main.setAttribute("tabindex", "0");
-            } else {
-                main.setAttribute("tabindex", "-1");
-            }
-        }
+        main.setAttribute("tabindex", ariaExpanded === "true" ? "0" : "-1");
     }
 
 }
