@@ -119,9 +119,8 @@ class DialogActions {
         const close = await crs.process.getValue(step.args.close ?? true, context, process, item);
         const type = await crs.process.getValue(step.args.type, context, process, item);
         const title = await crs.process.getValue(step.args.title, context, process, item);
-        const showHeaderButtons = await crs.process.getValue(step.args.showHeaderButtons, context, process, item);
 
-        const options = {target, position, anchor, size, margin, title, showHeaderButtons};
+        const options = {target, position, anchor, size, margin, title};
 
         const dialog = await ensureDialog(close, type);
         dialog.show(headerElement, mainElement, footerElement, options);
@@ -151,7 +150,7 @@ async function ensureDialog(close, type) {
     if (!globalThis.dialog) {
         globalThis.dialog = document.createElement('dialog-component');
         if (type != null) {
-            globalThis.dialog.dataset.type = type;
+            globalThis.dialog.classList.add(type);
         }
         document.body.appendChild(globalThis.dialog);
     }

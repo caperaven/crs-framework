@@ -160,12 +160,14 @@ function setAttribute(attr, value) {
         attrObj = {
             name: attr,
             value: value,
-            ownerElement: this
+            ownerElement: this,
+            nodeValue: value
         };
         hasAttr = false;
     } else {
         oldValue = attrObj.value;
-        attrObj.value = value
+        attrObj.value = value;
+        attrObj.nodeValue = value;
     }
 
     if (hasAttr == false) {

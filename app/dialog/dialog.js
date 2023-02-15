@@ -63,8 +63,7 @@ export default class Dialog extends crsbinding.classes.ViewBase {
         const args = {
             title: action,
             main: `This is an ${action} message`,
-            type: action,
-            showHeaderButtons: false
+            type: action
         }
 
         if (position != "none") {

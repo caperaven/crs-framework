@@ -39,8 +39,8 @@ export class Dialog extends HTMLElement {
      * @returns {Promise<void>}
      */
     async connectedCallback() {
-        this.shadowRoot.innerHTML = await this.#getHtml();
-        await this.#load();
+        this.shadowRoot.innerHTML = await fetch(import.meta.url.replace(".js", ".html")).then(response => response.text());
+        await this.load();
         await crs.call("component", "notify_ready", {element: this});
     }
 
@@ -48,7 +48,7 @@ export class Dialog extends HTMLElement {
      * @method #load - load the component and it's dependencies including events
      * @returns {Promise<unknown>}
      */
-    #load() {
+    load() {
         return new Promise(resolve => {
             this.shadowRoot.addEventListener("click", this.#clickHandler);
             resolve();
@@ -84,19 +84,6 @@ export class Dialog extends HTMLElement {
     }
 
     /**
-     * @method #getHtml - get the html for the component
-     * Conditionally fetch the html from the default dialog.html or if there is a type dataset value set
-     * use that to determine which html file to fetch from the types directory
-     * @private
-     * @returns {Promise<string>}
-     */
-    async #getHtml() {
-        const type = this.dataset.type;
-        const path = type == null ? "./dialog.html" : `./types/${type}.html`;
-        return await fetch(import.meta.url.replace("dialog.js", path)).then(response => response.text());
-    }
-
-    /**
      * @method #resizeClicked - show resize dialog by toggling fullscreen and back
      * @returns {Promise<void>}
      */
@@ -121,7 +108,6 @@ export class Dialog extends HTMLElement {
             callback: async () => {
                 await this.#setHeader(header, options);
                 await this.#setFooter(footer);
-                await this.#inflateTranslations(options);
                 await this.#setBody(main);
                 await this.#setPosition(options);
             }
@@ -139,13 +125,14 @@ export class Dialog extends HTMLElement {
 
         if (header != null) {
             headerElement.insertBefore(header, headerElement.firstElementChild);
-        }
-
-        if (options?.showHeaderButtons == false) {
-            const buttons = headerElement.querySelectorAll("button");
-            for (const button of buttons) {
-                button.style.display = "none";
+        } else {
+            const translations = {
+                "title": options?.title ?? "",
+                "close": options?.closeText ?? "Close",
+                "resize": options?.resizeText ?? "Resize"
             }
+            await crsbinding.translations.add(translations, "dialog");
+            await crsbinding.translations.parseElement(headerElement);
         }
     }
 
@@ -200,23 +187,6 @@ export class Dialog extends HTMLElement {
             anchor: options.anchor.toLowerCase(),
             margin: options.margin
         })
-    }
-
-    /**
-     * Inflate all translations defined in the html for the header and footer.
-     * @returns {Promise<void>}
-     */
-    async #inflateTranslations(options) {
-        await crsbinding.translations.add({
-            "cancel": "Cancel",
-            "accept": "Accept",
-            "close": "Close",
-            "resize": "Resize",
-            "title": options?.title
-        }, "dialog");
-        for (const child of this.shadowRoot.children) {
-            await crsbinding.translations.parseElement(child);
-        }
     }
 
     /**
