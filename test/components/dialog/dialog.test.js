@@ -29,4 +29,11 @@ describe("Dialog", () => {
         await instance.show(null, bodyDiv, null, null);
         assertEquals(instance.shadowRoot.querySelector("#body").textContent, "my content");
     });
+
+    it("should be able to show elements in the header", async () => {
+        const headerDiv = document.createElement("div");
+        headerDiv.textContent = "my header";
+        await instance.show(headerDiv, null, null, null);
+        assertEquals(instance.shadowRoot.querySelector("header").textContent, "my header");
+    });
 });

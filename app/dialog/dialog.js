@@ -33,33 +33,50 @@ export default class Dialog extends crsbinding.classes.ViewBase {
             margin: 10
         });
     }
+
     async handleMessage(event) {
         const target = event.target;
         const action = target.dataset.action;
         if (action == null) return;
 
-        const footerFragment = document.createDocumentFragment();
-        await crs.call("dom", "create_element", {
-            tag_name: "button",
-            classes: ["secondary"],
-            text_content: "Cancel",
-            parent: footerFragment,
-            attributes: {
-                "data-action": "close"
-            }
+        const footerTemplate = await crs.call("dom", "create_element", {
+            tag_name: "template",
+            children: [
+                {
+                    tag_name: "button",
+                    classes: ["secondary"],
+                    text_content: "Cancel",
+                    attributes: {
+                        "data-action": "close"
+                    }
+                },
+                {
+                    tag_name: "button",
+                    classes: ["primary"],
+                    text_content: "Accept"
+                }
+            ]
         });
-        await crs.call("dom", "create_element", {
-            tag_name: "button",
-            classes: ["primary"],
-            text_content: "Accept",
-            parent: footerFragment
+
+        const headerTemplate = await crs.call("dom", "create_element", {
+            tag_name: "template",
+            children: [
+                {
+                    tag_name: "h2",
+                    text_content: "My Title",
+                    attributes: {
+                        "id": "headerText"
+                    }
+                }
+            ]
         });
 
         const args = {
             title: action,
             main: `This is an ${action} message`,
             type: action,
-            footer: footerFragment
+            footer: footerTemplate.content.cloneNode(true),
+            header: headerTemplate.content.cloneNode(true)
         }
 
         let position = this.element.querySelector("#position").value;

@@ -124,7 +124,8 @@ export class Dialog extends HTMLElement {
         const headerElement = this.shadowRoot.querySelector("header");
 
         if (header != null) {
-            headerElement.insertBefore(header, headerElement.firstElementChild);
+            headerElement.innerHTML = "";
+            headerElement.appendChild(header);
         } else {
             const translations = {
                 "title": options?.title ?? "",
