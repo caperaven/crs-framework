@@ -31,7 +31,7 @@ export class Dialog extends HTMLElement {
      */
     constructor() {
         super();
-        this.attachShadow({ mode: 'open' });
+        this.attachShadow({mode: 'open'});
     }
 
     /**
@@ -100,7 +100,7 @@ export class Dialog extends HTMLElement {
      * @param struct
      */
     async #showStruct(struct) {
-        const { header, main, footer, options } = struct;
+        const {header, main, footer, options} = struct;
 
         await crs.call("component", "on_ready", {
             element: this,
@@ -177,7 +177,7 @@ export class Dialog extends HTMLElement {
      */
     async #setPosition(options) {
         if (options?.target == null) {
-            return await crs.call("fixed_position", "set", { element: this, position: "center-screen", margin: 10});
+            return await crs.call("fixed_position", "set", {element: this, position: "center-screen", margin: 10});
         }
 
         await crs.call("fixed_layout", "set", {
@@ -213,7 +213,7 @@ export class Dialog extends HTMLElement {
      * @returns {Promise<void>}
      */
     async show(header, main, footer, options) {
-        const struct = { header, main, footer, options };
+        const struct = {header, main, footer, options};
         this.#stack.push(struct);
         await this.#showStruct(struct);
     }

@@ -18,8 +18,9 @@
         display: flex;
         flex-direction: row;
         align-items: center;
-        padding: var(--padding);
         border-bottom: var(--border);
+        height: 3rem;
+        padding: 0 var(--padding) 0 var(--padding);
     }
 
     header h2 {
@@ -30,10 +31,24 @@
 
     #body {
         padding: var(--padding);
+        min-height: 3.5rem;
     }
 
     button.icon {
         font-size: 1.2rem;
+    }
+
+    footer:not(:empty) {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        height: 3.5rem;
+        border-top: var(--border);
+        padding: 0 var(--padding) 0 var(--padding);
+    }
+
+    footer button {
+        margin-left: 0.5rem;
     }
 </style>
 

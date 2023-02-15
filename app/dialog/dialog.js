@@ -52,18 +52,36 @@ export default class Dialog extends crsbinding.classes.ViewBase {
         const action = target.dataset.action;
         if (action == null) return;
 
-        const anchor = {
-            left: "top",
-            right: "top",
-            bottom: "left",
-        }
+        const footerFragment = document.createDocumentFragment();
+        await crs.call("dom", "create_element", {
+            tag_name: "button",
+            classes: ["secondary"],
+            text_content: "Cancel",
+            parent: footerFragment,
+            attributes: {
+                "data-action": "close"
+            }
+        });
+        await crs.call("dom", "create_element", {
+            tag_name: "button",
+            classes: ["primary"],
+            text_content: "Accept",
+            parent: footerFragment
+        });
 
-        let position = this.element.querySelector("#position").value;
 
         const args = {
             title: action,
             main: `This is an ${action} message`,
-            type: action
+            type: action,
+            footer: footerFragment
+        }
+
+        let position = this.element.querySelector("#position").value;
+        const anchor = {
+            left: "top",
+            right: "top",
+            bottom: "left",
         }
 
         if (position != "none") {
