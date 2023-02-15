@@ -122,6 +122,9 @@ export class Dialog extends HTMLElement {
      */
     async #setHeader(header, options) {
         const headerElement = this.shadowRoot.querySelector("header");
+        if (options?.severity != null) {
+            headerElement.dataset.severity = options.severity;
+        }
 
         if (header != null) {
             headerElement.innerHTML = "";

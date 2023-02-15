@@ -58,25 +58,25 @@ export default class Dialog extends crsbinding.classes.ViewBase {
             ]
         });
 
-        const headerTemplate = await crs.call("dom", "create_element", {
-            tag_name: "template",
-            children: [
-                {
-                    tag_name: "h2",
-                    text_content: "My Title",
-                    attributes: {
-                        "id": "headerText"
-                    }
-                }
-            ]
-        });
+        // const headerTemplate = await crs.call("dom", "create_element", {
+        //     tag_name: "template",
+        //     children: [
+        //         {
+        //             tag_name: "h2",
+        //             text_content: "My Title",
+        //             attributes: {
+        //                 "id": "headerText"
+        //             }
+        //         }
+        //     ]
+        // });
 
         const args = {
             title: action,
             main: `This is an ${action} message`,
             type: action,
             footer: footerTemplate.content.cloneNode(true),
-            header: headerTemplate.content.cloneNode(true)
+            // header: headerTemplate.content.cloneNode(true)
         }
 
         let position = this.element.querySelector("#position").value;
