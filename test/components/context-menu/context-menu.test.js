@@ -58,4 +58,8 @@ describe("Context Menu", async () => {
         // Dispose
         await contextMenu.disconnectedCallback();
     });
+
+    it ("hierarchies", async () => {
+
+    });
 });

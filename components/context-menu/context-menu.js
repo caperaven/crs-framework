@@ -131,44 +131,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     async #buildElements() {
         const fragment = document.createDocumentFragment();
 
-        for (const option of this.#options) {
-            if (option.title?.trim() == "-") {
-                fragment.appendChild(document.createElement("hr"));
-                continue;
-            }
-
-            const li = await crs.call("dom", "create_element", {
-                parent: fragment,
-                id: option.id,
-                tag_name: "li",
-                dataset: {
-                    icon: option.icon,
-                    ic: option.icon_color || "black",
-                    tags: option.tags || "",
-                    ...(option.dataset || {})
-                },
-                attributes: {
-                    role: "menuitem",
-                    "aria-selected": option.selected == true,
-                    ...(option.attributes || {})
-                },
-                styles: option.styles,
-                variables: {
-                    "--cl-icon": option.icon_color || "black"
-                }
-            });
-
-            if (option.template != null) {
-                const template = this.templates[option.template];
-                const fragment = await crs.call("html", "create", {
-                    ctx: option,
-                    html: template
-                });
-                li.appendChild(fragment);
-            } else {
-                li.textContent = option.title;
-            }
-        }
+        await createListItems(fragment, this.#options, this.templates);
 
         this.container.innerHTML = "";
         this.container.appendChild(fragment);
@@ -209,6 +172,64 @@ class ContextMenu extends crsbinding.classes.BindableElement {
 
     async focus() {
         // console.log("focus first");
+    }
+}
+
+async function createListItems(parentElement, collection, templates) {
+    for (const option of collection) {
+        if (option.title?.trim() == "-") {
+            parentElement.appendChild(document.createElement("hr"));
+            continue;
+        }
+
+        const li = await crs.call("dom", "create_element", {
+            parent: parentElement,
+            id: option.id,
+            tag_name: "li",
+            dataset: {
+                icon: option.icon,
+                ic: option.icon_color || "black",
+                tags: option.tags || "",
+                ...(option.dataset || {})
+            },
+            attributes: {
+                role: "menuitem",
+                "aria-selected": option.selected == true,
+                ...(option.attributes || {})
+            },
+            styles: option.styles,
+            variables: {
+                "--cl-icon": option.icon_color || "black"
+            }
+        });
+
+        if (option.template != null) {
+            const template = templates[option.template];
+            const fragment = await crs.call("html", "create", {
+                ctx: option,
+                html: template
+            });
+            li.appendChild(fragment);
+        }
+        else {
+            if (option.children == null) {
+                li.textContent = option.title;
+            }
+            else {
+                await crs.call("dom", "create_element", {
+                    parent: li,
+                    tag_name: "div",
+                    text_content: option.title
+                });
+
+                const ul = await crs.call("dom", "create_element", {
+                    parent: li,
+                    tag_name: "ul"
+                });
+
+                await createListItems(ul, option.children, templates);
+            }
+        }
     }
 }
 

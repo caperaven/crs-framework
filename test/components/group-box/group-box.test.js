@@ -1,7 +1,7 @@
 import { beforeAll, beforeEach, afterEach, describe, it} from "https://deno.land/std@0.157.0/testing/bdd.ts";
 import { assertEquals, assert } from "https://deno.land/std@0.149.0/testing/asserts.ts";
 import {init} from "./../../../test/mockups/init.js";
-import {ElementMock} from "../../mockups/element-mock.js";
+import {createMockChildren, ElementMock} from "../../mockups/element-mock.js";
 import {EventMock} from "../../mockups/event-mock.js";
 
 await init();
@@ -39,4 +39,25 @@ describe ("group box tests", async () => {
         instance.clickHandler(new EventMock(btnToggleExpandMock));
         assertEquals(instance.getAttribute("aria-expanded"), "true");
     })
+
+    it("check for header content", async () => {
+        instance.dataset.title = "test title";
+        assertEquals(instance.dataset.title, "test title");
+
+        const header = new ElementMock("header");
+        header.id = "group-header";
+        instance.appendChild(header);
+        const groupHeader = instance.querySelector("#group-header");
+
+        assert(instance.header !== null);
+        assert(instance.getAttribute("aria-expanded") === "true");
+
+        instance.activeElement = header;
+        instance.headerKeyHandler(new EventMock(header,  {key: "ArrowUp"}));
+
+        assertEquals(instance.getAttribute("aria-expanded"), "false");
+
+        instance.headerKeyHandler(new EventMock(header,  {key: "ArrowDown"}));
+        assertEquals(instance.getAttribute("aria-expanded"), "true");
+    });
 });
