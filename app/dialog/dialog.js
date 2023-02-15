@@ -34,24 +34,16 @@ export default class Dialog extends crsbinding.classes.ViewBase {
         });
     }
 
-    async showError(target, position, anchor) {
-        await crs.call("dialog", "show", {
-            title: "Error",
-            main: "This is an error message",
-            target: target,
-            position: position,
-            anchor: anchor,
-            margin: 10,
-            severity: "error"
-        });
+    async error(target, args) {
+        await crs.call("dialog", "show", args);
     }
 
-    async showInfo(target, position, anchor) {
-
+    async info(target, args) {
+        await crs.call("dialog", "show", args);
     }
 
-    async showWarning(target, position, anchor) {
-
+    async warning(target, args) {
+        await crs.call("dialog", "show", args);
     }
 
 
@@ -67,7 +59,23 @@ export default class Dialog extends crsbinding.classes.ViewBase {
         }
 
         let position = this.element.querySelector("#position").value;
-        position = position === "none" ? null : position;
-        await this[action](target, position, anchor[position]);
+
+        const args = {
+            title: action,
+            main: `This is an ${action} message`,
+            type: action,
+            showHeaderButtons: false
+        }
+
+        if (position != "none") {
+            Object.assign(args, {
+                target: target,
+                position: position,
+                anchor: anchor[position],
+                margin: 10
+            })
+        }
+
+        await this[action](target, args);
     }
 }

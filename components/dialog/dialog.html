@@ -13,18 +13,6 @@
         border-radius: var(--radius);
     }
 
-    :host([data-severity="error"]) header {
-        border-left: 0.5rem solid var(--red);
-        background-color: var(--red-s3);
-    }
-    :host([data-severity="error"]) header:before {
-        font-family: crsfrw;
-        content:"icon-error-fill";
-        color: var(--red);
-        margin-right: 0.4rem;
-        font-size: 1.5rem;
-    }
-
     header {
         display: flex;
         flex-direction: row;
@@ -49,9 +37,9 @@
 </style>
 
 <header>
-    <h2 id="headerText">Header Text</h2>
-    <button class="icon" id="btnResize">open-fullscreen</button>
-    <button class="icon" id="btnClose">close</button>
+    <h2 id="headerText">&{dialog.title}</h2>
+    <button class="icon" id="btnResize" data-action="resize" aria-label="&{dialog.resize}">open-fullscreen</button>
+    <button class="icon" id="btnClose" data-action="close" aria-label="&{dialog.close}">close</button>
 </header>
 
 <div id="body"></div>

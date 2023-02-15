@@ -117,11 +117,13 @@ class DialogActions {
         const size = await crs.process.getValue(step.args.size, context, process, item);
         const margin = await crs.process.getValue(step.args.margin ?? 0, context, process, item);
         const close = await crs.process.getValue(step.args.close ?? true, context, process, item);
-        const severity = await crs.process.getValue(step.args.severity, context, process, item);
+        const type = await crs.process.getValue(step.args.type, context, process, item);
+        const title = await crs.process.getValue(step.args.title, context, process, item);
+        const showHeaderButtons = await crs.process.getValue(step.args.showHeaderButtons, context, process, item);
 
-        const options = {target, position, anchor, size, margin};
+        const options = {target, position, anchor, size, margin, title, showHeaderButtons};
 
-        const dialog = await ensureDialog(close, severity);
+        const dialog = await ensureDialog(close, type);
         dialog.show(headerElement, mainElement, footerElement, options);
         return dialog;
     }
@@ -141,17 +143,19 @@ class DialogActions {
     }
 }
 
-async function ensureDialog(close, severity) {
+async function ensureDialog(close, type) {
     if (close == true) {
         await crs.call("dialog", "force_close", {});
     }
 
     if (!globalThis.dialog) {
         globalThis.dialog = document.createElement('dialog-component');
+        if (type != null) {
+            globalThis.dialog.dataset.type = type;
+        }
         document.body.appendChild(globalThis.dialog);
     }
 
-    globalThis.dialog.dataset.severity = severity;
     return globalThis.dialog;
 }
 
