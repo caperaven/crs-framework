@@ -28,36 +28,32 @@ describe ("group box tests", async () => {
     });
 
     it("expand and collapse on click", async () => {
-        // when I click on this button (with id="btnToggleExpand") then toggle the aria-expanded attribute
-        // by calling #toggleExpanded
         const btnToggleExpandMock = new ElementMock("button");
         btnToggleExpandMock.id = "btnToggleExpand";
 
-        instance.clickHandler(new EventMock(btnToggleExpandMock));
+        instance.performEvent("click", btnToggleExpandMock);
         assertEquals(instance.getAttribute("aria-expanded"), "false");
 
-        instance.clickHandler(new EventMock(btnToggleExpandMock));
+        instance.performEvent("click", btnToggleExpandMock);
         assertEquals(instance.getAttribute("aria-expanded"), "true");
     })
 
     it("check for header content", async () => {
         instance.dataset.title = "test title";
         assertEquals(instance.dataset.title, "test title");
+        assertEquals(instance.getAttribute("aria-expanded"), "true");
 
-        const header = new ElementMock("header");
-        header.id = "group-header";
-        instance.appendChild(header);
-        const groupHeader = instance.querySelector("#group-header");
+    });
 
-        assert(instance.header !== null);
-        assert(instance.getAttribute("aria-expanded") === "true");
+    it("keypress to expand and collapse", async () => {
+        const header = instance.shadowRoot.querySelector("header");
+        assert(header !== null);
 
-        instance.activeElement = header;
-        instance.headerKeyHandler(new EventMock(header,  {key: "ArrowUp"}));
-
+        header.performEvent("keyup", header,{key: "ArrowUp"});
         assertEquals(instance.getAttribute("aria-expanded"), "false");
 
-        instance.headerKeyHandler(new EventMock(header,  {key: "ArrowDown"}));
+        header.performEvent("keyup", header,{key: "ArrowDown"});
         assertEquals(instance.getAttribute("aria-expanded"), "true");
-    });
+
+    })
 });
