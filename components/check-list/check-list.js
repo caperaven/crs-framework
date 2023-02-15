@@ -10,7 +10,7 @@
  *     <li role="option" data-value="item4" aria-selected="true">&{checklist.item4}</li>
  * </check-list>
  *
- * @todo JHR
+ * @todo - JHR:
  * - add tests
  */
 export class Checklist extends HTMLElement {
