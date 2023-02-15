@@ -161,13 +161,17 @@ function setAttribute(attr, value) {
             name: attr,
             value: value,
             ownerElement: this,
-            nodeValue: value
+            get nodeValue() {
+                return this.value;
+            },
+            set nodeValue(value) {
+                this.value = value;
+            }
         };
         hasAttr = false;
     } else {
         oldValue = attrObj.value;
         attrObj.value = value;
-        attrObj.nodeValue = value;
     }
 
     if (hasAttr == false) {

@@ -36,4 +36,10 @@ describe("Dialog", () => {
         await instance.show(headerDiv, null, null, null);
         assertEquals(instance.shadowRoot.querySelector("header").textContent, "my header");
     });
+
+    it("should be able to accept strings for the close button and resize button", async () => {
+        await instance.show(null, null, null, {closeText: "Close", resizeText: "Resize"});
+        assertEquals(instance.shadowRoot.querySelector("#btnClose").getAttribute("aria-label"), "Close");
+        assertEquals(instance.shadowRoot.querySelector("#btnResize").getAttribute("aria-label"), "Resize");
+    });
 });
