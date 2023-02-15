@@ -33,20 +33,6 @@ export default class Dialog extends crsbinding.classes.ViewBase {
             margin: 10
         });
     }
-
-    async error(target, args) {
-        await crs.call("dialog", "show", args);
-    }
-
-    async info(target, args) {
-        await crs.call("dialog", "show", args);
-    }
-
-    async warning(target, args) {
-        await crs.call("dialog", "show", args);
-    }
-
-
     async handleMessage(event) {
         const target = event.target;
         const action = target.dataset.action;
@@ -68,7 +54,6 @@ export default class Dialog extends crsbinding.classes.ViewBase {
             text_content: "Accept",
             parent: footerFragment
         });
-
 
         const args = {
             title: action,
@@ -93,6 +78,6 @@ export default class Dialog extends crsbinding.classes.ViewBase {
             })
         }
 
-        await this[action](target, args);
+        await crs.call("dialog", "show", args);
     }
 }
