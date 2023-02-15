@@ -10,6 +10,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
 
     //Todo: do a complete name check and refactor method names to be more descriptive
     //Todo: check what happens when you get to a month where the 1st day is exactly on sunday?
+    //Todo:set another attribute that keeps track of the current focus index.
     get shadowDom() {
         return true;
     }
@@ -146,12 +147,11 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     /**
      * @method When the user presses the tab key, the focus moves to the next element in the list.
      */
-    async #updateFocus() {
+    async #updateTabIndex() {
         this.#elements[this.#currentIndex].tabIndex = 0;
         this.#elements[this.#currentIndex].focus();
         if (this.selectedView === "default") {
             await this.set_dataStart(this.#elements[this.#currentIndex]);
-            await crs.call("dom_collection", "toggle_selection", {target: this.#elements[this.#currentIndex], multiple: false});
         }
     }
 
@@ -187,10 +187,16 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      */
     async pressEnter(event) {
         const view = this.selectedView;
-        if (view !== "default") {
+        if (view) {
             const value = parseInt(event.target.dataset.value);
             this[`${view}Enter`](value);
         }
+    }
+
+    async defaultEnter(value) {
+        await this.set_dataStart(this.#elements[this.#currentIndex]);
+        this.setAttribute("data-selected", "true");
+        await crs.call("dom_collection", "toggle_selection", {target: this.#elements[this.#currentIndex], multiple: false});
     }
 
     async monthsEnter(value) {
@@ -206,8 +212,10 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      * @method The function is called when the user presses the arrow up key.
      */
     async pressArrowUp(event) {
-        this.#currentIndex = (this.#currentIndex - this.#columns) < 0 ? this.#elements.length - (this.#columns - this.#currentIndex) : this.#currentIndex - this.#columns;
-        await this.#updateFocus();
+        console.log(this.#currentIndex);
+        this.#currentIndex = (this.#currentIndex - this.#columns) < 0 ? ( await this.goToPrevious() ,(-(this.#columns - this.#currentIndex))) : this.#currentIndex - this.#columns;
+        await this.#updateTabIndex();
+        console.log(this.#currentIndex);
     }
 
     /**
@@ -215,23 +223,26 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      */
     async pressArrowDown(event) {
         this.#currentIndex = (this.#currentIndex + this.#columns) >= this.#elements.length ? (this.#currentIndex + this.#columns) - this.#elements.length : this.#currentIndex + this.#columns;
-        await this.#updateFocus();
+        await this.#updateTabIndex();
     }
 
     /**
-     * @method The function is called when the user presses the arrow left key.
+     * @function pressArrowLeft - The function is called when the user presses the arrow left key.
      */
     async pressArrowLeft(event) {
-        this.#currentIndex = (this.#currentIndex - 1) < 0 ? this.#elements.length - 1 : this.#currentIndex - 1;
-        await this.#updateFocus();
+        this.#currentIndex = (this.#currentIndex - 1) < 0 ? (await this.goToPrevious(), this.#currentIndex - 1) : this.#currentIndex - 1;
+        await this.#updateTabIndex();
+        console.log(this.#elements[this.#currentIndex]);
+
     }
 
     /**
-     * @method The function is called when the user presses the arrow right key.
+     * @function  pressArrowRight - The function is called when the user presses the arrow right key.
      */
     async pressArrowRight(event) {
         this.#currentIndex = (this.#currentIndex + 1) % this.#elements.length;
-        await this.#updateFocus();
+        await this.#updateTabIndex();
+
     }
 
     async viewLoaded() {
@@ -260,7 +271,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     /**
-     * @function The function is called when the selectedMonth property changes and renders the calendar.
+     * @function selectedMonthChanged - The function is called when the selectedMonth property changes and renders the calendar.
      * @param newValue - The new value of the selected month.
      */
     async selectedMonthChanged(newValue) {
@@ -272,7 +283,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     /**
-     * @function The function is called when the selectedYear property changes and renders the calendar.
+     * @function selectedYearChanged - The function is called when the selectedYear property changes and renders the calendar.
      * @param newValue - The new value of the property.
      */
     async selectedYearChanged(newValue) {
@@ -284,7 +295,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     /**
-     * @function The function is called when a user clicks on a date in the calendar
+     * @function selectedDate - The function is called when a user clicks on a date in the calendar
      * @param event - The event that triggered the function.
      */
     async selectedDate(event) {
@@ -297,7 +308,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     /**
-     * @function It sets the data-start attribute to the date selected by the user.
+     * @function set_dataStart - It sets the data-start attribute to the date selected by the user.
      * @param newValue - The new value of the attribute.
      */
     async set_dataStart(newValue) {
@@ -305,8 +316,12 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         this.setAttribute("data-start", dateObject.toISOString().slice(0, 10));
     }
 
+    async set_focus_position(newValue) {
+        const dateObject = new Date((new Date(newValue.dataset.year, newValue.dataset.month, newValue.dataset.day).getTime()) - ((new Date().getTimezoneOffset()) * 60 * 1000));
+        this.calendars.setAttribute("data-index", dateObject.toISOString().slice(0, 10));
+    }
     /**
-     * @function The function gets the currently selected tab, then gets all the tabs, then sets the tabIndex of the currently
+     * @function setFocusOnRender - The function gets the currently selected tab, then gets all the tabs, then sets the tabIndex of the currently
      * selected tab to -1, and the tabIndex of the newly selected tab to 0
      */
     async setFocusOnRender() {
@@ -326,6 +341,10 @@ export default class Calendar extends crsbinding.classes.BindableElement {
 
     }
 
+    /**
+     * @function goToNext - If the selected view is years, increment the year by one. Otherwise, increment the month by one and if the month
+     * is greater than 11, set the month to 0 and increment the year by one
+     */
     async goToNext() {
         if (this.selectedView === "years") {
             this.#year++;
@@ -338,6 +357,10 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         await this.#render();
     }
 
+    /**
+     * @function goToPrevious - If the selected view is years, then decrement the year by one. Otherwise, decrement the month by one and if the
+     * month is less than zero, then set the month to 11 and decrement the year by one
+     */
     async goToPrevious() {
         if (this.selectedView === "years") {
             this.#year--;

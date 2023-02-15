@@ -16,13 +16,14 @@
         display: grid;
         grid-template-rows: auto 1fr;
         user-select: none;
+        height: 100%;
     }
     #calendar-toolbar, perspective-element {
         margin: 0.75rem 1.5rem 1.5rem 1.5rem;
     }
 
     perspective-element[data-view="years"] {
-        margin: 0.75rem 0.2rem 1.5rem 0.2rem;
+        margin: 0rem 0.2rem 1.5rem 0.2rem;
     }
 
     :focus{
@@ -115,10 +116,10 @@
 </template>
 
 <div id="calendar-toolbar" role="toolbar" ref="tools">
-    <button id="previous-month" aria-label="previous" tooltip="Previous" click.call="goToPrevious"><svg id="chevron-left"><use href="#chevron-down"></use></svg></button>
-    <button id="month" aria-label="${selectedMonthText}" value="months" tooltip="Months" click.setValue="selectedView = selectedView === 'months' ? 'default' : 'months'" classlist.if="selectedView == 'months' ? 'current-view'">${selectedMonthText}</button>
-    <button id="year" aria-label="${selectedYearText}" value="years" tooltip="Years" click.setValue="selectedView = selectedView === 'years' ? 'default' : 'years'" classlist.if="selectedView == 'years' ? 'current-view'">${selectedYearText}</button>
-    <button id="next-month" aria-label="next" tooltip="Next" click.call="goToNext"><svg id="chevron-right"><use href="#chevron-up"></use></svg></button>
+    <button id="previous-month" aria-label="Previous to transition to the next month" tooltip="Previous" click.call="goToPrevious"><svg id="chevron-left"><use href="#chevron-down"></use></svg></button>
+    <button id="month" aria-label="Month selector it contains twelve months" value="months" tooltip="Months" click.setValue="selectedView = selectedView === 'months' ? 'default' : 'months'" classlist.if="selectedView == 'months' ? 'current-view'">${selectedMonthText}</button>
+    <button id="year" aria-label="Year selector it contains range of year starting from 2000 to 2031" value="years" tooltip="Years" click.setValue="selectedView = selectedView === 'years' ? 'default' : 'years'" classlist.if="selectedView == 'years' ? 'current-view'">${selectedYearText}</button>
+    <button id="next-month" aria-label="Next to transition to the next month" tooltip="Next" click.call="goToNext"><svg id="chevron-right"><use href="#chevron-up"></use></svg></button>
 </div>
 
 <perspective-element view.bind="selectedView" ctx.once="contextId" data-folder="/components/calendar/" view-loaded.call="viewLoaded" ref="perspectiveContainer">
