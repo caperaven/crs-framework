@@ -31,10 +31,10 @@ describe ("group box tests", async () => {
         const btnToggleExpandMock = new ElementMock("button");
         btnToggleExpandMock.id = "btnToggleExpand";
 
-        instance.performEvent("click", btnToggleExpandMock);
+        await instance.performEvent("click", btnToggleExpandMock);
         assertEquals(instance.getAttribute("aria-expanded"), "false");
 
-        instance.performEvent("click", btnToggleExpandMock);
+        await instance.performEvent("click", btnToggleExpandMock);
         assertEquals(instance.getAttribute("aria-expanded"), "true");
     })
 
@@ -49,11 +49,10 @@ describe ("group box tests", async () => {
         const header = instance.shadowRoot.querySelector("header");
         assert(header !== null);
 
-        header.performEvent("keyup", header,{key: "ArrowUp"});
+        await header.performEvent("keyup", header,{key: "ArrowUp"});
         assertEquals(instance.getAttribute("aria-expanded"), "false");
 
-        header.performEvent("keyup", header,{key: "ArrowDown"});
+        await header.performEvent("keyup", header,{key: "ArrowDown"});
         assertEquals(instance.getAttribute("aria-expanded"), "true");
-
     })
 });

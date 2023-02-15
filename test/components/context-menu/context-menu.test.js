@@ -53,7 +53,7 @@ describe("Context Menu", async () => {
         assertEquals(contextMenu.container.children[0].children.length, 2);
         //assertEquals(contextMenu.container.children[0].children[0].children[0].innerHTML, "<b>AP</b>&nbsp;<span>Approved</span>");
         assertEquals(contextMenu.container.children[0].children[1].textContent, "Browse");
-        assertEquals(contextMenu.container.children[0].children[0].getAttribute("aria-hidden"), true);
+        assertEquals(contextMenu.container.children[0].children[0].getAttribute("aria-hidden"), "true");
 
         // Dispose
         await contextMenu.disconnectedCallback();

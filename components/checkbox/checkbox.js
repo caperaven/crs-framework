@@ -31,7 +31,7 @@ export class Checkbox extends HTMLElement {
      * Values are one of:
      * 1. true
      * 2. false
-     * 3. mixed
+     * 3. "mixed"
      * @returns {*}
      */
     get checked() {
@@ -46,7 +46,7 @@ export class Checkbox extends HTMLElement {
      * Values are one of:
      * 1. true
      * 2. false
-     * 3. mixed
+     * 3. "mixed"
      */
     set checked(newValue) {
         if (newValue == null) {
