@@ -106,9 +106,9 @@
       "view": "dialog"
     },
     {
-      "title": "Designer Repo",
-      "hash": "#designer-repo-test",
-      "view": "designer-repo-test"
+      "title": "Group Box",
+      "hash": "#group-box",
+      "view": "group-box"
     },
     {
       "title": "About",

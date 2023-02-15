@@ -37,6 +37,25 @@ export default class ContextMenu extends crsbinding.classes.ViewBase {
         }, { status: "a" });
     }
 
+    async showHierarchy(event) {
+        await crs.call("context_menu", "show", {
+            element: event.target,
+            icon_font_family: "crsfrw",
+            options: [
+                { id: "item1", title: "Master Item", children: [
+                        { id: "sub item 1", title: "sub item 1", children: [
+                                { id: "sub item child 1", title: "sub item child 1" },
+                                { id: "sub item child 2", title: "sub item child 2" },
+                                { id: "sub item child 3", title: "sub item child 3" },
+                            ] },
+                        { id: "sub item 2", title: "sub item 1" },
+                        { id: "sub item 3", title: "sub item 1" }
+                    ]}
+            ],
+        }, { status: "a" });
+
+    }
+
     async #showContext(event) {
         await crs.call("context_menu", "show", {
             point: {x: event.clientX, y: event.clientY},
