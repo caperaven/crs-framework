@@ -5,6 +5,8 @@ globalThis.document = new ElementMock("document");
 globalThis.document.body = new ElementMock("body");
 globalThis.document.documentElement = globalThis.document.body;
 
+globalThis.document.appendChild = globalThis.document.body.appendChild;
+
 globalThis.document.createElement = (tag, html) => {
     if (globalThis.__elementRegistry[tag] != null) {
         let result = mockElement(new globalThis.__elementRegistry[tag](), tag);

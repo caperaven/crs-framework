@@ -20,7 +20,9 @@ export function findAll(element, selectorFn, collection) {
             collection.push(child)
         }
 
-        findAll(child, selectorFn, collection);
+        if (child.children.length > 0) {
+            findAll(child, selectorFn, collection);
+        }
     }
 }
 
