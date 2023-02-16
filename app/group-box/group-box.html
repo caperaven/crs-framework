@@ -1,0 +1,81 @@
+<style>
+    .icon {
+        font-family: crsfrw;
+        font-size: 1rem;
+        color: #0098E0;
+        padding: var(--padding);
+    }
+
+    #submit-random{
+        width: fit-content;
+        margin-top: 10px;
+    }
+
+    hr {
+        color: silver;
+    }
+
+    .custom-header {
+        color: red;
+        font-style: italic;
+    }
+
+    group-box#box-6 {
+        --header-bg:var(--red-s2);
+        --header-height: 40px;
+    }
+
+    group-box#box-6 .icon{
+        color: #76C422;
+        font-size: 24px;
+    }
+
+</style>
+
+<h1>Group-Box Examples</h1>
+
+<group-box id="box-1" data-title="Group Box defined by Data-Title">
+    <div slot="body">This will be where content is displayed</div>
+</group-box>
+<hr>
+<group-box id="box-2" data-title="Group Box with Custom Header">
+    <h3 slot="header" class="custom-header"><icon class="icon">home</icon> Custom Header </h3>
+    <div slot="body">This will be where content is displayed</div>
+</group-box>
+<hr>
+<group-box data-title="Group-Box with Custom Title with Actions" id="box-3">
+    <div slot="header"><h3 class="custom-header"> Custom Header</h3></div>
+    <div id="custom-actions" slot="actions" style="border: 2px solid hotpink">
+        <button class="primary">Save</button>
+        <button class="secondary">Delete</button>
+    </div>
+    <div slot="body">
+        <label for="random-input">Random Input</label>
+        <input id="random-input">
+
+        <div id="input-2">Input 2</div>
+        <input id="random-input 2">
+
+        <button class="primary" id="submit-random">Submit form</button>
+    </div>
+</group-box>
+<hr>
+<group-box id="box-4" data-title="Test For Title">
+    <div slot="body">This will be where content is displayed</div>
+</group-box>
+<hr>
+<group-box id="box-5" data-title="Test For Title">
+    <div slot="header">
+        <h3 class="custom-header">Test Asset <icon class="icon">regular-asset-task</icon></h3>
+    </div>
+    <div slot="body">This will be where content is displayed</div>
+</group-box>
+<hr>
+<group-box id="box-6" data-title="Test For Title">
+    <div slot="header">
+        <h3 class="custom-header">Test Asset</h3>
+        <icon class="icon">regular-asset-type-component</icon>
+    </div>
+    <div slot="body">This will be where content is displayed</div>
+</group-box>
+

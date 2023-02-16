@@ -1,20 +1,17 @@
 <style>
-    check-box {
-        margin-bottom: 100px;
-        text-decoration: none;
-        border-bottom: 1px groove var(--grey-s1);
-    }
-
-    check-box:focus {
-        outline: none;
-        text-decoration: none;
+    div {
+        margin-bottom: 1rem;
+        padding: var(--padding);
     }
 </style>
 
 <h2>${title}</h2>
 
-<check-box checked.bind="model.checked" aria-label="My Checked Checkbox"></check-box>
+<check-box checked.bind="isActive" aria-label="Is Active"></check-box>
+<div>Is Active: ${isActive}</div>
 
-<check-box checked.bind="model.checked" aria-label="My Unchecked Box"></check-box>
+<check-box checked.bind="isCorrect" aria-label="Is Correct"></check-box>
+<div>Is Active: ${isCorrect}</div>
 
-<check-box checked.bind="model.checked" aria-label="My Null Checkbox" data-nullable="true"></check-box>
+<check-box checked.bind="isTrue" aria-label="Is True" data-nullable="true"></check-box>
+<div>Is Active: ${isTrue}</div>
