@@ -23,16 +23,13 @@ export class ContextMenuActions {
         const height = await crs.process.getValue(step.args.height, context, process, item);
 
         const instance = document.createElement("context-menu");
-        instance.options = options;
-        instance.templates = templates;
-        instance.point = point;
-        instance.target = target;
-        instance.at = at;
-        instance.anchor = anchor;
-        instance.context = context;
-        instance.margin = margin;
-        instance.height = height;
-        instance.style.setProperty("--icon-font", icon_font_family);
+        instance.setOptions({
+            options, templates, point, target, at,
+            anchor, context, margin, height,
+            style: {
+                "--icon-font": icon_font_family
+            }
+        });
 
         document.body.appendChild(instance);
 

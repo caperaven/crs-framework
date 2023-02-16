@@ -1,13 +1,10 @@
 import "./../filter-header/filter-header.js";
 
 /**
- * Todo:
- * 1. add expand
- * 2. add sub item support
- * 3. add keyboard support
+ * @class ContextMenu - A context menu component that can be used to display a list of options.
+ * This can either be a flat list or a nested list.
+ * You should not be using this component directly but instead use the context_menu process api action instead.
  */
-
-
 class ContextMenu extends crsbinding.classes.BindableElement {
     #options;
     #point;
@@ -19,6 +16,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     #process;
     #item;
     #margin;
+    #templates;
 
     get shadowDom() {
         return true;
@@ -28,47 +26,11 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         return import.meta.url.replace(".js", ".html");
     }
 
-    set options(newValue) {
-        this.#options = newValue;
-    }
-
-    set point(newValue) {
-        this.#point = newValue;
-    }
-
-    set context(newValue) {
-        this.#context = newValue;
-    }
-
-    set at(newValue) {
-        this.#at = newValue
-    }
-
-    set anchor(newValue) {
-        this.#anchor = newValue;
-    }
-
-    set target(newValue) {
-        this.#target = newValue;
-    }
-
-    set margin(newValue) {
-        this.#margin = newValue;
-    }
-
-    set height(newValue) {
-        if (typeof newValue == "number") {
-            newValue = `${newValue}px`
-        }
-
-        this.style.setProperty("--height", newValue);
-    }
-
     async connectedCallback() {
         return new Promise(async (resolve) => {
             await super.connectedCallback();
 
-            this.#clickHandler = this.click.bind(this);
+            this.#clickHandler = this.#click.bind(this);
             this.shadowRoot.addEventListener("click", this.#clickHandler);
 
             await crsbinding.translations.add({
@@ -121,6 +83,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         this.#process = null;
         this.#item = null;
         this.#margin = null;
+        this.#templates = null;
     }
 
     #optionById(id) {
@@ -131,7 +94,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     async #buildElements() {
         const fragment = document.createDocumentFragment();
 
-        await createListItems(fragment, this.#options, this.templates);
+        await createListItems(fragment, this.#options, this.#templates);
 
         this.container.innerHTML = "";
         this.container.appendChild(fragment);
@@ -141,7 +104,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         }
     }
 
-    async click(event) {
+    async #click(event) {
         if (event.target.matches(".back")) {
             return await this.close();
         }
@@ -164,6 +127,57 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         this.dispatchEvent(new CustomEvent("change", {detail: option.id}));
 
         await this.close();
+    }
+
+    /**
+     * @method setOptions - Sets the options for the context menu.
+     * This is used by the action system to pass information to the context menu that it needs to render the content.
+     * @param args {Object} - The options for the context menu.
+     * @param args.options {Array} - An array of options to display in the context menu.
+     * @param [args.point] {Object} - The point to position the context menu at.
+     * @param [args.at] {String} - The position of the context menu relative to the point. (top, bottom, left, right)
+     * @param [args.anchor] {String} - The position of the point relative to the context menu. (top, bottom, left, right)
+     * @param [args.target] {HTMLElement} - The target element to position the context menu relative to.
+     * @param [args.context] {Object} - The context to use when inflating the context menu. used to execute a process with the menu item.
+     * @param [args.process] {String} - The process to call when an option is selected. used to execute a process with the menu item.
+     * @param [args.item] {Object} - The item to pass to the process when an option is selected. used to execute a process with the menu item.
+     * @param [args.margin] {Number} - The margin to use when positioning the context menu.
+     * @param [args.templates] {Object} - The templates to use when rendering the context menu.
+     * @param [args.height] {String} - The default height of the context menu.
+     * @param [args.style] {Object} - The style to apply to the context menu.
+     *
+     * Relative to a component:
+     * - set target to the component
+     * - set at to the location of the context menu relative to the component
+     * - set anchor to the align the menu to the component. for example if align is "top" the top of the component and the top of the menu will be the same.
+     * - set margin to the distance between the component and the menu.
+     *
+     * Relative to a point:
+     * - set point to the point to position the menu at.
+     */
+    setOptions(args) {
+        this.#options = args.options;
+        this.#point = args.point;
+        this.#at = args.at;
+        this.#anchor = args.anchor;
+        this.#target = args.target;
+        this.#context = args.context;
+        this.#process = args.process;
+        this.#item = args.item;
+        this.#margin = args.margin;
+        this.#templates = args.templates;
+
+        if (typeof args.height == "number") {
+            args.height = `${args.height}px`
+        }
+
+        this.style.setProperty("--height", args.height);
+
+        if (args.style != null) {
+            for (const key of Object.keys(args.style)) {
+                this.style.setProperty(key, args.style[key]);
+            }
+        }
     }
 
     async close() {
