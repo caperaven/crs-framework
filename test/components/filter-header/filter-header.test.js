@@ -26,24 +26,25 @@ describe ("filter-header tests", async () => {
         instance.setAttribute("for", "ul");
         parent.appendChild(instance);
 
-
-
         await instance.connectedCallback();
 
-        // instance = document.createElement("filter-header");
-        // instance.setAttribute("for", "ul");
-        // parent =  new ElementMock("div");
-        // instance.parentElement = parent;
-        // parent.appendChild(instance);
-        // await instance.connectedCallback();
+
     });
 
     afterEach(async () => {
         await instance.disconnectedCallback();
     });
 
-    it("parent container mock", async () => {
+    it("check elements exist", async () => {
         assert(instance !== null);
+        assert(parent !== null);
+        assert(ul !== null);
+
+        assertEquals(instance.parentElement, parent);
+    });
+
+    it("check input change", async () => {
+
     });
 
 

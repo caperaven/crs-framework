@@ -6,8 +6,10 @@
  * close - closes the filter
  *
  */
-class FilterHeader extends crsbinding.classes.BindableElement {
+class FilterHeader extends HTMLElement {
     #container;
+    #filterHandler = this.filter.bind(this);
+    #closeHandler = this.close.bind(this);
 
     get shadowDom() {
         return true;
@@ -19,7 +21,7 @@ class FilterHeader extends crsbinding.classes.BindableElement {
 
     constructor() {
         super();
-        // this.attachShadow({ mode: "open" });
+        this.attachShadow({ mode: "open" });
     }
 
     /**
@@ -27,10 +29,9 @@ class FilterHeader extends crsbinding.classes.BindableElement {
      * that has the id that is specified in the "for" attribute.
      */
     async connectedCallback() {
-        super.connectedCallback();
-        // const query = this.getAttribute("for");
-        // this.#container = this.parentElement.querySelector(query);
-        // this.shadowRoot.innerHTML = await fetch(this.html).then(result => result.text());
+        // super.connectedCallback();
+        this.shadowRoot.innerHTML = await fetch(this.html).then(result => result.text());
+
         await this.load();
 
     }
@@ -40,6 +41,9 @@ class FilterHeader extends crsbinding.classes.BindableElement {
             requestAnimationFrame(async () => {
                 const query = this.getAttribute("for");
                 this.#container = this.parentElement.querySelector(query);
+
+                this.shadowRoot.querySelector("input").addEventListener("keyup", this.#filterHandler);
+                this.shadowRoot.querySelector("#btnClose").addEventListener("click", this.#closeHandler);
                 resolve();
             });
         });
@@ -49,8 +53,13 @@ class FilterHeader extends crsbinding.classes.BindableElement {
      * @method disconnectedCallback - When the component is removed from the DOM, the container is set to null
      */
     async disconnectedCallback() {
+        // await super.disconnectedCallback();
+
         this.#container = null;
-        await super.disconnectedCallback();
+        this.shadowRoot.querySelector("input").removeEventListener("keyup", this.#filterHandler);
+        this.shadowRoot.querySelector("#btnClose").removeEventListener("click", this.#closeHandler);
+        this.#filterHandler = null;
+        this.#closeHandler = null;
     }
 
     /**
