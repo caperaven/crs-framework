@@ -16,13 +16,6 @@ import {ItemsFactory} from "./items-factory.js";
  * <available-selected data-id-field="title" data-drilldownable="true"></available-selected>
  *
  * To allow you to drill down the available items you need to set the data-drilldownable attribute to true.
- *
- * @todo - JHR: this is not complete @Kieran please finish this
- * - add drill down functionality
- * - add drag and drop ordering functionality (process api required feature)
- * - fix data-attributes to match above
- * - tests are missing :( @Kieran please add tests
- * - the items factory really should be a HTML Template instead of building it up manually
  */
 export class AvailableSelected extends HTMLElement {
     #clickHandler = this.#click.bind(this);
