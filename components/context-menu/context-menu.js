@@ -91,6 +91,10 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         return item;
     }
 
+    /**
+     * @method #buildElements - Builds the elements for the context menu.
+     * @returns {Promise<void>}
+     */
     async #buildElements() {
         const fragment = document.createDocumentFragment();
 
@@ -180,6 +184,10 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         }
     }
 
+    /**
+     * @method open - Opens the context menu.
+     * @returns {Promise<void>}
+     */
     async close() {
         await crs.call("context_menu", "close");
     }
@@ -189,6 +197,13 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     }
 }
 
+/**
+ * @method createListItems - Creates the list items for the context menu.
+ * @param parentElement {HTMLElement} - The parent element to add the list items to.
+ * @param collection {Array} - The collection of options to create the list items from.
+ * @param templates {Object} - The templates to use when creating the list items.
+ * @returns {Promise<void>}
+ */
 async function createListItems(parentElement, collection, templates) {
     for (const option of collection) {
         if (option.title?.trim() == "-") {
