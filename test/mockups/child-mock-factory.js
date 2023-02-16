@@ -11,7 +11,7 @@ export function createMockChildren(element) {
 }
 
 export function createChildrenFromHtml(element, html) {
-    const jsonStr = parse(html);
+    const jsonStr = parse(html.split(".").join("_"));
     const json = JSON.parse(jsonStr);
     createChildren(element, element.shadowRoot || element, json);
 }
