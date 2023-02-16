@@ -9,7 +9,6 @@
 class FilterHeader extends HTMLElement {
     #container;
     #filterHandler = this.filter.bind(this);
-    #closeHandler = this.close.bind(this);
 
     get shadowDom() {
         return true;
@@ -31,7 +30,6 @@ class FilterHeader extends HTMLElement {
     async connectedCallback() {
         // super.connectedCallback();
         this.shadowRoot.innerHTML = await fetch(this.html).then(result => result.text());
-
         await this.load();
 
     }
@@ -41,9 +39,7 @@ class FilterHeader extends HTMLElement {
             requestAnimationFrame(async () => {
                 const query = this.getAttribute("for");
                 this.#container = this.parentElement.querySelector(query);
-
                 this.shadowRoot.querySelector("input").addEventListener("keyup", this.#filterHandler);
-                this.shadowRoot.querySelector("#btnClose").addEventListener("click", this.#closeHandler);
                 resolve();
             });
         });
@@ -54,12 +50,9 @@ class FilterHeader extends HTMLElement {
      */
     async disconnectedCallback() {
         // await super.disconnectedCallback();
-
         this.#container = null;
         this.shadowRoot.querySelector("input").removeEventListener("keyup", this.#filterHandler);
-        this.shadowRoot.querySelector("#btnClose").removeEventListener("click", this.#closeHandler);
         this.#filterHandler = null;
-        this.#closeHandler = null;
     }
 
     /**
@@ -84,12 +77,6 @@ class FilterHeader extends HTMLElement {
         })
     }
 
-    /**
-     * The function `close()` dispatches a custom event called `close` to the DOM
-     */
-    async close() {
-        this.dispatchEvent(new CustomEvent("close"));
-    }
 }
 
 customElements.define("filter-header", FilterHeader);
