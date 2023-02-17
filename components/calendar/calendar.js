@@ -216,7 +216,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      * @method The function is called when the user presses the arrow up key.
      */
     async #pressArrowUp(event) {
-        const query = (this.#currentIndex - this.#columns) < 0;
+        const query = this.#currentIndex - this.#columns < 0;
 
         if (this.#selectedView === "default") {
             query && (await this.goToPrevious(), await this.#setFocusOnRender());
@@ -235,7 +235,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
 
         if (this.#selectedView === "default") {
             query && (await this.goToNext(), await this.#setFocusOnRender());
-            this.#currentIndex = this.#columns + this.#currentIndex;
+            this.#currentIndex = this.#currentIndex + this.#columns;
 
         } else {
             this.#currentIndex = query ? this.#currentIndex : this.#currentIndex + this.#columns;
