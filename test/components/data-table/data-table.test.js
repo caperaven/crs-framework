@@ -8,6 +8,7 @@ import {createChildrenFromHtml} from "../../mockups/child-mock-factory.js";
 await init();
 
 beforeAll(async () => {
+    await import("../../../src/data-manager/data-manager-actions.js");
     await import("../../../components/data-table/data-table.js");
 })
 
@@ -16,6 +17,8 @@ describe ("data-table tests", async () => {
 
     beforeEach(async () => {
         instance = document.createElement("data-table");
+        instance.dataset["manager"] = "data_manager";
+        instance.dataset["manager-key"] = "data_manager_key";
 
         createChildrenFromHtml(instance, [
             `<column data-heading="code" data-property="code" data-width="100"></column>`,
@@ -36,7 +39,7 @@ describe ("data-table tests", async () => {
         assertEquals(instance.columns[1].width, 200);
     });
 
-    it ("build table using refresh", async () => {
+    it ("build table using refresh - given rows", async () => {
         await instance.refresh([
             { code: "row 1 code", description: "row 1 description" },
             { code: "row 2 code", description: "row 2 description" },
@@ -48,5 +51,28 @@ describe ("data-table tests", async () => {
 
         const tableBody = instance.shadowRoot.querySelector("tbody");
         assertEquals(tableBody.children.length, 3);
-    })
+    });
+
+    it ("build table using refresh - data manager", async () => {
+        await crs.call("data_manager", "register", {
+            manager: "data_manager",
+            id_field: "id",
+            type: "memory",
+            records: [
+                { id: 0, code: "row 1 code", description: "row 1 description" },
+                { id: 1, code: "row 2 code", description: "row 2 description" },
+                { id: 2, code: "row 3 code", description: "row 3 description" }
+            ]
+        });
+
+        await instance.refresh();
+
+        const tableHeader = instance.shadowRoot.querySelector("#tableHeader");
+        assertEquals(tableHeader.children.length, 2);
+
+        const tableBody = instance.shadowRoot.querySelector("tbody");
+        assertEquals(tableBody.children.length, 3);
+
+        await crs.call("data_manager", "dispose", { manager: "data_manager" });
+    });
 })

@@ -13,6 +13,7 @@ import {CHANGE_TYPES} from "../../src/data-manager/data-manager-types.js";
  *
  * Attributes:
  * - data-manager - name of the data manager to use, used instead of having to set the property
+ * - data-manager-key - key to use for the data manager, used instead of having to set the property
  *
  * Methods:
  * - refresh - refresh the data, redrawing the grid
@@ -101,7 +102,8 @@ export class DataTable extends HTMLElement {
     load() {
         return new Promise(resolve => {
             requestAnimationFrame(async () => {
-                // load resources
+                this.#dataManager = this.dataset["manager"];
+                this.#dataManagerKey = this.dataset["manager-key"];
                 this.#hookDataManager();
                 resolve();
             });
@@ -281,7 +283,7 @@ export class DataTable extends HTMLElement {
     async refresh(data = null) {
         this.innerHTML = "";
 
-        data ||= await crs.call("data_manager", "get_all", { data_manager: this.#dataManager });
+        data ||= await crs.call("data_manager", "get_all", { manager: this.#dataManager });
         await this.#buildTable(data);
     }
 
