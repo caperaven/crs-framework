@@ -110,12 +110,8 @@ export class Dialog extends HTMLElement {
     async #resizeClicked() {
         // toggle the fullscreen class
         this.classList.toggle("fullscreen");
-
-        if (this.classList.contains("fullscreen")) {
-            await crs.call(...this.#domActions["disable_move"]);
-        } else {
-            await crs.call(...this.#domActions["enable_move"]);
-        }
+        const method = this.classList.contains("fullscreen") ? "disable_move" : "enable_move";
+        await crs.call(...this.#domActions[method]);
     }
 
     async #closeClicked() {
