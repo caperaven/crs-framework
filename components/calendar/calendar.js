@@ -217,17 +217,22 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      * @method The function is called when the user presses the arrow up key.
      */
     async #pressArrowUp(event) {
-        this.#currentIndex - this.#columns < 0 && (await this.goToPrevious(),await this.#setFocusOnRender());
-        this.#currentIndex = (this.#currentIndex - this.#columns) < 0 ? (-(this.#columns - this.#currentIndex)): this.#currentIndex - this.#columns;
+        if (this.#selectedView === "default") {
+            this.#currentIndex - this.#columns < 0 && (await this.goToPrevious(), await this.#setFocusOnRender());
+            this.#currentIndex = (this.#currentIndex - this.#columns) < 0 ? (-(this.#columns - this.#currentIndex)) : this.#currentIndex - this.#columns;
+        } else {
+            const currentIndex = this.#currentIndex;
+            this.#currentIndex = (this.#currentIndex - this.#columns) < 0 ? currentIndex : this.#currentIndex - this.#columns;
+        }
         await this.#updateTabIndex();
-        console.log(this.#currentIndex);
     }
 
     /**
      * @method The function is called when the user presses the arrow down key.
      */
     async #pressArrowDown(event) {
-        this.#currentIndex = (this.#currentIndex + this.#columns) >= this.#elements.length ? (this.#currentIndex + this.#columns) - this.#elements.length : this.#currentIndex + this.#columns;
+        const currentIndex = this.#currentIndex;
+        this.#currentIndex = (this.#currentIndex + this.#columns) >= this.#elements.length ? currentIndex : this.#currentIndex + this.#columns;
         await this.#updateTabIndex();
     }
 
@@ -235,7 +240,11 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      * @function pressArrowLeft - The function is called when the user presses the arrow left key.
      */
     async #pressArrowLeft(event) {
-        this.#currentIndex = (this.#currentIndex - 1) < 0 ? (await this.goToPrevious(), this.#currentIndex - 1) : this.#currentIndex - 1;
+        if (this.#selectedView === "default") {
+            this.#currentIndex = (this.#currentIndex - 1) < 0 ? (await this.goToPrevious(), this.#currentIndex - 1) : this.#currentIndex - 1;
+        } else {
+            this.#currentIndex = (this.#currentIndex - 1) < 0 ? this.#elements.length - 1 : this.#currentIndex - 1;
+        }
         await this.#updateTabIndex();
     }
 
