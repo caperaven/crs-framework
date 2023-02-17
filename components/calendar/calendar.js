@@ -159,7 +159,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     /**
      * @method This function sets the selectedView property to "default"
      */
-    async #set_default_view() {
+    async #setDefaultView() {
         this.setProperty("selectedView", "default");
     }
 
@@ -267,7 +267,6 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     async #pressArrowRight(event) {
         this.#currentIndex = (this.#currentIndex + 1) % this.#elements.length;
         await this.#updateTabIndex();
-
     }
 
     async #defaultEnter(value) {
@@ -285,13 +284,6 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     async #yearsEnter(value) {
         this.#year = value;
         await this.selectedYearChanged(this.#year);
-    }
-
-    async viewLoaded() {
-        const view = this.#selectedView;
-        if (this.#viewLoadActions[`${view}VisualSelection`]) {
-            await this.#viewLoadActions[`${view}VisualSelection`]();
-        }
     }
 
     async #yearsVisualSelection() {
@@ -312,6 +304,13 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         this.#columns = 7;
     }
 
+    async viewLoaded() {
+        const view = this.#selectedView;
+        if (this.#viewLoadActions[`${view}VisualSelection`]) {
+            await this.#viewLoadActions[`${view}VisualSelection`]();
+        }
+    }
+
     /**
      * @function selectedMonthChanged - The function is called when the selectedMonth property changes and renders the calendar.
      * @description The function is a binding engine convention it listens for the property to change.
@@ -321,7 +320,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         if (this.month !== this.#month) {
             this.#month = newValue == null || Number.parseInt(newValue) > 11 ? parseInt(this.#month) : newValue;
             await this.#setMonthProperty();
-            newValue != null && await this.#set_default_view();
+            newValue != null && await this.#setDefaultView();
         }
     }
 
@@ -334,7 +333,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         if (this.year !== this.#year) {
             this.#year = newValue == null || newValue.toString().length < 4 ? parseInt(this.#year) : newValue;
             await this.#setYearProperty();
-            newValue != null && await this.#set_default_view();
+            newValue != null && await this.#setDefaultView();
         }
     }
 
