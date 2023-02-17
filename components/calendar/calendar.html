@@ -112,7 +112,7 @@
 </svg>
 
 <template id="tplCell">
-    <div role="cell" tabindex="${new Date().toLocaleDateString() === date.toLocaleDateString() ? '0': tabindex == null ? '-1': tabindex}" aria-selected="${selected}" data-day="${date.getDate()}" data-month="${date.getMonth()}" data-year="${date.getFullYear()}" classlist.case="current == false: 'non-current-day', new Date().toLocaleDateString() === date.toLocaleDateString(): 'today'">${number}</div>
+    <div role="cell" tabindex="${new Date().toLocaleDateString() === date.toLocaleDateString() ? '0': tabindex == null ? '-1': tabindex}" aria-label="${number}" aria-selected="${selected}" data-day="${date.getDate()}" data-month="${date.getMonth()}" data-year="${date.getFullYear()}" classlist.case="current == false: 'non-current-day', new Date().toLocaleDateString() === date.toLocaleDateString(): 'today'">${number}</div>
 </template>
 
 <div id="calendar-toolbar" role="toolbar" ref="tools">

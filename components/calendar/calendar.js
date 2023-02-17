@@ -28,9 +28,6 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         "defaultVisualSelection": this.#defaultVisualSelection.bind(this)
     });
 
-    //Todo: do a complete name check and refactor method names to be more descriptive
-    //Todo: check what happens when you get to a month where the 1st day is exactly on sunday?
-    //Todo:set another attribute that keeps track of the current focus index.
     get shadowDom() {
         return true;
     }
@@ -73,6 +70,9 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         this.#currentIndex = null;
         this.#columns = null;
         this.#elements = null;
+        this.#keyboardActions = null;
+        this.#keyboardViewActions = null;
+        this.#viewLoadActions = null;
     }
 
     async preLoad() {
@@ -87,7 +87,6 @@ export default class Calendar extends crsbinding.classes.BindableElement {
 
     async attributeChangedCallback(name, oldValue, newValue) {
         if (!newValue) return;
-        const currentMonth = this.#month;
         const date = new Date(newValue);
         this.#month = date.getMonth();
         this.#year = date.getFullYear();
@@ -217,12 +216,13 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      * @method The function is called when the user presses the arrow up key.
      */
     async #pressArrowUp(event) {
+        const query = (this.#currentIndex - this.#columns) < 0;
+
         if (this.#selectedView === "default") {
-            this.#currentIndex - this.#columns < 0 && (await this.goToPrevious(), await this.#setFocusOnRender());
-            this.#currentIndex = (this.#currentIndex - this.#columns) < 0 ? (-(this.#columns - this.#currentIndex)) : this.#currentIndex - this.#columns;
+            query && (await this.goToPrevious(), await this.#setFocusOnRender());
+            this.#currentIndex = this.#currentIndex - this.#columns;
         } else {
-            const currentIndex = this.#currentIndex;
-            this.#currentIndex = (this.#currentIndex - this.#columns) < 0 ? currentIndex : this.#currentIndex - this.#columns;
+            this.#currentIndex = query ? this.#currentIndex : this.#currentIndex - this.#columns;
         }
         await this.#updateTabIndex();
     }
@@ -231,8 +231,16 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      * @method The function is called when the user presses the arrow down key.
      */
     async #pressArrowDown(event) {
-        const currentIndex = this.#currentIndex;
-        this.#currentIndex = (this.#currentIndex + this.#columns) >= this.#elements.length ? currentIndex : this.#currentIndex + this.#columns;
+        const query = (this.#currentIndex + this.#columns) >= this.#elements.length;
+
+        if (this.#selectedView === "default") {
+            query && (await this.goToNext(), await this.#setFocusOnRender());
+            this.#currentIndex = this.#columns + this.#currentIndex;
+
+        } else {
+            this.#currentIndex = query ? this.#currentIndex : this.#currentIndex + this.#columns;
+        }
+
         await this.#updateTabIndex();
     }
 
@@ -240,10 +248,12 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      * @function pressArrowLeft - The function is called when the user presses the arrow left key.
      */
     async #pressArrowLeft(event) {
+        const query = (this.#currentIndex - 1) < 0;
+
         if (this.#selectedView === "default") {
-            this.#currentIndex = (this.#currentIndex - 1) < 0 ? (await this.goToPrevious(), this.#currentIndex - 1) : this.#currentIndex - 1;
+            this.#currentIndex = query ? (await this.goToPrevious(), this.#currentIndex - 1) : this.#currentIndex - 1;
         } else {
-            this.#currentIndex = (this.#currentIndex - 1) < 0 ? this.#elements.length - 1 : this.#currentIndex - 1;
+            this.#currentIndex = query ? this.#elements.length - 1 : this.#currentIndex - 1;
         }
         await this.#updateTabIndex();
     }
