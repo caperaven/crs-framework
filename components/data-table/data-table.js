@@ -20,8 +20,8 @@ import {CHANGE_TYPES} from "../../src/data-manager/data-manager-types.js";
  *
  * @example <caption>html example</caption>
  * <data-table data-manager="my-data" data-manager-key="group1">
- *     <column heading="code" property="code"></column>
- *     <column heading="description" property="description"></column>
+ *     <column data-heading="code" data-property="code" data-width="100"></column>
+ *     <column data-heading="description" data-property="description" data-width="200"></column>
  * </data-table>
  *
  * @example <caption>javascript example to initialize the data table</caption>
@@ -30,8 +30,8 @@ import {CHANGE_TYPES} from "../../src/data-manager/data-manager-types.js";
  *     dataManager: "my-data",
  *     dataManagerKey: "group1",
  *     columns: [
- *        { heading: "code", property: "code" },
- *        { heading: "description", property: "description" }
+ *        { heading: "code", property: "code", width: 100 },
+ *        { heading: "description", property: "description", width: 200 }
  *     ]
  * })
  *
@@ -39,8 +39,8 @@ import {CHANGE_TYPES} from "../../src/data-manager/data-manager-types.js";
  * await crs.call("data-table", "set_columns", {
  *      element: document.querySelector("data-table"),
  *      columns: [
- *          { heading: "code", property: "code" },
- *          { heading: "description", property: "description" }
+ *          { heading: "code", property: "code", width: 100 },
+ *          { heading: "description", property: "description", width: 200 }
  *      ]
  * });
  *
@@ -49,6 +49,8 @@ import {CHANGE_TYPES} from "../../src/data-manager/data-manager-types.js";
  */
 export class DataTable extends HTMLElement {
     #columns;
+    #dataManager;
+    #dataManagerKey;
 
     /**
      * @field #changeEventMap - lookup table for change events and what function to call on that event
@@ -61,6 +63,10 @@ export class DataTable extends HTMLElement {
         [CHANGE_TYPES.refresh]: this.refresh,
     };
 
+    /**
+     * @property columns - getter/setter for the columns property
+     * @returns {*}
+     */
     get columns() {
         return this.#columns;
     }
@@ -82,6 +88,7 @@ export class DataTable extends HTMLElement {
      * @returns {Promise<void>}
      */
     async connectedCallback() {
+        this.#loadColumnsFromChildren();
         this.shadowRoot.innerHTML = await fetch(import.meta.url.replace(".js", ".html")).then(response => response.text());
         await this.load();
         await crs.call("component", "notify_ready", { element: this });
@@ -95,7 +102,6 @@ export class DataTable extends HTMLElement {
         return new Promise(resolve => {
             requestAnimationFrame(async () => {
                 // load resources
-                this.#loadColumnsFromChildren();
                 this.#hookDataManager();
                 resolve();
             });
@@ -183,16 +189,29 @@ export class DataTable extends HTMLElement {
      * If there are no children just ignore it.
      */
     #loadColumnsFromChildren() {
+        if (this.children.length === 0) return;
 
+        const columns = [];
+
+        for (const child of this.children) {
+            columns.push({
+                heading: child.dataset.heading,
+                property: child.dataset.property,
+                width: Number(child.dataset.width || "100")
+            });
+        }
+
+        this.#columns = columns;
     }
 
     /**
      * @method #buildTable - build the table from scratch by building the columns and rows in the HTML Table element
+     * @param data {Array} - data to build the rows from
      * @returns {Promise<void>}
      */
-    async #buildTable() {
+    async #buildTable(data) {
         await this.#buildColumns();
-        await this.#buildRows();
+        await this.#buildRows(data);
     }
 
     /**
@@ -200,15 +219,45 @@ export class DataTable extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #buildColumns() {
+        const fragment = document.createDocumentFragment();
 
+        for (const column of this.#columns) {
+            const td = document.createElement("td");
+            td.style.width = `${column.width}px`;
+            td.innerText = column.heading;
+            fragment.appendChild(td);
+        }
+
+        const tableHeader = this.shadowRoot.querySelector("#tableHeader");
+        tableHeader.innerHTML = "";
+        tableHeader.appendChild(fragment);
     }
 
     /**
      * @method #buildRows - build the rows in the HTML Table element
+     * @param data {Array} - data to build the rows from
      * @returns {Promise<void>}
      */
-    async #buildRows() {
+    async #buildRows(data) {
+        const fragment = document.createDocumentFragment();
 
+        // for each model in the data create a row
+        for (const model of data) {
+            const tr = document.createElement("tr");
+
+            // for each column in the columns create a cell
+            for (const column of this.#columns) {
+                const td = document.createElement("td");
+                td.innerText = model[column.property];
+                tr.appendChild(td);
+            }
+
+            fragment.appendChild(tr);
+        }
+
+        const tbody = this.shadowRoot.querySelector("tbody");
+        tbody.innerHTML = "";
+        tbody.appendChild(fragment);
     }
 
     /**
@@ -232,7 +281,7 @@ export class DataTable extends HTMLElement {
     async refresh(data = null) {
         this.innerHTML = "";
 
-        data ||= await crs.call("data_manager", "get_all", { data_manager: this.dataManager });
+        data ||= await crs.call("data_manager", "get_all", { data_manager: this.#dataManager });
         await this.#buildTable(data);
     }
 
