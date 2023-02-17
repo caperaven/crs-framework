@@ -95,4 +95,30 @@ describe ("data-table tests", async () => {
         assertEquals(tableBody.children.length, 4);
         assertEquals(tableBody.children[3].children[0].innerText, "row 4 code");
     });
+
+    it ("data manager remove record", async () => {
+        await instance.refresh();
+
+        await crs.call("data_manager", "remove", {
+            manager: "data_manager",
+            indexes: [0, 1]
+        });
+
+        const tableBody = instance.shadowRoot.querySelector("tbody");
+        assertEquals(tableBody.children.length, 1);
+        assertEquals(tableBody.children[0].children[0].innerText, "row 3 code");
+    })
+
+    it ("data manager update record", async () => {
+        await instance.refresh();
+
+        await crs.call("data_manager", "update", {
+            manager: "data_manager",
+            id: 2,
+            changes: { code: "row 2 code updated", description: "row 2 description updated" }
+        });
+
+        const tableBody = instance.shadowRoot.querySelector("tbody");
+        assertEquals(tableBody.children[1].children[0].innerText, "row 2 code updated");
+    })
 })

@@ -171,6 +171,7 @@ export class DataTable extends HTMLElement {
             for (const column of this.#columns) {
                 const cell = document.createElement("td");
                 cell.innerText = model[column.property];
+                cell.dataset.field = column.property;
                 row.appendChild(cell);
             }
             fragment.appendChild(row);
@@ -187,7 +188,19 @@ export class DataTable extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #updateRecord(args) {
+        const index = args.index;
+        const changes = args.changes;
 
+        const tbody = this.shadowRoot.querySelector("tbody");
+        const row = tbody.children[index];
+
+        for (const property of Object.keys(changes)) {
+            const cell = row.querySelector(`[data-field="${property}"]`);
+
+            if (cell) {
+                cell.innerText = changes[property];
+            }
+        }
     }
 
     /**
@@ -196,7 +209,13 @@ export class DataTable extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #deleteRecord(args) {
+        // sort the indexes in descending order so that the indexes don't change as you delete
+        const indexes = args.indexes.sort((a, b) => b - a);
+        const tbody = this.shadowRoot.querySelector("tbody");
 
+        for (const index of indexes) {
+            tbody.children[index].remove();
+        }
     }
 
     /**
@@ -275,9 +294,10 @@ export class DataTable extends HTMLElement {
 
             // for each column in the columns create a cell
             for (const column of this.#columns) {
-                const td = document.createElement("td");
-                td.innerText = model[column.property];
-                tr.appendChild(td);
+                const cell = document.createElement("td");
+                cell.innerText = model[column.property];
+                cell.dataset.field = column.property;
+                tr.appendChild(cell);
             }
 
             fragment.appendChild(tr);
