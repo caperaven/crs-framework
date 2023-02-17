@@ -62,7 +62,8 @@ export default class Dialog extends crsbinding.classes.ViewBase {
             title: action,
             main: `This is an ${action} message`,
             type: action,
-            footer: footerTemplate.content.cloneNode(true)
+            footer: footerTemplate.content.cloneNode(true),
+            showResize: false
         }
 
         let position = this.element.querySelector("#position").value;

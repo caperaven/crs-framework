@@ -21,10 +21,28 @@
 export class Dialog extends HTMLElement {
     #stack = [];
     #clickHandler = this.#click.bind(this);
-    #actions = {
+    #actions = Object.freeze({
         "close": this.#closeClicked.bind(this),
         "resize": this.#resizeClicked.bind(this),
-    }
+    });
+
+    #domActions = Object.freeze({
+        "enable_resize": ["dom_interactive", "enable_resize", {
+            element: this,
+            resize_query: ".resize",
+            options: {}
+        }],
+        "disable_resize": ["dom_interactive", "disable_resize", {
+            element: this
+        }],
+        "enable_move": ["dom_interactive", "enable_move", {
+            element: this,
+            move_query: "header"
+        }],
+        "disable_move": ["dom_interactive", "disable_move", {
+            element: this
+        }]
+    });
 
     /**
      * @constructor
@@ -49,8 +67,10 @@ export class Dialog extends HTMLElement {
      * @returns {Promise<unknown>}
      */
     load() {
-        return new Promise(resolve => {
+        return new Promise(async resolve => {
             this.shadowRoot.addEventListener("click", this.#clickHandler);
+            await crs.call(...this.#domActions["enable_resize"]);
+            await crs.call(...this.#domActions["enable_move"]);
             resolve();
         });
     }
@@ -80,7 +100,7 @@ export class Dialog extends HTMLElement {
      */
     async #click(event) {
         const action = event.target.dataset.action;
-        this.#actions[action]?.();
+        this.#actions[action]?.(event);
     }
 
     /**
@@ -88,7 +108,14 @@ export class Dialog extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #resizeClicked() {
-        // change the resize button icon to indicate the next action (fullscreen or back)
+        // toggle the fullscreen class
+        this.classList.toggle("fullscreen");
+
+        if (this.classList.contains("fullscreen")) {
+            await crs.call(...this.#domActions["disable_move"]);
+        } else {
+            await crs.call(...this.#domActions["enable_move"]);
+        }
     }
 
     async #closeClicked() {
@@ -126,18 +153,23 @@ export class Dialog extends HTMLElement {
             headerElement.dataset.severity = options.severity;
         }
 
+        if (options?.showResize === false) {
+            headerElement.dataset.showResize = "false";
+        }
+
         if (header != null) {
             headerElement.innerHTML = "";
             headerElement.appendChild(header);
-        } else {
-            const translations = {
-                "title": options?.title ?? "",
-                "close": options?.closeText ?? "Close",
-                "resize": options?.resizeText ?? "Resize"
-            }
-            await crsbinding.translations.add(translations, "dialog");
-            await crsbinding.translations.parseElement(headerElement);
+            return;
         }
+
+        const translations = {
+            "title": options?.title ?? "",
+            "close": options?.closeText ?? "Close",
+            "resize": options?.resizeText ?? "Resize"
+        }
+        await crsbinding.translations.add(translations, "dialog");
+        await crsbinding.translations.parseElement(headerElement);
     }
 
     /**

@@ -14,6 +14,21 @@
         border-radius: var(--radius);
     }
 
+    :host(.fullscreen) {
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        z-index: 100;
+        translate: unset !important;
+        height: unset !important;
+        width: unset !important;
+    }
+
+    :host(.fullscreen) .resize {
+        display: none;
+    }
+
     header {
         display: flex;
         flex-direction: row;
@@ -21,6 +36,14 @@
         border-bottom: var(--border);
         height: 3rem;
         padding: 0 var(--padding) 0 var(--padding);
+    }
+
+    header[data-show-resize="false"] #btnResize {
+        display: none;
+    }
+    
+    header:active {
+        cursor: grabbing;
     }
 
     header h2 {
@@ -50,6 +73,19 @@
     footer button {
         margin-left: 0.5rem;
     }
+
+    .resize {
+        position: absolute;
+        font-family: crsfrw;
+        right: 0;
+        bottom: 0;
+        cursor: se-resize;
+        font-size: 0.8rem;
+    }
+
+    .resize:active {
+        cursor: se-resize;
+    }
 </style>
 
 <header>
@@ -61,3 +97,4 @@
 <div id="body"></div>
 
 <footer></footer>
+<div class="resize">resize-handle</div>
