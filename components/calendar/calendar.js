@@ -355,21 +355,18 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      * selected tab to -1, and the tabIndex of the newly selected tab to 0
      */
     async #setFocusOnRender() {
-        const element = this.shadowRoot.querySelector("[aria-selected='true']");
+        let element = this.shadowRoot.querySelector("[aria-selected='true']");
         await this.#get_elements();
 
-        if (element) {
+        if (element != null && this.#elements[this.#currentIndex] != null) {
             this.#elements[this.#currentIndex].tabIndex = -1;
             element.tabIndex = 0;
-            element.focus();
-
         }
         if (element == null && this.#elements[this.#currentIndex] == null) {
-            const element = this.shadowRoot.querySelector(`[data-month = '${this.#month}']`);
+            element = this.shadowRoot.querySelector(`[data-month = '${this.#month}']`);
             element.tabIndex = 0;
-            element.focus();
         }
-
+        element?.focus();
     }
 
     /**
