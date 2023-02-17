@@ -1,3 +1,5 @@
+import {CalendarUtils} from "./calendar-utils.js";
+
 export default class Calendar extends crsbinding.classes.BindableElement {
     #month;
     #year;
@@ -91,7 +93,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         this.#year = date.getFullYear();
         await this.#setMonthProperty();
         await this.#setYearProperty();
-        (newValue !== oldValue && currentMonth !== this.#month) && await this.#defaultVisualSelection();
+        (newValue !== oldValue) && await this.#defaultVisualSelection();
     }
 
     /**
@@ -215,8 +217,10 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      * @method The function is called when the user presses the arrow up key.
      */
     async #pressArrowUp(event) {
-        this.#currentIndex = (this.#currentIndex - this.#columns) < 0 ? (await this.goToPrevious() , (-(this.#columns - this.#currentIndex))) : this.#currentIndex - this.#columns;
+        this.#currentIndex - this.#columns < 0 && (await this.goToPrevious(),await this.#setFocusOnRender());
+        this.#currentIndex = (this.#currentIndex - this.#columns) < 0 ? (-(this.#columns - this.#currentIndex)): this.#currentIndex - this.#columns;
         await this.#updateTabIndex();
+        console.log(this.#currentIndex);
     }
 
     /**
@@ -233,7 +237,6 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     async #pressArrowLeft(event) {
         this.#currentIndex = (this.#currentIndex - 1) < 0 ? (await this.goToPrevious(), this.#currentIndex - 1) : this.#currentIndex - 1;
         await this.#updateTabIndex();
-
     }
 
     /**
@@ -322,6 +325,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         if (newValue.getAttribute("role") === 'cell') {
             await crs.call("dom_collection", "toggle_selection", {target: newValue, multiple: false});
             await this.#setDataStart(newValue);
+            await this.#setFocusOnRender();
         }
     }
 
@@ -342,15 +346,17 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      * selected tab to -1, and the tabIndex of the newly selected tab to 0
      */
     async #setFocusOnRender() {
-        let element = this.shadowRoot.querySelector("[aria-selected='true']");
+        const element = this.shadowRoot.querySelector("[aria-selected='true']");
         await this.#get_elements();
 
-        if (element != null) {
+        if (element) {
             this.#elements[this.#currentIndex].tabIndex = -1;
-        } else if (this.#elements[this.#currentIndex] == null) {
-            element = this.shadowRoot.querySelector(`[data-month = '${this.#month}']`);
+            element.tabIndex = 0;
+            element.focus();
+
         }
-        if (element != null) {
+        if (element == null && this.#elements[this.#currentIndex] == null) {
+            const element = this.shadowRoot.querySelector(`[data-month = '${this.#month}']`);
             element.tabIndex = 0;
             element.focus();
         }
