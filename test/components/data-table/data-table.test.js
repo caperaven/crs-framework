@@ -16,6 +16,17 @@ describe ("data-table tests", async () => {
     let instance;
 
     beforeEach(async () => {
+        await crs.call("data_manager", "register", {
+            manager: "data_manager",
+            id_field: "id",
+            type: "memory",
+            records: [
+                { id: 1, code: "row 1 code", description: "row 1 description" },
+                { id: 2, code: "row 2 code", description: "row 2 description" },
+                { id: 3, code: "row 3 code", description: "row 3 description" }
+            ]
+        });
+
         instance = document.createElement("data-table");
         instance.dataset["manager"] = "data_manager";
         instance.dataset["manager-key"] = "data_manager_key";
@@ -26,6 +37,11 @@ describe ("data-table tests", async () => {
         ].join(" "), false);
 
         await instance.connectedCallback();
+    })
+
+    afterEach(async () => {
+        instance.disconnectedCallback();
+        instance = null;
     })
 
     it("instance is not null", async () => {
@@ -54,17 +70,6 @@ describe ("data-table tests", async () => {
     });
 
     it ("build table using refresh - data manager", async () => {
-        await crs.call("data_manager", "register", {
-            manager: "data_manager",
-            id_field: "id",
-            type: "memory",
-            records: [
-                { id: 0, code: "row 1 code", description: "row 1 description" },
-                { id: 1, code: "row 2 code", description: "row 2 description" },
-                { id: 2, code: "row 3 code", description: "row 3 description" }
-            ]
-        });
-
         await instance.refresh();
 
         const tableHeader = instance.shadowRoot.querySelector("#tableHeader");
@@ -72,7 +77,22 @@ describe ("data-table tests", async () => {
 
         const tableBody = instance.shadowRoot.querySelector("tbody");
         assertEquals(tableBody.children.length, 3);
+        assertEquals(tableBody.children[0].children[0].innerText, "row 1 code");
+        assertEquals(tableBody.children[1].children[0].innerText, "row 2 code");
+        assertEquals(tableBody.children[2].children[0].innerText, "row 3 code");
 
-        await crs.call("data_manager", "dispose", { manager: "data_manager" });
+    });
+
+    it ("data manager add record", async () => {
+        await instance.refresh();
+
+        await crs.call("data_manager", "append", {
+            manager: "data_manager",
+            records: [{ id: 4, code: "row 4 code", description: "row 4 description" }]
+        });
+
+        const tableBody = instance.shadowRoot.querySelector("tbody");
+        assertEquals(tableBody.children.length, 4);
+        assertEquals(tableBody.children[3].children[0].innerText, "row 4 code");
     });
 })

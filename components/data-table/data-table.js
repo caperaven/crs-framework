@@ -52,6 +52,7 @@ export class DataTable extends HTMLElement {
     #columns;
     #dataManager;
     #dataManagerKey;
+    #dataManagerChangedHandler = this.#dataManagerChanged.bind(this);
 
     /**
      * @field #changeEventMap - lookup table for change events and what function to call on that event
@@ -104,7 +105,7 @@ export class DataTable extends HTMLElement {
             requestAnimationFrame(async () => {
                 this.#dataManager = this.dataset["manager"];
                 this.#dataManagerKey = this.dataset["manager-key"];
-                this.#hookDataManager();
+                await this.#hookDataManager();
                 resolve();
             });
         })
@@ -116,24 +117,33 @@ export class DataTable extends HTMLElement {
      */
     async disconnectedCallback() {
         // dispose of resources
-        this.#unhookDataManager();
+        await this.#unhookDataManager();
+        this.#dataManagerChangedHandler = null;
     }
 
     /**
      * @private
      * @method #hoodDataManager - get the data manager and set the event listeners to be notified of change
      */
-    #hookDataManager() {
+    async #hookDataManager() {
         // when registering with the data manager, I need a key to be used in the filter operation
         // this key is used to only update visualizations that use the same key.
+
+        await crs.call("data_manager", "on_change", {
+            manager: this.#dataManager,
+            callback: this.#dataManagerChangedHandler
+        });
     }
 
     /**
      * @private
      * @method #unhookDataManager - remove the event listeners from the data manager
      */
-    #unhookDataManager() {
-
+    async #unhookDataManager() {
+        await crs.call("data_manager", "remove_change", {
+            manager: this.#dataManager,
+            callback: this.#dataManagerChangedHandler
+        });
     }
 
     /**
@@ -143,7 +153,7 @@ export class DataTable extends HTMLElement {
      * @param args {Object} - arguments from the data manager change event
      */
     async #dataManagerChanged(args) {
-        await this.#changeEventMap[args.action](args);
+        await this.#changeEventMap[args.action].call(this, args);
     }
 
     /**
@@ -152,7 +162,23 @@ export class DataTable extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #addRecord(args) {
+        const insertIndex = args.index;
 
+        const fragment = document.createDocumentFragment();
+        for (const model of args.models) {
+            const row = document.createElement("tr");
+
+            for (const column of this.#columns) {
+                const cell = document.createElement("td");
+                cell.innerText = model[column.property];
+                row.appendChild(cell);
+            }
+            fragment.appendChild(row);
+        }
+
+        const tbody = this.shadowRoot.querySelector("tbody");
+        const targetElement = tbody.children[insertIndex];
+        tbody.insertBefore(fragment, targetElement);
     }
 
     /**

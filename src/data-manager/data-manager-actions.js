@@ -137,6 +137,22 @@ class DataManagerActions {
         })
     }
 
+    /**
+     * @method append - Append records to a data manager
+     * @param step {object} - The step that contains the action to perform
+     * @param context {object} - The context of the process
+     * @param process {object} - The process
+     * @param item {object} - Current item in a process loop
+     * @param step.args.manager {string} - The name of the data manager. You will use this when performing operations on the data manager.
+     * @param step.args.records {array} - The records to append
+     * @returns {Promise<void>}
+     *
+     * @example <caption>javascript example</caption>
+     * await crs.call("data_manager", "append" {
+     *     manager: "my_data_manager",
+     *     records: [{id: 1, name: "test"}]
+     * })
+     */
     static async append(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
         if (manager == null) return;
