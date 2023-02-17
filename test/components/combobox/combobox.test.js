@@ -32,10 +32,10 @@ describe ("combobox tests", async () => {
         const btnToggleExpandMock = new ElementMock("button");
         btnToggleExpandMock.id = "btnDropdown";
 
-        instance.performEvent("click", btnToggleExpandMock);
+        await instance.performEvent("click", btnToggleExpandMock);
         assertEquals(instance.getAttribute("aria-expanded"), "true");
 
-        instance.performEvent("click", btnToggleExpandMock);
+        await instance.performEvent("click", btnToggleExpandMock);
         assertEquals(instance.getAttribute("aria-expanded"), "false");
     });
 })

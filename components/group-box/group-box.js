@@ -2,6 +2,13 @@
  * @class GroupBox - group box component
  *
  * Features:
+ * @method click - Click function to expand and collapse the content. Binded to the clickHandler.
+ * @method headerKeyup - Keyup function to expand and collapse the content. Binded to the headerKeyupHandler.
+ * @method toggleExpanded - Toggle the expand and collapse of the content.
+ * @method setTabIndex - Set the tabindex of the body to 0 if expanded and -1 if collapsed.
+ *
+ *
+ * Functionality:
  * 1. Allow custom header, content.
  * 2. Allow custom actions.
  * 3. Expand and collapse content.
@@ -44,15 +51,6 @@
  */
 export class GroupBox extends HTMLElement {
 
-    /**
-     * Todo: @Andre
-     * 1. Get the examples page up and running
-     * 2. Do styling of the component
-     * 3. Add the click events for the expand and collapse on btnToggleExpand.
-     * 4. Write tests.
-     * @returns {string}
-     */
-
     #clickHandler = this.#click.bind(this);
     #headerKeyHandler = this.#headerKeyUp.bind(this);
 
@@ -61,10 +59,6 @@ export class GroupBox extends HTMLElement {
     }
 
     get html() { return import.meta.url.replace('.js', '.html') }
-
-    // Required for testing
-    get clickHandler() { return this.#clickHandler }
-    get headerKeyHandler() { return this.#headerKeyHandler }
 
     constructor() {
         super();
@@ -88,25 +82,21 @@ export class GroupBox extends HTMLElement {
                 this.setAttribute("aria-expanded", "true");
                 this.shadowRoot.addEventListener("click", this.#clickHandler);
 
-                if(this.shadowRoot.querySelector("header") != null){
-                    this.shadowRoot.querySelector("header").addEventListener("keyup", this.#headerKeyHandler);
-                }
+                this.shadowRoot.querySelector("header").addEventListener("keyup", this.#headerKeyHandler);
+                this.shadowRoot.querySelector("#title").textContent = this.dataset.title;
 
-                if(this.shadowRoot.querySelector("#title") != null){
-                    this.shadowRoot.querySelector("#title").textContent = this.dataset.title;
-                }
+                await crs.call("component", "notify_ready", {
+                    element: this
+                });
+
+                resolve();
             });
-
-            resolve();
         })
     }
 
     async disconnectedCallback() {
         this.shadowRoot.removeEventListener("click", this.#clickHandler);
-        // this.shadowRoot.querySelector("header").removeEventListener("keyup", this.#headerKeyHandler);
-        if(this.shadowRoot.querySelector("header") != null){
-            this.shadowRoot.querySelector("header").removeEventListener("keyup", this.#headerKeyHandler);
-        }
+        this.shadowRoot.querySelector("header").removeEventListener("keyup", this.#headerKeyHandler);
 
         this.#clickHandler = null;
         this.#headerKeyHandler = null;
@@ -118,7 +108,7 @@ export class GroupBox extends HTMLElement {
      * @param event {MouseEvent} - The event object that was triggered.
      */
     async #click(event) {
-        const target = event.composedPath()[0];
+        const target = event.target;
         if (target.id === 'btnToggleExpand') {
             await this.#toggleExpanded();
         }
@@ -134,14 +124,11 @@ export class GroupBox extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #headerKeyUp(event) {
-        const target = event.composedPath()[0];
-        // if you press any key other than up or down, ignore it and return;
         if (event.key !== "ArrowUp" && event.key !== "ArrowDown") {
             return;
         }
-        // if you press up or down, toggle the expanded state.
-        this.setAttribute('aria-expanded', event.key === "ArrowUp" ? "false" : "true")
 
+        this.setAttribute('aria-expanded', event.key === "ArrowUp" ? "false" : "true");
     }
 
     /**
@@ -174,50 +161,17 @@ export class GroupBox extends HTMLElement {
         }
     }
 
-    // async #setTabIndex() {
-    //     const main = this.shadowRoot.querySelector("#main");
-    //     const ariaExpanded = this.shadowRoot.querySelector("#btnToggleExpand").getAttribute("aria-expanded");
-    //     const children = Array.from(main.children);
-    //
-    //     if (ariaExpanded === "true") {
-    //         children.forEach(child => child.setAttribute("tabindex", "0"));
-    //     } else {
-    //         children.forEach(child => child.setAttribute("tabindex", "-1"));
-    //     }
-    // }
-
+    /**
+     * @method #setTabIndex - If the main element is visible, set its tabindex to 0, otherwise set it to -1
+     */
     async #setTabIndex() {
+        if (this.dataset.ready !== "true") return;
+
+        const ariaExpanded = this.getAttribute("aria-expanded");
         const main = this.shadowRoot.querySelector("#main");
-        const btnToggleExpand = this.shadowRoot.querySelector("#btnToggleExpand");
-        if (main && btnToggleExpand) {
-            const ariaExpanded = btnToggleExpand.getAttribute("aria-expanded");
-            const children = Array.from(main.children);
-            if (ariaExpanded === "true") {
-                children.forEach(child => child.setAttribute("tabindex", "0"));
-            } else {
-                children.forEach(child => child.setAttribute("tabindex", "-1"));
-            }
-        }
+        main.setAttribute("tabindex", ariaExpanded === "true" ? "0" : "-1");
     }
 
-    // async #setTabIndex() {
-    //     const btnToggleExpand = this.shadowRoot.querySelector("#btnToggleExpand");
-    //     const ariaExpanded = btnToggleExpand.getAttribute("aria-expanded");
-    //     const bodySlot = this.shadowRoot.querySelector("#main > slot[name='body']");
-    //     const bodyElements = bodySlot.assignedNodes({ flatten: true });
-    //
-    //     function setTabIndexForChildren(element, value) {
-    //         element.setAttribute("tabindex", value);
-    //         const childElements = Array.from(element.children);
-    //         childElements.forEach(child => setTabIndexForChildren(child, value));
-    //     }
-    //
-    //     if (ariaExpanded === "true") {
-    //         bodyElements.forEach(bodyElement => setTabIndexForChildren(bodyElement, "0"));
-    //     } else {
-    //         bodyElements.forEach(bodyElement => setTabIndexForChildren(bodyElement, "-1"));
-    //     }
-    // }
 }
 
 customElements.define('group-box', GroupBox);

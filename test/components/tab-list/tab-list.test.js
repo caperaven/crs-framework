@@ -45,7 +45,7 @@ describe ("tab-list", async () => {
         assertEquals(selected[0].dataset.view, "view1");
         assertEquals(perspective.children[0].textContent, "Template 1");
 
-        await instance.clickedHandler(new EventMock(instance.shadowRoot.children[3]));
+        await instance.performEvent("click", instance.shadowRoot.children[3]);
         const selected2 = instance.shadowRoot.querySelectorAll("[aria-selected='true']");
         assertEquals(selected2.length, 1);
         assertEquals(selected2[0].dataset.view, "view3");

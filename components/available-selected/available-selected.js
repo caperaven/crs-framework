@@ -1,8 +1,24 @@
 import "./../../components/tab-list/tab-list.js";
 import {ItemsFactory} from "./items-factory.js";
 
+/**
+ * @class AvailableSelected - This is a component that allows you to select items from a list of available items.
+ *
+ * @example <caption>html simple example</caption>
+ * <available-selected data-id-field="title"></available-selected>
+ *
+ * @example <caption>allow reordering of selected items</caption>
+ * <available-selected data-id-field="title" data-orderable="true"></available-selected>
+ *
+ * To allow you to reorder the selected items you need to set the data-orderable attribute to true.
+ *
+ * @example <caption>allow drill down of available items</caption>
+ * <available-selected data-id-field="title" data-drilldownable="true"></available-selected>
+ *
+ * To allow you to drill down the available items you need to set the data-drilldownable attribute to true.
+ */
 export class AvailableSelected extends HTMLElement {
-    #clickHandler = this.#clicked.bind(this);
+    #clickHandler = this.#click.bind(this);
     #tablist;
     #perspectiveElement;
     #data;
@@ -46,13 +62,18 @@ export class AvailableSelected extends HTMLElement {
         this.#perspectiveElement = this.#perspectiveElement?.dispose();
     }
 
-    async #clicked(event) {
+    async #click(event) {
         const target = event.target;
         if (target.dataset.action != null) {
             this[target.dataset.action] != null && await this[target.dataset.action](event);
         }
     }
 
+    /**
+     * @method toggle - This method will toggle the selected item from the available list to the selected list.
+     * @param event {Event} - The click event.
+     * @returns {Promise<void>}
+     */
     async toggle(event) {
         const li = event.target.parentElement;
 
@@ -66,16 +87,11 @@ export class AvailableSelected extends HTMLElement {
         await this.update(this.#data);
     }
 
-    //NOTE KR: this is for demo purposes
-    async drag(event) {
-        console.log(event.target, event.target.dataset.action);
-    }
-
-    //NOTE KR: this is for demo purposes
-    async drill(event) {
-        console.log(event.target, event.target.dataset.action);
-    }
-
+    /**
+     * @method update - This method will update the data for the component.
+     * @param data {Object} - The data to update the component with.
+     * @returns {Promise<void>}
+     */
     async update(data) {
         this.#data = data;
         const selectedTemplate = await ItemsFactory.createTemplate(this, this.#currentView, "selected", this.#data);
@@ -96,6 +112,10 @@ export class AvailableSelected extends HTMLElement {
         this.#tablist.target = this.#perspectiveElement;
     }
 
+    /**
+     * @method getSelectedItems - This method will return the selected items.
+     * @returns {*}
+     */
     getSelectedItems() {
         return this.#data.selected;
     }
