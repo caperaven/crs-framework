@@ -4,6 +4,11 @@
         height: 24px;
     }
 
+    .icon{
+        font-family: crsfrw;
+        font-size: 1.5rem;
+    }
+
 </style>
 
 <options-toolbar change.setvalue="state = prop(this, 'dataset.value')">
@@ -12,3 +17,13 @@
 </options-toolbar>
 
 <div>${state}</div>
+
+<options-toolbar>
+    <button  data-value="on" ><icon class="icon">check</icon></button>
+    <button  data-value="off" aria-selected="true"><icon class="icon">close</icon></button>
+</options-toolbar>
+
+<options-toolbar>
+    <button class="icon">grid-on</button>
+    <button aria-selected="true" class="icon">list</button>
+</options-toolbar>

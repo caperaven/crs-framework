@@ -1,3 +1,10 @@
+/**
+ * @class OptionsToolbar - It's a toolbar that allows you to select one of the buttons in it and acts like a Toggle Switch
+ *
+ * Features:
+ * - set_selected - Sets the selected button
+ * - click - Handles the click event functionality
+ */
 class OptionsToolbar extends HTMLElement {
     #marker;
     #clickHandler;
@@ -11,20 +18,35 @@ class OptionsToolbar extends HTMLElement {
 
     async connectedCallback() {
         this.shadowRoot.innerHTML = await fetch(import.meta.url.replace(".js", ".html")).then(result => result.text());
+        await this.load();
+    }
 
-        requestAnimationFrame(() => {
+    /**
+     * @method load - load the component.
+     * set up event listeners and set aria attributes.
+     * @returns {Promise<void>}
+     */
+    load() {
+        return new Promise(resolve => {
+            requestAnimationFrame(async () => {
+                await crs.call("component", "notify_ready", {
+                    element: this
+                });
 
-            this.#marker = this.shadowRoot.querySelector(".marker");
+                this.#marker = this.shadowRoot.querySelector(".marker");
 
-            const selectedItem = this.querySelector(`[aria-selected='true']`) ?? this.firstElementChild;
-            this.#setSelected(selectedItem, false);
-            this.addEventListener("click", this.#clickHandler);
+                const selectedItem = this.querySelector(`[aria-selected='true']`) ?? this.firstElementChild;
+                await this.#setSelected(selectedItem, false);
+                this.addEventListener("click", this.#clickHandler);
 
-            const timeout = setTimeout(() => {
-                this.#marker.style.transition = "translate 0.3s ease-out";
-                clearTimeout(timeout);
-            }, 0.5)
-        })
+                const timeout = setTimeout(() => {
+                    this.#marker.style.transition = "translate 0.3s ease-out";
+                    clearTimeout(timeout);
+                }, 0.5)
+
+                resolve();
+            });
+        });
     }
 
     async disconnectedCallback() {
@@ -34,6 +56,11 @@ class OptionsToolbar extends HTMLElement {
         this.#previouslySelected = null;
     }
 
+    /**
+     * @method setSelected - It sets the selected item in the dropdown
+     * @param element - The element to select.
+     * @param [dispatchEvent=true] - Whether to dispatch a change event or not.
+     */
     async #setSelected(element, dispatchEvent= true) {
         const parentBounds = this.getBoundingClientRect();
         const bounds = element.getBoundingClientRect();
@@ -54,9 +81,19 @@ class OptionsToolbar extends HTMLElement {
         }
     }
 
+    /**
+     * @method click - When a button is clicked, set the selected button to the button that was clicked
+     * @param event - The event object that was triggered.
+     */
+    // async #click(event) {
+    //     if (event.target.nodeName == "BUTTON") {
+    //         await this.#setSelected(event.target);
+    //     }
+    // }
     async #click(event) {
-        if (event.target.nodeName == "BUTTON") {
-            await this.#setSelected(event.target);
+        const button = event.composedPath()[0].closest('button');
+        if (button) {
+            await this.#setSelected(button);
         }
     }
 }
