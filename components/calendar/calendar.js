@@ -221,6 +221,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         if (this.#selectedView === "default") {
             query && (await this.goToPrevious(), await this.#setFocusOnRender());
             this.#currentIndex = this.#currentIndex - this.#columns;
+
         } else {
             this.#currentIndex = query ? this.#currentIndex : this.#currentIndex - this.#columns;
         }
@@ -251,9 +252,11 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         const query = (this.#currentIndex - 1) < 0;
 
         if (this.#selectedView === "default") {
-            this.#currentIndex = query ? (await this.goToPrevious(), this.#currentIndex - 1) : this.#currentIndex - 1;
+            query && await this.goToPrevious();
+            this.#currentIndex = this.#currentIndex - 1;
+
         } else {
-            this.#currentIndex = query ? this.#elements.length - 1 : this.#currentIndex - 1;
+            this.#currentIndex = query ? this.#currentIndex : this.#currentIndex - 1;
         }
         await this.#updateTabIndex();
     }
