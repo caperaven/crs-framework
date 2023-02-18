@@ -10,6 +10,25 @@ const className = getClassName(element);
 createFile("./build/templates/component/component.js", `./components/${element}/${element}.js`);
 createFile("./build/templates/component/component.html", `./components/${element}/${element}.html`);
 createFile("./build/templates/component/component.test.js", `./test/components/${element}/${element}.test.js`);
+createFile("./build/templates/component/view.js", `./app/${element}/${element}.js`);
+createFile("./build/templates/component/view.html", `./app/${element}/${element}.html`);
+
+addRoute(element);
+
+/**
+ * Read the "./app/routes.json" file and add the new route.
+ * The file is json so convert it to json, add the new route, then convert it back to a string.
+ * @param element
+ */
+function addRoute(element) {
+    const json = JSON.parse(Deno.readTextFileSync("./app/routes.json"));
+    json["routes"].push({
+        title: element,
+        hash: `#${element}`,
+        view: element
+    });
+    Deno.writeTextFileSync("./app/routes.json", JSON.stringify(json, null, 4));
+}
 
 function getClassName(element) {
     const parts = element.split("-");
