@@ -1,5 +1,3 @@
-import {CalendarUtils} from "./calendar-utils.js";
-
 export default class Calendar extends crsbinding.classes.BindableElement {
     #month;
     #year;
@@ -95,9 +93,10 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         (newValue !== oldValue) && await this.#defaultVisualSelection();
     }
 
+
     /**
-     * @method Get the data for the month and year, then inflate the cells with the data.
-     * @description This method is called when the month or year is changed and renders the calendar.
+     * @method #render -  The function gets the data for the month and year, inflates the cells with the data, and then sets the focus on
+     * the cell that was previously focused
      */
     async #render() {
         const data = await crs.call("date", "get_days", {month: this.#month, year: this.#year, only_current: false});
@@ -108,7 +107,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     /**
-     * @method It sets the aria-selected attribute of the date that was clicked when render is called.
+     * @method #setAriaSelectedAttribute - It sets the aria-selected attribute of the date that was clicked when render is called.
      * @param data {object} - The {data} that is passed to the calendar.
      */
     async #setAriaSelectedAttribute(data) {
@@ -125,8 +124,8 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     /**
-     * @method It sets the month text property and sets the selected month property. If the selected view is months, it
-     * sets the months view and renders the calendar.
+     * @method #setMonthProperty - It sets the month text property and sets the selected month property. If the selected
+     * view is months, it sets the months view.
      */
     async #setMonthProperty() {
         this.setProperty("selectedMonthText", new Date(this.#year, this.#month).toLocaleString('en-US', {month: 'long'}));
@@ -135,8 +134,8 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     /**
-     * @method This function sets the selected year property and then sets the years view if the selected view is years and
-     * renders the calendar.
+     * @method #setYearProperty - This function sets the selected year property and then sets the years view if the
+     * selected view is years.
      */
     async #setYearProperty() {
         this.setProperty("selectedYearText", this.#year);
@@ -145,7 +144,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     /**
-     * @method This function sets the month OR year aria attributes on the selected element.
+     * @method #setMonthAndYearAria - This function sets the month OR year aria attributes on the selected element.
      * @param newValue - The value of the month or year you want to select.
      * @returns The element that was selected.
      */
@@ -157,14 +156,15 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     /**
-     * @method This function sets the selectedView property to "default"
+     * @method #setDefaultView - This function sets the selectedView property to "default"
      */
     async #setDefaultView() {
         this.setProperty("selectedView", "default");
     }
 
     /**
-     * @method When the user presses the tab key, the focus moves to the next element in the list.
+     * @method #updateTabIndex - This function sets the tab index of the current element to 0 and focuses on it and calls the
+     * setDataStart function that sets the data-start attribute on the calendar.
      */
     async #updateTabIndex() {
         this.#elements[this.#currentIndex].tabIndex = 0;
@@ -175,8 +175,8 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     /**
-     * @method The function gets all the elements with the role of cell, or the data-type of month-cell or year-cell, and then
-     * sets the currentIndex to the index of the element with the tabIndex of 0
+     * @method #get_elements - This function gets all the elements that are focusable in the calendar and sets the current index to the element
+     * that has focus.
      */
     async #get_elements() {
         this.#elements = this.shadowRoot.querySelectorAll("[role='cell'],[data-type='month-cell'],[data-type='year-cell']");
@@ -184,10 +184,10 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     /**
-     * @method This function is called when the user presses the tab key. It gets the elements, then checks if the target is a button and if it is, it returns.
-     * If the target is not a button, it checks if the key pressed is a function and if it is, it calls the function.
-     * @param event {object} - The event object that is passed to the function.
-     * @returns the value of the expression on the right side of the return statement.
+     * @method #tabNavigation - This function is called when the user presses a key on the keyboard. it calls the functions
+     * that correspond to the key that was pressed.
+     * @param event - The event object that is passed to the function.
+     * @returns the value of the expression.
      */
     async #tabNavigation(event) {
         if (event.target.tagName === "BUTTON") return;
@@ -204,6 +204,13 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      * function that is called when the user clicks on a date
      * @param event - The event that triggered the function.
      */
+
+    /**
+     * @method #pressEnter - The function is called when the user presses the enter key. It calls the functions that correspond to the
+     * selected view.
+     * @param event
+     * @return {Promise<void>}
+     */
     async #pressEnter(event) {
         const view = this.#selectedView;
         if (view != null) {
@@ -213,9 +220,9 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     /**
-     * @method The function is called when the user presses the arrow up key.
+     * @method #pressArrowUp - The function is called when the user presses the arrow up key.
      */
-    async #pressArrowUp(event) {
+    async #pressArrowUp() {
         const query = this.#currentIndex - this.#columns < 0;
 
         if (this.#selectedView === "default") {
@@ -229,9 +236,9 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     /**
-     * @method The function is called when the user presses the arrow down key.
+     * @method #pressArrowDown - The function is called when the user presses the arrow down key.
      */
-    async #pressArrowDown(event) {
+    async #pressArrowDown() {
         const query = (this.#currentIndex + this.#columns) >= this.#elements.length;
 
         if (this.#selectedView === "default") {
@@ -246,9 +253,9 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     /**
-     * @function pressArrowLeft - The function is called when the user presses the arrow left key.
+     * @method #pressArrowLeftt - The function is called when the user presses the arrow left key.
      */
-    async #pressArrowLeft(event) {
+    async #pressArrowLeft() {
         const query = (this.#currentIndex - 1) < 0;
 
         if (this.#selectedView === "default") {
@@ -262,30 +269,41 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     /**
-     * @function  pressArrowRight - The function is called when the user presses the arrow right key.
+     * @method pressArrowRight - The function is called when the user presses the arrow right key.
      */
-    async #pressArrowRight(event) {
+    async #pressArrowRight() {
         this.#currentIndex = (this.#currentIndex + 1) % this.#elements.length;
         await this.#updateTabIndex();
     }
 
-    async #defaultEnter(value) {
-        await crs.call("dom_collection", "toggle_selection", {
-            target: this.#elements[this.#currentIndex],
-            multiple: false
-        });
+    /**
+     * @method #defaultEnter - It calls the `toggle_selection` method of the `dom_collection`.
+     */
+    async #defaultEnter() {
+        await crs.call("dom_collection", "toggle_selection", {target: this.#elements[this.#currentIndex], multiple: false});
     }
 
+    /**
+     * @method #monthsEnter - It sets the month property to the value of the input field and calls the selectedMonthChanged function.
+     * @param value - The value of the input field.
+     */
     async #monthsEnter(value) {
         this.#month = value;
         await this.selectedMonthChanged(this.#month)
     }
 
+    /**
+     * > @method #yearsEnter - It sets the year property to the value of the input field and calls the selectedYearChanged function.
+     * @param value - The value of the input field.
+     */
     async #yearsEnter(value) {
         this.#year = value;
         await this.selectedYearChanged(this.#year);
     }
 
+    /**
+     * @method #setFocusOnRender - The function sets the year aria, focus on the element, and set the columns property.
+     */
     async #yearsVisualSelection() {
         const element = await this.#setMonthAndYearAria(this.#year);
         element.scrollIntoView();
@@ -293,12 +311,18 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         this.#columns = 4;
     }
 
+    /**
+     * @method #monthsVisualSelection - The function set the month aria, focus on the element, and set the columns property.
+     */
     async #monthsVisualSelection() {
         const element = await this.#setMonthAndYearAria(this.#month);
         element.focus();
         this.#columns = 3;
     }
 
+    /**
+     * @method #defaultVisualSelection - The function renders the calendar and set the columns property.
+     */
     async #defaultVisualSelection() {
         requestAnimationFrame(async () => await this.#render());
         this.#columns = 7;
