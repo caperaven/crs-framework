@@ -162,7 +162,7 @@ export class PageToolbar extends HTMLElement {
             this.pageSize = this.#recordCount;
         }
 
-        this.#lastPage = Math.ceil(this.#recordCount / this.pageSize);
+        this.#calculateLastPage();
     }
 
     /**
@@ -179,7 +179,7 @@ export class PageToolbar extends HTMLElement {
     async #dataManagerChanged(args) {
         if (args.action == CHANGE_TYPES.refresh) {
             this.#recordCount = args.count;
-            this.#lastPage = Math.ceil(this.#recordCount / this.pageSize);
+            this.#calculateLastPage();
         }
     }
 
@@ -274,6 +274,14 @@ export class PageToolbar extends HTMLElement {
 
         const data = []; // use the data manager to get the data
         target?.refresh(data);
+    }
+
+    #calculateLastPage() {
+        this.#lastPage = Math.ceil(this.#recordCount / this.pageSize);
+
+        if (this.#lastPage < 1) {
+            this.#lastPage = 1;
+        }
     }
 }
 
