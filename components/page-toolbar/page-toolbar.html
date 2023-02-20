@@ -1,0 +1,46 @@
+<style>
+    @import "./../../styles/lib/buttons.css";
+
+    :host {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        background: var(--grey-surface);
+        border: var(--border);
+        padding: var(--padding);
+    }
+
+    :host * {
+        box-sizing: border-box;
+    }
+
+    .spacer {
+        flex: 1;
+    }
+
+    input {
+        width: 2rem;
+        height: 2rem;
+        text-align: center;
+    }
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    button {
+        width: 2rem;
+        height: 2rem;
+    }
+</style>
+
+<input id="edtPageSize" type="number" min="1" max="100" value="10" />
+<div>&{pageToolbar.rowsPerPage}</div>
+<div class="spacer"></div>
+<button id="gotoFirst"></button>
+<button id="gotoPrevious"></button>
+<input id="edtPageNumber" type="number" min="1" value="1" />
+<button id="gotoNext"></button>
+<button id="gotoLast"></button>
