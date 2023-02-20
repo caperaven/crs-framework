@@ -336,7 +336,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     /**
-     * @function selectedMonthChanged - The function is called when the selectedMonth property changes and renders the calendar.
+     * @method selectedMonthChanged - The function is called when the selectedMonth property changes and renders the calendar.
      * @description The function is a binding engine convention it listens for the property to change.
      * @param newValue - The new value of the selected month.
      */
@@ -349,7 +349,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     /**
-     * @function selectedYearChanged - The function is called when the selectedYear property changes and renders the calendar.
+     * @method selectedYearChanged - The function is called when the selectedYear property changes and renders the calendar.
      * @description The function is a binding engine convention it listens for the property to change.
      * @param newValue - The new value of the property.
      */
@@ -362,7 +362,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     /**
-     * @function selectedDate - The function is called when a user clicks on a date in the calendar
+     * @method selectedDate - The function is called when a user clicks on a date in the calendar
      * @param event - The event that triggered the function.
      */
     async selectedDate(event) {
@@ -375,7 +375,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     /**
-     * @function set_dataStart - It sets the data-start attribute to the date selected by the user.
+     * @method #setDataStart - It sets the data-start attribute to the date selected by the user.
      * @param newValue - The new value of the attribute.
      *
      * @example
@@ -387,7 +387,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     /**
-     * @function setFocusOnRender - The function gets the currently selected tab, then gets all the tabs, then sets the tabIndex of the currently
+     * @method setFocusOnRender - The function gets the currently selected tab, then gets all the tabs, then sets the tabIndex of the currently
      * selected tab to -1, and the tabIndex of the newly selected tab to 0
      */
     async #setFocusOnRender() {
@@ -406,7 +406,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     /**
-     * @function goToNext - If the selected view is years, increment the year by one. Otherwise, increment the month by one and if the month
+     * @method goToNext - If the selected view is years, increment the year by one. Otherwise, increment the month by one and if the month
      * is greater than 11, set the month to 0 and increment the year by one
      */
     async goToNext() {
@@ -422,7 +422,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     /**
-     * @function goToPrevious - If the selected view is years, then decrement the year by one. Otherwise, decrement the month by one and if the
+     * @method goToPrevious - If the selected view is years, then decrement the year by one. Otherwise, decrement the month by one and if the
      * month is less than zero, then set the month to 11 and decrement the year by one
      */
     async goToPrevious() {
