@@ -27,4 +27,16 @@ export default class DataTableViewModel extends crsbinding.classes.ViewBase {
             ]
         })
     }
+
+    async addRecord() {
+        // Todo: JHR
+    }
+
+    async updateRecord() {
+        // Todo: JHR
+    }
+
+    async deleteRecord() {
+        // Todo: JHR
+    }
 }
