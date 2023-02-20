@@ -85,7 +85,8 @@ export class DataTable extends HTMLElement {
      * @property selected - return the id field value for the selected row / s
      */
     get selected() {
-        // TODO JHR - implement this
+        const selectedElement = this.shadowRoot.querySelector("[aria-selected='true']");
+        return selectedElement?.dataset.id || null;
     }
 
     /**
@@ -150,6 +151,7 @@ export class DataTable extends HTMLElement {
      */
     #click(event) {
         // TODO Andre - implement this
+        // use toggle selection on process api ...
     }
 
     /**
@@ -164,6 +166,8 @@ export class DataTable extends HTMLElement {
      * @method #keyUp - navigate up and down in the table using the arrow keys.
      * Use the space bar to select a row.
      * On row selection, set the selected id based on the recordElement.dataset.id
+     * Selection use aria-selected="true" on the row.
+     * What to use for highlighted / focused record but not selected.
      * @param event
      */
     #keyUp(event) {
