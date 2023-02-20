@@ -9,6 +9,7 @@ class OptionsToolbar extends HTMLElement {
     #marker;
     #clickHandler;
     #previouslySelected;
+    #parent;
 
     constructor() {
         super();
@@ -34,15 +35,16 @@ class OptionsToolbar extends HTMLElement {
                 });
 
                 this.#marker = this.shadowRoot.querySelector(".marker");
+                this.#parent = this.shadowRoot.querySelector(".parent");
 
                 const selectedItem = this.querySelector(`[aria-selected='true']`) ?? this.firstElementChild;
                 await this.#setSelected(selectedItem, false);
                 this.addEventListener("click", this.#clickHandler);
 
-                const timeout = setTimeout(() => {
-                    this.#marker.style.transition = "translate 0.3s ease-out";
-                    clearTimeout(timeout);
-                }, 0.5)
+                // const timeout = setTimeout(() => {
+                //     this.#marker.style.transition = "translate 0.3s ease-out";
+                //     clearTimeout(timeout);
+                // }, 0.5)
 
                 resolve();
             });

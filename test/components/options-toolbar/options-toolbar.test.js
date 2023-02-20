@@ -21,51 +21,60 @@ describe ("options-toolbar tests", async () => {
 
     beforeEach(async () => {
         instance = document.createElement("options-toolbar");
-        createChildrenFromHtml(instance, [
-            '<div class="marker"></div>',
-            '<div class="parent"><slot></slot></div>'
-        ].join(" "))
+        instance.bounds = {left: 0, top: 0, width: 40, height: 20};
+        // document.body.appendChild(instance);
 
-        marker = instance.shadowRoot.querySelector(".marker");
-        marker.classList.add("marker");
-        parent = instance.shadowRoot.querySelector(".parent");
-        parent.classList.add("parent");
+        // createChildrenFromHtml(instance.shadowRoot, [
+        //     '<button data-value="on" id="button-1"></button>',
+        //     '<button data-value="off" aria-selected="true" id="button-2"></button>'
+        // ].join(" "))
 
-        // button1 = document.createElement("button");
-        // button1.id = "button1";
-        // button1.textContent = "button1";
-        // button2 = document.createElement("button");
-        // button2.id = "button2";
-        // button2.textContent = "button2";
-        // instance.appendChild(button1);
-        // instance.appendChild(button2);
-        //
-        //
-        //
-        // await instance.connectedCallback();
-        let clasname = marker.classList;
-        console.log(clasname);
-    })
+
+
+
+        button1 = new ElementMock("button");
+        button1.setAttribute("data-value", "on");
+        button1.id = "on-button";
+        button1.bounds = {left: 0, top: 0, width: 20, height: 20};
+
+        instance.appendChild(button1);
+
+        button2 = new ElementMock("button");
+        button2.setAttribute("data-value", "off");
+        button2.setAttribute("aria-selected", "true");
+        button2.id = "off-button";
+        button2.bounds = {left: 20, top: 0, width: 20, height: 20};
+
+        instance.appendChild(button2);
+
+        await instance.connectedCallback();
+
+        const marker = instance.shadowRoot.querySelector(".marker");
+        marker.bounds = {left: 0, top: 0, width: 20, height: 20};
+        marker.id = "marker";
+
+        const parent = instance.shadowRoot.querySelector("div");
+        parent.bounds = {left: 0, top: 0, width: 40, height: 20};
+        parent.id = "parent";
+    });
 
     afterEach(async () => {
         await instance.disconnectedCallback();
-    })
+    });
 
     it("instance is not null", async () => {
         assert(instance !== null);
-
+        assert(instance.shadowRoot !== null);
+        assert(instance.shadowRoot.querySelector(".marker") !== null);
+        assert(instance.shadowRoot.querySelector(".parent") !== null);
     });
 
-    it("expand and collapse on click", async () => {
-
-    })
-
-    it("check for header content", async () => {
-
-
+    it("click", async () => {
+        console.log("button1", button1.id);
+        console.log("button2", button2.id);
+        console.log("marker", marker.id);
+        console.log("parent", parent.id);
     });
 
-    it("keypress to expand and collapse", async () => {
 
-    })
 });
