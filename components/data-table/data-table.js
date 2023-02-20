@@ -10,6 +10,7 @@ import {CHANGE_TYPES} from "../../src/data-manager/data-manager-types.js";
  *
  * Events:
  * - ready - fired when the element is ready to be used from outside
+ * - ondblclick - fired when a row is double clicked passing on the id field value of the record
  *
  * Attributes:
  * - data-manager - name of the data manager to use, used instead of having to set the property
@@ -18,6 +19,9 @@ import {CHANGE_TYPES} from "../../src/data-manager/data-manager-types.js";
  * Methods:
  * - refresh - refresh the data, redrawing the grid
  * - filter - filter the data based on some criteria
+ *
+ * Property:
+ * - selected - get the selected record/s
  *
  * @example <caption>html example</caption>
  * <data-table data-manager="my-data" data-manager-key="group1">
@@ -54,6 +58,10 @@ export class DataTable extends HTMLElement {
     #dataManagerKey;
     #dataManagerChangedHandler = this.#dataManagerChanged.bind(this);
 
+    #keyUpHandler = this.#keyUp.bind(this);
+    #clickHandler = this.#click.bind(this);
+    #dblClickHandler = this.#dblClick.bind(this);
+
     /**
      * @field #changeEventMap - lookup table for change events and what function to call on that event
      */
@@ -64,6 +72,22 @@ export class DataTable extends HTMLElement {
         [CHANGE_TYPES.filter]: this.#filterRecords,
         [CHANGE_TYPES.refresh]: this.refresh,
     };
+
+    /**
+     * @property dataManager - getter/setter for the dataManager property on what field to use as the id
+     * @returns {*}
+     */
+    get #idField() {
+        return dataManagers[this.#dataManager].idField;
+    }
+
+    /**
+     * @property selected - return the id field value for the selected row / s
+     */
+    get selected() {
+        const selectedElement = this.shadowRoot.querySelector("[aria-selected='true']");
+        return selectedElement?.dataset.id || null;
+    }
 
     /**
      * @property columns - getter/setter for the columns property
@@ -119,6 +143,35 @@ export class DataTable extends HTMLElement {
         // dispose of resources
         await this.#unhookDataManager();
         this.#dataManagerChangedHandler = null;
+    }
+
+    /**
+     * @method #click - find the record you clicked on and set the selected id based on the recordElement.dataset.id
+     * @param event
+     */
+    #click(event) {
+        // TODO Andre - implement this
+        // use toggle selection on process api ...
+    }
+
+    /**
+     * @method #dblClick - find the record you double clicked on and fire the ondblclick event passing on the id field value of the record
+     * @param event
+     */
+    #dblClick(event) {
+        this.dispatchEvent(new CustomEvent("ondblclick", { detail: this.selected }));
+    }
+
+    /**
+     * @method #keyUp - navigate up and down in the table using the arrow keys.
+     * Use the space bar to select a row.
+     * On row selection, set the selected id based on the recordElement.dataset.id
+     * Selection use aria-selected="true" on the row.
+     * What to use for highlighted / focused record but not selected.
+     * @param event
+     */
+    #keyUp(event) {
+        // TODO Andre - implement this
     }
 
     /**
@@ -291,6 +344,7 @@ export class DataTable extends HTMLElement {
         // for each model in the data create a row
         for (const model of data) {
             const tr = document.createElement("tr");
+            tr.dataset.id = model[this.#idField];
 
             // for each column in the columns create a cell
             for (const column of this.#columns) {

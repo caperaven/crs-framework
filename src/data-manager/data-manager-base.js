@@ -4,7 +4,7 @@
  *
  * Properties:
  * - count: The number of records in the data manager
- * - dataField: The name of the field that is used to identify records (primary key)
+ * - idField: The name of the field that is used to identify records (primary key)
  * - eventCount: The number of events that are currently registered
  *
  * Methods:
@@ -12,7 +12,7 @@
  * - setRecords: This method is called to set the records in the data manager. It should be used to initialize the data manager.
  * - append: This method is called to add records to the data manager.
  * - removeIndexes: This method is called to remove records from the data manager by index.
- * - removeIds: This method is called to remove records from the data manager by id (based on the dataField as the id).
+ * - removeIds: This method is called to remove records from the data manager by id (based on the idField as the id).
  * - addChangeCallback: This method is called to register a callback that will be called when the data manager changes.
  * - removeChangeCallback: This method is called to remove a callback that was previously registered.
  * - notifyChanges: This method is called to notify all registered callbacks that the data manager has changed.
@@ -24,11 +24,11 @@
  * - getById: This method is called to get a record by its id.
  * - getIds: This method is called to get the ids of all of the records in the data manager.
  * - updateIndex: This method is called to update a record in the data manager by index.
- * - updateId: This method is called to update a record in the data manager by id (based on the dataField as the id).
+ * - updateId: This method is called to update a record in the data manager by id (based on the idField as the id).
  */
 export class BaseDataManager {
     #id;
-    #dataField;
+    #idField;
     #count;
     #events = [];
 
@@ -41,11 +41,11 @@ export class BaseDataManager {
     }
 
     /**
-     * @property dataField {string} - The name of the field that is used to identify records (primary key)
+     * @property idField {string} - The name of the field that is used to identify records (primary key)
      * @returns {*}
      */
-    get dataField() {
-        return this.#dataField;
+    get idField() {
+        return this.#idField;
     }
 
     /**
@@ -59,18 +59,18 @@ export class BaseDataManager {
     /**
      * @constructor
      * @param id {string} - The id of the data manager
-     * @param dataField {string} - The name of the field that is used to identify records (primary key)
+     * @param idField {string} - The name of the field that is used to identify records (primary key)
      */
-    constructor(id, dataField) {
+    constructor(id, idField) {
         this.#id = id;
-        this.#dataField = dataField;
+        this.#idField = idField;
     }
 
     /**
      * @method dispose - This method is called when the data manager is no longer needed. It should be used to clean up any resources that are being used.
      */
     dispose() {
-        this.#dataField = null;
+        this.#idField = null;
         this.#events = null;
         this.#count = null;
     }
@@ -101,7 +101,7 @@ export class BaseDataManager {
     }
 
     /**
-     * @method removeIds - This method is called to remove records from the data manager by id (based on the dataField as the id).
+     * @method removeIds - This method is called to remove records from the data manager by id (based on the idField as the id).
      * @param count
      */
     removeIds(count) {
