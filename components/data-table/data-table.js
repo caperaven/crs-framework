@@ -10,18 +10,23 @@ import {CHANGE_TYPES} from "../../src/data-manager/data-manager-types.js";
  *
  * Events:
  * - ready - fired when the element is ready to be used from outside
+ * - ondblclick - fired when a row is double clicked passing on the id field value of the record
  *
  * Attributes:
  * - data-manager - name of the data manager to use, used instead of having to set the property
+ * - data-manager-key - key to use for the data manager, used instead of having to set the property
  *
  * Methods:
  * - refresh - refresh the data, redrawing the grid
  * - filter - filter the data based on some criteria
  *
+ * Property:
+ * - selected - get the selected record/s
+ *
  * @example <caption>html example</caption>
  * <data-table data-manager="my-data" data-manager-key="group1">
- *     <column heading="code" property="code"></column>
- *     <column heading="description" property="description"></column>
+ *     <column data-heading="code" data-property="code" data-width="100"></column>
+ *     <column data-heading="description" data-property="description" data-width="200"></column>
  * </data-table>
  *
  * @example <caption>javascript example to initialize the data table</caption>
@@ -30,8 +35,8 @@ import {CHANGE_TYPES} from "../../src/data-manager/data-manager-types.js";
  *     dataManager: "my-data",
  *     dataManagerKey: "group1",
  *     columns: [
- *        { heading: "code", property: "code" },
- *        { heading: "description", property: "description" }
+ *        { heading: "code", property: "code", width: 100 },
+ *        { heading: "description", property: "description", width: 200 }
  *     ]
  * })
  *
@@ -39,8 +44,8 @@ import {CHANGE_TYPES} from "../../src/data-manager/data-manager-types.js";
  * await crs.call("data-table", "set_columns", {
  *      element: document.querySelector("data-table"),
  *      columns: [
- *          { heading: "code", property: "code" },
- *          { heading: "description", property: "description" }
+ *          { heading: "code", property: "code", width: 100 },
+ *          { heading: "description", property: "description", width: 200 }
  *      ]
  * });
  *
@@ -49,6 +54,13 @@ import {CHANGE_TYPES} from "../../src/data-manager/data-manager-types.js";
  */
 export class DataTable extends HTMLElement {
     #columns;
+    #dataManager;
+    #dataManagerKey;
+    #dataManagerChangedHandler = this.#dataManagerChanged.bind(this);
+
+    #keyUpHandler = this.#keyUp.bind(this);
+    #clickHandler = this.#click.bind(this);
+    #dblClickHandler = this.#dblClick.bind(this);
 
     /**
      * @field #changeEventMap - lookup table for change events and what function to call on that event
@@ -61,6 +73,26 @@ export class DataTable extends HTMLElement {
         [CHANGE_TYPES.refresh]: this.refresh,
     };
 
+    /**
+     * @property dataManager - getter/setter for the dataManager property on what field to use as the id
+     * @returns {*}
+     */
+    get #idField() {
+        return dataManagers[this.#dataManager].idField;
+    }
+
+    /**
+     * @property selected - return the id field value for the selected row / s
+     */
+    get selected() {
+        const selectedElement = this.shadowRoot.querySelector("[aria-selected='true']");
+        return selectedElement?.dataset.id || null;
+    }
+
+    /**
+     * @property columns - getter/setter for the columns property
+     * @returns {*}
+     */
     get columns() {
         return this.#columns;
     }
@@ -82,6 +114,7 @@ export class DataTable extends HTMLElement {
      * @returns {Promise<void>}
      */
     async connectedCallback() {
+        this.#loadColumnsFromChildren();
         this.shadowRoot.innerHTML = await fetch(import.meta.url.replace(".js", ".html")).then(response => response.text());
         await this.load();
         await crs.call("component", "notify_ready", { element: this });
@@ -94,9 +127,9 @@ export class DataTable extends HTMLElement {
     load() {
         return new Promise(resolve => {
             requestAnimationFrame(async () => {
-                // load resources
-                this.#loadColumnsFromChildren();
-                this.#hookDataManager();
+                this.#dataManager = this.dataset["manager"];
+                this.#dataManagerKey = this.dataset["manager-key"];
+                await this.#hookDataManager();
                 resolve();
             });
         })
@@ -108,24 +141,62 @@ export class DataTable extends HTMLElement {
      */
     async disconnectedCallback() {
         // dispose of resources
-        this.#unhookDataManager();
+        await this.#unhookDataManager();
+        this.#dataManagerChangedHandler = null;
+    }
+
+    /**
+     * @method #click - find the record you clicked on and set the selected id based on the recordElement.dataset.id
+     * @param event
+     */
+    #click(event) {
+        // TODO Andre - implement this
+        // use toggle selection on process api ...
+    }
+
+    /**
+     * @method #dblClick - find the record you double clicked on and fire the ondblclick event passing on the id field value of the record
+     * @param event
+     */
+    #dblClick(event) {
+        this.dispatchEvent(new CustomEvent("ondblclick", { detail: this.selected }));
+    }
+
+    /**
+     * @method #keyUp - navigate up and down in the table using the arrow keys.
+     * Use the space bar to select a row.
+     * On row selection, set the selected id based on the recordElement.dataset.id
+     * Selection use aria-selected="true" on the row.
+     * What to use for highlighted / focused record but not selected.
+     * @param event
+     */
+    #keyUp(event) {
+        // TODO Andre - implement this
     }
 
     /**
      * @private
      * @method #hoodDataManager - get the data manager and set the event listeners to be notified of change
      */
-    #hookDataManager() {
+    async #hookDataManager() {
         // when registering with the data manager, I need a key to be used in the filter operation
         // this key is used to only update visualizations that use the same key.
+
+        await crs.call("data_manager", "on_change", {
+            manager: this.#dataManager,
+            callback: this.#dataManagerChangedHandler
+        });
     }
 
     /**
      * @private
      * @method #unhookDataManager - remove the event listeners from the data manager
      */
-    #unhookDataManager() {
-
+    async #unhookDataManager() {
+        await crs.call("data_manager", "remove_change", {
+            manager: this.#dataManager,
+            callback: this.#dataManagerChangedHandler
+        });
     }
 
     /**
@@ -135,7 +206,7 @@ export class DataTable extends HTMLElement {
      * @param args {Object} - arguments from the data manager change event
      */
     async #dataManagerChanged(args) {
-        await this.#changeEventMap[args.action](args);
+        await this.#changeEventMap[args.action].call(this, args);
     }
 
     /**
@@ -144,7 +215,24 @@ export class DataTable extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #addRecord(args) {
+        const insertIndex = args.index;
 
+        const fragment = document.createDocumentFragment();
+        for (const model of args.models) {
+            const row = document.createElement("tr");
+
+            for (const column of this.#columns) {
+                const cell = document.createElement("td");
+                cell.innerText = model[column.property];
+                cell.dataset.field = column.property;
+                row.appendChild(cell);
+            }
+            fragment.appendChild(row);
+        }
+
+        const tbody = this.shadowRoot.querySelector("tbody");
+        const targetElement = tbody.children[insertIndex];
+        tbody.insertBefore(fragment, targetElement);
     }
 
     /**
@@ -153,7 +241,19 @@ export class DataTable extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #updateRecord(args) {
+        const index = args.index;
+        const changes = args.changes;
 
+        const tbody = this.shadowRoot.querySelector("tbody");
+        const row = tbody.children[index];
+
+        for (const property of Object.keys(changes)) {
+            const cell = row.querySelector(`[data-field="${property}"]`);
+
+            if (cell) {
+                cell.innerText = changes[property];
+            }
+        }
     }
 
     /**
@@ -162,7 +262,13 @@ export class DataTable extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #deleteRecord(args) {
+        // sort the indexes in descending order so that the indexes don't change as you delete
+        const indexes = args.indexes.sort((a, b) => b - a);
+        const tbody = this.shadowRoot.querySelector("tbody");
 
+        for (const index of indexes) {
+            tbody.children[index].remove();
+        }
     }
 
     /**
@@ -183,16 +289,29 @@ export class DataTable extends HTMLElement {
      * If there are no children just ignore it.
      */
     #loadColumnsFromChildren() {
+        if (this.children.length === 0) return;
 
+        const columns = [];
+
+        for (const child of this.children) {
+            columns.push({
+                heading: child.dataset.heading,
+                property: child.dataset.property,
+                width: Number(child.dataset.width || "100")
+            });
+        }
+
+        this.#columns = columns;
     }
 
     /**
      * @method #buildTable - build the table from scratch by building the columns and rows in the HTML Table element
+     * @param data {Array} - data to build the rows from
      * @returns {Promise<void>}
      */
-    async #buildTable() {
+    async #buildTable(data) {
         await this.#buildColumns();
-        await this.#buildRows();
+        await this.#buildRows(data);
     }
 
     /**
@@ -200,15 +319,47 @@ export class DataTable extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #buildColumns() {
+        const fragment = document.createDocumentFragment();
 
+        for (const column of this.#columns) {
+            const td = document.createElement("td");
+            td.style.width = `${column.width}px`;
+            td.innerText = column.heading;
+            fragment.appendChild(td);
+        }
+
+        const tableHeader = this.shadowRoot.querySelector("#tableHeader");
+        tableHeader.innerHTML = "";
+        tableHeader.appendChild(fragment);
     }
 
     /**
      * @method #buildRows - build the rows in the HTML Table element
+     * @param data {Array} - data to build the rows from
      * @returns {Promise<void>}
      */
-    async #buildRows() {
+    async #buildRows(data) {
+        const fragment = document.createDocumentFragment();
 
+        // for each model in the data create a row
+        for (const model of data) {
+            const tr = document.createElement("tr");
+            tr.dataset.id = model[this.#idField];
+
+            // for each column in the columns create a cell
+            for (const column of this.#columns) {
+                const cell = document.createElement("td");
+                cell.innerText = model[column.property];
+                cell.dataset.field = column.property;
+                tr.appendChild(cell);
+            }
+
+            fragment.appendChild(tr);
+        }
+
+        const tbody = this.shadowRoot.querySelector("tbody");
+        tbody.innerHTML = "";
+        tbody.appendChild(fragment);
     }
 
     /**
@@ -232,7 +383,7 @@ export class DataTable extends HTMLElement {
     async refresh(data = null) {
         this.innerHTML = "";
 
-        data ||= await crs.call("data_manager", "get_all", { data_manager: this.dataManager });
+        data ||= await crs.call("data_manager", "get_all", { manager: this.#dataManager });
         await this.#buildTable(data);
     }
 

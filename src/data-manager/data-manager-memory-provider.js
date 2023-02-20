@@ -58,7 +58,7 @@ export class DataManagerMemoryProvider extends BaseDataManager {
      * @returns {*}
      */
     getById(id) {
-        return this.#records.find(item => item[this.dataField] == id);
+        return this.#records.find(item => item[this.idField] == id);
     }
 
     /**
@@ -69,7 +69,7 @@ export class DataManagerMemoryProvider extends BaseDataManager {
     getIds(indexes) {
         const ids = [];
         for (const index of indexes) {
-            ids.push(this.#records[index][this.dataField]);
+            ids.push(this.#records[index][this.idField]);
         }
         return ids;
     }
@@ -84,7 +84,7 @@ export class DataManagerMemoryProvider extends BaseDataManager {
         const ids = [];
 
         for (const index of indexes) {
-            ids.push(this.#records[index][this.dataField]);
+            ids.push(this.#records[index][this.idField]);
             this.#records.splice(index, 1);
         }
 
@@ -100,7 +100,7 @@ export class DataManagerMemoryProvider extends BaseDataManager {
     removeIds(ids) {
         const indexes = [];
         for (const id of ids) {
-            const index = this.#records.findIndex(item => item[this.dataField] == id);
+            const index = this.#records.findIndex(item => item[this.idField] == id);
             indexes.push(index);
             this.#records.splice(index, 1);
         }
@@ -118,7 +118,7 @@ export class DataManagerMemoryProvider extends BaseDataManager {
      */
     updateIndex(index, changes) {
         const record = this.#records[index];
-        const id = record[this.dataField];
+        const id = record[this.idField];
 
         const keys = Object.keys(changes);
         for (const key of keys) {
@@ -135,7 +135,7 @@ export class DataManagerMemoryProvider extends BaseDataManager {
      * @returns {{changes, index: *, id}}
      */
     updateId(id, changes) {
-        const index = this.#records.findIndex(item => item[this.dataField] == id);
+        const index = this.#records.findIndex(item => item[this.idField] == id);
         const record = this.#records[index];
 
         const keys = Object.keys(changes);

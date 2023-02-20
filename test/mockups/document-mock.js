@@ -34,5 +34,5 @@ globalThis.document.createTextNode = () => {
 }
 
 globalThis.document.createDocumentFragment = () => {
-    return new ElementMock();
+    return new ElementMock("DOCUMENT-FRAGMENT");
 }
