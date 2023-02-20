@@ -1,3 +1,5 @@
+import {CHANGE_TYPES} from "../../src/data-manager/data-manager-types.js";
+
 /**
  * @class PageToolbar - a custom element that displays a data table
  * This component manages the data for visualizations like the data table.
@@ -27,11 +29,14 @@
  */
 export class PageToolbar extends HTMLElement {
     #recordCount = 0;
+    #lastPage;
     #dataManager;
     #dataManagerKey;
     #dataManagerChangedHandler = this.#dataManagerChanged.bind(this);
     #clickHandler = this.#click.bind(this);
     #changeHandler = this.#change.bind(this);
+    #edtPageSize;
+    #edtPageNumber;
 
     /**
      * @property pageSize - the number of rows to display per page
@@ -41,11 +46,35 @@ export class PageToolbar extends HTMLElement {
      * @returns {*}
      */
     get pageSize() {
-        return this.shadowRoot.querySelector("#edtPageSize").value;
+        return Number(this.#edtPageSize.value);
     }
 
     set pageSize(newValue) {
-        this.shadowRoot.querySelector("#edtPageSize").value = newValue;
+        newValue = Number(newValue);
+
+        if (newValue < 1) {
+            newValue = 1;
+        }
+
+        this.#edtPageSize.value = Number(newValue);
+    }
+
+    get pageNumber() {
+        return Number(this.#edtPageNumber.value);
+    }
+
+    set pageNumber(newValue) {
+        newValue = Number(newValue);
+
+        if (newValue < 1) {
+            newValue = 1;
+        }
+
+        if (newValue > this.#lastPage) {
+            newValue = this.#lastPage;
+        }
+
+        this.#edtPageNumber.value = newValue;
     }
 
     /**
@@ -74,6 +103,9 @@ export class PageToolbar extends HTMLElement {
         return new Promise(resolve => {
             requestAnimationFrame(async () => {
                 this.setAttribute("role", "toolbar");
+
+                this.#edtPageSize = this.shadowRoot.querySelector("#edtPageSize");
+                this.#edtPageNumber = this.shadowRoot.querySelector("#edtPageNumber");
 
                 const size = this.dataset["page-size"];
                 this.pageSize = size ? parseInt(size) : 10;
@@ -105,6 +137,8 @@ export class PageToolbar extends HTMLElement {
         this.#dataManagerChangedHandler = null;
         this.#clickHandler = null;
         this.#changeHandler = null;
+        this.#edtPageSize = null;
+        this.#edtPageNumber = null;
     }
 
     async #translate() {
@@ -127,6 +161,8 @@ export class PageToolbar extends HTMLElement {
         if (this.#recordCount < this.pageSize) {
             this.pageSize = this.#recordCount;
         }
+
+        this.#lastPage = Math.ceil(this.#recordCount / this.pageSize);
     }
 
     /**
@@ -141,7 +177,10 @@ export class PageToolbar extends HTMLElement {
     }
 
     async #dataManagerChanged(args) {
-        console.log(args);
+        if (args.action == CHANGE_TYPES.refresh) {
+            this.#recordCount = args.count;
+            this.#lastPage = Math.ceil(this.#recordCount / this.pageSize);
+        }
     }
 
     async #click(event) {
@@ -189,13 +228,15 @@ export class PageToolbar extends HTMLElement {
     }
 
     #pageNumberChanged(value) {
-
+        this.pageNumber = value;
+        this.#notifyRefresh();
     }
 
     /**
      * @method #gotoFirstPage - go to the first page of the data and notify the target component
      */
     #gotoFirstPage() {
+        this.pageNumber = 1;
         this.#notifyRefresh();
     }
 
@@ -203,6 +244,7 @@ export class PageToolbar extends HTMLElement {
      * @method #gotoPreviousPage - go to the previous page of the data and notify the target component
      */
     #gotoPreviousPage() {
+        this.pageNumber -= 1;
         this.#notifyRefresh();
     }
 
@@ -210,6 +252,7 @@ export class PageToolbar extends HTMLElement {
      * @method #gotoNextPage - go to the next page of the data and notify the target component
      */
     #gotoNextPage() {
+        this.pageNumber += 1;
         this.#notifyRefresh();
     }
 
@@ -217,6 +260,7 @@ export class PageToolbar extends HTMLElement {
      * @method #gotoLastPage - go to the last page of the data and notify the target component
      */
     #gotoLastPage() {
+        this.pageNumber = this.#lastPage;
         this.#notifyRefresh();
     }
 
