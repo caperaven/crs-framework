@@ -36,6 +36,11 @@
             "view": "options-toolbar"
         },
         {
+            "title": "Calendar",
+            "hash": "#calendar",
+            "view": "calendar"
+        },
+        {
             "title": "Context Menu",
             "hash": "#context-menu",
             "view": "context-menu"
