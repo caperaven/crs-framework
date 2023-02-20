@@ -65,6 +65,10 @@ export class DataTable extends HTMLElement {
         [CHANGE_TYPES.refresh]: this.refresh,
     };
 
+    get #dataField() {
+        return dataManagers[this.#dataManager].idField;
+    }
+
     /**
      * @property columns - getter/setter for the columns property
      * @returns {*}
