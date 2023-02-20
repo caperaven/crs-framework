@@ -272,7 +272,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      * @method pressArrowRight - The function is called when the user presses the arrow right key.
      */
     async #pressArrowRight() {
-        this.#currentIndex = (this.#currentIndex + 1) % this.#elements.length;
+        this.#currentIndex = (this.#currentIndex + 1) >= this.#elements.length ? this.#currentIndex : this.#currentIndex + 1;
         await this.#updateTabIndex();
     }
 
