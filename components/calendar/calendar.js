@@ -1,3 +1,5 @@
+import {CalendarUtils} from "./calendar-utils.js";
+
 export default class Calendar extends crsbinding.classes.BindableElement {
     #month;
     #year;
@@ -91,7 +93,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         this.#year = date.getFullYear();
         await this.#setMonthProperty();
         await this.#setYearProperty();
-        (newValue !== oldValue && currentMonth !== this.#month) && await this.#defaultVisualSelection();
+        (newValue !== oldValue) && await this.#defaultVisualSelection();
     }
 
 
@@ -104,7 +106,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         const cells = this.shadowRoot.querySelectorAll("[role='cell']");
         await this.#setAriaSelectedAttribute(data);
         crsbinding.inflationManager.get("calendar-cell", data, cells);
-        await this.#setFocusOnRender();
+        this.calendars != null && await this.#setFocusOnRender();
     }
 
     /**
@@ -399,6 +401,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
             element = this.shadowRoot.querySelector(`[data-month = '${this.#month}']`);
             element.tabIndex = 0;
         }
+
         element?.focus();
     }
 
