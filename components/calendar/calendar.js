@@ -394,6 +394,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
             today != null ? (today.tabIndex = -1): this.#elements[this.#currentIndex].tabIndex = -1;
             element.tabIndex = 0;
         }
+
         if (element == null && this.#elements[this.#currentIndex] == null) {
             element = this.shadowRoot.querySelector(`[data-month = '${this.#month}']`);
             element.tabIndex = 0;
