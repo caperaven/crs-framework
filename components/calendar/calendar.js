@@ -203,12 +203,6 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     /**
-     * @method The function is called when the user presses the enter key. It calls the selectedDate function, which is the
-     * function that is called when the user clicks on a date
-     * @param event - The event that triggered the function.
-     */
-
-    /**
      * @method #pressEnter - The function is called when the user presses the enter key. It calls the functions that correspond to the
      * selected view.
      * @param event
