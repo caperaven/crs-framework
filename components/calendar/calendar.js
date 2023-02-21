@@ -85,12 +85,13 @@ export default class Calendar extends crsbinding.classes.BindableElement {
 
     async attributeChangedCallback(name, oldValue, newValue) {
         if (!newValue) return;
+        const currentMonth = this.#month;
         const date = new Date(newValue);
         this.#month = date.getMonth();
         this.#year = date.getFullYear();
         await this.#setMonthProperty();
         await this.#setYearProperty();
-        (newValue !== oldValue) && await this.#defaultVisualSelection();
+        (newValue !== oldValue && currentMonth !== this.#month) && await this.#defaultVisualSelection();
     }
 
 
@@ -171,6 +172,8 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         this.#elements[this.#currentIndex].focus();
         if (this.#selectedView === "default") {
             await this.#setDataStart(this.#elements[this.#currentIndex]);
+            await crs.call("dom_collection", "toggle_selection", {target: this.#elements[this.#currentIndex], multiple: false});
+            await this.#setFocusOnRender();
         }
     }
 
@@ -242,13 +245,12 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         const query = (this.#currentIndex + this.#columns) >= this.#elements.length;
 
         if (this.#selectedView === "default") {
-            query && (await this.goToNext(), await this.#setFocusOnRender());
+            query && (await this.goToNext());
             this.#currentIndex = this.#currentIndex + this.#columns;
 
         } else {
             this.#currentIndex = query ? this.#currentIndex : this.#currentIndex + this.#columns;
         }
-
         await this.#updateTabIndex();
     }
 
@@ -261,6 +263,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         if (this.#selectedView === "default") {
             query && await this.goToPrevious();
             this.#currentIndex = this.#currentIndex - 1;
+            console.log(this.#elements[this.#currentIndex])
 
         } else {
             this.#currentIndex = query ? this.#currentIndex : this.#currentIndex - 1;
@@ -392,11 +395,13 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      */
     async #setFocusOnRender() {
         let element = this.shadowRoot.querySelector("[aria-selected='true']");
+        const today = this.shadowRoot?.querySelector(".today");
         await this.#get_elements();
 
-        if (element != null && this.#elements[this.#currentIndex] != null) {
-            this.#elements[this.#currentIndex].tabIndex = -1;
+        if (element != null) {
+            today != null ? (today.tabIndex = -1): this.#elements[this.#currentIndex].tabIndex = -1;
             element.tabIndex = 0;
+            console.log("today: ", today, "current: ", this.#elements[this.#currentIndex]);
         }
         if (element == null && this.#elements[this.#currentIndex] == null) {
             element = this.shadowRoot.querySelector(`[data-month = '${this.#month}']`);
