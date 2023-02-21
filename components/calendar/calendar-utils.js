@@ -1,12 +1,5 @@
 export class CalendarUtils {
-
-    static calculateCurrentIndex(currentIndex,columnCount) {
-        if((currentIndex - columnCount) < 0) {
-
-           return (-(columnCount - currentIndex));
-        }
-        else {
-           return columnCount - currentIndex;
-        }
+    static getYearsAround(year, startOffset, endOffset) {
+        return Array.from({ length: endOffset - startOffset + 1 }, (_, i) => year + startOffset + i);
     }
 }
