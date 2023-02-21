@@ -1,20 +1,19 @@
 <style>
 
-     #calendar-container{
-         width: 375px;
-         height: 412px;
-         border: var(--border);
-         margin-bottom: 1rem;
+    #calendar-container {
+        width: 375px;
+        height: 412px;
+        border: var(--border);
+        margin-bottom: 1rem;
 
-     }
+    }
 
 </style>
 <h2>${title}</h2>
 <div id="calendar-container">
-<calendar-component id="calendar-component" ref="calendar"></calendar-component>
+    <calendar-component id="calendar-component" ref="calendar" data-start.attr="start"></calendar-component>
 </div>
 
-<input id="dateEntered" ref="dateInput" type="date"  placeholder="2023-01-01" required>
-<button id="btn-1" click.call="setStartDate">Set Start Date</button>
-<button id="display" click.call="getStartDate">Show Start Data</button>
+<input id="dateEntered" ref="dateInput" type="date" placeholder="2023-01-01"
+       change.setValue="start = prop($event.target, 'value')" required>
 <label id="startData">data-start: ${start}</label>
