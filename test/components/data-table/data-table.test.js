@@ -121,4 +121,51 @@ describe ("data-table tests", async () => {
         const tableBody = instance.shadowRoot.querySelector("tbody");
         assertEquals(tableBody.children[1].children[0].innerText, "row 2 code updated");
     })
+
+    it("click to set selected row", async () => {
+        await instance.refresh();
+
+        const row = instance.shadowRoot.querySelector("tbody").children[0];
+        const row2 = instance.shadowRoot.querySelector("tbody").children[1];
+        const row3 = instance.shadowRoot.querySelector("tbody").children[2];
+
+        assert(row != null);
+        assert(row.getAttribute("aria-selected") == null);
+
+        row.parentNode = instance.shadowRoot.querySelector("tbody");
+        console.log(row.parentNode.nodeName);
+        await instance.performEvent("click", row);
+        assertEquals(row.getAttribute("aria-selected"), "true");
+
+        await instance.performEvent("click", row2);
+        assertEquals(row.getAttribute("aria-selected"), undefined);
+        assertEquals(row2.getAttribute("aria-selected"), "true");
+
+        await instance.performEvent("click", row3);
+        assertEquals(row2.getAttribute("aria-selected"), undefined);
+        assertEquals(row3.getAttribute("aria-selected"), "true");
+    });
+
+    it("navigate through rows using arrow keys", async () => {
+       await instance.refresh();
+         const row1 = instance.shadowRoot.querySelector("tbody").children[0];
+        row1.dataset.id = 1;
+        row1.setAttribute("tabindex", "0");
+        document.activeElement = row1;
+        console.log(document.activeElement.nodeName);
+        console.log(row1.getAttribute("tabindex"));
+        console.log(instance.shadowRoot.querySelector("tbody").children.length);
+        await instance.performEvent("keyup", row1,{ key: "ENTER" });
+        console.log(row1.getAttribute("aria-selected"));
+        console.log(row1.getAttribute("aria-focused"));
+
+        const row2 = instance.shadowRoot.querySelector("tbody").children[1];
+        row2.dataset.id = 2;
+        row2.setAttribute("tabindex", "0");
+        await instance.performEvent("keyup", row1,{ key: "ArrowDown" });
+        console.log(row1.getAttribute("aria-focused"));
+        console.log(row2.getAttribute("aria-focused"));
+        assertEquals(row2.getAttribute("aria-focused"), "true");
+        assert(row1.getAttribute("aria-focused") == null);
+    });
 })

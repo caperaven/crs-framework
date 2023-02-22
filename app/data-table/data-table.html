@@ -1,6 +1,21 @@
+<style>
+    .icon {
+        font-family: crsfrw;
+        font-size: var(--icon-size);
+    }
+
+    data-table:focus {
+        outline: transparent;
+    }
+
+</style>
+
 <h2>${title}</h2>
 
-<data-table data-manager="my_data" data-manager-key="my_data_key">
-    <column data-heading="code" data-property="code" data-width="100"></column>
-    <column data-heading="description" data-property="description" data-width="200"></column>
+<data-table data-manager="my_data" data-manager-key="my_data_key" data-filter="true" data-column-resize="true">
+    <column data-heading="Code" data-property="code" data-width="100"></column>
+    <column data-heading="Description" data-property="description" data-width="200"></column>
 </data-table>
+
+
+

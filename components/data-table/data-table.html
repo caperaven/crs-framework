@@ -2,6 +2,83 @@
     :host {
         display: block;
     }
+
+
+    :focus {
+        outline: var(--double-border-width) solid var(--blue);
+    }
+
+    .focus {
+        outline: var(--double-border-width) solid var(--blue);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        border: var(--border);
+    }
+
+
+    thead tr#tableHeader{
+        height: 38px;
+        border: var(--border);
+        background-color: var(--grey-s3);
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    thead th{
+        border: var(--border);
+        padding: 0 var(--padding) 0 var(--padding);
+        text-align: left;
+    }
+
+    thead th span {
+        display: inline-block;
+        margin-top: 0.25rem;
+    }
+
+
+    tbody tr td{
+        border: var(--border);
+        padding: var(--padding);
+    }
+
+    .icon {
+        font-family: crsfrw;
+        font-size: var(--icon-size);
+    }
+
+    th button{
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        padding: var(--padding);
+        float: right;
+    }
+
+    button.ew-resize {
+        cursor: ew-resize;
+    }
+
+    tr[aria-selected="true"] {
+        background-color: var(--blue-s1);
+        border: var(--double-border-width) solid var(--blue);
+    }
+
+
+    :focus[aria-selected="true"] {
+        outline: var(--double-border-width) solid var(--blue);
+    }
+
+    .btn-container {
+        display: flex;
+        justify-content: flex-end;
+        width: max-content;
+        float: right;
+    }
+
+
 </style>
 
 <table>
