@@ -90,6 +90,7 @@ button.icon {
     justify-content: center;
     background-color: transparent;
     border: 0;
+    font-size: 1rem;
 }
 
 button.icon svg {

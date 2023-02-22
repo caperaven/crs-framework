@@ -15,7 +15,7 @@
  * - refresh - refresh the component from the data
  *
  * @example <caption>html example</caption>
- * <my-component></my-component>
+ * <__element__></__element__>
  */
 export class __class__ extends HTMLElement {
     /**

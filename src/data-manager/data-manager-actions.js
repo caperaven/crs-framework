@@ -116,6 +116,25 @@ class DataManagerActions {
     }
 
     /**
+     * @method record_count - Get the count of records in a data manager
+     * @param step {object} - The step that contains the action to perform
+     * @param context {object} - The context of the process
+     * @param process {object} - The process
+     * @param item {object} - Current item in a process loop
+     *
+     * @param step.args.manager {string} - The name of the data manager. You will use this when performing operations on the data manager.
+     * @returns {Promise<void>}
+     */
+    static async record_count(step, context, process, item) {
+        const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return 0;
+
+        const dataManager = globalThis.dataManagers[manager];
+        return dataManager.count;
+    }
+
+
+    /**
      * @method set_records - Set records for a data manager
      * @param step
      * @param context
