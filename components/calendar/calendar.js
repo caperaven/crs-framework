@@ -116,7 +116,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     /**
-     * > The function renders the years in the calendar when switching to years view.
+     * @method #renderYears - The function renders the years in the calendar when switching to years view.
      */
     async #renderYears() {
         const year = new Date().getFullYear();
