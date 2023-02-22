@@ -114,6 +114,9 @@
 <template id="tplCell">
     <div role="cell" tabindex="${new Date().toLocaleDateString() === date.toLocaleDateString() ? '0': tabindex == null ? '-1': tabindex}" aria-selected="${selected}" data-day="${date.getDate()}" data-month="${date.getMonth()}" data-year="${date.getFullYear()}" classlist.case="current == false: 'non-current-day', new Date().toLocaleDateString() === date.toLocaleDateString(): 'today'">${number}</div>
 </template>
+<template id="tplYears">
+    <div data-type="year-cell" tabindex="-1" data-value="${year}">${year}</div>
+</template>
 
 <div id="calendar-toolbar" role="toolbar" ref="tools">
     <button id="previous-month" aria-label="Previous month" tooltip="Previous" click.call="goToPrevious"><svg id="chevron-left"><use href="#chevron-down"></use></svg></button>

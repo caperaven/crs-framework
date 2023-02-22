@@ -55,6 +55,10 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     async load() {
         const tplCell = this.shadowRoot.querySelector("#tplCell");
         await crsbinding.inflationManager.register("calendar-cell", tplCell);
+
+        const tplYears = this.shadowRoot.querySelector("#tplYears");
+        await crsbinding.inflationManager.register("calendar-years",tplYears);
+
         this.#tabHandler = this.#tabNavigation.bind(this);
         this.shadowRoot.addEventListener('keydown', this.#tabHandler);
     }
@@ -62,6 +66,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     async disconnectedCallback() {
         await super.disconnectedCallback();
         await crsbinding.inflationManager.unregister("calendar-cell");
+        await crsbinding.inflationManager.unregister("calendar-years");
         this.shadowRoot.removeEventListener('keydown', this.#tabHandler);
         this.#tabHandler = null;
         this.#month = null;
@@ -108,6 +113,19 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         await this.#setAriaSelectedAttribute(data);
         crsbinding.inflationManager.get("calendar-cell", data, cells);
         await this.#setFocusOnRender();
+    }
+
+    /**
+     * > The function renders the years in the calendar when switching to years view.
+     */
+    async #renderYears() {
+        const year = new Date().getFullYear();
+        const years = CalendarUtils.getYearsAround(year, -30, 30);
+        const cells = this.shadowRoot.querySelectorAll("[data-type='year-cell']");
+        crsbinding.inflationManager.get("calendar-years", years, cells);
+        const element = await this.#setMonthAndYearAria(this.#year);
+        element.scrollIntoView({block: 'start', behavior: 'smooth' });
+        element.focus();
     }
 
     /**
@@ -303,9 +321,8 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      * @method #setFocusOnRender - The function sets the year aria, focus on the element, and set the columns property.
      */
     async #yearsVisualSelection() {
-        const element = await this.#setMonthAndYearAria(this.#year);
-        element.scrollIntoView();
-        element.focus();
+        requestAnimationFrame(async () => await this.#renderYears());
+
         this.#columns = 4;
     }
 
