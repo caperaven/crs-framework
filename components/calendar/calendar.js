@@ -87,26 +87,27 @@ export default class Calendar extends crsbinding.classes.BindableElement {
 
     async attributeChangedCallback(name, oldValue, newValue) {
         if (!newValue) return;
-        const currentMonth = this.#month;
         const date = new Date(newValue);
         this.#month = date.getMonth();
         this.#year = date.getFullYear();
         await this.#setMonthProperty();
         await this.#setYearProperty();
         (newValue !== oldValue) && await this.#defaultVisualSelection();
+        this.dispatchEvent(new CustomEvent("date-selected", {detail: {date: newValue}, bubbles: true}));
     }
-
 
     /**
      * @method #render -  The function gets the data for the month and year, inflates the cells with the data, and then sets the focus on
      * the cell that was previously focused
      */
     async #render() {
+        if (this.calendars == null) return;
+
         const data = await crs.call("date", "get_days", {month: this.#month, year: this.#year, only_current: false});
         const cells = this.shadowRoot.querySelectorAll("[role='cell']");
         await this.#setAriaSelectedAttribute(data);
         crsbinding.inflationManager.get("calendar-cell", data, cells);
-        this.calendars != null && await this.#setFocusOnRender();
+        await this.#setFocusOnRender();
     }
 
     /**
@@ -393,7 +394,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         await this.#get_elements();
 
         if (element != null) {
-            today != null ? (today.tabIndex = -1): this.#elements[this.#currentIndex].tabIndex = -1;
+            today != null ? (today.tabIndex = -1) : this.#elements[this.#currentIndex].tabIndex = -1;
             element.tabIndex = 0;
         }
 
