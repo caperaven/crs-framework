@@ -20,5 +20,6 @@ export default class Calendar extends crsbinding.classes.ViewBase {
     async #setStartDate(event) {
         this.setProperty("start", event.detail.date);
         this.dateInput.value = this.getProperty("start");
+        event.stopPropagation();
     }
 }
