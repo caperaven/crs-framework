@@ -119,9 +119,9 @@ class DialogActions {
         const close = await crs.process.getValue(step.args.close ?? true, context, process, item);
         const severity = await crs.process.getValue(step.args.type, context, process, item);
         const title = await crs.process.getValue(step.args.title, context, process, item);
-        const showResize = await crs.process.getValue(step.args.showResize, context, process, item);
+        const allowResize = await crs.process.getValue(step.args.allowResize, context, process, item);
 
-        const options = {target, position, anchor, size, margin, title, severity, showResize};
+        const options = {target, position, anchor, size, margin, title, severity, allowResize};
 
         const dialog = await ensureDialog(close);
         dialog.show(headerElement, mainElement, footerElement, options);

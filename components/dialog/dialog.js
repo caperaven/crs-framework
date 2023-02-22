@@ -63,7 +63,7 @@ export class Dialog extends HTMLElement {
     }
 
     /**
-     * @method #load - load the component and it's dependencies including events
+     * @method load - load the component and it's dependencies including events
      * @returns {Promise<unknown>}
      */
     load() {
@@ -82,6 +82,7 @@ export class Dialog extends HTMLElement {
     async disconnectedCallback() {
         this.shadowRoot.removeEventListener("click", this.#clickHandler);
         this.#clickHandler = null;
+        await crsbinding.translations.delete("dialog");
     }
 
     /**
@@ -149,13 +150,12 @@ export class Dialog extends HTMLElement {
             headerElement.dataset.severity = options.severity;
         }
 
-        if (options?.showResize === false) {
-            headerElement.dataset.showResize = "false";
+        if (options?.allowResize === false) {
+            headerElement.dataset.allowResize = "false";
         }
 
         if (header != null) {
-            headerElement.innerHTML = "";
-            headerElement.appendChild(header);
+            headerElement.replaceChildren(header);
             return;
         }
 
@@ -174,8 +174,7 @@ export class Dialog extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #setBody(body) {
-        if (body == null)
-            return;
+        if (body == null) return;
 
         const bodyElement = this.shadowRoot.querySelector("#body");
 
@@ -195,9 +194,9 @@ export class Dialog extends HTMLElement {
      */
     async #setFooter(footer) {
         const footerElement = this.shadowRoot.querySelector("footer");
+        footerElement.innerHTML = "";
 
         if (footer != null) {
-            footerElement.innerHTML = "";
             footerElement.appendChild(footer);
         }
     }
