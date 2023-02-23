@@ -3,14 +3,21 @@
         display: block;
     }
 
-
-    :focus {
+    :focus{
         outline: var(--double-border-width) solid var(--blue);
     }
 
-    .focus {
-        outline: var(--double-border-width) solid var(--blue);
+
+    .icon {
+        font-family: crsfrw;
+        font-size: var(--icon-size);
     }
+
+
+    button.ew-resize {
+        cursor: ew-resize;
+    }
+
 
     table {
         width: 100%;
@@ -18,8 +25,7 @@
         border: var(--border);
     }
 
-
-    thead tr#tableHeader{
+    thead tr#tableHeader {
         height: 38px;
         border: var(--border);
         background-color: var(--grey-s3);
@@ -27,38 +33,20 @@
         font-weight: bold;
     }
 
-    thead th{
+    thead th {
         border: var(--border);
-        padding: 0 var(--padding) 0 var(--padding);
+        padding: 0 var(--padding);
         text-align: left;
     }
 
-    thead th span {
-        display: inline-block;
-        margin-top: 0.25rem;
-    }
+   .scrollable {
+       overflow-y: auto;
+       max-height: 200px;
+   }
 
-
-    tbody tr td{
+    tbody tr td {
         border: var(--border);
         padding: var(--padding);
-    }
-
-    .icon {
-        font-family: crsfrw;
-        font-size: var(--icon-size);
-    }
-
-    th button{
-        background-color: transparent;
-        border: none;
-        cursor: pointer;
-        padding: var(--padding);
-        float: right;
-    }
-
-    button.ew-resize {
-        cursor: ew-resize;
     }
 
     tr[aria-selected="true"] {
@@ -66,18 +54,31 @@
         border: var(--double-border-width) solid var(--blue);
     }
 
-
     :focus[aria-selected="true"] {
         outline: var(--double-border-width) solid var(--blue);
     }
 
-    .btn-container {
-        display: flex;
-        justify-content: flex-end;
-        width: max-content;
-        float: right;
+
+    th {
+        position: relative;
+        text-align: left;
     }
 
+    th button {
+        position: absolute;
+        top: 50%;
+        right: 0;
+        transform: translateY(-50%);
+        margin-left: 1rem;
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+        padding: var(--padding);
+    }
+
+    button#filter-btn {
+        margin-right: 30px;
+    }
 
 </style>
 
@@ -85,5 +86,5 @@
     <thead>
         <tr id="tableHeader"></tr>
     </thead>
-    <tbody></tbody>
+    <tbody class="scrollable"></tbody>
 </table>

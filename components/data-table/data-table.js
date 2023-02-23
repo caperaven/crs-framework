@@ -162,32 +162,13 @@ export class DataTable extends HTMLElement {
      * @param event
      */
     async #click(event) {
-        // TODO Andre - implement this
-        // use toggle selection on process api ...
-
-        // const target = event.composedPath()[1]
-        const target = event.composedPath()[1] || event.composedPath()[0];
-        // const target = event.target.closest("tr");
-        // const target = event.target.parentNode;
-
-        // if you don't click on a row, then clear the selection
-        if (target.nodeName !== "TR") {
-            const rows = this.shadowRoot.querySelector('tbody').children;
-            for(let row of rows) {
-                row.removeAttribute("aria-selected");
-                row.removeAttribute("aria-focused")
-            }
-            return;
-
-        }
+        const target = await crs.call("dom_utils", "find_parent_of_type", { element: event.target, nodeName: "TR" });
 
         if (target.nodeName === "TR" && target.getAttribute("aria-selected" ) !== "true") {
             await crs.call("dom_collection", "toggle_selection", { target: target , multiple: false });
-            // target.focus();
         } else {
-            target.removeAttribute("aria-selected")
+            target.removeAttribute("aria-selected");
         }
-
     }
 
     /**
@@ -209,7 +190,6 @@ export class DataTable extends HTMLElement {
     #keyUp(event) {
         // TODO Andre - implement this
         const rows = this.shadowRoot.querySelector('tbody').children;
-
         const lastIndex = rows.length - 1;
 
         let focusedIndex = Array.from(rows).findIndex(row => row.getAttribute('aria-focused') === 'true');
@@ -222,61 +202,70 @@ export class DataTable extends HTMLElement {
             }
         }
 
-        switch (event.key) {
-            case 'ArrowUp':
-                if (focusedIndex > 0) {
-                    rows[focusedIndex].removeAttribute('aria-focused');
-                    focusedIndex--;
-                    rows[focusedIndex].setAttribute('aria-focused', 'true');
-                    // rows[focusedIndex].setAttribute('tabindex', '0');
-                    rows[focusedIndex].focus();
-
-                }
-                break;
-            case 'ArrowDown':
-                if (focusedIndex < lastIndex) {
-                    rows[focusedIndex].removeAttribute('aria-focused');
-                    focusedIndex++;
-                    rows[focusedIndex].setAttribute('aria-focused', 'true');
-                    // rows[focusedIndex].setAttribute('tabindex', '0');
-                    rows[focusedIndex].focus();
-                }
-                break;
-            case 'Enter':
-                if (focusedIndex >= 0) {
-                    const selectedRow = rows[focusedIndex];
-                    const dataId = selectedRow.getAttribute('data-id');
-                    console.log(`Selected row with data-id=${dataId}`);
-                    rows[focusedIndex].removeAttribute('aria-focused');
-                    focusedIndex = Array.from(rows).findIndex(row => row === event.target);
-                    rows[focusedIndex].setAttribute('aria-focused', 'true');
-
-                    const alreadySelected = this.shadowRoot.querySelector('tbody tr[aria-selected="true"]');
-                    if (alreadySelected != null && alreadySelected !== selectedRow) {
-                        alreadySelected.removeAttribute('aria-selected');
-                    }
-                    else if (alreadySelected != null && alreadySelected === selectedRow) {
-                        selectedRow.removeAttribute('aria-selected');
-                        return;
-                    }
-
-                    if (rows[focusedIndex].getAttribute('aria-selected') !== 'true') {
-                        rows[focusedIndex].setAttribute('aria-selected', 'true');
-                    }
-
-                    // Store a reference to the newly selected row
-                    this.selectedRow = rows[focusedIndex];
-
-                    // Update the reference to the previously selected row
-                    this.previousRow = this.selectedRow;
-
-                    // Deselect the previously selected row
-                    if (this.selectedRow !== this.previousRow && this.previousRow !== null) {
-                        this.previousRow.removeAttribute('aria-selected');
-                    }
-                }
-                break;
+        if (event.key === 'ArrowUp') {
+            this.#arrowUpPressed(event);
+        } else if (event.key === 'ArrowDown') {
+            this.#arrowDownPressed(event);
+        } else if (event.key === 'Enter' || event.key === ' ') {
+            this.#enterPressed(event);
         }
+    }
+
+    /**
+     * @method #arrowUpPressed - When the up arrow is pressed, the focus moves to the previous row in the table, if there is one.
+     * @param event - The event object that was triggered.
+     */
+    async #arrowUpPressed(event) {
+        const rows = this.shadowRoot.querySelector('tbody').children;
+        const lastIndex = rows.length - 1;
+        let focusedIndex = Array.from(rows).findIndex(row => row.getAttribute('aria-focused') === 'true');
+
+        if (focusedIndex > 0) {
+            rows[focusedIndex].removeAttribute('aria-focused');
+            focusedIndex--;
+            rows[focusedIndex].setAttribute('aria-focused', 'true');
+            rows[focusedIndex].focus();
+        }
+    }
+
+    /**
+     * @method #arrowDownPressed -  When the down arrow is pressed, the focus moves to the next row in the table, if there is one.
+     * @param event - The event object that was triggered.
+     */
+    async #arrowDownPressed(event) {
+        const rows = this.shadowRoot.querySelector('tbody').children;
+        const lastIndex = rows.length - 1;
+        let focusedIndex = Array.from(rows).findIndex(row => row.getAttribute('aria-focused') === 'true');
+
+        if (focusedIndex < lastIndex) {
+            rows[focusedIndex].removeAttribute('aria-focused');
+            focusedIndex++;
+            rows[focusedIndex].setAttribute('aria-focused', 'true');
+            rows[focusedIndex].focus();
+        }
+    }
+
+    /**
+     * @method #enterPressed - When the user presses the enter key, the row is selected.
+     * @param event - The event that triggered the function.
+     */
+    async #enterPressed(event) {
+        const rows = this.shadowRoot.querySelector('tbody').children;
+        const lastIndex = rows.length - 1;
+        let focusedIndex = Array.from(rows).findIndex(row => row.getAttribute('aria-focused') === 'true');
+        rows[focusedIndex].removeAttribute('aria-focused');
+        focusedIndex = Array.from(rows).findIndex(row => row === event.target);
+        rows[focusedIndex].setAttribute('aria-focused', 'true');
+
+        if (rows[focusedIndex].getAttribute("aria-selected" ) !== "true") {
+            await crs.call("dom_collection", "toggle_selection", { target: rows[focusedIndex] , multiple: false });
+        } else {
+            rows[focusedIndex].removeAttribute("aria-selected");
+        }
+
+        // if (focusedIndex >= 0) {
+        //     await crs.call("dom_collection", "toggle_selection", { target: rows[focusedIndex] , multiple: false });
+        // }
     }
 
 
@@ -427,35 +416,32 @@ export class DataTable extends HTMLElement {
     /**
      * @method addColumnsFeatures - This function adds the features to the table header eg. Filter and Resize.
      *
-     * This method will create a element of type button and add the class "icon" to it.
+     * This method will create an element of type button and add the class "icon" to it.
      * This method will add a data action attribute to the element eg. data-action="filter", data-action="resize"
      * @param th - the table header row
      * @param column - The column object
      */
     async #addColumnFeatures(th, column) {
-        const btnContainer = document.createElement("div");
-        btnContainer.classList.add("btn-container");
         const filterButton = document.createElement("button");
         filterButton.classList.add("icon");
+        filterButton.id = "filter-btn"
+        filterButton.tabIndex = 1;
         filterButton.dataset.action = "filter";
         filterButton.dataset.property = column.property;
         filterButton.textContent = "filter-outline";
-        filterButton.tabIndex = 0;
 
         const resizeButton = document.createElement("button");
         resizeButton.classList.add("icon");
+        resizeButton.id = "resize-btn"
+        resizeButton.tabIndex = -1;
         resizeButton.dataset.action = "resize";
         resizeButton.dataset.property = column.property;
         resizeButton.textContent = "drag-vertical";
-        resizeButton.tabIndex = 0;
         resizeButton.classList.add("ew-resize");
 
         const fragment = document.createDocumentFragment();
-        // fragment.appendChild(resizeButton);
-        // fragment.appendChild(filterButton);
-        btnContainer.appendChild(resizeButton);
-        btnContainer.appendChild(filterButton);
-        fragment.appendChild(btnContainer);
+        fragment.appendChild(filterButton);
+        fragment.appendChild(resizeButton);
         th.appendChild(fragment);
     }
 
@@ -493,9 +479,7 @@ export class DataTable extends HTMLElement {
         for (const model of data) {
             const tr = document.createElement("tr");
             tr.dataset.id = model[this.#idField];
-
-            // const tr2 = document.createElement("tr"); // more records
-            // tr2.dataset.id = model[this.#idField];
+            tr.dataset.row = model[this.#idField];
 
             // for each column in the columns create a cell
             for (const column of this.#columns) {
@@ -503,15 +487,9 @@ export class DataTable extends HTMLElement {
                 cell.innerText = model[column.property];
                 cell.dataset.field = column.property;
                 tr.appendChild(cell);
-
-                // const cell2 = document.createElement("td"); // more records
-                // cell2.innerText = model[column.property];
-                // cell2.dataset.field = column.property;
-                // tr2.appendChild(cell2);
             }
 
             fragment.appendChild(tr);
-            // fragment.appendChild(tr2); // more records
         }
 
         const tbody = this.shadowRoot.querySelector("tbody");
@@ -527,7 +505,7 @@ export class DataTable extends HTMLElement {
     async filter(criteria) {
         // on data manager make is so that perspective actions can affect the data manager or
         // crs.call("data_manager", "filter", { data_manager: this.dataManager, criteria: criteria });
-        // the data manager will cause a refresh to be called and
+        // the data manager will cause a refresh to be called and the data will be filtered
     }
 
     /**
