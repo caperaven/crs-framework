@@ -5,7 +5,7 @@ export default class Calendar extends crsbinding.classes.ViewBase {
 
     async connectedCallback() {
         await super.connectedCallback();
-        this.setProperty("start", "2023-01-01");
+        // this.setProperty("start", "2023-01-01");
         this.#dateSelectedHandler = this.#setStartDate.bind(this);
         this.calendar.addEventListener("date-selected", this.#dateSelectedHandler);
     }
