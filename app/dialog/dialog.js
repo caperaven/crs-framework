@@ -63,7 +63,7 @@ export default class Dialog extends crsbinding.classes.ViewBase {
         const args = {
             title: action,
             main: `This is an ${action} message`,
-            type: action,
+            severity: action,
             footer: footerTemplate.content.cloneNode(true),
             allowResize: false,
             parent: "main"

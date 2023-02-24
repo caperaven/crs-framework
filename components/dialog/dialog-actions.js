@@ -8,7 +8,7 @@ import "./dialog.js";
  * 2. show - show the dialog.
  * 3. force_close - force close the dialog regardless of what is in it.
  */
-class DialogActions {
+export class DialogActions {
     /**
      * @method defineSizes - define the sizes for the dialog and is called during initial application setup.
      * @param step {object} - the process step.
@@ -117,7 +117,7 @@ class DialogActions {
         const size = await crs.process.getValue(step.args.size, context, process, item);
         const margin = await crs.process.getValue(step.args.margin ?? 0, context, process, item);
         const close = await crs.process.getValue(step.args.close ?? true, context, process, item);
-        const severity = await crs.process.getValue(step.args.type, context, process, item);
+        const severity = await crs.process.getValue(step.args.severity, context, process, item);
         const title = await crs.process.getValue(step.args.title, context, process, item);
         const allowResize = await crs.process.getValue(step.args.allowResize, context, process, item);
         const parent = await crs.call("dom", "get_element", {element: step.args.parent}, context, process, item);
