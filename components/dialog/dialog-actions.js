@@ -120,10 +120,11 @@ class DialogActions {
         const severity = await crs.process.getValue(step.args.type, context, process, item);
         const title = await crs.process.getValue(step.args.title, context, process, item);
         const allowResize = await crs.process.getValue(step.args.allowResize, context, process, item);
+        const parent = await crs.call("dom", "get_element", {element: step.args.parent}, context, process, item);
 
         const options = {target, position, anchor, size, margin, title, severity, allowResize};
 
-        const dialog = await ensureDialog(close);
+        const dialog = await ensureDialog(close, parent);
         dialog.show(headerElement, mainElement, footerElement, options);
         return dialog;
     }
@@ -143,14 +144,15 @@ class DialogActions {
     }
 }
 
-async function ensureDialog(close) {
+async function ensureDialog(close, parent) {
     if (close == true) {
         await crs.call("dialog", "force_close", {});
     }
 
-    if (!globalThis.dialog) {
+    if (globalThis.dialog == null) {
+        const container = parent ?? document.body;
         globalThis.dialog = document.createElement('dialog-component');
-        document.body.appendChild(globalThis.dialog);
+        container.appendChild(globalThis.dialog);
     }
 
     return globalThis.dialog;

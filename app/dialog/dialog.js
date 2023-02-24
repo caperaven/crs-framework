@@ -10,7 +10,8 @@ export default class Dialog extends crsbinding.classes.ViewBase {
 
         await crs.call("dialog", "show", {
             title: "My Title",
-            main: instance
+            main: instance,
+            parent: "main"
         });
     }
 
@@ -30,7 +31,8 @@ export default class Dialog extends crsbinding.classes.ViewBase {
             target: event.target,
             position: position,
             anchor: anchor[position],
-            margin: 10
+            margin: 10,
+            parent: "main"
         });
     }
 
@@ -63,7 +65,8 @@ export default class Dialog extends crsbinding.classes.ViewBase {
             main: `This is an ${action} message`,
             type: action,
             footer: footerTemplate.content.cloneNode(true),
-            allowResize: false
+            allowResize: false,
+            parent: "main"
         }
 
         let position = this.element.querySelector("#position").value;
@@ -112,7 +115,8 @@ export default class Dialog extends crsbinding.classes.ViewBase {
         await crs.call("dialog", "show", {
             title: "My Title",
             main: "Test",
-            header: headerTemplate.content.cloneNode(true)
+            header: headerTemplate.content.cloneNode(true),
+            parent: "main"
         });
     }
 }

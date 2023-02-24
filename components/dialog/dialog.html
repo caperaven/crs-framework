@@ -4,14 +4,17 @@
     @import "/styles/lib/states.css";
 
     :host {
-        position: fixed;
+        position: absolute;
         display: grid;
         grid-template-rows: auto 1fr auto;
         background: var(--window);
         min-width: 18.75rem;
+        min-height: 9rem;
         border: var(--border);
         box-shadow: var(--box-shadow);
         border-radius: var(--radius);
+        resize: both;
+        overflow: auto;
         --header-height: 3rem;
         --footer-height: 3.5rem;
         --body-height: 3.5rem;
@@ -26,9 +29,10 @@
         translate: unset !important;
         height: unset !important;
         width: unset !important;
+        position: absolute !important;
     }
 
-    :host(.fullscreen) .resize {
+    :host([data-allow-resize="false"]) #btnResize {
         display: none;
     }
 
@@ -37,14 +41,10 @@
         flex-direction: row;
         align-items: center;
         border-bottom: var(--border);
-        height: var(--header-height);
+        min-height: var(--header-height);
         padding: 0 var(--padding);
     }
 
-    header[data-show-resize="false"] #btnResize {
-        display: none;
-    }
-    
     header:active {
         cursor: grabbing;
     }
@@ -57,7 +57,6 @@
 
     #body {
         padding: var(--padding);
-        min-height: var(--body-height);
     }
 
     button.icon {
@@ -68,26 +67,13 @@
         display: flex;
         align-items: center;
         justify-content: flex-end;
-        height: var(--footer-height);
+        min-height: var(--footer-height);
         border-top: var(--border);
         padding: 0 var(--padding);
     }
 
     footer button {
         margin-left: 0.5rem;
-    }
-
-    .resize {
-        position: absolute;
-        font-family: crsfrw;
-        right: 0;
-        bottom: 0;
-        cursor: se-resize;
-        font-size: 0.8rem;
-    }
-
-    .resize:active {
-        cursor: se-resize;
     }
 </style>
 
@@ -100,4 +86,3 @@
 <div id="body"></div>
 
 <footer></footer>
-<div class="resize">resize-handle</div>

@@ -26,24 +26,6 @@ export class Dialog extends HTMLElement {
         "resize": this.#resizeClicked.bind(this),
     });
 
-    #domActions = Object.freeze({
-        "enable_resize": ["dom_interactive", "enable_resize", {
-            element: this,
-            resize_query: ".resize",
-            options: {}
-        }],
-        "disable_resize": ["dom_interactive", "disable_resize", {
-            element: this
-        }],
-        "enable_move": ["dom_interactive", "enable_move", {
-            element: this,
-            move_query: "header"
-        }],
-        "disable_move": ["dom_interactive", "disable_move", {
-            element: this
-        }]
-    });
-
     /**
      * @constructor
      */
@@ -69,8 +51,6 @@ export class Dialog extends HTMLElement {
     load() {
         return new Promise(async resolve => {
             this.shadowRoot.addEventListener("click", this.#clickHandler);
-            await crs.call(...this.#domActions["enable_resize"]);
-            await crs.call(...this.#domActions["enable_move"]);
             resolve();
         });
     }
@@ -111,8 +91,15 @@ export class Dialog extends HTMLElement {
     async #resizeClicked() {
         // toggle the fullscreen class
         this.classList.toggle("fullscreen");
+
+        const icon = this.classList.contains("fullscreen") ? "close-fullscreen" : "open-fullscreen";
+        this.shadowRoot.querySelector("#btnResize").textContent = icon;
+
         const method = this.classList.contains("fullscreen") ? "disable_move" : "enable_move";
-        await crs.call(...this.#domActions[method]);
+        await crs.call("dom_interactive", method, {
+            element: this,
+            move_query: "header"
+        });
     }
 
     async #closeClicked() {
@@ -134,6 +121,15 @@ export class Dialog extends HTMLElement {
                 await this.#setFooter(footer);
                 await this.#setBody(main);
                 await this.#setPosition(options);
+
+                await crs.call("dom_interactive", "enable_move", {
+                    element: this,
+                    move_query: "header"
+                });
+
+                if (options?.allowResize === false) {
+                    this.dataset.allowResize = "false";
+                }
             }
         });
     }
@@ -148,10 +144,6 @@ export class Dialog extends HTMLElement {
         const headerElement = this.shadowRoot.querySelector("header");
         if (options?.severity != null) {
             headerElement.dataset.severity = options.severity;
-        }
-
-        if (options?.allowResize === false) {
-            headerElement.dataset.allowResize = "false";
         }
 
         if (header != null) {
