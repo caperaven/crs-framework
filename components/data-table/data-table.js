@@ -187,7 +187,7 @@ export class DataTable extends HTMLElement {
      * What to use for highlighted / focused record but not selected.
      * @param event
      */
-    #keyUp(event) {
+    async #keyUp(event) {
         // TODO Andre - implement this
         const rows = this.shadowRoot.querySelector('tbody').children;
         const lastIndex = rows.length - 1;
@@ -202,13 +202,16 @@ export class DataTable extends HTMLElement {
             }
         }
 
-        if (event.key === 'ArrowUp') {
-            this.#arrowUpPressed(event);
-        } else if (event.key === 'ArrowDown') {
-            this.#arrowDownPressed(event);
-        } else if (event.key === 'Enter' || event.key === ' ') {
-            this.#enterPressed(event);
-        }
+        // if (event.key === 'ArrowUp') {
+        //     this.#arrowUpPressed(event);
+        // } else if (event.key === 'ArrowDown') {
+        //     this.#arrowDownPressed(event);
+        // } else if (event.key === 'Enter' || event.key === ' ') {
+        //     this.#enterPressed(event);
+        // }
+        const method = `#${event.code.toLowerCase()}Pressed`;
+        console.log(method)
+        this[method] && await this[method](event);
     }
 
     /**
@@ -429,6 +432,8 @@ export class DataTable extends HTMLElement {
         filterButton.dataset.action = "filter";
         filterButton.dataset.property = column.property;
         filterButton.textContent = "filter-outline";
+        filterButton.setAttribute("aria-label", "filter-button");
+        filterButton.setAttribute("role", "button");
 
         const resizeButton = document.createElement("button");
         resizeButton.classList.add("icon");
@@ -438,6 +443,8 @@ export class DataTable extends HTMLElement {
         resizeButton.dataset.property = column.property;
         resizeButton.textContent = "drag-vertical";
         resizeButton.classList.add("ew-resize");
+        resizeButton.setAttribute("aria-label", "resize-button");
+        resizeButton.setAttribute("role", "button");
 
         const fragment = document.createDocumentFragment();
         fragment.appendChild(filterButton);
@@ -455,8 +462,10 @@ export class DataTable extends HTMLElement {
         for (const column of this.#columns) {
             const th = document.createElement("th");
             th.style.width = `${column.width}px`;
+            th.setAttribute("role", "columnheader")
             const thText = document.createElement("span");
             thText.innerText = column.heading;
+            thText.setAttribute("aria-label", "column-description for " + column.heading);
             th.appendChild(thText);
             await this.#addColumnFeatures(th, column);
             fragment.appendChild(th);
@@ -480,6 +489,7 @@ export class DataTable extends HTMLElement {
             const tr = document.createElement("tr");
             tr.dataset.id = model[this.#idField];
             tr.dataset.row = model[this.#idField];
+            tr.setAttribute("role", "row")
 
             // for each column in the columns create a cell
             for (const column of this.#columns) {

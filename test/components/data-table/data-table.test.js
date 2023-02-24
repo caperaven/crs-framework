@@ -133,7 +133,7 @@ describe ("data-table tests", async () => {
         assert(row.getAttribute("aria-selected") == null);
 
         row.parentNode = instance.shadowRoot.querySelector("tbody");
-        console.log(row.parentNode.nodeName);
+        // console.log(row.parentNode.nodeName);
         await instance.performEvent("click", row);
         assertEquals(row.getAttribute("aria-selected"), "true");
 
@@ -152,20 +152,20 @@ describe ("data-table tests", async () => {
         row1.dataset.id = 1;
         row1.setAttribute("tabindex", "0");
         document.activeElement = row1;
-        console.log(document.activeElement.nodeName);
-        console.log(row1.getAttribute("tabindex"));
-        console.log(instance.shadowRoot.querySelector("tbody").children.length);
+        // console.log(document.activeElement.nodeName);
+        // console.log(row1.getAttribute("tabindex"));
+        // console.log(instance.shadowRoot.querySelector("tbody").children.length);
         await instance.performEvent("keyup", row1,{ key: "Enter" });
-        console.log(row1.getAttribute("aria-selected"));
-        console.log(row1.getAttribute("aria-focused"));
+        // console.log(row1.getAttribute("aria-selected"));
+        // console.log(row1.getAttribute("aria-focused"));
 
         const row2 = instance.shadowRoot.querySelector("tbody").children[1];
         row2.dataset.id = 2;
         row2.id = "row2";
         row2.setAttribute("tabindex", "0");
         await instance.performEvent("keyup", row1,{ key: "ArrowDown" });
-        console.log(row1.getAttribute("aria-focused"));
-        console.log(row2.getAttribute("aria-focused"));
+        // console.log(row1.getAttribute("aria-focused"));
+        // console.log(row2.getAttribute("aria-focused"));
         assertEquals(row2.getAttribute("aria-focused"), "true");
         assert(row1.getAttribute("aria-focused") == null);
         assertEquals(globalThis.activeElement.id, row2.id);
@@ -176,8 +176,8 @@ describe ("data-table tests", async () => {
         row3.setAttribute("tabindex", "0");
         await instance.performEvent("keyup", row2,{ key: "ArrowDown" });
         await instance.performEvent("keyup", row3,{ key: "Enter" });
-        console.log(row2.getAttribute("aria-focused"));
-        console.log(row3.getAttribute("aria-focused"));
+        // console.log(row2.getAttribute("aria-focused"));
+        // console.log(row3.getAttribute("aria-focused"));
         assertEquals(row3.getAttribute("aria-focused"), "true");
         assert(row2.getAttribute("aria-focused") == null);
         assertEquals(globalThis.activeElement.id, row3.id);
@@ -185,7 +185,11 @@ describe ("data-table tests", async () => {
         await instance.performEvent("keyup", row3,{ key: "Shift+Tab" });
         await instance.performEvent("keyup", row2,{ key: "Shift+Tab" });
         await instance.performEvent("keyup", row1,{ key: "Enter" });
-        console.log(row1.getAttribute("aria-selected"));
+        // console.log(row1.getAttribute("aria-selected"));
         assertEquals(row1.getAttribute("aria-selected"), "true");
+
+        await instance.performEvent("keyup", row1,{ key: "Tab" });
+        await instance.performEvent("keyup", row2,{ key: "Enter" });
+        assertEquals(row2.getAttribute("aria-selected"), "true");
     });
 })
