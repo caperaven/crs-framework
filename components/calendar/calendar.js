@@ -178,6 +178,12 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         this.#elements[this.#currentIndex].focus();
         if (this.#selectedView === "default") {
             await this.#trackFocus(this.#elements[this.#currentIndex],"data-position");
+            if(parseInt(this.#elements[this.#currentIndex].dataset.month) < this.#month) {
+                await this.goToPrevious();
+            }
+            else if(parseInt(this.#elements[this.#currentIndex].dataset.month) > this.#month) {
+                await this.goToNext();
+            }
         }
     }
 
@@ -243,7 +249,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         const query = (this.#currentIndex + this.#columns) >= this.#elements.length;
 
         if (this.#selectedView === "default") {
-            query && (await this.goToNext());
+            query && (await this.goToNext(),await this.#setFocusOnRender());
             this.#currentIndex = this.#currentIndex + this.#columns;
 
         } else {
@@ -261,6 +267,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         if (this.#selectedView === "default") {
             query && await this.goToPrevious();
             this.#currentIndex = this.#currentIndex - 1;
+
         } else {
             this.#currentIndex = query ? this.#currentIndex : this.#currentIndex - 1;
         }
@@ -397,13 +404,16 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      */
     async #setFocusOnRender() {
         const today = this.shadowRoot?.querySelector(".today");
+        await this.#get_elements();
 
         const focusElement = this.calendars.dataset.position != null && await this.#get_element(this.calendars.dataset.position);
         if(focusElement !== false && focusElement != null)
         {
+
             today != null && (today.tabIndex = -1);
             focusElement.tabIndex = 0;
             focusElement.focus();
+            this.#elements[this.#currentIndex] != null ? this.#elements[this.#currentIndex].tabIndex = -1 : null;
         }
 
         const selectedElement = this.dataset.start != null && await this.#get_element(this.dataset.start);
@@ -411,9 +421,8 @@ export default class Calendar extends crsbinding.classes.BindableElement {
             await crs.call("dom_collection", "toggle_selection", {target: selectedElement, multiple: false});
         }
 
-        if (today == null && (focusElement === false || focusElement === null)) {
-
-            const element = this.shadowRoot.querySelector(`[data-month = '${this.#month}']`);
+        if ((selectedElement == null || selectedElement === false) && this.#elements[this.#currentIndex] == null && (focusElement === false || focusElement === null)) {
+            const  element = this.shadowRoot.querySelector(`[data-month = '${this.#month}']`);
             element.tabIndex = 0;
             element.focus();
         }
