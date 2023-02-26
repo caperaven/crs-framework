@@ -58,7 +58,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         await crsbinding.inflationManager.register("calendar-cell", tplCell);
 
         const tplYears = this.shadowRoot.querySelector("#tplYears");
-        await crsbinding.inflationManager.register("calendar-years",tplYears);
+        await crsbinding.inflationManager.register("calendar-years", tplYears);
 
         this.#tabHandler = this.#tabNavigation.bind(this);
         this.shadowRoot.addEventListener('keydown', this.#tabHandler);
@@ -126,7 +126,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         const cells = this.shadowRoot.querySelectorAll("[data-type='year-cell']");
         crsbinding.inflationManager.get("calendar-years", years, cells);
         const element = await this.#setMonthAndYearAria(this.#year);
-        element.scrollIntoView({block: 'start', behavior: 'smooth' });
+        element.scrollIntoView({block: 'start', behavior: 'smooth'});
         element.focus();
     }
 
@@ -177,11 +177,10 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         this.#elements[this.#currentIndex].tabIndex = 0;
         this.#elements[this.#currentIndex].focus();
         if (this.#selectedView === "default") {
-            await this.#trackFocus(this.#elements[this.#currentIndex],"data-position");
-            if(parseInt(this.#elements[this.#currentIndex].dataset.month) < this.#month) {
+            await this.#trackFocus(this.#elements[this.#currentIndex], "data-position");
+            if (parseInt(this.#elements[this.#currentIndex].dataset.month) < this.#month) {
                 await this.goToPrevious();
-            }
-            else if(parseInt(this.#elements[this.#currentIndex].dataset.month) > this.#month) {
+            } else if (parseInt(this.#elements[this.#currentIndex].dataset.month) > this.#month) {
                 await this.goToNext();
             }
         }
@@ -249,7 +248,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         const query = (this.#currentIndex + this.#columns) >= this.#elements.length;
 
         if (this.#selectedView === "default") {
-            query && (await this.goToNext(),await this.#setFocusOnRender());
+            query && (await this.goToNext(), await this.#setFocusOnRender());
             this.#currentIndex = this.#currentIndex + this.#columns;
 
         } else {
@@ -392,7 +391,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         this.setAttribute("data-start", dateObject.toISOString().slice(0, 10));
     }
 
-    async #trackFocus(newValue,attribute) {
+    async #trackFocus(newValue, attribute) {
         this.#type = "position";
         const dateObject = new Date((new Date(newValue.dataset.year, newValue.dataset.month, newValue.dataset.day).getTime()) - ((new Date().getTimezoneOffset()) * 60 * 1000));
         this.calendars?.setAttribute(attribute, dateObject.toISOString().slice(0, 10));
@@ -403,39 +402,43 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      * selected tab to -1, and the tabIndex of the newly selected tab to 0
      */
     async #setFocusOnRender() {
-        const today = this.shadowRoot?.querySelector(".today");
+        const today = this.shadowRoot.querySelector(".today");
         await this.#get_elements();
 
         const focusElement = this.calendars.dataset.position != null && await this.#get_element(this.calendars.dataset.position);
-        if(focusElement !== false && focusElement != null)
-        {
-
+        if (focusElement !== false && focusElement != null) {
+            this.#elements[this.#currentIndex] != null ? this.#elements[this.#currentIndex].tabIndex = -1 : null;
             today != null && (today.tabIndex = -1);
             focusElement.tabIndex = 0;
             focusElement.focus();
-            this.#elements[this.#currentIndex] != null ? this.#elements[this.#currentIndex].tabIndex = -1 : null;
         }
 
         const selectedElement = this.dataset.start != null && await this.#get_element(this.dataset.start);
-        if(selectedElement !== false && selectedElement != null){
+        if (selectedElement !== false && selectedElement != null) {
             await crs.call("dom_collection", "toggle_selection", {target: selectedElement, multiple: false});
         }
 
-        if ((selectedElement == null || selectedElement === false) && this.#elements[this.#currentIndex] == null && (focusElement === false || focusElement === null)) {
-            const  element = this.shadowRoot.querySelector(`[data-month = '${this.#month}']`);
+        if (selectedElement != null && (focusElement == null || focusElement == false) && selectedElement !== focusElement) {
+            today != null && (today.tabIndex = -1);
+            selectedElement.tabIndex = 0;
+        }
+
+        if ((selectedElement == null || selectedElement === false) && (focusElement === false || focusElement == null) && today == null) {
+            const tab = this.shadowRoot.querySelector("[tabindex='0']");
+            tab != null && (tab.tabIndex = -1);
+            const element = this.shadowRoot.querySelector(`[data-month = '${this.#month}']`);
             element.tabIndex = 0;
             element.focus();
         }
-
     }
-
+    
     /**
      * @method #get_elements - Takes in a date object and returns and element that matches the date, month, and year.
      * @param date
      * @returns {Element}
      */
     async #get_element(data) {
-        if(data == null) return;
+        if (data == null) return;
 
         const date = new Date(data);
         const year = date.getFullYear();
@@ -445,6 +448,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
 
         return element;
     }
+
     /**
      * @method goToNext - If the selected view is years, increment the year by one. Otherwise, increment the month by one and if the month
      * is greater than 11, set the month to 0 and increment the year by one
