@@ -178,9 +178,17 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         this.#elements[this.#currentIndex].focus();
         if (this.#selectedView === "default") {
             await this.#trackFocus(this.#elements[this.#currentIndex], "data-position");
-            if (parseInt(this.#elements[this.#currentIndex].dataset.month) < this.#month) {
+            if (parseInt(this.#elements[this.#currentIndex].dataset.month) < this.#month && this.#year === parseInt(this.#elements[this.#currentIndex].dataset.year)) {
                 await this.goToPrevious();
             } else if (parseInt(this.#elements[this.#currentIndex].dataset.month) > this.#month) {
+                await this.goToNext();
+            }
+
+            if(parseInt(this.#elements[this.#currentIndex]?.dataset.year) < this.#year) {
+                await this.goToPrevious();
+            }
+
+            else if(parseInt(this.#elements[this.#currentIndex]?.dataset.year) > this.#year) {
                 await this.goToNext();
             }
         }
@@ -264,7 +272,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         const query = (this.#currentIndex - 1) < 0;
 
         if (this.#selectedView === "default") {
-            query && await this.goToPrevious();
+            query && (await this.goToPrevious(),await this.#setFocusOnRender());
             this.#currentIndex = this.#currentIndex - 1;
 
         } else {
@@ -407,31 +415,37 @@ export default class Calendar extends crsbinding.classes.BindableElement {
 
         const focusElement = this.calendars.dataset.position != null && await this.#get_element(this.calendars.dataset.position);
         if (focusElement !== false && focusElement != null) {
-            this.#elements[this.#currentIndex] != null ? this.#elements[this.#currentIndex].tabIndex = -1 : null;
-            today != null && (today.tabIndex = -1);
-            focusElement.tabIndex = 0;
-            focusElement.focus();
+            await this.#resetFocus(today, focusElement);
+            this.#elements[this.#currentIndex] != null && focusElement != this.#elements[this.#currentIndex] ? this.#elements[this.#currentIndex].tabIndex = -1 : null;
         }
 
         const selectedElement = this.dataset.start != null && await this.#get_element(this.dataset.start);
         if (selectedElement !== false && selectedElement != null) {
+            if(focusElement != null && focusElement !== false) {
+                this.#elements[this.#currentIndex] != null && selectedElement !== this.#elements[this.#currentIndex] ? this.#elements[this.#currentIndex].tabIndex = -1 : null;
+            }
             await crs.call("dom_collection", "toggle_selection", {target: selectedElement, multiple: false});
         }
 
-        if (selectedElement != null && (focusElement == null || focusElement == false) && selectedElement !== focusElement) {
-            today != null && (today.tabIndex = -1);
-            selectedElement.tabIndex = 0;
+        if (selectedElement != null && (focusElement == null || focusElement === false) && selectedElement !== focusElement) {
+            this.#elements[this.#currentIndex] != null && selectedElement != this.#elements[this.#currentIndex] ? this.#elements[this.#currentIndex].tabIndex = -1 : null;
+            await this.#resetFocus(today, selectedElement);
         }
 
         if ((selectedElement == null || selectedElement === false) && (focusElement === false || focusElement == null) && today == null) {
             const tab = this.shadowRoot.querySelector("[tabindex='0']");
-            tab != null && (tab.tabIndex = -1);
             const element = this.shadowRoot.querySelector(`[data-month = '${this.#month}']`);
-            element.tabIndex = 0;
-            element.focus();
+            await this.#resetFocus(tab, element);
         }
+
     }
-    
+
+    async #resetFocus(previousIndex, currentIndex) {
+        previousIndex != null && (previousIndex.tabIndex = -1);
+        currentIndex.tabIndex = 0;
+        currentIndex.focus();
+    }
+
     /**
      * @method #get_elements - Takes in a date object and returns and element that matches the date, month, and year.
      * @param date
