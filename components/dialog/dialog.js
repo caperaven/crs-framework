@@ -96,8 +96,9 @@ export class Dialog extends HTMLElement {
         this.shadowRoot.querySelector("#btnResize").textContent = icon;
 
         const method = this.classList.contains("fullscreen") ? "disable_move" : "enable_move";
+        const popup = this.shadowRoot.querySelector(".popup");
         await crs.call("dom_interactive", method, {
-            element: this,
+            element: popup,
             move_query: "header"
         });
     }
@@ -122,8 +123,9 @@ export class Dialog extends HTMLElement {
                 await this.#setBody(main);
                 await this.#setPosition(options);
 
+                const popup = this.shadowRoot.querySelector(".popup");
                 await crs.call("dom_interactive", "enable_move", {
-                    element: this,
+                    element: popup,
                     move_query: "header"
                 });
 
@@ -199,13 +201,15 @@ export class Dialog extends HTMLElement {
      * @returns {Promise<*>}
      */
     async #setPosition(options) {
+        const popup = this.shadowRoot.querySelector(".popup");
+
         if (options?.target == null) {
-            return await crs.call("fixed_position", "set", {element: this, position: "center-screen", margin: 10});
+            return await crs.call("fixed_position", "set", {element: popup, position: "center-screen", margin: 10});
         }
 
         await crs.call("fixed_layout", "set", {
             target: options.target,
-            element: this,
+            element: popup,
             at: options.position.toLowerCase(),
             anchor: options.anchor.toLowerCase(),
             margin: options.margin

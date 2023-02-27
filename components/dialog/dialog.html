@@ -4,23 +4,17 @@
     @import "./styles/lib/states.css";
 
     :host {
-        position: absolute;
-        display: grid;
-        grid-template-rows: auto 1fr auto;
-        background: var(--window);
-        min-width: 18.75rem;
-        min-height: 9rem;
-        border: var(--border);
-        box-shadow: var(--box-shadow);
-        border-radius: var(--radius);
-        resize: both;
-        overflow: auto;
         --header-height: 3rem;
         --footer-height: 3.5rem;
         --body-height: 3.5rem;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
     }
 
-    :host(.fullscreen) {
+    :host(.fullscreen) .popup {
         top: 0;
         left: 0;
         bottom: 0;
@@ -35,6 +29,25 @@
 
     :host([data-allow-resize="false"]) #btnResize {
         display: none;
+    }
+
+    .popup {
+        position: absolute;
+        display: grid;
+        grid-template-rows: auto 1fr auto;
+        background: var(--window);
+        border: var(--border);
+        box-shadow: var(--box-shadow);
+        border-radius: var(--radius);
+        resize: both;
+        overflow: auto;
+        min-width: 18.75rem;
+        min-height: 9rem;
+    }
+
+    .back {
+        height: 100%;
+        width: 100%;
     }
 
     header {
@@ -81,12 +94,18 @@
     }
 </style>
 
-<header>
-    <h2 id="headerText">&{dialog.title}</h2>
-    <button class="icon transparent" id="btnResize" data-action="resize" aria-label="&{dialog.resize}">open-fullscreen</button>
-    <button class="icon transparent" id="btnClose" data-action="close" aria-label="&{dialog.close}">close</button>
-</header>
+<div class="back" data-action="close"></div>
 
-<div id="body"></div>
+<div class="popup">
+    <header>
+        <h2 id="headerText">&{dialog.title}</h2>
+        <button class="icon transparent" id="btnResize" data-action="resize" aria-label="&{dialog.resize}">
+            open-fullscreen
+        </button>
+        <button class="icon transparent" id="btnClose" data-action="close" aria-label="&{dialog.close}">close</button>
+    </header>
 
-<footer></footer>
+    <div id="body"></div>
+
+    <footer></footer>
+</div>
