@@ -11,9 +11,9 @@ export default class Calendar extends crsbinding.classes.ViewBase {
     }
 
     async disconnectedCallback() {
-        await super.disconnectedCallback();
-        this.#dateSelectedHandler = null;
         this.calendar.removeEventListener("date-selected", this.#dateSelectedHandler);
+        this.#dateSelectedHandler = null;
+        await super.disconnectedCallback();
     }
 
     async #setStartDate(event) {

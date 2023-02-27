@@ -1,4 +1,5 @@
 import "./../../components/dialog/dialog-actions.js";
+import "./../../components/calendar/calendar.js";
 
 export default class Dialog extends crsbinding.classes.ViewBase {
     async connectedCallback() {
@@ -121,8 +122,12 @@ export default class Dialog extends crsbinding.classes.ViewBase {
     }
 
     async emptyHeader(event) {
+        const calendar = document.createElement("calendar-component");
+        calendar.setAttribute("id", "calendar-component");
+        calendar.dataset.start = "2023-01-15";
+
         await crs.call("dialog", "show", {
-            main: "Hello World",
+            main: calendar,
             header: "",
             parent: "main",
             position: "bottom",

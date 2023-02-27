@@ -83,9 +83,6 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     async preLoad() {
-        const date = new Date();
-        this.#year = date.getFullYear();
-        this.#month = date.getMonth();
         this.setProperty("selectedView", "default");
         this.setProperty("tabindex", "-1");
         await this.#setMonthProperty();
@@ -93,15 +90,13 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     async attributeChangedCallback(name, oldValue, newValue) {
-        if (!newValue) return;
-        const currentMonth = this.#month;
+        if (newValue == null) return;
         const date = new Date(newValue);
         this.#month = date.getMonth();
         this.#year = date.getFullYear();
         await this.#setMonthProperty();
         await this.#setYearProperty();
-        (newValue !== oldValue && currentMonth != this.#month) && await this.#defaultVisualSelection();
-        this.dispatchEvent(new CustomEvent("date-selected", {detail: {date: newValue}, bubbles: true}));
+        newValue !== oldValue && await this.#defaultVisualSelection();
     }
 
     /**
@@ -184,11 +179,9 @@ export default class Calendar extends crsbinding.classes.BindableElement {
                 await this.goToNext();
             }
 
-            if(parseInt(this.#elements[this.#currentIndex]?.dataset.year) < this.#year) {
+            if (parseInt(this.#elements[this.#currentIndex]?.dataset.year) < this.#year) {
                 await this.goToPrevious();
-            }
-
-            else if(parseInt(this.#elements[this.#currentIndex]?.dataset.year) > this.#year) {
+            } else if (parseInt(this.#elements[this.#currentIndex]?.dataset.year) > this.#year) {
                 await this.goToNext();
             }
         }
@@ -272,7 +265,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         const query = (this.#currentIndex - 1) < 0;
 
         if (this.#selectedView === "default") {
-            query && (await this.goToPrevious(),await this.#setFocusOnRender());
+            query && (await this.goToPrevious(), await this.#setFocusOnRender());
             this.#currentIndex = this.#currentIndex - 1;
 
         } else {
@@ -295,6 +288,11 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     async #defaultEnter() {
         await this.#setDataStart(this.#elements[this.#currentIndex]);
         await this.#setFocusOnRender();
+        this.dispatchEvent(new CustomEvent("date-selected", {
+            detail: {
+                date: this.dataset.start
+            }, bubbles: true
+        }));
     }
 
     /**
@@ -383,6 +381,11 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         if (newValue.getAttribute("role") === 'cell') {
             await this.#setDataStart(newValue);
             await this.#setFocusOnRender();
+            this.dispatchEvent(new CustomEvent("date-selected", {
+                detail: {
+                    date: this.dataset.start
+                }, bubbles: true
+            }));
         }
     }
 
@@ -421,7 +424,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
 
         const selectedElement = this.dataset.start != null && await this.#get_element(this.dataset.start);
         if (selectedElement !== false && selectedElement != null) {
-            if(focusElement != null && focusElement !== false) {
+            if (focusElement != null && focusElement !== false) {
                 this.#elements[this.#currentIndex] != null && selectedElement !== this.#elements[this.#currentIndex] ? this.#elements[this.#currentIndex].tabIndex = -1 : null;
             }
             await crs.call("dom_collection", "toggle_selection", {target: selectedElement, multiple: false});

@@ -121,7 +121,10 @@ export class Dialog extends HTMLElement {
                 await this.#setHeader(header, options);
                 await this.#setFooter(footer);
                 await this.#setBody(main);
-                await this.#setPosition(options);
+
+                requestAnimationFrame(async () => {
+                    this.#setPosition(options);
+                });
 
                 const popup = this.shadowRoot.querySelector(".popup");
                 await crs.call("dom_interactive", "enable_move", {
@@ -243,6 +246,10 @@ export class Dialog extends HTMLElement {
         const struct = {header, main, footer, options};
         this.#stack.push(struct);
         await this.#showStruct(struct);
+    }
+
+    async close() {
+        await this.#popStack();
     }
 }
 
