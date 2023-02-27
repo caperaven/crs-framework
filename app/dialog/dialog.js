@@ -119,4 +119,15 @@ export default class Dialog extends crsbinding.classes.ViewBase {
             parent: "main"
         });
     }
+
+    async emptyHeader(event) {
+        await crs.call("dialog", "show", {
+            main: "Hello World",
+            header: "",
+            parent: "main",
+            position: "bottom",
+            anchor: "left",
+            target: event.target
+        });
+    }
 }
