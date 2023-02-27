@@ -41,9 +41,12 @@
         display: flex;
         flex-direction: row;
         align-items: center;
-        border-bottom: var(--border);
+    }
+
+    header:not(:empty) {
         min-height: var(--header-height);
         padding: 0 var(--padding);
+        border-bottom: var(--border);
     }
 
     header:active {
