@@ -1,0 +1,138 @@
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    :host {
+        --size: 2.5rem;
+        --text-size: 1rem;
+        --margin-size: 0.59rem;
+        --chevron-padding: 0.3rem;
+        --chevron-down-icon: "chevron-down";
+        --chevron-up-icon: "chevron-up";
+        --checked-icon: "check";
+        --icon-font-family: crsfrw;
+
+        display: grid;
+        grid-template-rows: auto 1fr;
+        user-select: none;
+        height: 100%;
+    }
+    #calendar-toolbar, perspective-element {
+        margin: 0.75rem 1.5rem 1.5rem 1.5rem;
+    }
+
+    perspective-element[data-view="years"] {
+        margin: 0rem 0.2rem 1.5rem 0.2rem;
+    }
+
+    :focus{
+        outline-color: var(--blue);
+    }
+
+    #calendar-toolbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: var(--size);
+        margin-bottom: 0.5rem;
+        border:none;
+        color: var(--grey);
+    }
+    #calendar-toolbar #month, #year, #previous-month, #next-month {
+        display: inherit;
+        justify-content: center;
+        align-items: center;
+        background: transparent;
+        height: var(--size);
+    }
+
+    #calendar-toolbar #previous-month, #next-month {
+        width: var(--size);
+        cursor: pointer;
+        border: none;
+    }
+
+    #calendar-toolbar #month, #year {
+        text-align: center;
+        font-size: var(--text-size);
+        font-weight: bold;
+        cursor: pointer;
+        border-radius: var(--radius);
+        border: none;
+    }
+
+    #calendar-toolbar #previous-month:hover,#next-month:hover {
+        background: var(--grey-s3);
+    }
+
+    #calendar-toolbar #month:hover, #year:hover {
+        background: var(--grey-s3);
+    }
+
+    #calendar-toolbar #year {
+        width: 5rem;
+    }
+
+    #calendar-toolbar #month {
+        width: 8rem;
+    }
+
+    #calendar-toolbar #year:after,#month:after {
+        font-family: var(--icon-font-family);
+        content: var(--chevron-down-icon);
+        padding-left: var(--chevron-padding);
+    }
+
+    .current-view {
+        color: var(--cl-primary-alt);
+        background: var(--blue) !important;
+    }
+
+    .current-view:after {
+        content: var(--chevron-up-icon) !important;
+    }
+
+    #chevron-right, #chevron-left {
+        width: 1.5rem;
+        height: 1.5rem;
+        rotate: 90deg;
+    }
+
+</style>
+
+<svg style="display: none" viewBox="0 0 24 24">
+    <symbol id="chevron-up" width="24" height="24">
+        <path d="M7.14541 15.6446L12.0063 10.9309L16.8671 15.6446C17.3557 16.1185 18.145 16.1185 18.6336 15.6446C19.1221 15.1708 19.1221 14.4055 18.6336 13.9317L12.8832 8.35535C12.3946 7.88155 11.6054 7.88155 11.1168 8.35535L5.36644 13.9317C4.87785 14.4055 4.87785 15.1708 5.36644 15.6446C5.85503 16.1063 6.65682 16.1185 7.14541 15.6446Z" fill="#272C37"/>
+    </symbol>
+
+    <symbol id="chevron-down" width="24" height="24">
+        <path d="M7.14541 8.35535L12.0063 13.0691L16.8671 8.35535C17.3557 7.88155 18.145 7.88155 18.6336 8.35535C19.1221 8.82916 19.1221 9.59453 18.6336 10.0683L12.8832 15.6446C12.3946 16.1185 11.6054 16.1185 11.1168 15.6446L5.36644 10.0683C4.87785 9.59453 4.87785 8.82916 5.36644 8.35535C5.85503 7.8937 6.65682 7.88155 7.14541 8.35535Z" fill="#272C37"/>
+    </symbol>
+</svg>
+
+<template id="tplCell">
+    <div role="cell" tabindex="${new Date().toLocaleDateString() === date.toLocaleDateString() ? '0': tabindex == null ? '-1': tabindex}" aria-selected="${selected}" data-day="${date.getDate()}" data-month="${date.getMonth()}" data-year="${date.getFullYear()}" classlist.case="current == false: 'non-current-day', new Date().toLocaleDateString() === date.toLocaleDateString(): 'today'">${number}</div>
+</template>
+<template id="tplYears">
+    <div data-type="year-cell" tabindex="-1" data-value="${year}">${year}</div>
+</template>
+
+<div id="calendar-toolbar" role="toolbar" ref="tools">
+    <button id="previous-month" aria-label="Previous month" tooltip="Previous" click.call="goToPrevious"><svg id="chevron-left"><use href="#chevron-down"></use></svg></button>
+    <button id="month" aria-label="Month selector" value="months" tooltip="Months" click.setValue="selectedView = selectedView === 'months' ? 'default' : 'months'" classlist.if="selectedView == 'months' ? 'current-view'">${selectedMonthText}</button>
+    <button id="year" aria-label="Year selector" value="years" tooltip="Years" click.setValue="selectedView = selectedView === 'years' ? 'default' : 'years'" classlist.if="selectedView == 'years' ? 'current-view'">${selectedYearText}</button>
+    <button id="next-month" aria-label="Next month" tooltip="Next" click.call="goToNext"><svg id="chevron-right"><use href="#chevron-up"></use></svg></button>
+</div>
+
+<perspective-element view.bind="selectedView" ctx.once="contextId" data-folder="/components/calendar/" view-loaded.call="viewLoaded" ref="perspectiveContainer">
+    <template data-id="default" data-default="true">
+        <template src="./templates/days.html"></template>
+    </template>
+    <template data-id="months">
+        <template src="./templates/months.html"></template>
+    </template>
+    <template data-id="years">
+        <template src="./templates/years.html"></template>
+    </template>
+</perspective-element>
