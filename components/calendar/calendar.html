@@ -4,7 +4,7 @@
     }
 
     :host {
-        --size: 2.5rem;
+        --size: 2rem;
         --text-size: 1rem;
         --margin-size: 0.59rem;
         --chevron-padding: 0.3rem;
@@ -17,14 +17,6 @@
         grid-template-rows: auto 1fr;
         user-select: none;
         height: 100%;
-    }
-
-    #calendar-toolbar, perspective-element {
-        margin: 0.75rem 1.5rem 1.5rem 1.5rem;
-    }
-
-    perspective-element[data-view="years"] {
-        margin: 0rem 0.2rem 1.5rem 0.2rem;
     }
 
     :focus {
@@ -46,11 +38,9 @@
         justify-content: center;
         align-items: center;
         background: transparent;
-        height: var(--size);
     }
 
     #calendar-toolbar #previous-month, #next-month {
-        width: var(--size);
         cursor: pointer;
         border: none;
     }
