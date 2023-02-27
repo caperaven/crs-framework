@@ -4,7 +4,8 @@
     }
 
     :focus{
-        outline: var(--double-border-width) solid var(--blue);
+        outline: none;
+        border: var(--double-border-width) solid var(--blue);
     }
 
 
@@ -25,12 +26,17 @@
         border: var(--border);
     }
 
+    thead {
+        /*border: var(--border);*/
+    }
+
     thead tr#tableHeader {
         height: 38px;
-        border: var(--border);
+        /*border: var(--border);*/
         background-color: var(--grey-s3);
         font-size: 16px;
-        font-weight: bold;
+        line-height: 22px;
+        font-weight: 700;
         position: sticky;
     }
 
@@ -40,23 +46,25 @@
         text-align: left;
     }
 
-   /*.scrollable {*/
-   /*    overflow: auto;*/
-   /*    max-height: 380px;*/
-   /*}*/
+    tbody tr {
+        height: 38px;
+        border: var(--border);
+    }
 
     tbody tr td {
         border: var(--border);
         padding: var(--padding);
+        font-size: 16px;
+        font-weight: 400;
     }
 
     tr[aria-selected="true"] {
         background-color: var(--blue-s1);
-        border: var(--double-border-width) solid var(--blue);
+        /*border: var(--double-border-width) solid var(--blue);*/
     }
 
     :focus[aria-selected="true"] {
-        outline: var(--double-border-width) solid var(--blue);
+        border: var(--double-border-width) solid var(--blue);
     }
 
 
@@ -88,5 +96,5 @@
     <thead aria-label="table-header">
         <tr id="tableHeader"></tr>
     </thead>
-    <tbody class="scrollable" aria-label="table-body"></tbody>
+    <tbody aria-label="table-body"></tbody>
 </table>
