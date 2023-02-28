@@ -117,7 +117,8 @@ export default class Dialog extends crsbinding.classes.ViewBase {
             title: "My Title",
             main: "Test",
             header: headerTemplate.content.cloneNode(true),
-            parent: "main"
+            parent: "main",
+            allowMove: false
         });
     }
 
@@ -132,7 +133,8 @@ export default class Dialog extends crsbinding.classes.ViewBase {
             parent: "main",
             position: "bottom",
             anchor: "left",
-            target: event.target
+            target: event.target,
+            allowClose: true
         });
     }
 }

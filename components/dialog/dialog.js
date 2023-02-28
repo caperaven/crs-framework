@@ -121,22 +121,30 @@ export class Dialog extends HTMLElement {
                 await this.#setHeader(header, options);
                 await this.#setFooter(footer);
                 await this.#setBody(main);
+                await this.#setOptions(options);
 
                 requestAnimationFrame(async () => {
                     this.#setPosition(options);
                 });
-
-                const popup = this.shadowRoot.querySelector(".popup");
-                await crs.call("dom_interactive", "enable_move", {
-                    element: popup,
-                    move_query: "header"
-                });
-
-                if (options?.allowResize === false) {
-                    this.dataset.allowResize = "false";
-                }
             }
         });
+    }
+
+    async #setOptions(options) {
+        if (options?.allowMove === true) {
+            const popup = this.shadowRoot.querySelector(".popup");
+            await crs.call("dom_interactive", "enable_move", {
+                element: popup,
+                move_query: "header"
+            });
+        }
+
+        this.dataset.allowResize = options?.allowResize === true ? "true" : "false";
+
+        if (options?.allowClose === true) {
+            const backLayer = this.shadowRoot.querySelector("#back-layer");
+            backLayer.dataset.action = "close";
+        }
     }
 
     /**
