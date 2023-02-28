@@ -10,10 +10,10 @@ export function createMockChildren(element) {
     createChildrenFromHtml(element, html);
 }
 
-export function createChildrenFromHtml(element, html) {
+export function createChildrenFromHtml(element, html, useShadowRoot = true) {
     const jsonStr = parse(html.split(".").join("_"));
     const json = JSON.parse(jsonStr);
-    createChildren(element, element.shadowRoot || element, json);
+    createChildren(element, useShadowRoot == true ? element.shadowRoot : element, json);
 }
 
 function createChildren(context, element, json) {

@@ -10,5 +10,6 @@ export const CHANGE_TYPES = Object.freeze({
     add: "add",
     update: "update",
     delete: "delete",
-    refresh: "refresh"
+    refresh: "refresh",
+    filter: "filter"
 });

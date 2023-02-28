@@ -27,6 +27,10 @@ export function findAll(element, selectorFn, collection) {
 }
 
 export function createQueryFunction(query) {
+    if (query.indexOf("data-") != -1) {
+        return createDataAttributeFunction(query);
+    }
+
     if (query.indexOf("[") != -1) {
         return createAttributeFunction(query);
     }
@@ -40,6 +44,20 @@ export function createQueryFunction(query) {
     }
 
     return createTagFunction(query);
+}
+
+function createDataAttributeFunction(query) {
+    query = query
+        .replace("data-", "")
+        .replace("[", "")
+        .replace("]", "")
+
+    const parts = query.split("=");
+    const property = parts[0];
+    const value = parts[1];
+
+    const code = `return item.dataset["${property}"] == ${value};`
+    return new Function("item", code);
 }
 
 function createAttributeFunction(query) {
