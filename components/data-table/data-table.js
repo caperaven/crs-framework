@@ -267,7 +267,8 @@ export class DataTable extends HTMLElement {
 
         if (rows[focusedIndex].getAttribute("aria-selected" ) !== "true") {
             await crs.call("dom_collection", "toggle_selection", { target: rows[focusedIndex] , multiple: false });
-        } else {
+        }
+        else {
             rows[focusedIndex].removeAttribute("aria-selected");
         }
 

@@ -133,7 +133,6 @@ describe ("data-table tests", async () => {
         assert(row.getAttribute("aria-selected") == null);
 
         row.parentNode = instance.shadowRoot.querySelector("tbody");
-        // console.log(row.parentNode.nodeName);
         await instance.performEvent("click", row);
         assertEquals(row.getAttribute("aria-selected"), "true");
 
