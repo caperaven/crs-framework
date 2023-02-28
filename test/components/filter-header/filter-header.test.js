@@ -52,9 +52,11 @@ describe ("filter-header tests", async () => {
     });
 
     it("check input change", async () => {
+        let count = 0;
 
         for(let i = 0; i < ul.children.length; i++){
             console.log(ul.children[i].getAttribute("data-tags"));
+            assert(ul.children[i].getAttribute("aria-hidden") == null);
         }
 
         const input = instance.shadowRoot.querySelector("input");
@@ -64,21 +66,36 @@ describe ("filter-header tests", async () => {
 
         for(let i = 0; i < ul.children.length; i++){
             console.log(ul.children[i].getAttribute("aria-hidden"));
+            if (ul.children[i].getAttribute("aria-hidden")) {
+                count++;
+            }
         }
+        assertEquals(count, 1);
+        count = 0;
 
         input.value = "";
         await input.performEvent("keyup", input);
 
         for(let i = 0; i < ul.children.length; i++){
             console.log(ul.children[i].getAttribute("aria-hidden"));
+            if (ul.children[i].getAttribute("aria-hidden")) {
+                count++;
+            }
         }
+
+        assertEquals(count, 0);
+        count = 0;
 
         input.value = "add";
         await input.performEvent("keyup", input);
 
         for(let i = 0; i < ul.children.length; i++){
             console.log(ul.children[i].getAttribute("aria-hidden"));
+            if (ul.children[i].getAttribute("aria-hidden")) {
+                count++;
+            }
         }
+        assertEquals(count, 3);
     });
 
 

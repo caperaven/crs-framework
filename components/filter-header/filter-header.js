@@ -28,7 +28,6 @@ class FilterHeader extends HTMLElement {
      * that has the id that is specified in the "for" attribute.
      */
     async connectedCallback() {
-        // super.connectedCallback();
         this.shadowRoot.innerHTML = await fetch(this.html).then(result => result.text());
         await this.load();
 
@@ -49,7 +48,6 @@ class FilterHeader extends HTMLElement {
      * @method disconnectedCallback - When the component is removed from the DOM, the container is set to null
      */
     async disconnectedCallback() {
-        // await super.disconnectedCallback();
         this.#container = null;
         this.shadowRoot.querySelector("input").removeEventListener("keyup", this.#filterHandler);
         this.#filterHandler = null;
