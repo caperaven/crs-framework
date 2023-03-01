@@ -278,7 +278,20 @@ function removeEventListener(event, callback) {
 
 function insertBefore(newElement, oldElement) {
     const index = this.children.indexOf(oldElement);
-    this.children.splice(index, 0, newElement);
+
+    if (newElement.nodeName === "DOCUMENT-FRAGMENT") {
+        newElement = newElement.children;
+    }
+    else {
+        newElement = [newElement];
+    }
+
+    if (index == -1) {
+        this.children.push(...newElement);
+    }
+    else {
+        this.children.splice(index, 0, ...newElement);
+    }
 }
 
 function replaceChild(node, child) {

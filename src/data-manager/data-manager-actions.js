@@ -116,6 +116,25 @@ class DataManagerActions {
     }
 
     /**
+     * @method record_count - Get the count of records in a data manager
+     * @param step {object} - The step that contains the action to perform
+     * @param context {object} - The context of the process
+     * @param process {object} - The process
+     * @param item {object} - Current item in a process loop
+     *
+     * @param step.args.manager {string} - The name of the data manager. You will use this when performing operations on the data manager.
+     * @returns {Promise<void>}
+     */
+    static async record_count(step, context, process, item) {
+        const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return 0;
+
+        const dataManager = globalThis.dataManagers[manager];
+        return dataManager.count;
+    }
+
+
+    /**
      * @method set_records - Set records for a data manager
      * @param step
      * @param context
@@ -137,6 +156,22 @@ class DataManagerActions {
         })
     }
 
+    /**
+     * @method append - Append records to a data manager
+     * @param step {object} - The step that contains the action to perform
+     * @param context {object} - The context of the process
+     * @param process {object} - The process
+     * @param item {object} - Current item in a process loop
+     * @param step.args.manager {string} - The name of the data manager. You will use this when performing operations on the data manager.
+     * @param step.args.records {array} - The records to append
+     * @returns {Promise<void>}
+     *
+     * @example <caption>javascript example</caption>
+     * await crs.call("data_manager", "append" {
+     *     manager: "my_data_manager",
+     *     records: [{id: 1, name: "test"}]
+     * })
+     */
     static async append(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
         if (manager == null) return;
@@ -155,6 +190,29 @@ class DataManagerActions {
         });
     }
 
+    /**
+     * @method remove - Remove records from a data manager
+     * @param step {object} - The step that contains the action to perform
+     * @param context {object} - The context of the process
+     * @param process {object} - The process
+     * @param item {object} - Current item in a process loop
+     * @param step.args.manager {string} - The name of the data manager. You will use this when performing operations on the data manager.
+     * @param [step.args.indexes] {array} - The indexes of the records to remove
+     * @param [step.args.ids] {array} - The ids of the records to remove
+     * @returns {Promise<void>}
+     *
+     * @example <caption>javascript example using indexes</caption>
+     * await crs.call("data_manager", "remove" {
+     *    manager: "my_data_manager",
+     *    indexes: [0, 1, 2]
+     * });
+     *
+     * @example <caption>javascript example using ids</caption>
+     * await crs.call("data_manager", "remove" {
+     *   manager: "my_data_manager",
+     *   ids: [1001, 1002, 1003]
+     * });
+     */
     static async remove(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
         if (manager == null) return;
@@ -179,6 +237,33 @@ class DataManagerActions {
         })
     }
 
+    /**
+     * @method update - Update records in a data manager
+     * @param step {object} - The step that contains the action to perform
+     * @param context {object} - The context of the process
+     * @param process {object} - The process
+     * @param item {object} - Current item in a process loop
+     *
+     * @param step.args.manager {string} - The name of the data manager. You will use this when performing operations on the data manager.
+     * @param [step.args.index] {number} - The index of the record to update
+     * @param [step.args.id] {number} - The id of the record to update
+     * @param step.args.changes {object} - The changes to make to the record
+     * @returns {Promise<void>}
+     *
+     * @example <caption>javascript example using index</caption>
+     * await crs.call("data_manager", "update" {
+     *     manager: "my_data_manager",
+     *     index: 0,
+     *     changes: {name: "test"}
+     * });
+     *
+     * @example <caption>javascript example using id</caption>
+     * await crs.call("data_manager", "update" {
+     *    manager: "my_data_manager",
+     *    id: 1001,
+     *    changes: {name: "test"}
+     * });
+     */
     static async update(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
         if (manager == null) return;
