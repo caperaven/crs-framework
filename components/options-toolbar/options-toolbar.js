@@ -39,7 +39,7 @@ class OptionsToolbar extends HTMLElement {
 
                 const selectedItem = this.querySelector(`[aria-selected='true']`) ?? this.firstElementChild;
                 await this.#setSelected(selectedItem, false);
-                this.addEventListener("click", this.#clickHandler);
+                this.shadowRoot.addEventListener("click", this.#clickHandler);
 
                 let timeout = setTimeout(() => {
                     if (this.#marker != null){
@@ -54,7 +54,7 @@ class OptionsToolbar extends HTMLElement {
     }
 
     async disconnectedCallback() {
-        this.removeEventListener("click", this.#clickHandler);
+        this.shadowRoot.removeEventListener("click", this.#clickHandler);
         this.#marker = null;
         this.#clickHandler = null;
         this.#previouslySelected = null;
