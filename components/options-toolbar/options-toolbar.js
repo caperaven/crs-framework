@@ -41,8 +41,10 @@ class OptionsToolbar extends HTMLElement {
                 await this.#setSelected(selectedItem, false);
                 this.addEventListener("click", this.#clickHandler);
 
-                const timeout = setTimeout(() => {
-                    this.#marker.style.transition = "translate 0.3s ease-out";
+                let timeout = setTimeout(() => {
+                    if (this.#marker != null){
+                        this.#marker.style.transition = "translate 0.3s ease-out";
+                    }
                     clearTimeout(timeout);
                 }, 0.5)
 
@@ -88,17 +90,11 @@ class OptionsToolbar extends HTMLElement {
      * @param event - The event object that was triggered.
      */
     async #click(event) {
-        if (event.target.nodeName == "BUTTON") {
-            await this.#setSelected(event.target);
+        const target = await crs.call("dom_utils", "find_parent_of_type", { element: event?.target, nodeName: "BUTTON" });
+        if (target) {
+            await this.#setSelected(target);
         }
     }
-    // async #click(event) {
-    //     console.log(event)
-    //     const button = event.composedPath()[0].closest('button');
-    //     if (button) {
-    //         await this.#setSelected(button);
-    //     }
-    // }
 }
 
 customElements.define("options-toolbar", OptionsToolbar);

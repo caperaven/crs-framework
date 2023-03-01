@@ -41,12 +41,10 @@ describe ("options-toolbar tests", async () => {
 
         await instance.connectedCallback();
 
-        // console.log(instance.shadowRoot.querySelector(".marker").tagName);
-
         const marker = instance.shadowRoot.querySelector(".marker");
         marker.bounds = {left: 0, top: 0, width: 20, height: 20};
         marker.id = "marker";
-        //
+
         const parent = instance.shadowRoot.querySelector(".parent");
         parent.bounds = {left: 0, top: 0, width: 40, height: 20};
         parent.id = "parent";
@@ -59,22 +57,19 @@ describe ("options-toolbar tests", async () => {
     it("instance is not null", async () => {
         assert(instance !== null);
         assert(instance.shadowRoot !== null);
-        // assert(instance.shadowRoot.querySelector(".marker") !== null);
-        // assert(instance.shadowRoot.querySelector(".parent") !== null);
         assert(marker !== null);
         assert(parent !== null);
     });
 
     it("click", async () => {
-        console.log("button1", button1.id);
-        console.log("button2", button2.id);
-        console.log(instance.shadowRoot.querySelector(".marker").id);
-        console.log(instance.shadowRoot.querySelector(".parent").id);
-        console.log(button2.getAttribute("aria-selected"));
+        assertEquals(button2.getAttribute("aria-selected"), "true");
         await instance.performEvent("click", button1);
-        console.log(button2.getAttribute("aria-selected"));
-        console.log(button1.getAttribute("aria-selected"));
-    });
+        assertEquals(button2.getAttribute("aria-selected"), undefined);
+        assertEquals(button1.getAttribute("aria-selected"), "true");
 
+        await instance.performEvent("click", button2);
+        assertEquals(button2.getAttribute("aria-selected"), "true");
+        assertEquals(button1.getAttribute("aria-selected"), undefined);
+    });
 
 });
