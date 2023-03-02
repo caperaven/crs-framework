@@ -1,7 +1,7 @@
 import {assertEquals, beforeAll, beforeEach, describe, it} from "./../../dependencies.js";
 import {init} from "../../mockups/init.js";
 
-describe.ignore("Dialog", () => {
+describe("Dialog", () => {
     let instance;
 
     beforeAll(async () => {

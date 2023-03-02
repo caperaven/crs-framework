@@ -53,6 +53,7 @@ export function mockElement(instance, tag, id) {
     instance.cloneNode = cloneNode.bind(instance);
     instance.appendChild = appendChild.bind(instance);
     instance.removeChild = removeChild.bind(instance);
+    instance.replaceChildren = replaceChildren.bind(instance);
     instance.addEventListener = addEventListener.bind(instance);
     instance.removeEventListener = removeEventListener.bind(instance);
     instance.insertBefore = insertBefore.bind(instance);
@@ -126,7 +127,8 @@ export function mockElement(instance, tag, id) {
             return clone;
         },
 
-        set(newValue) {}
+        set(newValue) {
+        }
     });
 
     return instance;
@@ -160,7 +162,13 @@ function setAttribute(attr, value) {
         attrObj = {
             name: attr,
             value: value,
-            ownerElement: this
+            ownerElement: this,
+            get nodeValue() {
+                return this.value;
+            },
+            set nodeValue(value) {
+                this.value = value;
+            }
         };
         hasAttr = false;
     } else {
@@ -237,10 +245,6 @@ function appendChild(element) {
         child.parentElement = this;
     }
 
-    //TODO: We need functionality like this to truly represent some test scenarios
-    // if (element.connectedCallback != null) {
-    //     element.connectedCallback();
-    // }
     return element;
 
 }
@@ -251,10 +255,6 @@ function removeChild(child) {
     if (index != -1) {
         const removed = this.children.splice(index, 1);
         removed.parentElement = null;
-        //TODO: We need functionality like this to truly represent some test scenarios
-        // if (element.disconnectedCallback != null) {
-        //     element.disconnectedCallback();
-        // }
         return removed;
     }
 
@@ -263,7 +263,7 @@ function removeChild(child) {
 }
 
 function addEventListener(event, callback) {
-    this.__events.push({ event: event, callback: callback });
+    this.__events.push({event: event, callback: callback});
 }
 
 function removeEventListener(event, callback) {
@@ -281,15 +281,13 @@ function insertBefore(newElement, oldElement) {
 
     if (newElement.nodeName === "DOCUMENT-FRAGMENT") {
         newElement = newElement.children;
-    }
-    else {
+    } else {
         newElement = [newElement];
     }
 
     if (index == -1) {
         this.children.push(...newElement);
-    }
-    else {
+    } else {
         this.children.splice(index, 0, ...newElement);
     }
 }
@@ -300,6 +298,11 @@ function replaceChild(node, child) {
     if (index != -1) {
         this.children.splice(index, 1, node);
     }
+}
+
+function replaceChildren(...elements) {
+    this.children.length = 0;
+    this.children.push(...elements);
 }
 
 function dispatchEvent(event, args) {

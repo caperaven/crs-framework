@@ -11,9 +11,8 @@ export function createMockChildren(element) {
 }
 
 export function createChildrenFromHtml(element, html, useShadowRoot = true) {
-    // TODO : JHR this split join causes issues with any html that has a path in it for example  model.code will become model_code logged by AA
-    // Some of my tests are now ignored because I need the above resolved.
-    const jsonStr = parse(html.split(".").join("_"));
+    let jsonStr = parse(html.split(".").join("____"));
+    jsonStr = jsonStr.replaceAll("____", ".");
     const json = JSON.parse(jsonStr);
     createChildren(element, useShadowRoot == true ? element.shadowRoot : element, json);
 }
