@@ -12,6 +12,7 @@
  * 7. Allow close of container (the entire stack).
  * 8. Maximize container
  * 9. Show backdrop
+ * 10. Allow auto close on click outside of container.
  *
  * Stack Features:
  * 1. Allow push and pop of stack.
@@ -49,7 +50,7 @@ export class Dialog extends HTMLElement {
      * @returns {Promise<unknown>}
      */
     load() {
-        return new Promise(async resolve => {
+        return new Promise(resolve => {
             this.shadowRoot.addEventListener("click", this.#clickHandler);
             resolve();
         });
@@ -75,7 +76,7 @@ export class Dialog extends HTMLElement {
     }
 
     /**
-     * @method click - handle click events
+     * @method click - handle click events using a convention of data-action="actionName"
      * @param event
      * @returns {Promise<void>}
      */
@@ -123,6 +124,7 @@ export class Dialog extends HTMLElement {
                 await this.#setBody(main);
                 await this.#setOptions(options);
 
+                // Set position is called after the content is rendered in the dialog.
                 requestAnimationFrame(async () => {
                     this.#setPosition(options);
                 });
@@ -130,6 +132,16 @@ export class Dialog extends HTMLElement {
         });
     }
 
+    /**
+     * @method #setOptions - set the options for the dialog
+     * @param options {object} - the options to set
+     * @param options.allowMove {boolean} - allow the dialog to be moved
+     * @param options.allowResize {boolean} - allow the dialog to be resized
+     * @param options.autoClose {boolean} - allow the dialog to be closed by clicking outside the dialog on a back layer
+     * @param options.minWidth {string} - the minimum width of the dialog, used to control resize min width
+     * @param options.minHeight {string} - the minimum height of the dialog, used to control resize min height
+     * @returns {Promise<void>}
+     */
     async #setOptions(options) {
         if (options?.allowMove === true && options?.showHeader === true) {
             const popup = this.shadowRoot.querySelector(".popup");
@@ -142,7 +154,7 @@ export class Dialog extends HTMLElement {
         this.dataset.allowMove = options?.allowMove === true ? "true" : "false";
         this.dataset.allowResize = options?.allowResize === true ? "true" : "false";
 
-        if (options?.clickOutsideToClose === true) {
+        if (options?.autoClose === true) {
             const backLayer = await crs.call("dom", "create_element", {
                 tag_name: "div",
                 classes: ["back"],
@@ -278,6 +290,11 @@ export class Dialog extends HTMLElement {
         await this.#showStruct(struct);
     }
 
+    /**
+     * @method close - Public close method to allow the dialog to be closed from external code.
+     * This will be needed in instances where a dialog has no close buttons on it.
+     * @returns {Promise<void>}
+     */
     async close() {
         await this.#popStack();
     }
