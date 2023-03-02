@@ -160,13 +160,7 @@ function setAttribute(attr, value) {
         attrObj = {
             name: attr,
             value: value,
-            ownerElement: this,
-            get nodeValue() {
-                return this.value;
-            },
-            set nodeValue(value) {
-                this.value = value;
-            }
+            ownerElement: this
         };
         hasAttr = false;
     } else {
@@ -310,8 +304,8 @@ function replaceChild(node, child) {
 
 function dispatchEvent(event, args) {
     const events = this.__events.filter(item => {
-        const itemEvent = typeof item.event == "object" ? item.event.event : item.event
-        return event == itemEvent
+        event = typeof item.event == "object" ? item.event.event : item.event
+        return item.event == event
     }) || [];
     for (let eventItem of events) {
         eventItem.callback(args);
