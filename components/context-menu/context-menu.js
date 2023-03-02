@@ -33,10 +33,6 @@ class ContextMenu extends crsbinding.classes.BindableElement {
             this.#clickHandler = this.#click.bind(this);
             this.shadowRoot.addEventListener("click", this.#clickHandler);
 
-            await crsbinding.translations.add({
-                approved: "Approved"
-            })
-
             requestAnimationFrame(async () => {
                 const ul = this.shadowRoot.querySelector(".popup");
 
@@ -232,7 +228,7 @@ async function createListItems(parentElement, collection, templates) {
             }
         });
 
-        if (option.template != null) {
+        if (templates != null && option.template != null) {
             const template = templates[option.template];
             const fragment = await crs.call("html", "create", {
                 ctx: option,

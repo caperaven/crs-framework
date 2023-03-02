@@ -23,7 +23,7 @@ describe ("tab-list", async () => {
             '<template data-id="view1" data-default="true"><h1>Template 1</h1></template>',
             '<template data-id="view2"><h1>Template 2</h1></template>',
             '<template data-id="view3"><h1>Template 3</h1></template>'
-        ].join(" "))
+        ].join(" "), false)
 
         perspective.connectedCallback();
 
