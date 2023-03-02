@@ -8,7 +8,7 @@ import "./dialog.js";
  * 2. show - show the dialog.
  * 3. force_close - force close the dialog regardless of what is in it.
  */
-class DialogActions {
+export class DialogActions {
     /**
      * @method defineSizes - define the sizes for the dialog and is called during initial application setup.
      * @param step {object} - the process step.
@@ -64,6 +64,12 @@ class DialogActions {
      *
      * @param step.args.margin {number} - the margin between the dialog and the target element.
      * @param step.args.close {boolean} - if true, the dialog is closed before showing the new content.
+     * @param step.args.auto_close {boolean} - if true, the dialog is closed when the user clicks outside the dialog.
+     * @param step.args.allow_resize {boolean} - if true, the dialog can be resized by the user.
+     * @param step.args.allow_move {boolean} - if true, the dialog can be moved by the user.
+     * @param step.args.min_width {number} - the minimum width of the dialog, the dialog cannot be resized smaller than this.
+     * @param step.args.min_height {number} - the minimum height of the dialog, the dialog cannot be resized smaller than this.
+     * @param step.args.show_header {boolean} - if true, the dialog header is shown, if false allow_move has no effect.
      *
      * @returns {Promise<void>}
      *
@@ -83,8 +89,14 @@ class DialogActions {
      *
      *     // optional
      *     title: "My Title" - used instead of the header element as an alternative
-     *     close: true - by default this is true and the old dialog is closed and a new one opened..
+     *     close: true - by default this is true and the old dialog is closed and a new one opened.
      *     if close is false, the new content is added to the stack and closing the dialog will return to the previous one.
+     *     auto_close: true - the dialog is closed when the user clicks outside the dialog.
+     *     allow_resize: true - the dialog can be resized by the user.
+     *     allow_move: true - the dialog can be moved by the user.
+     *     min_width: 100 - the minimum width of the dialog, the dialog cannot be resized smaller than this.
+     *     min_height: 100 - the minimum height of the dialog, the dialog cannot be resized smaller than this.
+     *     show_header: true - if true, the dialog header is shown. If false allow_move has no effect.
      * })
      *
      * @example <caption>json example</caption>
@@ -101,6 +113,14 @@ class DialogActions {
      *        "header": "$context.header",
      *        "main": "$context.main",
      *        "footer": "$context.footer",
+     *
+     *       "title": "My Title",
+     *       "auto_close": true,
+     *       "allow_resize": true,
+     *       "allow_move": true,
+     *       "min_width": 100,
+     *       "min_height": 100,
+     *       "show_header": true
      *    }
      */
     static async show(step, context, process, item) {
@@ -117,11 +137,24 @@ class DialogActions {
         const size = await crs.process.getValue(step.args.size, context, process, item);
         const margin = await crs.process.getValue(step.args.margin ?? 0, context, process, item);
         const close = await crs.process.getValue(step.args.close ?? true, context, process, item);
+        const severity = await crs.process.getValue(step.args.severity, context, process, item);
+        const title = await crs.process.getValue(step.args.title, context, process, item);
+        const allowResize = await crs.process.getValue(step.args.allow_resize, context, process, item) ?? true;
+        const allowMove = await crs.process.getValue(step.args.allow_move, context, process, item) ?? true;
+        const minWidth = await crs.process.getValue(step.args.min_width, context, process, item);
+        const minHeight = await crs.process.getValue(step.args.min_height, context, process, item);
+        const showHeader = await crs.process.getValue(step.args.show_header, context, process, item) ?? true;
+        const autoClose = await crs.process.getValue(step.args.auto_close, context, process, item) ?? false;
+        const parent = await crs.call("dom", "get_element", {element: step.args.parent}, context, process, item) ?? document.body;
 
-        const options = {target, position, anchor, size, margin};
+        const options = {
+            target, position, anchor, size, margin, title, severity, allowResize,
+            allowMove, minWidth, minHeight, showHeader, autoClose
+        };
 
-        const dialog = await ensureDialog(close);
+        const dialog = await ensureDialog(close, parent);
         dialog.show(headerElement, mainElement, footerElement, options);
+        return dialog;
     }
 
     /**
@@ -139,14 +172,14 @@ class DialogActions {
     }
 }
 
-async function ensureDialog(close) {
+async function ensureDialog(close, parent) {
     if (close == true) {
         await crs.call("dialog", "force_close", {});
     }
 
-    if (!globalThis.dialog) {
+    if (globalThis.dialog == null) {
         globalThis.dialog = document.createElement('dialog-component');
-        document.body.appendChild(globalThis.dialog);
+        parent.appendChild(globalThis.dialog);
     }
 
     return globalThis.dialog;

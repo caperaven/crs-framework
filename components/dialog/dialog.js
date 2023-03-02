@@ -12,6 +12,7 @@
  * 7. Allow close of container (the entire stack).
  * 8. Maximize container
  * 9. Show backdrop
+ * 10. Allow auto close on click outside of container.
  *
  * Stack Features:
  * 1. Allow push and pop of stack.
@@ -21,17 +22,17 @@
 export class Dialog extends HTMLElement {
     #stack = [];
     #clickHandler = this.#click.bind(this);
-    #actions = {
-        "btnClose": this.#closeClicked.bind(this),
-        "btnResize": this.#resizeClicked.bind(this),
-    }
+    #actions = Object.freeze({
+        "close": this.#closeClicked.bind(this),
+        "resize": this.#resizeClicked.bind(this),
+    });
 
     /**
      * @constructor
      */
     constructor() {
         super();
-        this.attachShadow({ mode: 'open' });
+        this.attachShadow({mode: 'open'});
     }
 
     /**
@@ -40,15 +41,15 @@ export class Dialog extends HTMLElement {
      */
     async connectedCallback() {
         this.shadowRoot.innerHTML = await fetch(import.meta.url.replace(".js", ".html")).then(response => response.text());
-        await this.#load();
+        await this.load();
         await crs.call("component", "notify_ready", {element: this});
     }
 
     /**
-     * @method #load - load the component and it's dependencies including events
+     * @method load - load the component and it's dependencies including events
      * @returns {Promise<unknown>}
      */
-    #load() {
+    load() {
         return new Promise(resolve => {
             this.shadowRoot.addEventListener("click", this.#clickHandler);
             resolve();
@@ -62,6 +63,7 @@ export class Dialog extends HTMLElement {
     async disconnectedCallback() {
         this.shadowRoot.removeEventListener("click", this.#clickHandler);
         this.#clickHandler = null;
+        await crsbinding.translations.delete("dialog");
     }
 
     /**
@@ -74,13 +76,13 @@ export class Dialog extends HTMLElement {
     }
 
     /**
-     * @method click - handle click events
+     * @method click - handle click events using a convention of data-action="actionName"
      * @param event
      * @returns {Promise<void>}
      */
     async #click(event) {
-        const id = event.target.id;
-        this.#actions[id]?.();
+        const action = event.target.dataset.action;
+        this.#actions[action]?.(event);
     }
 
     /**
@@ -88,7 +90,18 @@ export class Dialog extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #resizeClicked() {
-        // change the resize button icon to indicate the next action (fullscreen or back)
+        // toggle the fullscreen class
+        this.classList.toggle("fullscreen");
+
+        const icon = this.classList.contains("fullscreen") ? "close-fullscreen" : "open-fullscreen";
+        this.shadowRoot.querySelector("#btnResize").textContent = icon;
+
+        const method = this.classList.contains("fullscreen") ? "disable_move" : "enable_move";
+        const popup = this.shadowRoot.querySelector(".popup");
+        await crs.call("dom_interactive", method, {
+            element: popup,
+            move_query: "header"
+        });
     }
 
     async #closeClicked() {
@@ -100,18 +113,66 @@ export class Dialog extends HTMLElement {
      * @param struct
      */
     async #showStruct(struct) {
-        const { header, main, footer, options } = struct;
+        const {header, main, footer, options} = struct;
 
         await crs.call("component", "on_ready", {
             element: this,
             caller: this,
             callback: async () => {
-                await this.#setHeader(header, options.title);
-                await this.#setBody(main);
+                await this.#setHeader(header, options);
                 await this.#setFooter(footer);
-                await this.#setPosition(options);
+                await this.#setBody(main);
+                await this.#setOptions(options);
+
+                // Set position is called after the content is rendered in the dialog.
+                requestAnimationFrame(async () => {
+                    this.#setPosition(options);
+                });
             }
         });
+    }
+
+    /**
+     * @method #setOptions - set the options for the dialog
+     * @param options {object} - the options to set
+     * @param options.allowMove {boolean} - allow the dialog to be moved
+     * @param options.allowResize {boolean} - allow the dialog to be resized
+     * @param options.autoClose {boolean} - allow the dialog to be closed by clicking outside the dialog on a back layer
+     * @param options.minWidth {string} - the minimum width of the dialog, used to control resize min width
+     * @param options.minHeight {string} - the minimum height of the dialog, used to control resize min height
+     * @returns {Promise<void>}
+     */
+    async #setOptions(options) {
+        if (options?.allowMove === true && options?.showHeader === true) {
+            const popup = this.shadowRoot.querySelector(".popup");
+            await crs.call("dom_interactive", "enable_move", {
+                element: popup,
+                move_query: "header"
+            });
+        }
+
+        this.dataset.allowMove = options?.allowMove === true ? "true" : "false";
+        this.dataset.allowResize = options?.allowResize === true ? "true" : "false";
+
+        if (options?.autoClose === true) {
+            const backLayer = await crs.call("dom", "create_element", {
+                tag_name: "div",
+                classes: ["back"],
+                id: "back-layer",
+                dataset: {
+                    "action": "close"
+                }
+            });
+            this.shadowRoot.appendChild(backLayer);
+        }
+
+        if (options?.minWidth != null) {
+            this.style.setProperty("--min-width", options.minWidth);
+        }
+
+        if (options?.minHeight != null) {
+            this.style.setProperty("--min-height", options.minHeight);
+        }
     }
 
     /**
@@ -120,16 +181,30 @@ export class Dialog extends HTMLElement {
      * @param title
      * @returns {Promise<void>}
      */
-    async #setHeader(header, title) {
-        const headerElement = this.shadowRoot.querySelector("#header");
+    async #setHeader(header, options) {
+        const headerElement = this.shadowRoot.querySelector("header");
 
-        if (title != null) {
-            headerElement.querySelector("#headerText").textContent = options.title;
+        if (options?.showHeader === false) {
+            headerElement.innerHTML = "";
+            return;
+        }
+
+        if (options?.severity != null) {
+            headerElement.dataset.severity = options.severity;
         }
 
         if (header != null) {
-            headerElement.insertBefore(options.header, headerElement.firstElementChild);
+            headerElement.replaceChildren(header);
+            return;
         }
+
+        const translations = {
+            "title": options?.title ?? "",
+            "close": options?.closeText ?? "Close",
+            "resize": options?.resizeText ?? "Resize"
+        }
+        await crsbinding.translations.add(translations, "dialog");
+        await crsbinding.translations.parseElement(headerElement);
     }
 
     /**
@@ -138,7 +213,15 @@ export class Dialog extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #setBody(body) {
+        if (body == null) return;
+
         const bodyElement = this.shadowRoot.querySelector("#body");
+
+        if (typeof body == "string") {
+            bodyElement.textContent = body;
+            return;
+        }
+
         bodyElement.innerHTML = "";
         bodyElement.appendChild(body);
     }
@@ -153,7 +236,7 @@ export class Dialog extends HTMLElement {
         footerElement.innerHTML = "";
 
         if (footer != null) {
-            footerElement.appendChild(options.footer);
+            footerElement.appendChild(footer);
         }
     }
 
@@ -163,13 +246,15 @@ export class Dialog extends HTMLElement {
      * @returns {Promise<*>}
      */
     async #setPosition(options) {
-        if (options.target == null) {
-            return await crs.call("fixed_position", "set", { element: this, position: "center-screen", margin: 10});
+        const popup = this.shadowRoot.querySelector(".popup");
+
+        if (options?.target == null) {
+            return await crs.call("fixed_position", "set", {element: popup, position: "center-screen", margin: 10});
         }
 
         await crs.call("fixed_layout", "set", {
             target: options.target,
-            element: this,
+            element: popup,
             at: options.position.toLowerCase(),
             anchor: options.anchor.toLowerCase(),
             margin: options.margin
@@ -200,9 +285,18 @@ export class Dialog extends HTMLElement {
      * @returns {Promise<void>}
      */
     async show(header, main, footer, options) {
-        const struct = { header, main, footer, options };
+        const struct = {header, main, footer, options};
         this.#stack.push(struct);
         await this.#showStruct(struct);
+    }
+
+    /**
+     * @method close - Public close method to allow the dialog to be closed from external code.
+     * This will be needed in instances where a dialog has no close buttons on it.
+     * @returns {Promise<void>}
+     */
+    async close() {
+        await this.#popStack();
     }
 }
 

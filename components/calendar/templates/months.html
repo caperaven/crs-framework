@@ -1,0 +1,54 @@
+<style>
+    #months {
+        display: grid;
+        grid-template: repeat(3, 1fr)/repeat(3, 1fr);
+        justify-items: center;
+        align-items: center;
+        grid-gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    #months > [data-type = "month-cell"] {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: var(--grey);
+        width: 6.1rem;
+        height: 3rem;
+        font-size: var(--text-size);
+        border-radius: var(--radius);
+    }
+
+    #months > div:hover:not([aria-selected = "true"]) {
+        background: var(--grey-s3);
+        cursor: pointer;
+    }
+
+    #months > [aria-selected = "true"] {
+        color: var(--blue);
+        background: var(--blue-s2);
+        font-weight: bold;
+    }
+
+    #months > [aria-selected = "true"]:after {
+        content: var(--checked-icon);
+        font-family: var(--icon-font-family);
+        padding-left: var(--chevron-padding);
+        font-weight: bold;
+    }
+</style>
+
+<div id="months" click.setValue="selectedMonth = $event.target.dataset.value">
+    <div data-type="month-cell" tabindex="-1" data-value="0">January</div>
+    <div data-type="month-cell" tabindex="-1" data-value="1">February</div>
+    <div data-type="month-cell" tabindex="-1" data-value="2">March</div>
+    <div data-type="month-cell" tabindex="-1" data-value="3">April</div>
+    <div data-type="month-cell" tabindex="-1" data-value="4">May</div>
+    <div data-type="month-cell" tabindex="-1" data-value="5">June</div>
+    <div data-type="month-cell" tabindex="-1" data-value="6">July</div>
+    <div data-type="month-cell" tabindex="-1" data-value="7">August</div>
+    <div data-type="month-cell" tabindex="-1" data-value="8">September</div>
+    <div data-type="month-cell" tabindex="-1" data-value="9">October</div>
+    <div data-type="month-cell" tabindex="-1" data-value="10">November</div>
+    <div data-type="month-cell" tabindex="-1" data-value="11">December</div>
+</div>
