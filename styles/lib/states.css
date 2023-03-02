@@ -1,19 +1,16 @@
 [data-severity="error"] {
     --severity-colour: var(--red);
     --severity-background-colour: var(--red-s3);
-    --severity-icon: "icon-error-fill";
 }
 
 [data-severity="warning"] {
     --severity-colour: var(--orange);
     --severity-background-colour: var(--orange-s2);
-    --severity-icon: "icon-warning";
 }
 
 [data-severity="info"] {
     --severity-colour: var(--blue);
     --severity-background-colour: var(--blue-s2);
-    --severity-icon: "icon-info-fill";
 }
 
 [data-severity] {
@@ -23,7 +20,7 @@
 
 [data-severity]:before {
     font-family: crsfrw;
-    content: var(--severity-icon);
+    content: "icon-" attr(data-severity);
     color: var(--severity-colour);
     margin-right: 0.4rem;
     font-size: 1.5rem;
