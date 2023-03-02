@@ -64,7 +64,7 @@ export class PageToolbar extends HTMLElement {
     }
 
     get pageNumber() {
-        return Number(this.#edtPageNumber.value);
+        return Number(this.#edtPageNumber.value || 1);
     }
 
     set pageNumber(newValue) {

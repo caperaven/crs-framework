@@ -429,6 +429,52 @@ class DataManagerActions {
         dataManager.commit();
     }
 
+    /**
+     * @method get - Get a record from a data manager.
+     * This can be index based or id based.
+     *
+     * @param step {object} - The step that contains the action to perform
+     * @param context {object} - The context of the process
+     * @param process {object} - The process
+     * @param item {object} - Current item in a process loop
+     *
+     * @param step.args.manager {string} - The name of the data manager. You will use this when performing operations on the data manager.
+     * @param [step.args.index] {number} - The index of the record to get
+     * @param [step.args.id] {number} - The id of the record to get
+     * @returns {Promise<*|null>}
+     *
+     * @example <caption>javascript example using index</caption>
+     * const record = await crs.call("data_manager", "get" {
+     *     manager: "my_data_manager",
+     *     index: 0
+     * });
+     *
+     * @example <caption>javascript example using id</caption>
+     * const record = await crs.call("data_manager", "get" {
+     *     manager: "my_data_manager",
+     *     id: 1001
+     * });
+     *
+     * @example <caption>json example using index</caption>
+     * {
+     *    "type": "data_manager",
+     *    "action": "get",
+     *    "args": {
+     *        "manager": "my_data_manager",
+     *        "index": 0
+     *    }
+     * }
+     *
+     * @example <caption>json example using id</caption>
+     * {
+     *   "type": "data_manager",
+     *   "action": "get",
+     *   "args": {
+     *      "manager": "my_data_manager",
+     *      "id": 1001
+     *    }
+     * }
+     */
     static async get(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
         if (manager == null) return;
@@ -447,7 +493,20 @@ class DataManagerActions {
         return globalThis.dataManagers[manager].getById(id);
     }
 
-    static async get_page(step, context, process, item) {
+    /**
+     * @method get_batch - Get a page of records from a data manager.
+     * @param step {object} - The step that contains the action to perform
+     * @param context {object} - The context of the process
+     * @param process {object} - The process
+     * @param item {object} - Current item in a process loop
+     *
+     * @param step.args.manager {string} - The name of the data manager. You will use this when performing operations on the data manager.
+     * @param step.args.from {number} - The index of the first record to get
+     * @param step.args.to {number} - The index of the last record to get
+     *
+     * @returns {Promise<*|null>}
+     */
+    static async get_batch(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
         if (manager == null) return;
 
@@ -461,6 +520,77 @@ class DataManagerActions {
         return globalThis.dataManagers[manager].getPage(from, to);
     }
 
+    /**
+     * @method get_page - Get a page of records from a data manager.
+     * @param step {object} - The step that contains the action to perform
+     * @param context {object} - The context of the process
+     * @param process {object} - The process
+     * @param item {object} - Current item in a process loop
+     *
+     * @param step.args.manager {string} - The name of the data manager. You will use this when performing operations on the data manager.
+     * @param step.args.page {number} - The page number to get - page numbers start at 1
+     * @param step.args.size {number} - The number of records per page
+     * @returns {Promise<*|null>}
+     *
+     * @example <caption>javascript example</caption>
+     * const records = await crs.call("data_manager", "get_page" {
+     *    manager: "my_data_manager",
+     *    page: 1,
+     *    size: 10
+     * });
+     *
+     * @example <caption>json example</caption>
+     * {
+     *   "type": "data_manager",
+     *   "action": "get_page",
+     *   "args": {
+     *       "manager": "my_data_manager",
+     *       "page": 1,
+     *       "size": 10
+     *   }
+     * }
+     */
+    static async get_page(step, context, process, item) {
+        const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return;
+
+        const page = await crs.process.getValue(step.args.page, context, process, item);
+        const size = await crs.process.getValue(step.args.size, context, process, item);
+
+        if (globalThis.dataManagers[manager] == null) {
+            return null;
+        }
+
+        const from = page * size - size;
+        const to = from + size;
+
+        return globalThis.dataManagers[manager].getPage(from, to);
+    }
+
+    /**
+     * @method get_all - Get all records from a data manager.
+     * @param step {object} - The step that contains the action to perform
+     * @param context {object} - The context of the process
+     * @param process {object} - The process
+     * @param item {object} - Current item in a process loop
+     *
+     * @param step.args.manager {string} - The name of the data manager. You will use this when performing operations on the data manager.
+     * @returns {Promise<*|null>}
+     *
+     * @example <caption>javascript example</caption>
+     * const records = await crs.call("data_manager", "get_all" {
+     *   manager: "my_data_manager"
+     * });
+     *
+     * @example <caption>json example</caption>
+     * {
+     *     "type": "data_manager",
+     *     "action": "get_all",
+     *     "args": {
+     *         "manager": "my_data_manager"
+     *     }
+     * }
+     */
     static async get_all(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
         if (manager == null) return;
@@ -472,6 +602,33 @@ class DataManagerActions {
         return globalThis.dataManagers[manager].getAll();
     }
 
+    /**
+     * @method get_ids - given an array of indexes, get the id value for each record and return and array of ids
+     * @param step {object} - The step that contains the action to perform
+     * @param context {object} - The context of the process
+     * @param process {object} - The process
+     * @param item {object} - Current item in a process loop
+     *
+     * @param step.args.manager {string} - The name of the data manager. You will use this when performing operations on the data manager.
+     * @param step.args.indexes {array} - An array of indexes to get the id for
+     * @returns {Promise<*[]|*|null>}
+     *
+     * @example <caption>javascript example</caption>
+     * const ids = await crs.call("data_manager", "get_ids" {
+     *    manager: "my_data_manager",
+     *    indexes: [1, 2, 3]
+     * });
+     *
+     * @example <caption>json example</caption>
+     * {
+     *     "type": "data_manager",
+     *     "action": "get_ids",
+     *     "args": {
+     *         "manager": "my_data_manager",
+     *         "indexes": [1, 2, 3]
+     *     }
+     * }
+     */
     static async get_ids(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
         if (manager == null) return;
@@ -485,6 +642,35 @@ class DataManagerActions {
         return globalThis.dataManagers[manager].getIds(indexes);
     }
 
+    /**
+     * @method on_change - Add a callback to be called when a record is added, updated or deleted.
+     * @param step {object} - The step that contains the action to perform
+     * @param context {object} - The context of the process
+     * @param process {object} - The process
+     * @param item {object} - Current item in a process loop
+     *
+     * @param step.args.manager {string} - The name of the data manager. You will use this when performing operations on the data manager.
+     * @param step.args.callback {function} - The callback to be called when a record is added, updated or deleted.
+     * @returns {Promise<void|*>}
+     *
+     * @example <caption>javascript example</caption>
+     * await crs.call("data_manager", "on_change" {
+     *     manager: "my_data_manager",
+     *     callback: (args) => {
+     *         ...
+     *     }
+     * });
+     *
+     * @example <caption>json example</caption>
+     * {
+     *    "type": "data_manager",
+     *    "action": "on_change",
+     *    "args": {
+     *        "manager": "my_data_manager",
+     *        "callback": "$context.my_callback"
+     *    }
+     * }
+     */
     static async on_change(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
         if (manager == null) return;
@@ -493,6 +679,33 @@ class DataManagerActions {
         return globalThis.dataManagers[manager].addChangeCallback(callback);
     }
 
+    /**
+     * @method remove_change - Remove a callback from the list of callbacks to be called when a record is added, updated or deleted.
+     * @param step {object} - The step that contains the action to perform
+     * @param context {object} - The context of the process
+     * @param process {object} - The process
+     * @param item {object} - Current item in a process loop
+     *
+     * @param step.args.manager {string} - The name of the data manager. You will use this when performing operations on the data manager.
+     * @param step.args.callback {function} - The callback to be removed.
+     * @returns {Promise<void|*>}
+     *
+     * @example <caption>javascript example</caption>
+     * await crs.call("data_manager", "remove_change" {
+     *    manager: "my_data_manager",
+     *    callback: callbackHandler,
+     * });
+     *
+     * @example <caption>json example</caption>
+     * {
+     *     "type": "data_manager",
+     *     "action": "remove_change",
+     *     "args": {
+     *         "manager": "my_data_manager",
+     *         "callback": "$context.my_callback"
+     *     }
+     * }
+     */
     static async remove_change(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
         if (manager == null) return;
