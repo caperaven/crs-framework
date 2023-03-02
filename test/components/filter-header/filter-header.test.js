@@ -1,8 +1,7 @@
-import { beforeAll, beforeEach, afterEach, describe, it} from "https://deno.land/std@0.157.0/testing/bdd.ts";
-import { assertEquals, assert } from "https://deno.land/std@0.149.0/testing/asserts.ts";
+import {beforeAll, beforeEach, afterEach, describe, it} from "https://deno.land/std@0.157.0/testing/bdd.ts";
+import {assertEquals, assert} from "https://deno.land/std@0.149.0/testing/asserts.ts";
 import {init} from "./../../../test/mockups/init.js";
-import {createMockChildren, ElementMock} from "../../mockups/element-mock.js";
-import {EventMock} from "../../mockups/event-mock.js";
+import {ElementMock} from "../../mockups/element-mock.js";
 import {createChildrenFromHtml} from "../../mockups/child-mock-factory.js";
 
 
@@ -12,7 +11,7 @@ beforeAll(async () => {
     await import("../../../components/filter-header/filter-header.js");
 })
 
-describe ("filter-header tests", async () => {
+describe("filter-header tests", async () => {
     let instance;
     let parent;
     let ul;
@@ -51,11 +50,13 @@ describe ("filter-header tests", async () => {
         assertEquals(instance.getAttribute("for"), "ul");
     });
 
-    it("check input change", async () => {
+    // TODO : AW Split up tests to three cases
+    // Add arrange act assert
+    it("should filter the list by the word add", async () => {
+
         let count = 0;
 
-        for(let i = 0; i < ul.children.length; i++){
-            console.log(ul.children[i].getAttribute("data-tags"));
+        for (let i = 0; i < ul.children.length; i++) {
             assert(ul.children[i].getAttribute("aria-hidden") == null);
         }
 
@@ -64,8 +65,7 @@ describe ("filter-header tests", async () => {
         input.value = "a";
         await input.performEvent("keyup", input);
 
-        for(let i = 0; i < ul.children.length; i++){
-            console.log(ul.children[i].getAttribute("aria-hidden"));
+        for (let i = 0; i < ul.children.length; i++) {
             if (ul.children[i].getAttribute("aria-hidden")) {
                 count++;
             }
@@ -76,8 +76,7 @@ describe ("filter-header tests", async () => {
         input.value = "";
         await input.performEvent("keyup", input);
 
-        for(let i = 0; i < ul.children.length; i++){
-            console.log(ul.children[i].getAttribute("aria-hidden"));
+        for (let i = 0; i < ul.children.length; i++) {
             if (ul.children[i].getAttribute("aria-hidden")) {
                 count++;
             }
@@ -89,14 +88,11 @@ describe ("filter-header tests", async () => {
         input.value = "add";
         await input.performEvent("keyup", input);
 
-        for(let i = 0; i < ul.children.length; i++){
-            console.log(ul.children[i].getAttribute("aria-hidden"));
+        for (let i = 0; i < ul.children.length; i++) {
             if (ul.children[i].getAttribute("aria-hidden")) {
                 count++;
             }
         }
         assertEquals(count, 3);
     });
-
-
 });

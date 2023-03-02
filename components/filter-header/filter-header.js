@@ -10,6 +10,7 @@ class FilterHeader extends HTMLElement {
     #container;
     #filterHandler = this.filter.bind(this);
 
+    // TODO : AW please remove binding remnants
     get shadowDom() {
         return true;
     }
@@ -30,7 +31,6 @@ class FilterHeader extends HTMLElement {
     async connectedCallback() {
         this.shadowRoot.innerHTML = await fetch(this.html).then(result => result.text());
         await this.load();
-
     }
 
     load() {
