@@ -61,6 +61,8 @@ describe ("page-toolbar tests", async () => {
     it("instance is not null", async () => {
         assert(instance !== null);
         assertEquals(instance.pageSize, 10);
+        assertEquals(instance.lastPage, 10);
+        assertEquals(instance.pageNumber, 1);
     });
 
     it ("click #gotoFirstPage", async () => {
