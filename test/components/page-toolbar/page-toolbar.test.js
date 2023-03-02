@@ -7,6 +7,7 @@ import {EventMock} from "../../mockups/event-mock.js";
 await init();
 
 beforeAll(async () => {
+    await import("../../test-data.js");
     await import("../../../src/data-manager/data-manager-actions.js");
     await import("../../../components/page-toolbar/page-toolbar.js");
 })
@@ -19,15 +20,22 @@ describe ("page-toolbar tests", async () => {
     beforeEach(async () => {
         eventPassedThrough = false;
 
+        const data = await crs.call("test_data", "get", {
+            fields: {
+                code: "string:auto",
+                description: "string:10",
+                price: "float:1:100",
+                quantity: "int:1:100",
+                isValid: "bool"
+            },
+            count: 100
+        });
+
         await crs.call("data_manager", "register", {
             manager: "data_manager",
             id_field: "id",
             type: "memory",
-            records: [
-                { id: 1, code: "row 1 code", description: "row 1 description" },
-                { id: 2, code: "row 2 code", description: "row 2 description" },
-                { id: 3, code: "row 3 code", description: "row 3 description" }
-            ]
+            records: data
         });
 
         visualization = document.createElement("div");
@@ -45,7 +53,6 @@ describe ("page-toolbar tests", async () => {
     })
 
     afterEach(async () => {
-
         visualization = null;
         instance.disconnectedCallback();
         instance = null;
@@ -53,7 +60,7 @@ describe ("page-toolbar tests", async () => {
 
     it("instance is not null", async () => {
         assert(instance !== null);
-        assertEquals(instance.pageSize, 3);
+        assertEquals(instance.pageSize, 10);
     });
 
     it ("click #gotoFirstPage", async () => {
@@ -114,7 +121,7 @@ describe ("page-toolbar tests", async () => {
         // 3. test for pages being set over the amount of available records
         input.value = 10;
         instance.performEvent("change", input);
-        assertEquals(instance.pageSize, 3);
+        assertEquals(instance.pageSize, 10);
 
         // clean up the test resources
         document.body.removeChild(input);
