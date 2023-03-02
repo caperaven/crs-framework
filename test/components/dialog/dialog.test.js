@@ -44,7 +44,8 @@ describe("Dialog", () => {
         assertEquals(instance.shadowRoot.querySelector("#btnResize").getAttribute("aria-label"), "Resize");
     });
 
-    // I want to be able to write tests like this the framework is too restrictive
+    // I want to be able to write tests like this the test framework is too restrictive
+    // Connected callback should automatically be called.
     // it("should be able to close on clicking outside the dialog", async () => {
     //     const dialog = await crs.call("dialog", "show", {content: "my content", title: "My Title", auto_close: true});
     //     await dialog.connectedCallback();
