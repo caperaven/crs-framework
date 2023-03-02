@@ -1,9 +1,7 @@
-import { beforeAll, beforeEach, afterEach, describe, it} from "https://deno.land/std@0.157.0/testing/bdd.ts";
-import { assertEquals, assert } from "https://deno.land/std@0.149.0/testing/asserts.ts";
+import {beforeAll, beforeEach, afterEach, describe, it} from "https://deno.land/std@0.157.0/testing/bdd.ts";
+import {assertEquals, assert} from "https://deno.land/std@0.149.0/testing/asserts.ts";
 import {init} from "./../../../test/mockups/init.js";
-import {createMockChildren, ElementMock} from "../../mockups/element-mock.js";
-import {EventMock} from "../../mockups/event-mock.js";
-import {createChildrenFromHtml} from "../../mockups/child-mock-factory.js";
+import {ElementMock} from "../../mockups/element-mock.js";
 
 await init();
 
@@ -11,7 +9,7 @@ beforeAll(async () => {
     await import("../../../components/options-toolbar/options-toolbar.js");
 })
 
-describe ("options-toolbar tests", async () => {
+describe("options-toolbar tests", async () => {
     let instance;
     let button1;
     let button2;
@@ -22,7 +20,6 @@ describe ("options-toolbar tests", async () => {
     beforeEach(async () => {
         instance = document.createElement("options-toolbar");
         instance.bounds = {left: 0, top: 0, width: 40, height: 20};
-
 
         button1 = new ElementMock("button");
         button1.setAttribute("data-value", "on");
@@ -38,7 +35,6 @@ describe ("options-toolbar tests", async () => {
         button2.bounds = {left: 20, top: 0, width: 20, height: 20};
 
         instance.appendChild(button2);
-
         await instance.connectedCallback();
 
         const marker = instance.shadowRoot.querySelector(".marker");

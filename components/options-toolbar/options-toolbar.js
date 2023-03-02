@@ -7,14 +7,13 @@
  */
 class OptionsToolbar extends HTMLElement {
     #marker;
-    #clickHandler;
+    #clickHandler = this.#click.bind(this);
     #previouslySelected;
     #parent;
 
     constructor() {
         super();
         this.attachShadow({mode: "open"});
-        this.#clickHandler = this.#click.bind(this);
     }
 
     async connectedCallback() {
@@ -42,7 +41,7 @@ class OptionsToolbar extends HTMLElement {
                 this.shadowRoot.addEventListener("click", this.#clickHandler);
 
                 let timeout = setTimeout(() => {
-                    if (this.#marker != null){
+                    if (this.#marker != null) {
                         this.#marker.style.transition = "translate 0.3s ease-out";
                     }
                     clearTimeout(timeout);
@@ -55,17 +54,17 @@ class OptionsToolbar extends HTMLElement {
 
     async disconnectedCallback() {
         this.shadowRoot.removeEventListener("click", this.#clickHandler);
-        this.#marker = null;
         this.#clickHandler = null;
+        this.#marker = null;
         this.#previouslySelected = null;
     }
 
     /**
-     * @method setSelected - It sets the selected item in the dropdown
+     * @method setSelected - It sets the selected item in the toolbar
      * @param element - The element to select.
      * @param [dispatchEvent=true] - Whether to dispatch a change event or not.
      */
-    async #setSelected(element, dispatchEvent= true) {
+    async #setSelected(element, dispatchEvent = true) {
         const parentBounds = this.getBoundingClientRect();
         const bounds = element.getBoundingClientRect();
 
@@ -74,7 +73,7 @@ class OptionsToolbar extends HTMLElement {
         this.#marker.style.translate = `${bounds.left - parentBounds.left}px 4px`;
 
         await crs.call("dom_collection", "toggle_selection", {
-           target: element
+            target: element
         });
 
         this.dataset.value = element.dataset.value;
@@ -90,8 +89,8 @@ class OptionsToolbar extends HTMLElement {
      * @param event - The event object that was triggered.
      */
     async #click(event) {
-        const target = await crs.call("dom_utils", "find_parent_of_type", { element: event?.target, nodeName: "BUTTON" });
-        if (target) {
+        const target = await crs.call("dom_utils", "find_parent_of_type", {element: event?.target, nodeName: "BUTTON"});
+        if (target != null) {
             await this.#setSelected(target);
         }
     }
