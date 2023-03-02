@@ -158,9 +158,9 @@ export class Dialog extends HTMLElement {
             const backLayer = await crs.call("dom", "create_element", {
                 tag_name: "div",
                 classes: ["back"],
-                attributes: {
-                    "id": "back-layer",
-                    "data-action": "close"
+                id: "back-layer",
+                dataset: {
+                    "action": "close"
                 }
             });
             this.shadowRoot.appendChild(backLayer);
