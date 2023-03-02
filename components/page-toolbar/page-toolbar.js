@@ -38,6 +38,10 @@ export class PageToolbar extends HTMLElement {
     #edtPageSize;
     #edtPageNumber;
 
+    get lastPage() {
+        return this.#lastPage;
+    }
+
     /**
      * @property pageSize - the number of rows to display per page
      * You can get and set this property.
@@ -60,7 +64,7 @@ export class PageToolbar extends HTMLElement {
     }
 
     get pageNumber() {
-        return Number(this.#edtPageNumber.value);
+        return Number(this.#edtPageNumber.value || 1);
     }
 
     set pageNumber(newValue) {
@@ -228,8 +232,16 @@ export class PageToolbar extends HTMLElement {
     }
 
     #pageNumberChanged(value) {
+        if (value < 1) {
+            value = 1;
+        }
+
+        if (value > this.#lastPage) {
+            value = this.#lastPage;
+        }
+
         this.pageNumber = value;
-        this.#notifyRefresh();
+        this.#updatePage();
     }
 
     /**
@@ -237,7 +249,7 @@ export class PageToolbar extends HTMLElement {
      */
     #gotoFirstPage() {
         this.pageNumber = 1;
-        this.#notifyRefresh();
+        this.#updatePage();
     }
 
     /**
@@ -245,7 +257,7 @@ export class PageToolbar extends HTMLElement {
      */
     #gotoPreviousPage() {
         this.pageNumber -= 1;
-        this.#notifyRefresh();
+        this.#updatePage();
     }
 
     /**
@@ -253,7 +265,7 @@ export class PageToolbar extends HTMLElement {
      */
     #gotoNextPage() {
         this.pageNumber += 1;
-        this.#notifyRefresh();
+        this.#updatePage();
     }
 
     /**
@@ -261,7 +273,7 @@ export class PageToolbar extends HTMLElement {
      */
     #gotoLastPage() {
         this.pageNumber = this.#lastPage;
-        this.#notifyRefresh();
+        this.#updatePage();
     }
 
     /**
@@ -269,7 +281,9 @@ export class PageToolbar extends HTMLElement {
      * use the for attribute to get the query of what component to target.
      * the use that element's refresh method to refresh the data
      */
-    #notifyRefresh() {
+    #updatePage() {
+        this.shadowRoot.querySelector("#edtPageNumber").value = this.pageNumber;
+
         const target = document.querySelector(this.getAttribute("for"));
 
         const data = []; // use the data manager to get the data
