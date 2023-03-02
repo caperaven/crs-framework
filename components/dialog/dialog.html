@@ -31,6 +31,10 @@
         display: none;
     }
 
+    :host([data-allow-move="false"]) header:active {
+        cursor: unset;
+    }
+
     .popup {
         position: absolute;
         display: grid;

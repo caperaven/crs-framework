@@ -66,7 +66,7 @@ export default class Dialog extends crsbinding.classes.ViewBase {
             main: `This is an ${action} message`,
             severity: action,
             footer: footerTemplate.content.cloneNode(true),
-            allowResize: false,
+            allow_resize: false,
             parent: "main"
         }
 
@@ -118,25 +118,25 @@ export default class Dialog extends crsbinding.classes.ViewBase {
             main: "Test",
             header: headerTemplate.content.cloneNode(true),
             parent: "main",
-            allowMove: false
+            allow_move: false
         });
     }
 
-    async emptyHeader(event) {
+    async noHeader(event) {
         const calendar = document.createElement("calendar-component");
         calendar.setAttribute("id", "calendar-component");
         calendar.dataset.start = "2023-01-15";
 
         await crs.call("dialog", "show", {
             main: calendar,
-            showHeader: false,
+            show_header: false,
             parent: "main",
             position: "bottom",
             anchor: "left",
             target: event.target,
-            clickOutsideToClose: true,
-            minWidth: "20rem",
-            minHeight: "21rem"
+            auto_close: true,
+            min_width: "20rem",
+            min_height: "21rem"
         });
     }
 }

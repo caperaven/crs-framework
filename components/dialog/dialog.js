@@ -139,6 +139,7 @@ export class Dialog extends HTMLElement {
             });
         }
 
+        this.dataset.allowMove = options?.allowMove === true ? "true" : "false";
         this.dataset.allowResize = options?.allowResize === true ? "true" : "false";
 
         if (options?.clickOutsideToClose === true) {

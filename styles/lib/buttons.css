@@ -8,7 +8,7 @@ button {
     box-sizing: border-box;
     height: 2.5rem;
     min-width: 2rem;
-    font-weight: var(--bold);
+    font-weight: bold;
 }
 
 button.left {
