@@ -131,7 +131,7 @@ export class Dialog extends HTMLElement {
     }
 
     async #setOptions(options) {
-        if (options?.allowMove === true) {
+        if (options?.allowMove === true && options?.showHeader === true) {
             const popup = this.shadowRoot.querySelector(".popup");
             await crs.call("dom_interactive", "enable_move", {
                 element: popup,
@@ -141,9 +141,24 @@ export class Dialog extends HTMLElement {
 
         this.dataset.allowResize = options?.allowResize === true ? "true" : "false";
 
-        if (options?.allowClose === true) {
-            const backLayer = this.shadowRoot.querySelector("#back-layer");
-            backLayer.dataset.action = "close";
+        if (options?.clickOutsideToClose === true) {
+            const backLayer = await crs.call("dom", "create_element", {
+                tag_name: "div",
+                classes: ["back"],
+                attributes: {
+                    "id": "back-layer",
+                    "data-action": "close"
+                }
+            });
+            this.shadowRoot.appendChild(backLayer);
+        }
+
+        if (options?.minWidth != null) {
+            this.style.setProperty("--min-width", options.minWidth);
+        }
+
+        if (options?.minHeight != null) {
+            this.style.setProperty("--min-height", options.minHeight);
         }
     }
 
@@ -155,6 +170,12 @@ export class Dialog extends HTMLElement {
      */
     async #setHeader(header, options) {
         const headerElement = this.shadowRoot.querySelector("header");
+
+        if (options?.showHeader === false) {
+            headerElement.innerHTML = "";
+            return;
+        }
+
         if (options?.severity != null) {
             headerElement.dataset.severity = options.severity;
         }

@@ -120,11 +120,17 @@ export class DialogActions {
         const severity = await crs.process.getValue(step.args.severity, context, process, item);
         const title = await crs.process.getValue(step.args.title, context, process, item);
         const allowResize = await crs.process.getValue(step.args.allowResize, context, process, item) ?? true;
-        const allowClose = await crs.process.getValue(step.args.allowClose, context, process, item) ?? false;
         const allowMove = await crs.process.getValue(step.args.allowMove, context, process, item) ?? true;
+        const minWidth = await crs.process.getValue(step.args.minWidth, context, process, item);
+        const minHeight = await crs.process.getValue(step.args.minHeight, context, process, item);
+        const showHeader = await crs.process.getValue(step.args.showHeader, context, process, item) ?? true;
+        const clickOutsideToClose = await crs.process.getValue(step.args.clickOutsideToClose, context, process, item) ?? false;
         const parent = await crs.call("dom", "get_element", {element: step.args.parent}, context, process, item) ?? document.body;
 
-        const options = {target, position, anchor, size, margin, title, severity, allowResize, allowClose, allowMove};
+        const options = {
+            target, position, anchor, size, margin, title, severity, allowResize,
+            allowMove, minWidth, minHeight, showHeader, clickOutsideToClose
+        };
 
         const dialog = await ensureDialog(close, parent);
         dialog.show(headerElement, mainElement, footerElement, options);

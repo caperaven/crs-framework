@@ -41,8 +41,8 @@
         border-radius: var(--radius);
         resize: both;
         overflow: auto;
-        min-width: 18.75rem;
-        min-height: 9rem;
+        min-width: var(--min-width, 18.75rem);
+        min-height: var(--min-height, 9rem);
     }
 
     .back {
@@ -93,8 +93,6 @@
         margin-left: 0.5rem;
     }
 </style>
-
-<div id="back-layer" class="back"></div>
 
 <div class="popup">
     <header>

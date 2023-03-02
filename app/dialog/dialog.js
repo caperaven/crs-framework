@@ -129,12 +129,14 @@ export default class Dialog extends crsbinding.classes.ViewBase {
 
         await crs.call("dialog", "show", {
             main: calendar,
-            header: "",
+            showHeader: false,
             parent: "main",
             position: "bottom",
             anchor: "left",
             target: event.target,
-            allowClose: true
+            clickOutsideToClose: true,
+            minWidth: "20rem",
+            minHeight: "21rem"
         });
     }
 }
