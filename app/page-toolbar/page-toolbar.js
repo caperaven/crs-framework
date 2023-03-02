@@ -1,5 +1,6 @@
 import "./../../components/page-toolbar/page-toolbar.js";
 import "./../../src/data-manager/data-manager-actions.js";
+import "./../../test/test-data.js";
 
 export default class PageToolbarViewModel extends crsbinding.classes.ViewBase {
     async connectedCallback() {
@@ -10,6 +11,19 @@ export default class PageToolbarViewModel extends crsbinding.classes.ViewBase {
         await crsbinding.translations.add({
             rowsPerPage: "rows per page"
         }, "pageToolbar");
+
+        const data = await crs.call("test_data", "get", {
+            fields: {
+                code: "string:auto",
+                description: "string:10",
+                price: "float:1:100",
+                quantity: "int:1:100",
+                isValid: "bool"
+            },
+            count: 100
+        });
+
+        console.table(data);
 
         await crs.call("data_manager", "register", {
             manager: "my_data",
