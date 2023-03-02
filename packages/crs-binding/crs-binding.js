@@ -670,7 +670,7 @@ var BindProvider = class extends OneWayProvider {
     event.stopPropagation();
   }
   _number(value) {
-    if (value == null || value == "")
+    if (value == null || value === "")
       return null;
     return Number(value);
   }
@@ -2842,7 +2842,7 @@ var BindingData = class {
     if (dataType === "boolean" || typeof value === "boolean") {
       value = Boolean(value);
     } else if (dataType === "number" || dataType == null && typeof value !== "object" && (isNaN(value) == false && value != "")) {
-      value = value == null || value == "" ? null : Number(value);
+      value = value == null || value === "" ? null : Number(value);
     }
     if (obj.type == "data") {
       obj = this._data[id].data;
