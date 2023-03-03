@@ -6,7 +6,6 @@ export default class Icons extends crsbinding.classes.ViewBase {
         const icons = definition.selection.map(_ => _.name).sort();
         setProperty("icons", icons);
         setProperty("copyText", "Click to copy icon name.");
-
     }
 
     async copy(event) {

@@ -10,11 +10,6 @@ class FilterHeader extends HTMLElement {
     #container;
     #filterHandler = this.filter.bind(this);
 
-    // TODO : AW please remove binding remnants
-    get shadowDom() {
-        return true;
-    }
-
     get html() {
         return import.meta.url.replace(".js", ".html");
     }
@@ -33,15 +28,36 @@ class FilterHeader extends HTMLElement {
         await this.load();
     }
 
+    /**
+     * @method load - It waits for the DOM to be ready, then it adds an event listener to the input element, and then it notifies the
+     * framework that the component is ready
+     * @returns A promise that resolves when the component is ready.
+     */
     load() {
         return new Promise(resolve => {
             requestAnimationFrame(async () => {
                 const query = this.getAttribute("for");
                 this.#container = this.parentElement.querySelector(query);
                 this.shadowRoot.querySelector("input").addEventListener("keyup", this.#filterHandler);
+                await crs.call("component", "notify_ready", {
+                    element: this
+                });
+
+                const placeholder = {
+                    en: "Type here to filter"
+                }
+
+                await crsbinding.translations.add(placeholder, "filter-header");
+                await crsbinding.translations.parseElement(this.shadowRoot.querySelector("input"));
                 resolve();
             });
         });
+    }
+
+    async preLoad() {
+        await crsbinding.translations.add({
+            placeholder: "Type here to filter"
+        }, "filterHeader");
     }
 
     /**
