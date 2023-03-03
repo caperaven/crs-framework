@@ -16,12 +16,13 @@ button {
     border-radius: var(--radius);
     padding: var(--padding);
     box-sizing: border-box;
-    height: 2rem;
+    height: 2.5rem;
     min-width: 2rem;
     margin: 0 5px;
     display: flex;
     align-items: center;
     justify-content: center;
+    font-weight: bold;
 }
 
 
