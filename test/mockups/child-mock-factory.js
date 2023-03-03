@@ -11,7 +11,8 @@ export function createMockChildren(element) {
 }
 
 export function createChildrenFromHtml(element, html, useShadowRoot = true) {
-    const jsonStr = parse(html.split(".").join("_"));
+    let jsonStr = parse(html.split(".").join("____"));
+    jsonStr = jsonStr.replaceAll("____", ".");
     const json = JSON.parse(jsonStr);
     createChildren(element, useShadowRoot == true ? element.shadowRoot : element, json);
 }
