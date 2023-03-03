@@ -40,7 +40,7 @@ describe ("page-toolbar tests", async () => {
 
         visualization = document.createElement("div");
         visualization.id = "vis";
-        visualization.refresh = () => {
+        visualization.refresh = async () => {
             eventPassedThrough = true;
         }
 

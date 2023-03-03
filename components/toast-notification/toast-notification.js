@@ -8,7 +8,7 @@ class ToastNotification extends HTMLElement {
     #icons = Object.freeze({
         "success" : "check-circle",
         "warning" : "warning",
-        "error"   : "error-fill",
+        "error"   : "error",
         "info"    : "info"
     })
 

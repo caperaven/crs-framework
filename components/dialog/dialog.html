@@ -1,23 +1,73 @@
 <style>
-    @import "/styles/lib/buttons.css";
+    @import "./styles/lib/buttons.css";
+    @import "./styles/lib/variables.css";
+    @import "./styles/lib/states.css";
 
     :host {
-        position: fixed;
+        --header-height: 3rem;
+        --footer-height: 3.5rem;
+        --body-height: 3.5rem;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+    }
+
+    :host(.fullscreen) .popup {
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        z-index: 100;
+        resize: none;
+        translate: unset !important;
+        height: unset !important;
+        width: unset !important;
+        position: absolute !important;
+    }
+
+    :host([data-allow-resize="false"]) #btnResize {
+        display: none;
+    }
+
+    :host([data-allow-move="false"]) header:active {
+        cursor: unset;
+    }
+
+    .popup {
+        position: absolute;
         display: grid;
         grid-template-rows: auto 1fr auto;
         background: var(--window);
-        min-width: 18.75rem;
         border: var(--border);
         box-shadow: var(--box-shadow);
         border-radius: var(--radius);
+        resize: both;
+        overflow: auto;
+        min-width: var(--min-width, 18.75rem);
+        min-height: var(--min-height, 9rem);
+    }
+
+    .back {
+        height: 100%;
+        width: 100%;
     }
 
     header {
         display: flex;
         flex-direction: row;
         align-items: center;
-        padding: var(--padding);
+    }
+
+    header:not(:empty) {
+        min-height: var(--header-height);
+        padding: 0 var(--padding);
         border-bottom: var(--border);
+    }
+
+    header:active {
+        cursor: grabbing;
     }
 
     header h2 {
@@ -33,14 +83,31 @@
     button.icon {
         font-size: 1.2rem;
     }
+
+    footer:not(:empty) {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        min-height: var(--footer-height);
+        border-top: var(--border);
+        padding: 0 var(--padding);
+    }
+
+    footer button {
+        margin-left: 0.5rem;
+    }
 </style>
 
-<header>
-    <h2 id="headerText">Header Text</h2>
-    <button class="icon" id="btnResize">open-fullscreen</button>
-    <button class="icon" id="btnClose">close</button>
-</header>
+<div class="popup">
+    <header>
+        <h2 id="headerText">&{dialog.title}</h2>
+        <button class="icon transparent" id="btnResize" data-action="resize" aria-label="&{dialog.resize}">
+            open-fullscreen
+        </button>
+        <button class="icon transparent" id="btnClose" data-action="close" aria-label="&{dialog.close}">close</button>
+    </header>
 
-<div id="body"></div>
+    <div id="body"></div>
 
-<footer></footer>
+    <footer></footer>
+</div>
