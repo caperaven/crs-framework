@@ -147,7 +147,6 @@ class DataManagerActions {
         return dataManager.count;
     }
 
-
     /**
      * @method set_records - Set records for a data manager
      * @param step {object} - The step that contains the action to perform

@@ -206,6 +206,8 @@ export class DataTable extends HTMLElement {
      * @param args {Object} - arguments from the data manager change event
      */
     async #dataManagerChanged(args) {
+        if (args.action === CHANGE_TYPES.refresh && this.dataset.paged === "true") return;
+
         await this.#changeEventMap[args.action].call(this, args);
     }
 

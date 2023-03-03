@@ -40,6 +40,9 @@ export default class DataTableViewModel extends crsbinding.classes.ViewBase {
 
     async addRecord() {
         // Todo: JHR
+        await crs.call("data_manager", "add_record", {
+
+        })
     }
 
     async updateRecord() {
@@ -48,5 +51,25 @@ export default class DataTableViewModel extends crsbinding.classes.ViewBase {
 
     async deleteRecord() {
         // Todo: JHR
+    }
+
+    async refreshData() {
+        const data = await crs.call("test_data", "get", {
+            fields: {
+                code: "string:auto",
+                description: "string:10",
+                price: "float:1:100",
+                quantity: "int:1:100",
+                isValid: "bool"
+            },
+            count: 100
+        });
+
+        await crs.call("data_manager", "set_records", {
+            manager: "my_data",
+            id_field: "id",
+            type: "memory",
+            records: data
+        })
     }
 }

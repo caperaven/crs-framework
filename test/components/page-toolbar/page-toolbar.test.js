@@ -43,11 +43,11 @@ describe ("page-toolbar tests", async () => {
         visualization.refresh = async () => {
             eventPassedThrough = true;
         }
+        visualization.dataset["manager"] = "data_manager";
 
         document.body.appendChild(visualization);
 
         instance = document.createElement("page-toolbar");
-        instance.dataset["manager"] = "data_manager";
         instance.setAttribute("for", "#vis");
         await instance.connectedCallback();
     })
