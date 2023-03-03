@@ -32,6 +32,8 @@ class OptionsToolbar extends HTMLElement {
                 await crs.call("component", "notify_ready", {
                     element: this
                 });
+                this.setAttribute("role", "toggle-switch");
+                this.setAttribute("aria-label", "toggle-switch");
 
                 this.#marker = this.shadowRoot.querySelector(".marker");
                 this.#parent = this.shadowRoot.querySelector(".parent");
@@ -70,7 +72,7 @@ class OptionsToolbar extends HTMLElement {
 
         this.style.setProperty("--width", `${bounds.width}px`);
         this.style.setProperty("--height", `${bounds.height}px`);
-        this.#marker.style.translate = `${bounds.left - parentBounds.left}px 4px`;
+        this.#marker.style.translate = `${(bounds.left -1) - (parentBounds.left )}px 4px`;
 
         await crs.call("dom_collection", "toggle_selection", {
             target: element
@@ -94,6 +96,7 @@ class OptionsToolbar extends HTMLElement {
             await this.#setSelected(target);
         }
     }
+
 }
 
 customElements.define("options-toolbar", OptionsToolbar);
