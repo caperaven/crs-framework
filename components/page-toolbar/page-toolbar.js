@@ -167,6 +167,18 @@ export class PageToolbar extends HTMLElement {
         }
 
         this.#calculateLastPage();
+
+        if (this.#recordCount > 0) {
+            const element = document.querySelector(this.getAttribute("for"));
+
+            await crs.call("component", "on_ready", {
+                element,
+                callback: async () => {
+                    await this.#updatePage()
+                },
+                caller: this
+            });
+        }
     }
 
     /**
@@ -229,6 +241,7 @@ export class PageToolbar extends HTMLElement {
         }
 
         this.pageSize = value;
+        await this.#updatePage();
     }
 
     async #pageNumberChanged(value) {
