@@ -6,8 +6,9 @@ button {
     border-radius: var(--radius);
     padding: var(--padding);
     box-sizing: border-box;
-    height: 2rem;
+    height: 2.5rem;
     min-width: 2rem;
+    font-weight: bold;
 }
 
 button.left {

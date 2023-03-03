@@ -38,6 +38,10 @@ export class PageToolbar extends HTMLElement {
     #edtPageSize;
     #edtPageNumber;
 
+    get lastPage() {
+        return this.#lastPage;
+    }
+
     /**
      * @property pageSize - the number of rows to display per page
      * You can get and set this property.
@@ -60,7 +64,7 @@ export class PageToolbar extends HTMLElement {
     }
 
     get pageNumber() {
-        return Number(this.#edtPageNumber.value);
+        return Number(this.#edtPageNumber.value || 1);
     }
 
     set pageNumber(newValue) {
@@ -163,6 +167,18 @@ export class PageToolbar extends HTMLElement {
         }
 
         this.#calculateLastPage();
+
+        if (this.#recordCount > 0) {
+            const element = document.querySelector(this.getAttribute("for"));
+
+            await crs.call("component", "on_ready", {
+                element,
+                callback: async () => {
+                    await this.#updatePage()
+                },
+                caller: this
+            });
+        }
     }
 
     /**
@@ -195,7 +211,7 @@ export class PageToolbar extends HTMLElement {
             "gotoLastPage": this.#gotoLastPage
         }[target.id];
 
-        fn?.call(this);
+        await fn?.call(this);
     }
 
     async #change(event) {
@@ -208,10 +224,10 @@ export class PageToolbar extends HTMLElement {
             "edtPageNumber": this.#pageNumberChanged
         }[target.dataset.property];
 
-        fn?.call(this, target.value);
+        await fn?.call(this, target.value);
     }
 
-    #pageSizeChanged(value) {
+    async #pageSizeChanged(value) {
         if (value > 100) {
             return this.pageSize = 100;
         }
@@ -225,43 +241,52 @@ export class PageToolbar extends HTMLElement {
         }
 
         this.pageSize = value;
+        await this.#updatePage();
     }
 
-    #pageNumberChanged(value) {
+    async #pageNumberChanged(value) {
+        if (value < 1) {
+            value = 1;
+        }
+
+        if (value > this.#lastPage) {
+            value = this.#lastPage;
+        }
+
         this.pageNumber = value;
-        this.#notifyRefresh();
+        await this.#updatePage();
     }
 
     /**
      * @method #gotoFirstPage - go to the first page of the data and notify the target component
      */
-    #gotoFirstPage() {
+    async #gotoFirstPage() {
         this.pageNumber = 1;
-        this.#notifyRefresh();
+        await this.#updatePage();
     }
 
     /**
      * @method #gotoPreviousPage - go to the previous page of the data and notify the target component
      */
-    #gotoPreviousPage() {
+    async #gotoPreviousPage() {
         this.pageNumber -= 1;
-        this.#notifyRefresh();
+        await this.#updatePage();
     }
 
     /**
      * @method #gotoNextPage - go to the next page of the data and notify the target component
      */
-    #gotoNextPage() {
+    async #gotoNextPage() {
         this.pageNumber += 1;
-        this.#notifyRefresh();
+        await this.#updatePage();
     }
 
     /**
      * @method #gotoLastPage - go to the last page of the data and notify the target component
      */
-    #gotoLastPage() {
+    async #gotoLastPage() {
         this.pageNumber = this.#lastPage;
-        this.#notifyRefresh();
+        await this.#updatePage();
     }
 
     /**
@@ -269,10 +294,17 @@ export class PageToolbar extends HTMLElement {
      * use the for attribute to get the query of what component to target.
      * the use that element's refresh method to refresh the data
      */
-    #notifyRefresh() {
+    async #updatePage() {
+        this.shadowRoot.querySelector("#edtPageNumber").value = this.pageNumber;
+
         const target = document.querySelector(this.getAttribute("for"));
 
-        const data = []; // use the data manager to get the data
+        const data = await crs.call("data_manager", "get_page", {
+            manager: this.#dataManager,
+            page: this.pageNumber,
+            size: this.pageSize
+        })
+
         target?.refresh(data);
     }
 

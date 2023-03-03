@@ -192,6 +192,26 @@ describe("data manager tests", () => {
         assertEquals(idCollection[1], "1001");
     })
 
+    it ("get_batch", async () => {
+        const records = [];
+        for (let i = 0; i < 10; i++) {
+            records.push({ id: i, code: `code ${i}` });
+        }
+
+        await crs.call("data_manager", "set_records", {
+            manager: "store",
+            records: records
+        })
+
+        const page = await crs.call("data_manager", "get_batch", {
+            manager: "store",
+            from: 0,
+            to: 5
+        });
+
+        assertEquals(page.length, 5);
+    })
+
     it ("get_page", async () => {
         const records = [];
         for (let i = 0; i < 10; i++) {
@@ -205,11 +225,13 @@ describe("data manager tests", () => {
 
         const page = await crs.call("data_manager", "get_page", {
             manager: "store",
-            from: 0,
-            to: 5
+            page: 1,
+            size: 5
         });
 
         assertEquals(page.length, 5);
+        assertEquals(page[0].id, 0);
+        assertEquals(page[4].id, 4);
     })
 
     it ("get_all", async () => {
