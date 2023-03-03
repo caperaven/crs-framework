@@ -20,20 +20,23 @@ describe("filter-header tests", async () => {
         parent = new ElementMock("div");
         parent.id = "parent";
         ul = new ElementMock("ul");
+        ul.id = "ul-list-container";
         parent.appendChild(ul);
 
         instance = document.createElement("filter-header");
         instance.setAttribute("for", "ul");
         parent.appendChild(instance);
 
-        await instance.connectedCallback();
 
         createChildrenFromHtml(ul, [
             '<li data-tags="add">Add</li>',
             '<li data-tags="remove">Remove</li>',
             '<li data-tags="update">Update</li>',
             '<li data-tags="save">Save</li>'
-        ].join(" "));
+        ].join(" "), false);
+
+        await instance.connectedCallback();
+
 
     });
 
@@ -50,10 +53,7 @@ describe("filter-header tests", async () => {
         assertEquals(instance.getAttribute("for"), "ul");
     });
 
-    // TODO : AW Split up tests to three cases
-    // Add arrange act assert
-    it("should filter the list by the word add", async () => {
-
+    it("should filter the list by the letter a", async () => {
         let count = 0;
 
         for (let i = 0; i < ul.children.length; i++) {
@@ -71,20 +71,17 @@ describe("filter-header tests", async () => {
             }
         }
         assertEquals(count, 1);
-        count = 0;
+    });
 
-        input.value = "";
-        await input.performEvent("keyup", input);
+    it('should filter the list by the word add', async () => {
+        let count = 0;
 
         for (let i = 0; i < ul.children.length; i++) {
-            if (ul.children[i].getAttribute("aria-hidden")) {
-                count++;
-            }
+            assert(ul.children[i].getAttribute("aria-hidden") == null);
         }
 
-        assertEquals(count, 0);
-        count = 0;
-
+        const input = instance.shadowRoot.querySelector("input");
+        assert(input !== null);
         input.value = "add";
         await input.performEvent("keyup", input);
 
@@ -93,6 +90,23 @@ describe("filter-header tests", async () => {
                 count++;
             }
         }
+
         assertEquals(count, 3);
     });
+
+    it('should filter the list by the word remove', async () => {
+        let count = 0;
+        const input = instance.shadowRoot.querySelector("input");
+        assert(input !== null);
+        input.value = "remove";
+        await input.performEvent("keyup", input);
+        for (let i = 0; i < ul.children.length; i++) {
+            if (ul.children[i].getAttribute("aria-hidden")) {
+                count++;
+            }
+        }
+        assertEquals(count, 3);
+    });
+
+
 });

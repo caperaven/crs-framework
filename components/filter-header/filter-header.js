@@ -44,10 +44,10 @@ class FilterHeader extends HTMLElement {
                 });
 
                 const placeholder = {
-                    en: "Type here to filter"
+                    placeholder: "Type here to filter"
                 }
 
-                await crsbinding.translations.add(placeholder, "filter-header");
+                await crsbinding.translations.add(placeholder, "filterHeader");
                 await crsbinding.translations.parseElement(this.shadowRoot.querySelector("input"));
                 resolve();
             });
