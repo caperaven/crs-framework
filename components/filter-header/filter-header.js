@@ -54,11 +54,6 @@ class FilterHeader extends HTMLElement {
         });
     }
 
-    async preLoad() {
-        await crsbinding.translations.add({
-            placeholder: "Type here to filter"
-        }, "filterHeader");
-    }
 
     /**
      * @method disconnectedCallback - When the component is removed from the DOM, the container is set to null
@@ -66,6 +61,7 @@ class FilterHeader extends HTMLElement {
     async disconnectedCallback() {
         this.#container = null;
         this.shadowRoot.querySelector("input").removeEventListener("keyup", this.#filterHandler);
+        await crsbinding.translations.delete("filterHeader");
         this.#filterHandler = null;
     }
 
