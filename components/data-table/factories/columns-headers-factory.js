@@ -5,18 +5,19 @@
  * - width: the width of the column
  * - property: the property name of the column
  * @param columns
- * @returns {Promise<DocumentFragment>}
+ * @returns {Promise<HTMLElement>}
  */
 export async function columnsHeadersFactory(columns) {
-    let fragment = document.createDocumentFragment();
+    let header = document.createElement("div");
+    header.role = "row";
 
     for (const column of columns) {
         let th = document.createElement("div");
         th.role = "columnheader";
         th.dataset.field = column.property;
         th.textContent = column.title;
-        fragment.appendChild(th);
+        header.appendChild(th);
     }
 
-    return fragment;
+    return header;
 }

@@ -1,13 +1,22 @@
 <style>
     :host {
         --columns: "";
-
-        display: grid;
-        grid-template-columns: var(--columns);
     }
 
     :focus {
         outline: none;
         border: var(--double-border-width) solid var(--blue);
+    }
+
+    [role="row"] {
+        display: grid;
+        grid-template-columns: var(--columns);
+    }
+
+    [role="cell"], [role="columnheader"] {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        padding: var(--padding);
     }
 </style>

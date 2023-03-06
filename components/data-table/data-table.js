@@ -2,6 +2,8 @@ import {CHANGE_TYPES} from "../../src/data-manager/data-manager-types.js";
 import {ColumnsManager} from "./managers/columns-manager.js";
 import {columnsFromChildren} from "./utils/columnsFromChildren.js";
 import {columnsHeadersFactory} from "./factories/columns-headers-factory.js";
+import {rowInflationFactory} from "./factories/row-inflation-factory.js";
+import {rowFactory} from "./factories/row-factory.js";
 
 /**
  * @class DataTable - a custom element that displays a data table
@@ -221,6 +223,14 @@ export class DataTable extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #buildRows(data) {
+        const fragment = document.createDocumentFragment();
+        const createRowFn = rowFactory(this.#columnsManager.columns);
+
+        for (const record of data) {
+            createRowFn(record, fragment);
+        }
+
+        this.shadowRoot.appendChild(fragment);
     }
 
     /**
