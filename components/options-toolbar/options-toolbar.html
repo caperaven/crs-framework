@@ -16,8 +16,19 @@
         position: relative;
         user-select: none;
         border: var(--border);
-        border-radius: var(--radius);
     }
+
+    :focus-within {
+        outline: none;
+        border: var(--border) solid var(--blue);
+    }
+
+    :host(:focus-within) ::slotted(button:focus) {
+        outline:var(--border) solid var(--blue);
+        /*border: var(--border) solid var(--blue);*/
+        box-shadow: var(--blue) 0 0 0 2px;
+    }
+
 
     ::slotted(button) {
         border: 0 !important;
@@ -26,11 +37,11 @@
         padding-top: 0 !important;
         padding-bottom: 0 !important;
         font-weight: normal !important;
+        margin-right: 3px;
     }
 
     ::slotted(button:active) {
         color: var(--blue) !important;
-
     }
 
     ::slotted([aria-selected="true"]) {
@@ -53,8 +64,10 @@
     .parent {
         z-index: 1;
         padding: var(--half-padding);
+        display: flex;
     }
+
 </style>
 
-<div class="marker"></div>
-<div class="parent"><slot></slot></div>
+<div class="marker" id="marker" aria-label="draggable marker" role="slider"></div>
+<div class="parent" id="parent" aria-labelby="options-toolbar" tabindex="0"><slot></slot></div>

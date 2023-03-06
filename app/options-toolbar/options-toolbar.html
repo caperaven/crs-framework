@@ -4,11 +4,42 @@
         height: 24px;
     }
 
+    .icon{
+        font-family: crsfrw;
+        font-size: 18px;
+    }
+
 </style>
 
+<h4>Using normal text on button</h4>
+
 <options-toolbar change.setvalue="state = prop(this, 'dataset.value')">
-    <button  data-value="on">On</button>
-    <button  data-value="off" aria-selected="true">Off</button>
+    <button data-value="on" aria-selected="true">On</button>
+    <button data-value="off">Off</button>
 </options-toolbar>
 
 <div>${state}</div>
+
+<h4>Using Icon element within button to display Icon</h4>
+
+<options-toolbar>
+    <button  data-value="on" aria-selected="true"><icon class="icon">check</icon></button>
+    <button  data-value="off"><icon class="icon">close</icon></button>
+</options-toolbar>
+
+<h4>Using Button text-content for Icons</h4>
+
+<options-toolbar>
+    <button class="icon" aria-selected="true">grid-on</button>
+    <button class="icon">format-list-bulleted</button>
+</options-toolbar>
+
+<h4>Using toggle switch for multiple options</h4>
+
+<options-toolbar>
+    <button data-value="days" aria-selected="true">Days</button>
+    <button data-value="weeks">Weeks</button>
+    <button data-value="months">Months</button>
+    <button data-value="years">Years</button>
+</options-toolbar>
+
