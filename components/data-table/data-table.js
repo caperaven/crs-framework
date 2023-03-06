@@ -139,6 +139,25 @@ export class DataTable extends HTMLElement {
                 this.shadowRoot.addEventListener("dblclick", this.#dblClickHandler);
                 this.shadowRoot.addEventListener("keyup", this.#keyUpHandler);
                 await this.#hookDataManager();
+
+                await crs.call("component", "notify_ready", { element: this });
+
+                await crs.call("dom_interactive", "enable_resize", {
+                    element: this,
+                    resize_query: ".ew-resize",
+                    options: {
+                        min: {
+                            width: 50,
+                            height: 40
+                        },
+                        max: {
+                            width: 500,
+                            height: 500
+                        },
+                        lock_axis: "x",
+                    }
+
+                });
                 resolve();
             });
         })
@@ -152,6 +171,7 @@ export class DataTable extends HTMLElement {
         // dispose of resources
         await this.#unhookDataManager();
         this.#dataManagerChangedHandler = null;
+        await crs.call("dom_interactive", "disable_resize", { element: this });
 
         this.shadowRoot.removeEventListener("click", this.#clickHandler);
         this.shadowRoot.removeEventListener("dblclick", this.#dblClickHandler);
