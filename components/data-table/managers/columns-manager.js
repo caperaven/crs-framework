@@ -43,6 +43,22 @@ export class ColumnsManager {
      */
     dispose() {
         this.#widths.length = 0;
+        this.#columns.length = 0;
+        return null;
+    }
+
+    /**
+     * @method set - set the columns
+     * @param columns {Array} - array of columns objects
+     */
+    set(columns) {
+        this.#widths.length = 0;
+        this.#columns.length = 0;
+
+        for (const column of columns) {
+            this.#widths.push(column.width);
+            this.#columns.push(column);
+        }
     }
 
     /**

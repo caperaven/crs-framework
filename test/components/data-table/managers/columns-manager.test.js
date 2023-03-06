@@ -104,4 +104,12 @@ describe ("ColumnsManager tests", async () => {
 
         await crsbinding.translations.delete("test");
     });
+
+    it ("set", async () => {
+        await instance.append("code", 100, "code");
+
+        await instance.set([{title: "code", width: 100, property: "code"}, {title: "description", width: 200, property: "description"}]);
+        assertEquals(instance.gridTemplateColumns, "100px 200px");
+        assertEquals(instance.columns, [{title: "code", width: 100, property: "code"}, {title: "description", width: 200, property: "description"}]);
+    });
 })

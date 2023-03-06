@@ -1,4 +1,7 @@
 import {CHANGE_TYPES} from "../../src/data-manager/data-manager-types.js";
+import {ColumnsManager} from "./managers/columns-manager.js";
+import {columnsFromChildren} from "./utils/columnsFromChildren.js";
+import {columnsHeadersFactory} from "./factories/columns-headers-factory.js";
 
 /**
  * @class DataTable - a custom element that displays a data table
@@ -53,19 +56,10 @@ import {CHANGE_TYPES} from "../../src/data-manager/data-manager-types.js";
  * await crs.call("data-table", "refresh", { element: document.querySelector("data-table") });
  */
 export class DataTable extends HTMLElement {
-    #keyBoardActions = Object.freeze({
-        "ArrowDown": this.#arrowdownPressed.bind(this),
-        "ArrowUp": this.#arrowupPressed.bind(this),
-        "Enter": this.#enterPressed.bind(this),
-    });
-    #columns;
+    #columnsManager = new ColumnsManager();
     #dataManager;
     #dataManagerKey;
     #dataManagerChangedHandler = this.#dataManagerChanged.bind(this);
-
-    #keyUpHandler = this.#keyUp.bind(this);
-    #clickHandler = this.#click.bind(this);
-    #dblClickHandler = this.#dblClick.bind(this);
 
     /**
      * @field #changeEventMap - lookup table for change events and what function to call on that event
@@ -87,26 +81,6 @@ export class DataTable extends HTMLElement {
     }
 
     /**
-     * @property selected - return the id field value for the selected row / s
-     */
-    get selected() {
-        const selectedElement = this.shadowRoot.querySelector("[aria-selected='true']");
-        return selectedElement?.dataset.id || null;
-    }
-
-    /**
-     * @property columns - getter/setter for the columns property
-     * @returns {*}
-     */
-    get columns() {
-        return this.#columns;
-    }
-
-    set columns(value) {
-        this.#columns = value;
-    }
-
-    /**
      * @constructor
      */
     constructor() {
@@ -119,7 +93,8 @@ export class DataTable extends HTMLElement {
      * @returns {Promise<void>}
      */
     async connectedCallback() {
-        this.#loadColumnsFromChildren();
+        columnsFromChildren(this.children, this.#columnsManager);
+
         this.shadowRoot.innerHTML = await fetch(import.meta.url.replace(".js", ".html")).then(response => response.text());
         await this.load();
         await crs.call("component", "notify_ready", { element: this });
@@ -135,29 +110,9 @@ export class DataTable extends HTMLElement {
                 this.#dataManager = this.dataset["manager"];
                 this.#dataManagerKey = this.dataset["manager-key"];
 
-                this.shadowRoot.addEventListener("click", this.#clickHandler);
-                this.shadowRoot.addEventListener("dblclick", this.#dblClickHandler);
-                this.shadowRoot.addEventListener("keyup", this.#keyUpHandler);
                 await this.#hookDataManager();
 
                 await crs.call("component", "notify_ready", { element: this });
-
-                await crs.call("dom_interactive", "enable_resize", {
-                    element: this,
-                    resize_query: ".ew-resize",
-                    options: {
-                        min: {
-                            width: 50,
-                            height: 40
-                        },
-                        max: {
-                            width: 500,
-                            height: 500
-                        },
-                        lock_axis: "x",
-                    }
-
-                });
                 resolve();
             });
         })
@@ -168,142 +123,18 @@ export class DataTable extends HTMLElement {
      * @returns {Promise<void>}
      */
     async disconnectedCallback() {
-        // dispose of resources
+        this.#columnsManager = this.#columnsManager.dispose();
+
         await this.#unhookDataManager();
         this.#dataManagerChangedHandler = null;
         await crs.call("dom_interactive", "disable_resize", { element: this });
-
-        this.shadowRoot.removeEventListener("click", this.#clickHandler);
-        this.shadowRoot.removeEventListener("dblclick", this.#dblClickHandler);
-        this.shadowRoot.removeEventListener("keyup", this.#keyUpHandler);
-
-        this.#clickHandler = null;
-        this.#dblClickHandler = null;
-        this.#keyUpHandler = null;
     }
 
     /**
-     * @method #click - find the record you clicked on and set the selected id based on the recordElement.dataset.id
-     * @param event
-     */
-    async #click(event) {
-        const target = await crs.call("dom_utils", "find_parent_of_type", { element: event.target, nodeName: "TR" });
-
-        if (target.nodeName === "TR" && target.getAttribute("aria-selected" ) !== "true") {
-            await crs.call("dom_collection", "toggle_selection", { target: target , multiple: false });
-        } else {
-            target.removeAttribute("aria-selected");
-        }
-
-        const rows = this.shadowRoot.querySelector('tbody').children;
-        for (const row of rows) {
-            row.removeAttribute('aria-focused');
-        }
-
-        target.focus();
-        target.setAttribute('aria-focused', 'true');
-        target.setAttribute('tabindex', '0');
-    }
-
-    /**
-     * @method #dblClick - find the record you double-clicked on and fire the ondblclick event passing on the id field value of the record
-     * @param event
-     */
-    #dblClick(event) {
-        this.dispatchEvent(new CustomEvent("ondblclick", { detail: this.selected }));
-    }
-
-    /**
-     * @method #keyUp - navigate up and down in the table using the arrow keys.
-     * Use the space bar to select a row.
-     * On row selection, set the selected id based on the recordElement.dataset.id
-     * Selection use aria-selected="true" on the row.
-     * What to use for highlighted / focused record but not selected.
-     * @param event
-     */
-    async #keyUp(event) {
-        // TODO Andre - implement this
-        const rows = this.shadowRoot.querySelector('tbody').children;
-        const lastIndex = rows.length - 1;
-
-        let focusedIndex = Array.from(rows).findIndex(row => row.getAttribute('aria-focused') === 'true');
-        if (focusedIndex < 0) {
-            focusedIndex = 0;
-            rows[focusedIndex].setAttribute('aria-focused', 'true');
-        }
-
-        this.#keyBoardActions[event.code] && await this.#keyBoardActions[event.code](event);
-    }
-
-    /**
-     * @method #arrowUpPressed - When the up arrow is pressed, the focus moves to the previous row in the table, if there is one.
-     * @param event - The event object that was triggered.
-     */
-    async #arrowupPressed(event) {
-        const rows = this.shadowRoot.querySelector('tbody').children;
-        const lastIndex = rows.length - 1;
-        let focusedIndex = Array.from(rows).findIndex(row => row.getAttribute('aria-focused') === 'true');
-
-        if (focusedIndex > 0) {
-            rows[focusedIndex].removeAttribute('aria-focused');
-            focusedIndex--;
-            rows[focusedIndex].setAttribute('aria-focused', 'true');
-            rows[focusedIndex].focus();
-        }
-
-        return Promise.resolve();
-    }
-
-    /**
-     * @method #arrowDownPressed -  When the down arrow is pressed, the focus moves to the next row in the table, if there is one.
-     * @param event - The event object that was triggered.
-     */
-    async #arrowdownPressed(event) {
-        const rows = this.shadowRoot.querySelector('tbody').children;
-        const lastIndex = rows.length - 1;
-        let focusedIndex = Array.from(rows).findIndex(row => row.getAttribute('aria-focused') === 'true');
-
-        if (focusedIndex < lastIndex) {
-            rows[focusedIndex].removeAttribute('aria-focused');
-            focusedIndex++;
-            rows[focusedIndex].setAttribute('aria-focused', 'true');
-            rows[focusedIndex].focus();
-        }
-
-        return Promise.resolve();
-    }
-
-    /**
-     * @method #enterPressed - When the user presses the enter key, the row is selected.
-     * @param event - The event that triggered the function.
-     */
-    async #enterPressed(event) {
-        const rows = this.shadowRoot.querySelector('tbody').children;
-        const lastIndex = rows.length - 1;
-        let focusedIndex = Array.from(rows).findIndex(row => row.getAttribute('aria-focused') === 'true');
-        rows[focusedIndex].removeAttribute('aria-focused');
-        focusedIndex = Array.from(rows).findIndex(row => row === event.target);
-        rows[focusedIndex].setAttribute('aria-focused', 'true');
-
-        if (rows[focusedIndex].getAttribute("aria-selected" ) !== "true") {
-            await crs.call("dom_collection", "toggle_selection", { target: rows[focusedIndex] , multiple: false });
-        }
-        else {
-            rows[focusedIndex].removeAttribute("aria-selected");
-        }
-
-        return Promise.resolve();
-    }
-
-
-        /**
      * @private
      * @method #hoodDataManager - get the data manager and set the event listeners to be notified of change
      */
     async #hookDataManager() {
-        // when registering with the data manager, I need a key to be used in the filter operation
-        // this key is used to only update visualizations that use the same key.
-
         await crs.call("data_manager", "on_change", {
             manager: this.#dataManager,
             callback: this.#dataManagerChangedHandler
@@ -337,24 +168,6 @@ export class DataTable extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #addRecord(args) {
-        const insertIndex = args.index;
-
-        const fragment = document.createDocumentFragment();
-        for (const model of args.models) {
-            const row = document.createElement("tr");
-
-            for (const column of this.#columns) {
-                const cell = document.createElement("td");
-                cell.innerText = model[column.property];
-                cell.dataset.field = column.property;
-                row.appendChild(cell);
-            }
-            fragment.appendChild(row);
-        }
-
-        const tbody = this.shadowRoot.querySelector("tbody");
-        const targetElement = tbody.children[insertIndex];
-        tbody.insertBefore(fragment, targetElement);
     }
 
     /**
@@ -363,19 +176,6 @@ export class DataTable extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #updateRecord(args) {
-        const index = args.index;
-        const changes = args.changes;
-
-        const tbody = this.shadowRoot.querySelector("tbody");
-        const row = tbody.children[index];
-
-        for (const property of Object.keys(changes)) {
-            const cell = row.querySelector(`[data-field="${property}"]`);
-
-            if (cell) {
-                cell.innerText = changes[property];
-            }
-        }
     }
 
     /**
@@ -384,13 +184,6 @@ export class DataTable extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #deleteRecord(args) {
-        // sort the indexes in descending order so that the indexes don't change as you delete
-        const indexes = args.indexes.sort((a, b) => b - a);
-        const tbody = this.shadowRoot.querySelector("tbody");
-
-        for (const index of indexes) {
-            tbody.children[index].remove();
-        }
     }
 
     /**
@@ -399,35 +192,6 @@ export class DataTable extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #filterRecords(args) {
-        const data = args.models; // this is the data that came back after doing the filter.
-        await this.refresh(data);
-    }
-
-    /**
-     * @private
-     * @method #loadColumnsFromChildren - Look at the component's children and load the columns from them
-     * <column heading="code" property="code"></column>
-     *
-     * If there are no children just ignore it.
-     */
-    #loadColumnsFromChildren() {
-        if (this.children.length === 0) return;
-
-        const columns = [];
-        let count = 0;
-
-        for (const child of this.children) {
-            count++;
-            columns.push({
-                heading: child.dataset.heading,
-                property: child.dataset.property,
-                width: Number(child.dataset.width || "100"),
-                // added data id?
-                id: child.dataset.id + count
-            });
-        }
-
-        this.#columns = columns;
     }
 
     /**
@@ -441,63 +205,14 @@ export class DataTable extends HTMLElement {
     }
 
     /**
-     * @method addColumnsFeatures - This function adds the features to the table header eg. Filter and Resize.
-     *
-     * This method will create an element of type button and add the class "icon" to it.
-     * This method will add a data action attribute to the element eg. data-action="filter", data-action="resize"
-     * @param th - the table header row
-     * @param column - The column object
-     */
-    async #addColumnFeatures(th, column) {
-        const filterButton = document.createElement("button");
-        filterButton.classList.add("icon");
-        filterButton.id = "filter-btn"
-        filterButton.tabIndex = 0;
-        filterButton.dataset.action = "filter";
-        filterButton.dataset.property = column.property;
-        filterButton.textContent = "filter-outline";
-        filterButton.setAttribute("aria-label", "filter-button");
-        filterButton.setAttribute("role", "button");
-
-        const resizeButton = document.createElement("button");
-        resizeButton.classList.add("icon");
-        resizeButton.id = "resize-btn"
-        resizeButton.tabIndex = -1;
-        resizeButton.dataset.action = "resize";
-        resizeButton.dataset.property = column.property;
-        resizeButton.textContent = "drag-vert-alt";
-        resizeButton.classList.add("ew-resize");
-        resizeButton.setAttribute("aria-label", "resize-button");
-        resizeButton.setAttribute("role", "button");
-
-        const fragment = document.createDocumentFragment();
-        fragment.appendChild(filterButton);
-        fragment.appendChild(resizeButton);
-        th.appendChild(fragment);
-    }
-
-    /**
      * @method #buildColumns - build the columns and headers in the HTML Table element
      * @returns {Promise<void>}
      */
     async #buildColumns() {
-        const fragment = document.createDocumentFragment();
+        this.style.setProperty("--columns", this.#columnsManager.gridTemplateColumns);
 
-        for (const column of this.#columns) {
-            const th = document.createElement("th");
-            th.style.width = `${column.width}px`;
-            th.setAttribute("role", "columnheader")
-            const thText = document.createElement("span");
-            thText.innerText = column.heading;
-            thText.setAttribute("aria-label", "column-description for " + column.heading);
-            th.appendChild(thText);
-            await this.#addColumnFeatures(th, column);
-            fragment.appendChild(th);
-        }
-
-        const tableHeader = this.shadowRoot.querySelector("#tableHeader");
-        tableHeader.innerHTML = "";
-        tableHeader.appendChild(fragment);
+        const headers = await columnsHeadersFactory(this.#columnsManager.columns);
+        this.shadowRoot.appendChild(headers);
     }
 
     /**
@@ -506,41 +221,6 @@ export class DataTable extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #buildRows(data) {
-        const fragment = document.createDocumentFragment();
-
-        // for each model in the data create a row
-        for (const model of data) {
-            const tr = document.createElement("tr");
-            tr.dataset.id = model[this.#idField];
-            tr.dataset.row = model[this.#idField];
-            tr.setAttribute("role", "row")
-            tr.setAttribute("tabindex", "0")
-
-            // for each column in the columns create a cell
-            for (const column of this.#columns) {
-                const cell = document.createElement("td");
-                cell.innerText = model[column.property];
-                cell.dataset.field = column.property;
-                tr.appendChild(cell);
-            }
-
-            fragment.appendChild(tr);
-        }
-
-        const tbody = this.shadowRoot.querySelector("tbody");
-        tbody.innerHTML = "";
-        tbody.appendChild(fragment);
-    }
-
-    /**
-     * @method filter - filter the data based on some criteria
-     * @param criteria {Object} - criteria to filter the data
-     * @returns {Promise<void>}
-     */
-    async filter(criteria) {
-        // on data manager make is so that perspective actions can affect the data manager or
-        // crs.call("data_manager", "filter", { data_manager: this.dataManager, criteria: criteria });
-        // the data manager will cause a refresh to be called and the data will be filtered
     }
 
     /**
