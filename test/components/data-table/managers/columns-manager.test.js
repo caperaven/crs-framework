@@ -21,66 +21,66 @@ describe ("ColumnsManager tests", async () => {
     });
 
     it("append", async () => {
-        await instance.append("code", 100);
-        await instance.append("description", 200);
-        assertEquals(instance.widths, [100, 200]);
-        assertEquals(instance.columns, [{title: "code", width: 100}, {title: "description", width: 200}]);
+        await instance.append("code", 100, "code");
+        await instance.append("description", 200, "description");
+        assertEquals(instance.gridTemplateColumns, "100px 200px");
+        assertEquals(instance.columns, [{title: "code", width: 100, property: "code"}, {title: "description", width: 200, property: "description"}]);
     });
 
     it ("insert", async () => {
-        await instance.append("code", 100);
-        await instance.append("description", 200);
-        await instance.insert(1, "id", 50);
-        assertEquals(instance.widths, [100, 50, 200]);
-        assertEquals(instance.columns, [{title: "code", width: 100}, {title: "id", width: 50}, {title: "description", width: 200}]);
+        await instance.append("code", 100, "code");
+        await instance.append("description", 200, "description");
+        await instance.insert(1, "id", 50, "id");
+        assertEquals(instance.gridTemplateColumns, "100px 50px 200px");
+        assertEquals(instance.columns, [{title: "code", width: 100, property: "code"}, {title: "id", width: 50, property: "id"}, {title: "description", width: 200, property: "description"}]);
     });
 
     it ("remove", async () => {
-        await instance.append("code", 100);
-        await instance.append("description", 200);
+        await instance.append("code", 100, "code");
+        await instance.append("description", 200, "description");
         await instance.remove(1);
-        assertEquals(instance.widths, [100]);
-        assertEquals(instance.columns, [{title: "code", width: 100}]);
+        assertEquals(instance.gridTemplateColumns, "100px");
+        assertEquals(instance.columns, [{title: "code", width: 100, property: "code"}]);
     });
 
     it ("remove - invalid index", async () => {
-        await instance.append("code", 100);
-        await instance.append("description", 200);
+        await instance.append("code", 100, "code");
+        await instance.append("description", 200, "description");
         await instance.remove(2);
-        assertEquals(instance.widths, [100, 200]);
-        assertEquals(instance.columns, [{title: "code", width: 100}, {title: "description", width: 200}]);
+        assertEquals(instance.gridTemplateColumns, "100px 200px");
+        assertEquals(instance.columns, [{title: "code", width: 100, property: "code"}, {title: "description", width: 200, property: "description"}]);
     });
 
     it ("move", async () => {
-        await instance.append("code", 100);
-        await instance.append("description", 200);
+        await instance.append("code", 100, "code");
+        await instance.append("description", 200, "description");
         await instance.move(1, 0);
-        assertEquals(instance.widths, [200, 100]);
-        assertEquals(instance.columns, [{title: "description", width: 200}, {title: "code", width: 100}]);
+        assertEquals(instance.gridTemplateColumns, "200px 100px");
+        assertEquals(instance.columns, [{title: "description", width: 200, property: "description"}, {title: "code", width: 100, property: "code"}]);
     })
 
     it ("move - invalid index", async () => {
-        await instance.append("code", 100);
-        await instance.append("description", 200);
+        await instance.append("code", 100, "code");
+        await instance.append("description", 200, "description");
         await instance.move(2, 0);
-        assertEquals(instance.widths, [100, 200]);
-        assertEquals(instance.columns, [{title: "code", width: 100}, {title: "description", width: 200}]);
+        assertEquals(instance.gridTemplateColumns, "100px 200px");
+        assertEquals(instance.columns, [{title: "code", width: 100, property: "code"}, {title: "description", width: 200, property: "description"}]);
     });
 
     it ("resize", async () => {
-        await instance.append("code", 100);
-        await instance.append("description", 200);
+        await instance.append("code", 100, "code");
+        await instance.append("description", 200, "description");
         await instance.resize(1, 150);
-        assertEquals(instance.widths, [100, 150]);
-        assertEquals(instance.columns, [{title: "code", width: 100}, {title: "description", width: 150}]);
+        assertEquals(instance.gridTemplateColumns, "100px 150px");
+        assertEquals(instance.columns, [{title: "code", width: 100, property: "code"}, {title: "description", width: 150, property: "description"}]);
     });
 
     it ("resize - invalid index", async () => {
-        await instance.append("code", 100);
-        await instance.append("description", 200);
+        await instance.append("code", 100, "code");
+        await instance.append("description", 200, "description");
         await instance.resize(2, 150);
-        assertEquals(instance.widths, [100, 200]);
-        assertEquals(instance.columns, [{title: "code", width: 100}, {title: "description", width: 200}]);
+        assertEquals(instance.gridTemplateColumns, "100px 200px");
+        assertEquals(instance.columns, [{title: "code", width: 100, property: "code"}, {title: "description", width: 200, property: "description"}]);
     });
 
     it ("append with translations", async () => {

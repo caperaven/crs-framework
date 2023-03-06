@@ -16,17 +16,18 @@
  * Column structure:
  * - title {String} - column title, can be a translation key, will be translated on adding to manager
  * - width {Number} - column width in pixels
+ * - property {String} - property name of the data object
  */
 export class ColumnsManager {
     #widths = [];
     #columns = [];
 
     /**
-     * @property widths - array of column widths
-     * @returns {*[]}
+     * @property gridTemplateColumns - css grid template columns
+     * @returns {string}
      */
-    get widths() {
-        return this.#widths;
+    get gridTemplateColumns() {
+        return this.#widths.map(item => `${item}px`).join(" ");
     }
 
     /**
@@ -48,15 +49,16 @@ export class ColumnsManager {
      * @method append - add a column to the manager at the end of the list
      * @param title {string} - column title, can be a translation key, will be translated on adding to manager
      * @param width {number} - column width in pixels
+     * @param property {string} - property name of the data object
      * @returns {Promise<void>}
      */
-    async append(title, width) {
+    async append(title, width, property) {
         if (title.indexOf("&{") !== -1) {
             title = await crsbinding.translations.get_with_markup(title);
         }
 
         this.#widths.push(width);
-        this.#columns.push({title, width});
+        this.#columns.push({ title, width, property });
     }
 
     /**
@@ -64,11 +66,12 @@ export class ColumnsManager {
      * @param index {number} - index to insert the column
      * @param title {string} - column title, can be a translation key, will be translated on adding to manager
      * @param width {number} - column width in pixels
+     * @param property {string} - property name of the data object
      * @returns {Promise<void>}
      */
-    async insert(index, title, width) {
+    async insert(index, title, width, property) {
         if (!validIndex(this.#widths, index)) {
-            return this.append(title, width);
+            return this.append(title, width, property);
         }
 
         if (title.indexOf("&{") !== -1) {
@@ -76,7 +79,7 @@ export class ColumnsManager {
         }
 
         this.#widths.splice(index, 0, width);
-        this.#columns.splice(index, 0, {title, width});
+        this.#columns.splice(index, 0, { title, width, property });
     }
 
     /**
