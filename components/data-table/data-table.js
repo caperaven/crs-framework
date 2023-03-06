@@ -227,7 +227,7 @@ export class DataTable extends HTMLElement {
         const createRowFn = rowFactory(this.#columnsManager.columns);
 
         for (const record of data) {
-            createRowFn(record, fragment);
+            await createRowFn(record, fragment);
         }
 
         this.shadowRoot.appendChild(fragment);
