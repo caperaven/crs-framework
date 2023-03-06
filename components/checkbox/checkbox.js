@@ -7,6 +7,8 @@
  * 1. checked
  * 2. unchecked
  * 3. null
+ *  3.1. if data-nullable="true" is set, then the state will cycle through "checked", "unchecked", and "null"
+ *  3.2. If there is an aria-controls attribute set on the checkbox, then the state will cycle through "checked" and "unchecked, and be set to "null" if the controlled checkbox have both true and false states
  *
  * @example <caption>Example usage of the checkbox component.</caption>
  * // this only allows checked and unchecked states
@@ -15,6 +17,14 @@
  * @example <caption>Example usage of the checkbox component as tristate.</caption>
  * // to allow null state, set data-nullable="true"
  * <check-box checked.bind="model.checked" data-title="Checkbox" data-nullable="true"></check-box>
+ *
+ * @example <caption>Exmaple usage of the checkbox component with aria-controls other checkboxes</caption>
+ * // to allow null state, set data-nullable="true"
+ * <check-box checked.bind="model.checked" data-title="Checkbox" aria-controls="item1 item2"></check-box>
+ * <div class="checkbox group">
+ *      <check-box id="item1" checked.bind="model.checked" data-title="Checkbox"></check-box>
+ *      <check-box id="item2" checked.bind="model.checked" data-title="Checkbox"></check-box>
+ * /div>
  */
 export class Checkbox extends HTMLElement {
     #checked;

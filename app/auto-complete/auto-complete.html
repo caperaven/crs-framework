@@ -1,0 +1,53 @@
+<style>
+    .work-area {
+        display: flex;
+        flex-direction: row;
+    }
+    span {
+        width: 100%;
+    }
+
+</style>
+<h2>Autocomplete POC</h2>
+
+<h3>Scenario 1</h3>
+<p>Wrap the inputs in a form with button type=submit</p>
+<form>
+    <label for="search">Search Tree</label>
+    <input id="search" class="iptSearch" type="search" placeholder="Search Tree" autocomplete="on">
+    <button>Search</button>
+</form>
+<p>Autocomplete functionality not always the most consistent</p>
+<p>Edge and Chrome have similar results. Firefox found to be the most consistent</p>
+
+<h3>Scenario 2</h3>
+<p>
+    Just specify the autocomplete attribute on the input. No form, no submit button.
+    Found that the input only retains the value when we navigate to another page.
+    I attempted to check if the input retains values when it is removed and re-added to the page, but autocomplete does not work.
+</p>
+<div class="work-area">
+    <span id="search-area">
+        <label for="search">Search Tree</label>
+        <input id="search2" class="iptSearch" type="search" placeholder="Search Tree" autocomplete="on">
+    </span>
+    <span id="toggle-search">
+        <button id="btnToggle" type="submit">Toggle Search</button>
+    </span>
+</div>
+
+<div>
+    <ul>
+        <lable>Some text</lable>
+        <li>List item 1</li>
+        <li>List item 2</li>
+        <li>List item 3</li>
+        <ul>
+            <lable>Some text Other</lable>
+            <li>List item 5</li>
+            <li>List item 6</li>
+            <li>List item 7</li>
+        </ul>
+        <li>List item 4</li>
+    </ul>
+</div>

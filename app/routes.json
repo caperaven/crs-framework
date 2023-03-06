@@ -76,6 +76,11 @@
             "view": "tab-list"
         },
         {
+            "title": "Check box",
+            "hash": "#checkbox",
+            "view": "checkbox"
+        },
+        {
             "title": "Check List",
             "hash": "#check-list",
             "view": "check-list"
@@ -133,6 +138,11 @@
             "title": "page-toolbar",
             "hash": "#page-toolbar",
             "view": "page-toolbar"
+        },
+        {
+            "title": "auto-complete",
+            "hash": "#auto-complete",
+            "view": "auto-complete"
         }
     ]
 }

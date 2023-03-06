@@ -9,7 +9,7 @@ export default class Checkbox extends crsbinding.classes.ViewBase {
     async preLoad() {
         this.setProperty("isActive", true);
         this.setProperty("isCorrect", false);
-        this.setProperty("isTrue", "mixed");
+        this.setProperty("isTrue", false);
     }
 
     async disconnectedCallback() {

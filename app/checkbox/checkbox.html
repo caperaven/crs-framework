@@ -3,6 +3,10 @@
         margin-bottom: 1rem;
         padding: var(--padding);
     }
+
+    .checkbox-group {
+        margin-left: 1rem;
+    }
 </style>
 
 <h2>${title}</h2>
@@ -15,3 +19,20 @@
 
 <check-box checked.bind="isTrue" aria-label="Is True" data-nullable="true"></check-box>
 <div>Is Active: ${isTrue}</div>
+
+<check-box aria-label="Tri State" data-nullable="true" aria-controls="item1 item2"></check-box>
+<div class="checkbox-group">
+    <check-box id="item1" aria-label="Item 1"></check-box>
+    <check-box id="item2" aria-label="Item 2"></check-box>
+</div>
+
+<check-box aria-label="Nested Tri State" data-nullable="true" aria-controls="item1 item2 item3"></check-box>
+<div class="checkbox-group">
+    <check-box id="item4" aria-label="Item 4"></check-box>
+    <check-box id="item5" aria-label="Item 5"></check-box>
+    <check-box id="item6" aria-label="Tri State 2" data-nullable="true" aria-controls="item7 item8"></check-box>
+    <div class="checkbox-group">
+        <check-box id="item7" aria-label="Item 7"></check-box>
+        <check-box id="item8" aria-label="Item 8"></check-box>
+    </div>
+</div>
