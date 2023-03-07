@@ -226,14 +226,14 @@ export class DataTable extends HTMLElement {
      */
     async #buildRows(data) {
         const fragment = document.createDocumentFragment();
-        const createRowFn = rowFactory(this.#columnsManager.columns);
+        const createRowFn = rowFactory(this.#columnsManager.columns, this.#idField);
 
         for (const record of data) {
             await createRowFn(record, fragment);
         }
 
         this.shadowRoot.appendChild(fragment);
-        this.#inflationFn = rowInflationFactory(this.#columnsManager.columns);
+        this.#inflationFn = rowInflationFactory(this.#columnsManager.columns, this.#idField);
     }
 
     /**
