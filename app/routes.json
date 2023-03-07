@@ -111,6 +111,11 @@
       "view": "group-box"
     },
     {
+      "title": "Designer-Repo",
+      "hash": "#designer-repo-test",
+      "view": "designer-repo-test"
+    },
+    {
       "title": "About",
       "hash": "#about",
       "view": "about",
