@@ -1,13 +1,15 @@
 /**
  * @function rowInflationFactory - Creates a function that inflates a row with the given columns
- * @param columns
+ * @param columns {Array} - The columns to inflate
+ * @param idField {string} - The id field to use for the row
  */
-export function rowInflationFactory(columns) {
+export function rowInflationFactory(columns, idField) {
     const code = [];
     for (let i = 0; i < columns.length; i++) {
         const column = columns[i];
-        code.push(`row.children[${i}].textContent = item["${column.property}"];`);
+        code.push(`rowElement.dataset.id = item["${idField ?? "id"}"];`);
+        code.push(`rowElement.children[${i}].textContent = item["${column.property}"];`);
     }
 
-    return new crsbinding.classes.AsyncFunction("item", "row", code.join("\n"));
+    return new crsbinding.classes.AsyncFunction("item", "rowElement", code.join("\n"));
 }

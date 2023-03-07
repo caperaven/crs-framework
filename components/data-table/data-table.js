@@ -62,6 +62,7 @@ export class DataTable extends HTMLElement {
     #dataManager;
     #dataManagerKey;
     #dataManagerChangedHandler = this.#dataManagerChanged.bind(this);
+    #inflationFn;
 
     /**
      * @field #changeEventMap - lookup table for change events and what function to call on that event
@@ -130,6 +131,7 @@ export class DataTable extends HTMLElement {
         await this.#unhookDataManager();
         this.#dataManagerChangedHandler = null;
         await crs.call("dom_interactive", "disable_resize", { element: this });
+        this.#inflationFn = null;
     }
 
     /**
@@ -231,6 +233,43 @@ export class DataTable extends HTMLElement {
         }
 
         this.shadowRoot.appendChild(fragment);
+        this.#inflationFn = rowInflationFactory(this.#columnsManager.columns);
+    }
+
+    /**
+     * @method #updateRows - update the rows in the HTML Table element
+     * @param data
+     * @returns {Promise<void>}
+     */
+    async #updateRows(data) {
+        const rowElements = Array.from(this.shadowRoot.querySelectorAll("[data-id]"));
+        const diff = data.length - rowElements.length;
+
+        // add elements for each new record
+        if (diff > 0) {
+            const fragment = document.createDocumentFragment();
+            for (let i = 0; i < diff; i++) {
+                const rowElement = rowElements[0].cloneNode(true);
+                rowElements.push(rowElement);
+                fragment.appendChild(rowElement);
+            }
+            this.shadowRoot.appendChild(fragment);
+        }
+
+        // remove elements that are not going to be used
+        if (diff < 0) {
+            for (let i = 0; i < Math.abs(diff); i++) {
+                const rowElement = rowElements.pop();
+                rowElement.remove();
+            }
+        }
+
+        // inflate the elements
+        for (let i = 0; i < data.length; i++) {
+            const record = data[i];
+            const rowElement = rowElements[i];
+            await this.#inflationFn(record, rowElement);
+        }
     }
 
     /**
@@ -241,12 +280,15 @@ export class DataTable extends HTMLElement {
      * @returns {Promise<void>}
      */
     async refresh(data = null) {
-        this.innerHTML = "";
-
         data ||= await crs.call("data_manager", "get_all", { manager: this.#dataManager });
-        await this.#buildTable(data);
-    }
 
+        if (this.#inflationFn == null) {
+            await this.#buildTable(data);
+        }
+        else {
+            await this.#updateRows(data);
+        }
+    }
 }
 
 customElements.define("data-table", DataTable);
