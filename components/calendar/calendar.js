@@ -187,11 +187,11 @@ export default class Calendar extends crsbinding.classes.BindableElement {
             this.#currentIndex = this.#currentIndex + this.#columns;
         }
 
-        if ((query === false || query == null) && parseInt(element.dataset.month) > this.#month && element.classList[0] === "non-current-day") {
+        if ((query === false || query == null) && parseInt(element.dataset.month) > this.#month) {
             await this.goToNext();
         }
 
-        if ((query === false || query == null) && parseInt(element.dataset.month) < this.#month && element.classList[0] === "non-current-day") {
+        if ((query === false || query == null) && parseInt(element.dataset.month) < this.#month) {
             await this.goToPrevious();
         }
     }
