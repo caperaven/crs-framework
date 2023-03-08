@@ -231,8 +231,7 @@ export class DesignerRepo extends crsbinding.classes.BindableElement{
     async #click(event) {
         console.log("click")
         const target = event.composedPath()[0];
-        console.log(target)
-        if (target.nodeName === "BUTTON") {
+        if (target.nodeName === "BUTTON" && target.dataset.id === "grid-btn" || target.dataset.id === "list-btn") {
             if(this.displayStatus === "grid") {
                 this.displayStatus = "list";
                 // this.shadowRoot.querySelector("ul").classList.remove("grid")
