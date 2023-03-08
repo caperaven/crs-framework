@@ -10,7 +10,7 @@ beforeAll(async () => {
 })
 
 //Discuss with JHR I need the childMockFactory not to replace . with _ in the html.
-describe("Calendar Component", async () => {
+describe.ignore("Calendar Component", async () => {
 
     beforeEach(async () => {
         instance = document.createElement("calendar-component");
@@ -80,13 +80,6 @@ describe("Calendar Component", async () => {
 
         // Assert
         assertEquals(instance.getProperty("selectedYearText"), 2022);
-    });
-});
-
-describe('Calendar Component Edge Cases', async () => {
-    beforeEach(async () => {
-        instance = document.createElement("calendar-component");
-        await instance.connectedCallback();
     });
 
     it('should return default selected month if selected month value is null', async () => {
