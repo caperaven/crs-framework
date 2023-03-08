@@ -361,7 +361,7 @@ export class DataTable extends HTMLElement {
      */
     async callExtension(extName, method, args) {
         if (typeof this.#extensions[extName] !== "string") {
-            return await this.#extensions[extName][method](args);
+            return await this.#extensions[extName][method](...args);
         }
     }
 }

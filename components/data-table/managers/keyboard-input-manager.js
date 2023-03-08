@@ -24,11 +24,11 @@ export class KeyboardInputManager {
     constructor(table) {
         this.#table = table;
         this.#keyupHandler = this.#keyup.bind(table);
-        this.#table.addEventListener('keyup', this.#keyupHandler);
+        this.#table.shadowRoot.addEventListener('keyup', this.#keyupHandler);
     }
 
     dispose() {
-        this.#table.removeEventListener('keyup', this.#keyupHandler);
+        this.#table.shadowRoot.removeEventListener('keyup', this.#keyupHandler);
         this.#table = null;
         this.#keyupHandler = null;
         this.#fnMap = null;
