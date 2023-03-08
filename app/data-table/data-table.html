@@ -13,8 +13,15 @@
 
 <h2>${title}</h2>
 
-<data-table data-manager="my_data">
-    <column data-heading="code" data-property="code" data-width="100"></column>
+<data-table data-manager="my_data" data-resizeable="true" data-filterable="true" data-moveable="true">
+    <formatter condition="price < 20" classes="class1, class2" styles="background: red; color: blue;"></formatter>
+    <formatter condition="price <= 5" classes="class1, class2" styles="background: red; color: blue;"></formatter>
+
+    <column data-heading="code" data-property="code" data-width="100">
+        <formatter classes="class1, class2" styles="background: red; color: blue;"></formatter>
+        <formatter condition="code === 'A'" classes="class1, class2" styles="background: red; color: blue;"></formatter>
+    </column>
+
     <column data-heading="description" data-property="description" data-width="200"></column>
     <column data-heading="price" data-property="price" data-width="100"></column>
     <column data-heading="quantity" data-property="quantity" data-width="100"></column>

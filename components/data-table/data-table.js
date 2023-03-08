@@ -4,6 +4,9 @@ import {columnsFromChildren} from "./utils/columnsFromChildren.js";
 import {columnsHeadersFactory} from "./factories/columns-headers-factory.js";
 import {rowInflationFactory} from "./factories/row-inflation-factory.js";
 import {rowFactory} from "./factories/row-factory.js";
+import {MouseInputManager} from "./managers/mouse-input-manager.js";
+import {KeyboardInputManager} from "./managers/keyboard-input-manager.js";
+import {DataTableExtensions} from "./data-table-extensions.js";
 
 /**
  * @class DataTable - a custom element that displays a data table
@@ -63,6 +66,23 @@ export class DataTable extends HTMLElement {
     #dataManagerKey;
     #dataManagerChangedHandler = this.#dataManagerChanged.bind(this);
     #inflationFn;
+    #keyboardInputManager = new KeyboardInputManager(this);
+    #mouseInputManager = new MouseInputManager(this);
+    #extensions = {
+        [DataTableExtensions.FORMATTING.name]: DataTableExtensions.FORMATTING.path,
+        [DataTableExtensions.CELL_EDITING.name]: DataTableExtensions.CELL_EDITING.path,
+    };
+
+    #selectedRows;
+    #selectedCells;
+
+    get selectedRows() {
+        return this.#selectedRows;
+    }
+
+    get selectedCells() {
+        return this.#selectedCells;
+    }
 
     /**
      * @field #changeEventMap - lookup table for change events and what function to call on that event
@@ -96,7 +116,7 @@ export class DataTable extends HTMLElement {
      * @returns {Promise<void>}
      */
     async connectedCallback() {
-        columnsFromChildren(this.children, this.#columnsManager);
+        columnsFromChildren(this, this.#columnsManager);
 
         this.shadowRoot.innerHTML = await fetch(import.meta.url.replace(".js", ".html")).then(response => response.text());
         await this.load();
@@ -132,6 +152,17 @@ export class DataTable extends HTMLElement {
         this.#dataManagerChangedHandler = null;
         await crs.call("dom_interactive", "disable_resize", { element: this });
         this.#inflationFn = null;
+        this.#keyboardInputManager = this.#keyboardInputManager.dispose();
+        this.#mouseInputManager = this.#mouseInputManager.dispose();
+
+        this.disposeExtension(DataTableExtensions.FORMATTING.name);
+        this.disposeExtension(DataTableExtensions.CELL_EDITING.name);
+
+        this.#extensions = null;
+    }
+
+    disposeExtension(name) {
+        this.#extensions[name] = this.#extensions[name].dispose?.();
     }
 
     /**
@@ -287,6 +318,50 @@ export class DataTable extends HTMLElement {
         }
         else {
             await this.#updateRows(data);
+        }
+    }
+
+    /**
+     * @method setExtension - you can enable or disable an extension here.
+     * you can also just update the properties on a already loaded extension.
+     * @param extName {String} - the name of the extension
+     * @param settings {*} - the settings for the extension
+     * @param enabled {Boolean} - if the extension is enabled or not
+     * @returns {Promise<*>}
+     */
+    async setExtension(extName, settings, enabled) {
+        const ext = this.#extensions[extName];
+        const extType = typeof ext;
+
+        // if this a string it is not loaded.
+        // if it is not loaded, and we enable it then load it.
+        // if it is not loaded, and we disable it, then do nothing.
+        if (extType === "string" && enabled === true) {
+            this.#extensions[extName] = new (await import(ext)).default(this, settings);
+            return;
+        }
+
+        // if this has been loaded, and we disable it then dispose of it.
+        if (extType === "object" && enabled === false) {
+            return this.disposeExtension(extName);
+        }
+
+        // this has been loaded, so we just want to update the settings
+        this.#extensions[extName].settings = settings;
+    }
+
+    /**
+     * @method callExtension - call a method on an extension
+     * This is used by any code that wants to execute a method on an extension if that extension has been loaded.
+     * If the extension is not loaded, the method will not be called
+     * @param extName {String} - the name of the extension
+     * @param method {String} - the name of the async method to call.
+     * @param args {*} - the arguments to pass to the method
+     * @returns {Promise<*>}
+     */
+    async callExtension(extName, method, args) {
+        if (typeof this.#extensions[extName] !== "string") {
+            return await this.#extensions[extName][method](args);
         }
     }
 }

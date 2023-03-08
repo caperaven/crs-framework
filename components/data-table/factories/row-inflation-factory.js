@@ -4,12 +4,15 @@
  * @param idField {string} - The id field to use for the row
  */
 export function rowInflationFactory(columns, idField) {
-    const code = [];
+    const code = [`rowElement.dataset.id = item["${idField ?? "id"}"];`];
+
     for (let i = 0; i < columns.length; i++) {
         const column = columns[i];
-        code.push(`rowElement.dataset.id = item["${idField ?? "id"}"];`);
         code.push(`rowElement.children[${i}].textContent = item["${column.property}"];`);
     }
+
+    // const formatFactoryFn = extensions["formatting"].createFormattingCode;
+    // formatFactoryFn?.(code);
 
     return new crsbinding.classes.AsyncFunction("item", "rowElement", code.join("\n"));
 }

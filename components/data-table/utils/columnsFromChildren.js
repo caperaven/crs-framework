@@ -3,14 +3,16 @@
  * @param children {HTMLCollection} - child elements of the data-table
  * @param columnsManager {ColumnsManager} - columns manager
  */
-export function columnsFromChildren(children, columnsManager) {
+export function columnsFromChildren(table, columnsManager) {
     const columns = [];
 
-    for (let child of children) {
+    const columnElements = table.querySelectorAll("column");
+
+    for (let columnElement of columnElements) {
         columns.push({
-            title: child.dataset.heading,
-            width: child.dataset.width,
-            property: child.dataset.property
+            title: columnElement.dataset.heading,
+            width: columnElement.dataset.width,
+            property: columnElement.dataset.property
         });
     }
 
