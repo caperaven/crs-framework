@@ -120,6 +120,7 @@ export class DataTable extends HTMLElement {
         await columnsFromChildren(this, this.#columnsManager);
         await formattingFromChildren(this);
 
+        this.innerHTML = "";
         this.shadowRoot.innerHTML = await fetch(import.meta.url.replace(".js", ".html")).then(response => response.text());
         await this.load();
         await crs.call("component", "notify_ready", { element: this });
