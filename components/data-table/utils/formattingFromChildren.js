@@ -29,9 +29,9 @@ export async function formattingFromChildren(table) {
     };
 
     for (let formatterElement of formatterElements) {
-        const condition = formatterElement.dataset.condition;
-        const classes = formatterElement.dataset.classes.split(" ");
-        const styles = formatterElement.dataset.styles;
+        const condition = formatterElement.dataset.condition ?? null;
+        const classes = (formatterElement.dataset.classes ?? "").split(" ");
+        const styles = formatterElement.dataset.styles ?? "";
 
         const formatter = {
             condition, classes, styles

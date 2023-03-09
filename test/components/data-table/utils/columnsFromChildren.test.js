@@ -3,7 +3,6 @@ import { assertEquals, assert } from "https://deno.land/std@0.149.0/testing/asse
 import {init} from "./../../../../test/mockups/init.js";
 import {ColumnsManager} from "../../../../components/data-table/managers/columns-manager.js";
 import {columnsFromChildren} from "../../../../components/data-table/utils/columnsFromChildren.js";
-import {createChildrenFromHtml} from "../../../mockups/child-mock-factory.js";
 
 await init();
 
