@@ -181,13 +181,14 @@ export class DesignerRepo extends crsbinding.classes.BindableElement{
                 this.shadowRoot.addEventListener("click", this.#clickHandler)
                 await crs.call("dom_interactive", "enable_resize", {
                     element: this,
-                    resize_query : this.shadowRoot.querySelector(".resize-icon"),
-                    options: {}
+                    resize_query : ".resize",
+                    options: {
+
+                    }
                 })
                 await crs.call("component", "notify_ready", {element: this});
 
                 resolve();
-
             });
 
         })
