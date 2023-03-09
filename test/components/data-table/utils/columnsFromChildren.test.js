@@ -20,14 +20,20 @@ describe ("columnsHeadersFactory tests", async () => {
 
     it("create column headers", async () => {
         const element = document.createElement("div");
+        element.appendChild(createColumnElement("code", "code", "100"));
+        element.appendChild(createColumnElement("description", "description", "200"));
 
-        createChildrenFromHtml(element, [
-            '<col data-heading="code" data-property="code" data-width="100"></col>',
-            '<col data-heading="description" data-property="description" data-width="200"></col>'
-        ].join(" "), false)
-
-        columnsFromChildren(element.children, columnsManager);
+        await columnsFromChildren(element, columnsManager);
 
         assertEquals(columnsManager.columns.length, 2);
     });
 });
+
+function createColumnElement(heading, property, width) {
+    const element = document.createElement("column");
+    element.dataset["heading"] = heading;
+    element.dataset["property"] = property;
+    element.dataset["width"] = width;
+
+    return element;
+}
