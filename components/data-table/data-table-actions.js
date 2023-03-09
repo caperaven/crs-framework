@@ -68,6 +68,10 @@ class DataTableActions {
         const enabled = await crs.process.getValue(step.args.enabled ?? true, context, process, item);
 
         await element.setExtension(DataTableExtensions.FORMATTING.name, settings, enabled);
+
+        if (element.dataset.ready === "true") {
+            await element.updateInflation();
+        }
     }
 
     static async set_editing(step, context, process, item) {

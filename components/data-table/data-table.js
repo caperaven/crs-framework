@@ -262,7 +262,7 @@ export class DataTable extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #buildRows(data) {
-        this.#inflationFn = await rowInflationFactory(this, this.#columnsManager.columns, this.#idField);
+        await this.updateInflation();
 
         const fragment = document.createDocumentFragment();
         const createRowFn = rowFactory(this.#columnsManager.columns, this.#idField);
@@ -379,6 +379,20 @@ export class DataTable extends HTMLElement {
      */
     getColumnIndex(columnName) {
         return this.#columnsManager.getColumnIndex(columnName);
+    }
+
+    /**
+     * @method updateInflation - update the inflation function.
+     * Call this when things like these happen.
+     * - Formatting changes
+     * - Column order changes
+     * @returns {Promise<void>}
+     */
+    async updateInflation() {
+        this.#inflationFn = await rowInflationFactory(this, this.#columnsManager.columns, this.#idField);
+
+        // JHR:  need to refresh the page to update the inflation
+        // Just need to think on what the best way for this is without having to cache the data it is currently rendering.
     }
 }
 

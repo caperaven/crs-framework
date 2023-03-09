@@ -1,7 +1,6 @@
 import { beforeAll, beforeEach, afterEach, describe, it} from "https://deno.land/std@0.157.0/testing/bdd.ts";
 import { assertEquals, assert } from "https://deno.land/std@0.149.0/testing/asserts.ts";
 import {init} from "./../../../../test/mockups/init.js";
-import {ColumnsManager} from "../../../../components/data-table/managers/columns-manager.js";
 import {formattingFromChildren} from "../../../../components/data-table/utils/formattingFromChildren.js";
 
 await init();
