@@ -141,6 +141,15 @@ export class ColumnsManager {
         this.#widths[index] = width;
         this.#columns[index].width = width;
     }
+
+    /**
+     * @method getColumnIndex - get the index of a column by property name
+     * @param property {string} - property name of the column
+     * @returns {number}
+     */
+    getColumnIndex(property) {
+        return this.#columns.findIndex(item => item.property === property);
+    }
 }
 
 function validIndex(collection, index) {

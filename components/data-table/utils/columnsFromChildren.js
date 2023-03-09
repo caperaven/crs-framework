@@ -3,7 +3,7 @@
  * @param children {HTMLCollection} - child elements of the data-table
  * @param columnsManager {ColumnsManager} - columns manager
  */
-export function columnsFromChildren(table, columnsManager) {
+export async function columnsFromChildren(table, columnsManager) {
     const columns = [];
 
     const columnElements = table.querySelectorAll("column");

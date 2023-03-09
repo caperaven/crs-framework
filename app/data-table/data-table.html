@@ -14,12 +14,11 @@
 <h2>${title}</h2>
 
 <data-table data-manager="my_data" data-resizeable="true" data-filterable="true" data-moveable="true" data-groupable="true">
-    <formatter data-condition="price < 20" data-classes="class1, class2" data-styles="background: red; color: blue;"></formatter>
-    <formatter data-condition="price <= 5" data-classes="class1, class2" data-styles="background: red; color: blue;"></formatter>
+    <formatter data-condition="model.price < 50" data-classes="class1 class2" data-styles="background: #ff0090; color: white;"></formatter>
+    <formatter data-condition="model.price <= 15" data-classes="class1 class2" data-styles="background: red; color: blue;"></formatter>
 
     <column data-heading="code" data-property="code" data-width="100">
-        <formatter data-classes="class1, class2" data-styles="background: red; color: blue;"></formatter>
-        <formatter data-condition="code === 'A'" data-classes="class1, class2" data-styles="background: red; color: blue;"></formatter>
+        <formatter data-condition="model.price < 20" data-classes="class1 class2" data-styles="background: blue; color: yellow;"></formatter>
     </column>
 
     <column data-heading="description" data-property="description" data-width="200"></column>

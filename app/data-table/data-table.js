@@ -1,4 +1,4 @@
-import "./../../components/data-table/data-table.js";
+import "./../../components/data-table/data-table-actions.js";
 import "./../../components/page-toolbar/page-toolbar.js";
 import "./../../src/data-manager/data-manager-actions.js";
 import "./../../test/test-data.js";

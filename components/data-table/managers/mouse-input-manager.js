@@ -11,13 +11,13 @@ export class MouseInputManager {
         this.#clickHandler = this.#click.bind(table);
         this.#dblclickHandler = this.#dblclick.bind(table);
 
-        this.#table.addEventListener('click', this.#clickHandler);
-        this.#table.addEventListener('dblclick', this.#dblclickHandler);
+        this.#table.shadowRoot.addEventListener('click', this.#clickHandler);
+        this.#table.shadowRoot.addEventListener('dblclick', this.#dblclickHandler);
     }
 
     dispose() {
-        this.#table.removeEventListener('click', this.#clickHandler);
-        this.#table.removeEventListener('dblclick', this.#dblclickHandler);
+        this.#table.shadowRoot.removeEventListener('click', this.#clickHandler);
+        this.#table.shadowRoot.removeEventListener('dblclick', this.#dblclickHandler);
         this.#table = null;
         this.#clickHandler = null;
         this.#dblclickHandler = null;

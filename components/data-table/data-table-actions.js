@@ -1,3 +1,4 @@
+import "./data-table.js";
 import {DataTableExtensions} from "./data-table-extensions.js";
 
 class DataTableActions {
@@ -39,13 +40,13 @@ class DataTableActions {
      *
      * @example <caption>javascript example</caption>
      * await crs.call("data_table", "set_formatter", { element: "#my-table", settings: {
-     *     row: {
+     *     row: [{
      *         "condition": "item.id === 1",
      *         "classes": ["my-class"],
      *         "styles": {
      *             "background-color": "red"
      *         }
-     *     }
+     *     }],
      *     column: {
      *         "code": [
      *             {
@@ -76,3 +77,5 @@ class DataTableActions {
         await element.setExtension(DataTableExtensions.CELL_EDITING.name, null, enabled);
     }
 }
+
+crs.intent.data_table = DataTableActions;

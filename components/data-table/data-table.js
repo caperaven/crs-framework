@@ -7,6 +7,7 @@ import {rowFactory} from "./factories/row-factory.js";
 import {MouseInputManager} from "./managers/mouse-input-manager.js";
 import {KeyboardInputManager} from "./managers/keyboard-input-manager.js";
 import {DataTableExtensions} from "./data-table-extensions.js";
+import {formattingFromChildren} from "./utils/formattingFromChildren.js";
 
 /**
  * @class DataTable - a custom element that displays a data table
@@ -66,8 +67,8 @@ export class DataTable extends HTMLElement {
     #dataManagerKey;
     #dataManagerChangedHandler = this.#dataManagerChanged.bind(this);
     #inflationFn;
-    #keyboardInputManager = new KeyboardInputManager(this);
-    #mouseInputManager = new MouseInputManager(this);
+    #keyboardInputManager;
+    #mouseInputManager;
     #extensions = {
         [DataTableExtensions.FORMATTING.name]: DataTableExtensions.FORMATTING.path,
         [DataTableExtensions.CELL_EDITING.name]: DataTableExtensions.CELL_EDITING.path,
@@ -116,7 +117,8 @@ export class DataTable extends HTMLElement {
      * @returns {Promise<void>}
      */
     async connectedCallback() {
-        columnsFromChildren(this, this.#columnsManager);
+        await columnsFromChildren(this, this.#columnsManager);
+        await formattingFromChildren(this);
 
         this.shadowRoot.innerHTML = await fetch(import.meta.url.replace(".js", ".html")).then(response => response.text());
         await this.load();
@@ -134,6 +136,9 @@ export class DataTable extends HTMLElement {
                 this.#dataManagerKey = this.dataset["manager-key"];
 
                 await this.#hookDataManager();
+
+                this.#keyboardInputManager = new KeyboardInputManager(this);
+                this.#mouseInputManager = new MouseInputManager(this);
 
                 await crs.call("component", "notify_ready", { element: this });
                 resolve();
@@ -264,7 +269,7 @@ export class DataTable extends HTMLElement {
         }
 
         this.shadowRoot.appendChild(fragment);
-        this.#inflationFn = rowInflationFactory(this.#columnsManager.columns, this.#idField);
+        this.#inflationFn = await rowInflationFactory(this, this.#columnsManager.columns, this.#idField);
     }
 
     /**
@@ -361,8 +366,16 @@ export class DataTable extends HTMLElement {
      */
     async callExtension(extName, method, args) {
         if (typeof this.#extensions[extName] !== "string") {
-            return await this.#extensions[extName][method](...args);
+            return await this.#extensions[extName][method](args);
         }
+    }
+
+    /**
+     * @method getColumnIndex - get the index of a column by its name
+     * @param columnName {String} - the name of the column
+     */
+    getColumnIndex(columnName) {
+        return this.#columnsManager.getColumnIndex(columnName);
     }
 }
 
