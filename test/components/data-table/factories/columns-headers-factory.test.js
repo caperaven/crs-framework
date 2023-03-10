@@ -8,6 +8,9 @@ await init();
 
 describe ("columnsHeadersFactory tests", async () => {
     let columnsManager;
+    const table = {
+        callExtension: async (name, method, ...args) => {}
+    };
 
     beforeEach(async () => {
         columnsManager = new ColumnsManager();
@@ -22,7 +25,7 @@ describe ("columnsHeadersFactory tests", async () => {
     });
 
     it("create column headers", async () => {
-        const result = await columnsHeadersFactory(columnsManager.columns);
+        const result = await columnsHeadersFactory(columnsManager.columns, table);
         assertEquals(result.children.length, 2);
     });
 });

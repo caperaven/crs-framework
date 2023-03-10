@@ -72,6 +72,7 @@ export class DataTable extends HTMLElement {
     #extensions = {
         [DataTableExtensions.FORMATTING.name]: DataTableExtensions.FORMATTING.path,
         [DataTableExtensions.CELL_EDITING.name]: DataTableExtensions.CELL_EDITING.path,
+        [DataTableExtensions.RESIZE.name]: DataTableExtensions.RESIZE.path
     };
 
     #selectedRows;
@@ -141,7 +142,10 @@ export class DataTable extends HTMLElement {
                 this.#keyboardInputManager = new KeyboardInputManager(this);
                 this.#mouseInputManager = new MouseInputManager(this);
 
-                await crs.call("component", "notify_ready", { element: this });
+                if (this.dataset.resizeable === "true") {
+                    await crs.call("data_table", "set_resize", { element: this, enabled: true });
+                }
+
                 resolve();
             });
         })
@@ -161,14 +165,23 @@ export class DataTable extends HTMLElement {
         this.#keyboardInputManager = this.#keyboardInputManager.dispose();
         this.#mouseInputManager = this.#mouseInputManager.dispose();
 
-        this.disposeExtension(DataTableExtensions.FORMATTING.name);
-        this.disposeExtension(DataTableExtensions.CELL_EDITING.name);
+        for (const extension of Object.values(DataTableExtensions)) {
+            this.disposeExtension(extension.name);
+        }
 
         this.#extensions = null;
     }
 
-    disposeExtension(name) {
-        this.#extensions[name] = this.#extensions[name].dispose?.();
+    /**
+     * @method disposeExtension - dispose of an extension
+     * @param name - name of the extension
+     * @param removeUI - remove the UI elements from the DOM
+     * This is used when removing a extension without disposing the grid.
+     * In that case you want to remove any UI the extension added to the DOM.
+     * If you are disposing of the grid this is not required.
+     */
+    disposeExtension(name, removeUI = false) {
+        this.#extensions[name] = this.#extensions[name].dispose?.(removeUI);
     }
 
     /**
@@ -252,7 +265,7 @@ export class DataTable extends HTMLElement {
     async #buildColumns() {
         this.style.setProperty("--columns", this.#columnsManager.gridTemplateColumns);
 
-        const headers = await columnsHeadersFactory(this.#columnsManager.columns);
+        const headers = await columnsHeadersFactory(this.#columnsManager.columns, this);
         this.shadowRoot.appendChild(headers);
     }
 
@@ -351,7 +364,7 @@ export class DataTable extends HTMLElement {
 
         // if this has been loaded, and we disable it then dispose of it.
         if (extType === "object" && enabled === false) {
-            return this.disposeExtension(extName);
+            return this.disposeExtension(extName, true);
         }
 
         // this has been loaded, so we just want to update the settings

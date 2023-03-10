@@ -1,3 +1,5 @@
+import {DataTableExtensions} from "../data-table-extensions.js";
+
 /**
  * @function columnsHeadersFactory - create column header cells from the columns definitions.
  * The columns definitions are the columns on the columns manager and contains the following properties:
@@ -7,9 +9,10 @@
  * @param columns
  * @returns {Promise<HTMLElement>}
  */
-export async function columnsHeadersFactory(columns) {
+export async function columnsHeadersFactory(columns, table) {
     let header = document.createElement("div");
     header.role = "row";
+    header.classList.add("header");
 
     for (const column of columns) {
         let th = document.createElement("div");
@@ -18,6 +21,8 @@ export async function columnsHeadersFactory(columns) {
         th.textContent = column.title;
         header.appendChild(th);
     }
+
+    await table.callExtension(DataTableExtensions.RESIZE.name, "addElements", header);
 
     return header;
 }

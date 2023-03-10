@@ -3,9 +3,18 @@
         --columns: "";
     }
 
+    :host * {
+        box-sizing: border-box;
+    }
+
     :focus {
         outline: none;
         border: var(--double-border-width) solid var(--blue);
+    }
+
+    .header {
+        background-color: var(--grey-surface);
+        border: var(--border);
     }
 
     [role="row"] {
@@ -18,5 +27,26 @@
         overflow: hidden;
         text-overflow: ellipsis;
         padding: var(--padding);
+    }
+
+    [role="columnheader"] {
+        display: flex;
+        align-items: center;
+        background: var(--grey-surface);
+        border-right: var(--border);
+        user-select: none;
+    }
+
+    .flex {
+        flex: 1;
+    }
+
+    [role="columnheader"] * {
+        line-height: 1rem;
+    }
+
+    .resize {
+        font-family: 'crsfrw';
+        cursor: ew-resize;
     }
 </style>

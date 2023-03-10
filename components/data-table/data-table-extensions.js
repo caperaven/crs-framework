@@ -6,5 +6,9 @@ export const DataTableExtensions = Object.freeze({
     CELL_EDITING: {
         name: "cellEditing",
         path: "./extensions/cell-editing-extension.js"
+    },
+    RESIZE: {
+        name: "resize",
+        path: "./extensions/resize-extension.js"
     }
 })
