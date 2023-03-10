@@ -67,7 +67,11 @@ export default class ResizeExtension {
         this.#table.style.setProperty("--columns", widths.join(" "));
     }
 
-    addElements(columnsRow) {
+    /**
+     * @function initialize - add the resize elements to the column headers and enable the resize functionality.
+     * @param columnsRow {HTMLElement} - The row containing the column headers.
+     */
+    initialize(columnsRow) {
         for (const column of columnsRow.children) {
             if (column.textContent.length > 0) {
                 const text = column.textContent;

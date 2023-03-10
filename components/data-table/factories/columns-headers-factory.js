@@ -22,7 +22,7 @@ export async function columnsHeadersFactory(columns, table) {
         header.appendChild(th);
     }
 
-    await table.callExtension(DataTableExtensions.RESIZE.name, "addElements", header);
+    await table.callExtension(DataTableExtensions.RESIZE.name, "initialize", header);
 
     return header;
 }
