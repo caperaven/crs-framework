@@ -6,11 +6,6 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     #year;
     #keyboardInputManager;
     #dateSelected;
-    #currentIndex;
-    #columns;
-    #elements;
-    #type;
-
     #viewLoadActions = Object.freeze({
         "yearsVisualSelection": this.#yearsVisualSelection.bind(this),
         "monthsVisualSelection": this.#monthsVisualSelection.bind(this),
@@ -58,11 +53,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         this.#month = null;
         this.#year = null;
         this.#dateSelected = null;
-        this.#currentIndex = null;
-        this.#columns = null;
-        this.#elements = null;
         this.#viewLoadActions = null;
-        this.#type = null;
         this.#keyboardInputManager = this.#keyboardInputManager.dispose();
     }
 
@@ -232,7 +223,6 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      * format of the date is yyyy-mm-dd
      */
     async #setDataStart(newValue) {
-        this.#type = "start";
         const dateObject = new Date((new Date(newValue.dataset.year, newValue.dataset.month, newValue.dataset.day).getTime()) - ((new Date().getTimezoneOffset()) * 60 * 1000));
         this.setAttribute("data-start", dateObject.toISOString().slice(0, 10));
     }
