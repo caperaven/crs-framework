@@ -10,5 +10,9 @@ export const DataTableExtensions = Object.freeze({
     RESIZE: {
         name: "resize",
         path: "./extensions/resize-extension.js"
+    },
+    FILTER: {
+        name: "filter",
+        path: "./extensions/filter-extension.js"
     }
 })

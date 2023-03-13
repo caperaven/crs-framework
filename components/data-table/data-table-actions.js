@@ -87,6 +87,13 @@ class DataTableActions {
 
         await element.setExtension(DataTableExtensions.RESIZE.name, null, enabled);
     }
+
+    static async set_filter(step, context, process, item) {
+        const element = await crs.process.getValue(step.args.element, context, process, item);
+        const enabled = await crs.process.getValue(step.args.enabled, context, process, item);
+
+        await element.setExtension(DataTableExtensions.FILTER.name, null, enabled);
+    }
 }
 
 crs.intent.data_table = DataTableActions;

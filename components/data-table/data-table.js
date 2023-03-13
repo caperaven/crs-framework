@@ -72,7 +72,8 @@ export class DataTable extends HTMLElement {
     #extensions = {
         [DataTableExtensions.FORMATTING.name]: DataTableExtensions.FORMATTING.path,
         [DataTableExtensions.CELL_EDITING.name]: DataTableExtensions.CELL_EDITING.path,
-        [DataTableExtensions.RESIZE.name]: DataTableExtensions.RESIZE.path
+        [DataTableExtensions.RESIZE.name]: DataTableExtensions.RESIZE.path,
+        [DataTableExtensions.FILTER.name]: DataTableExtensions.FILTER.path
     };
 
     #selectedRows;
@@ -142,6 +143,10 @@ export class DataTable extends HTMLElement {
                 this.#keyboardInputManager = new KeyboardInputManager(this);
                 this.#mouseInputManager = new MouseInputManager(this);
 
+                if (this.dataset.filterable === "true") {
+                    await crs.call("data_table", "set_filter", { element: this, enabled: true });
+                }
+
                 if (this.dataset.resizeable === "true") {
                     await crs.call("data_table", "set_resize", { element: this, enabled: true });
                 }
@@ -181,7 +186,9 @@ export class DataTable extends HTMLElement {
      * If you are disposing of the grid this is not required.
      */
     disposeExtension(name, removeUI = false) {
-        this.#extensions[name] = this.#extensions[name].dispose?.(removeUI);
+        if (this.#extensions[name].dispose != null) {
+            this.#extensions[name] = this.#extensions[name].dispose(removeUI);
+        }
     }
 
     /**
