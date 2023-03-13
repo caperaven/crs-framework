@@ -63,6 +63,7 @@ export function mockElement(instance, tag, id) {
     instance.attachShadow = attachShadow.bind(instance);
     instance.getBoundingClientRect = getBoundingClientRect.bind(instance);
     instance.remove = remove.bind(instance);
+    instance.focus = focus.bind(instance);
 
     Object.defineProperty(instance, "firstElementChild", {
         get() {
@@ -341,4 +342,8 @@ function getBoundingClientRect() {
 
 function remove() {
     this.parentElement.removeChild(this);
+}
+
+function focus() {
+    globalThis.activeElement = this;
 }
