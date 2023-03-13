@@ -73,7 +73,7 @@ export default class ResizeExtension {
      */
     initialize(columnsRow) {
         for (const column of columnsRow.children) {
-            if (column.textContent.length > 0) {
+            if (column.children.length == 0) {
                 const text = column.textContent;
 
                 const textDiv = document.createElement("div");

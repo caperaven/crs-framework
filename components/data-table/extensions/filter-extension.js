@@ -4,7 +4,7 @@ import {DataTableExtensions} from "./../data-table-extensions.js";
  * @class ResizeExtension - add resize elements to the column headers.
  * This will add the UI required to resize the columns using the addElements method.
  */
-export default class ResizeExtension {
+export default class FilterExtension {
     #settings;
     #table;
     #parent;
@@ -36,7 +36,7 @@ export default class ResizeExtension {
 
     initialize(columnsRow) {
         for (const column of columnsRow.children) {
-            if (column.textContent.length > 0) {
+            if (column.children.length == 0) {
                 const text = column.textContent;
 
                 const textDiv = document.createElement("div");
@@ -47,7 +47,7 @@ export default class ResizeExtension {
             }
 
             const filterElement = document.createElement("div");
-            filterElement.classList.add("resize");
+            filterElement.classList.add("filter");
             filterElement.textContent = "filter-outline";
 
             column.appendChild(filterElement);
