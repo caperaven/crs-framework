@@ -169,6 +169,10 @@ export class DataTable extends HTMLElement {
      * @returns {Promise<void>}
      */
     async disconnectedCallback() {
+        for (const extension of Object.values(DataTableExtensions)) {
+            this.disposeExtension(extension.name);
+        }
+
         this.#columnsManager = this.#columnsManager.dispose();
 
         await this.#unhookDataManager();
@@ -177,10 +181,6 @@ export class DataTable extends HTMLElement {
         this.#inflationFn = null;
         this.#keyboardInputManager = this.#keyboardInputManager.dispose();
         this.#mouseInputManager = this.#mouseInputManager.dispose();
-
-        for (const extension of Object.values(DataTableExtensions)) {
-            this.disposeExtension(extension.name);
-        }
 
         this.#extensions = null;
     }
