@@ -244,6 +244,7 @@ export class PageToolbar extends HTMLElement {
         }
 
         this.pageSize = value;
+        this.#calculateLastPage();
         await this.#updatePage();
     }
 

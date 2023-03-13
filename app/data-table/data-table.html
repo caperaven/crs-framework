@@ -1,18 +1,31 @@
+<style>
+    .icon {
+        font-family: crsfrw;
+        font-size: var(--icon-size);
+    }
+
+    data-table:focus {
+        outline: transparent;
+        border: none;
+    }
+
+</style>
+
 <h2>${title}</h2>
 
-<data-table data-manager="my_data">
-    <column data-heading="code" data-property="code" data-width="100"></column>
+<data-table data-manager="my_data" data-resizeable="true" data-filterable="true" data-moveable="true" data-groupable="true">
+    <formatter data-condition="model.price < 50" data-classes="class1 class2" data-styles="background: #ff0090; color: white;"></formatter>
+    <formatter data-condition="model.price <= 15" data-classes="class1 class2" data-styles="background: red; color: blue;"></formatter>
+
+    <column data-heading="code" data-property="code" data-width="100">
+        <formatter data-condition="model.price < 20" data-classes="class1 class2" data-styles="background: blue; color: yellow;"></formatter>
+    </column>
+
     <column data-heading="description" data-property="description" data-width="200"></column>
-    <column data-heading="price" data-property="price" data-width="50"></column>
-    <column data-heading="quantity" data-property="quantity" data-width="50"></column>
-    <column data-heading="is valid" data-property="isValid" data-width="50"></column>
+    <column data-heading="price" data-property="price" data-width="100"></column>
+    <column data-heading="quantity" data-property="quantity" data-width="100"></column>
+    <column data-heading="is valid" data-property="isValid" data-width="100"></column>
 </data-table>
 
-<page-toolbar for="data-table"></page-toolbar>
+<page-toolbar data-manager="my_data" data-manager-key="my_data_key" for="data-table"></page-toolbar>
 
-<div class="toolbar">
-    <button click.call="addRecord">Add Record</button>
-    <button click.call="updateRecord">Update Record</button>
-    <button click.call="deleteRecord">Delete Record</button>
-    <button click.call="refreshData">Refresh</button>
-</div>

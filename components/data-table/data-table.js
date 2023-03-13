@@ -1,4 +1,13 @@
 import {CHANGE_TYPES} from "../../src/data-manager/data-manager-types.js";
+import {ColumnsManager} from "./managers/columns-manager.js";
+import {columnsFromChildren} from "./utils/columnsFromChildren.js";
+import {columnsHeadersFactory} from "./factories/columns-headers-factory.js";
+import {rowInflationFactory} from "./factories/row-inflation-factory.js";
+import {rowFactory} from "./factories/row-factory.js";
+import {MouseInputManager} from "./managers/mouse-input-manager.js";
+import {KeyboardInputManager} from "./managers/keyboard-input-manager.js";
+import {DataTableExtensions} from "./data-table-extensions.js";
+import {formattingFromChildren} from "./utils/formattingFromChildren.js";
 
 /**
  * @class DataTable - a custom element that displays a data table
@@ -10,7 +19,7 @@ import {CHANGE_TYPES} from "../../src/data-manager/data-manager-types.js";
  *
  * Events:
  * - ready - fired when the element is ready to be used from outside
- * - ondblclick - fired when a row is double clicked passing on the id field value of the record
+ * - ondblclick - fired when a row is double-clicked passing on the id field value of the record
  *
  * Attributes:
  * - data-manager - name of the data manager to use, used instead of having to set the property
@@ -53,14 +62,30 @@ import {CHANGE_TYPES} from "../../src/data-manager/data-manager-types.js";
  * await crs.call("data-table", "refresh", { element: document.querySelector("data-table") });
  */
 export class DataTable extends HTMLElement {
-    #columns;
+    #columnsManager = new ColumnsManager();
     #dataManager;
     #dataManagerKey;
     #dataManagerChangedHandler = this.#dataManagerChanged.bind(this);
+    #inflationFn;
+    #keyboardInputManager;
+    #mouseInputManager;
+    #extensions = {
+        [DataTableExtensions.FORMATTING.name]: DataTableExtensions.FORMATTING.path,
+        [DataTableExtensions.CELL_EDITING.name]: DataTableExtensions.CELL_EDITING.path,
+        [DataTableExtensions.RESIZE.name]: DataTableExtensions.RESIZE.path,
+        [DataTableExtensions.FILTER.name]: DataTableExtensions.FILTER.path
+    };
 
-    #keyUpHandler = this.#keyUp.bind(this);
-    #clickHandler = this.#click.bind(this);
-    #dblClickHandler = this.#dblClick.bind(this);
+    #selectedRows;
+    #selectedCells;
+
+    get selectedRows() {
+        return this.#selectedRows;
+    }
+
+    get selectedCells() {
+        return this.#selectedCells;
+    }
 
     /**
      * @field #changeEventMap - lookup table for change events and what function to call on that event
@@ -82,26 +107,6 @@ export class DataTable extends HTMLElement {
     }
 
     /**
-     * @property selected - return the id field value for the selected row / s
-     */
-    get selected() {
-        const selectedElement = this.shadowRoot.querySelector("[aria-selected='true']");
-        return selectedElement?.dataset.id || null;
-    }
-
-    /**
-     * @property columns - getter/setter for the columns property
-     * @returns {*}
-     */
-    get columns() {
-        return this.#columns;
-    }
-
-    set columns(value) {
-        this.#columns = value;
-    }
-
-    /**
      * @constructor
      */
     constructor() {
@@ -114,7 +119,10 @@ export class DataTable extends HTMLElement {
      * @returns {Promise<void>}
      */
     async connectedCallback() {
-        this.#loadColumnsFromChildren();
+        await columnsFromChildren(this, this.#columnsManager);
+        await formattingFromChildren(this);
+
+        this.innerHTML = "";
         this.shadowRoot.innerHTML = await fetch(import.meta.url.replace(".js", ".html")).then(response => response.text());
         await this.load();
         await crs.call("component", "notify_ready", { element: this });
@@ -129,7 +137,20 @@ export class DataTable extends HTMLElement {
             requestAnimationFrame(async () => {
                 this.#dataManager = this.dataset["manager"];
                 this.#dataManagerKey = this.dataset["manager-key"];
+
                 await this.#hookDataManager();
+
+                this.#keyboardInputManager = new KeyboardInputManager(this);
+                this.#mouseInputManager = new MouseInputManager(this);
+
+                if (this.dataset.filterable === "true") {
+                    await crs.call("data_table", "set_filter", { element: this, enabled: true });
+                }
+
+                if (this.dataset.resizeable === "true") {
+                    await crs.call("data_table", "set_resize", { element: this, enabled: true });
+                }
+
                 resolve();
             });
         })
@@ -140,38 +161,34 @@ export class DataTable extends HTMLElement {
      * @returns {Promise<void>}
      */
     async disconnectedCallback() {
-        // dispose of resources
+        this.#columnsManager = this.#columnsManager.dispose();
+
         await this.#unhookDataManager();
         this.#dataManagerChangedHandler = null;
+        await crs.call("dom_interactive", "disable_resize", { element: this });
+        this.#inflationFn = null;
+        this.#keyboardInputManager = this.#keyboardInputManager.dispose();
+        this.#mouseInputManager = this.#mouseInputManager.dispose();
+
+        for (const extension of Object.values(DataTableExtensions)) {
+            this.disposeExtension(extension.name);
+        }
+
+        this.#extensions = null;
     }
 
     /**
-     * @method #click - find the record you clicked on and set the selected id based on the recordElement.dataset.id
-     * @param event
+     * @method disposeExtension - dispose of an extension
+     * @param name - name of the extension
+     * @param removeUI - remove the UI elements from the DOM
+     * This is used when removing a extension without disposing the grid.
+     * In that case you want to remove any UI the extension added to the DOM.
+     * If you are disposing of the grid this is not required.
      */
-    #click(event) {
-        // TODO Andre - implement this
-        // use toggle selection on process api ...
-    }
-
-    /**
-     * @method #dblClick - find the record you double clicked on and fire the ondblclick event passing on the id field value of the record
-     * @param event
-     */
-    #dblClick(event) {
-        this.dispatchEvent(new CustomEvent("ondblclick", { detail: this.selected }));
-    }
-
-    /**
-     * @method #keyUp - navigate up and down in the table using the arrow keys.
-     * Use the space bar to select a row.
-     * On row selection, set the selected id based on the recordElement.dataset.id
-     * Selection use aria-selected="true" on the row.
-     * What to use for highlighted / focused record but not selected.
-     * @param event
-     */
-    #keyUp(event) {
-        // TODO Andre - implement this
+    disposeExtension(name, removeUI = false) {
+        if (this.#extensions[name].dispose != null) {
+            this.#extensions[name] = this.#extensions[name].dispose(removeUI);
+        }
     }
 
     /**
@@ -179,9 +196,6 @@ export class DataTable extends HTMLElement {
      * @method #hoodDataManager - get the data manager and set the event listeners to be notified of change
      */
     async #hookDataManager() {
-        // when registering with the data manager, I need a key to be used in the filter operation
-        // this key is used to only update visualizations that use the same key.
-
         await crs.call("data_manager", "on_change", {
             manager: this.#dataManager,
             callback: this.#dataManagerChangedHandler
@@ -217,24 +231,6 @@ export class DataTable extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #addRecord(args) {
-        const insertIndex = args.index;
-
-        const fragment = document.createDocumentFragment();
-        for (const model of args.models) {
-            const row = document.createElement("tr");
-
-            for (const column of this.#columns) {
-                const cell = document.createElement("td");
-                cell.innerText = model[column.property];
-                cell.dataset.field = column.property;
-                row.appendChild(cell);
-            }
-            fragment.appendChild(row);
-        }
-
-        const tbody = this.shadowRoot.querySelector("tbody");
-        const targetElement = tbody.children[insertIndex];
-        tbody.insertBefore(fragment, targetElement);
     }
 
     /**
@@ -243,19 +239,6 @@ export class DataTable extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #updateRecord(args) {
-        const index = args.index;
-        const changes = args.changes;
-
-        const tbody = this.shadowRoot.querySelector("tbody");
-        const row = tbody.children[index];
-
-        for (const property of Object.keys(changes)) {
-            const cell = row.querySelector(`[data-field="${property}"]`);
-
-            if (cell) {
-                cell.innerText = changes[property];
-            }
-        }
     }
 
     /**
@@ -264,13 +247,6 @@ export class DataTable extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #deleteRecord(args) {
-        // sort the indexes in descending order so that the indexes don't change as you delete
-        const indexes = args.indexes.sort((a, b) => b - a);
-        const tbody = this.shadowRoot.querySelector("tbody");
-
-        for (const index of indexes) {
-            tbody.children[index].remove();
-        }
     }
 
     /**
@@ -279,31 +255,6 @@ export class DataTable extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #filterRecords(args) {
-        const data = args.models; // this is the data that came back after doing the filter.
-        await this.refresh(data);
-    }
-
-    /**
-     * @private
-     * @method #loadColumnsFromChildren - Look at the component's children and load the columns from them
-     * <column heading="code" property="code"></column>
-     *
-     * If there are no children just ignore it.
-     */
-    #loadColumnsFromChildren() {
-        if (this.children.length === 0) return;
-
-        const columns = [];
-
-        for (const child of this.children) {
-            columns.push({
-                heading: child.dataset.heading,
-                property: child.dataset.property,
-                width: Number(child.dataset.width || "100")
-            });
-        }
-
-        this.#columns = columns;
     }
 
     /**
@@ -321,18 +272,10 @@ export class DataTable extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #buildColumns() {
-        const fragment = document.createDocumentFragment();
+        this.style.setProperty("--columns", this.#columnsManager.gridTemplateColumns);
 
-        for (const column of this.#columns) {
-            const td = document.createElement("td");
-            td.style.width = `${column.width}px`;
-            td.innerText = column.heading;
-            fragment.appendChild(td);
-        }
-
-        const tableHeader = this.shadowRoot.querySelector("#tableHeader");
-        tableHeader.innerHTML = "";
-        tableHeader.appendChild(fragment);
+        const headers = await columnsHeadersFactory(this.#columnsManager.columns, this);
+        this.shadowRoot.appendChild(headers);
     }
 
     /**
@@ -341,38 +284,53 @@ export class DataTable extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #buildRows(data) {
+        await this.updateInflation();
+
         const fragment = document.createDocumentFragment();
+        const createRowFn = rowFactory(this.#columnsManager.columns, this.#idField);
 
-        // for each model in the data create a row
-        for (const model of data) {
-            const tr = document.createElement("tr");
-            tr.dataset.id = model[this.#idField];
-
-            // for each column in the columns create a cell
-            for (const column of this.#columns) {
-                const cell = document.createElement("td");
-                cell.innerText = model[column.property];
-                cell.dataset.field = column.property;
-                tr.appendChild(cell);
-            }
-
-            fragment.appendChild(tr);
+        for (const record of data) {
+            const row = await createRowFn(record, fragment);
+            this.#inflationFn(record, row);
         }
 
-        const tbody = this.shadowRoot.querySelector("tbody");
-        tbody.innerHTML = "";
-        tbody.appendChild(fragment);
+        this.shadowRoot.appendChild(fragment);
     }
 
     /**
-     * @method filter - filter the data based on some criteria
-     * @param criteria {Object} - criteria to filter the data
+     * @method #updateRows - update the rows in the HTML Table element
+     * @param data
      * @returns {Promise<void>}
      */
-    async filter(criteria) {
-        // on data manager make is so that perspective actions can affect the data manager or
-        // crs.call("data_manager", "filter", { data_manager: this.dataManager, criteria: criteria });
-        // the data manager will cause a refresh to be called and
+    async #updateRows(data) {
+        const rowElements = Array.from(this.shadowRoot.querySelectorAll("[data-id]"));
+        const diff = data.length - rowElements.length;
+
+        // add elements for each new record
+        if (diff > 0) {
+            const fragment = document.createDocumentFragment();
+            for (let i = 0; i < diff; i++) {
+                const rowElement = rowElements[0].cloneNode(true);
+                rowElements.push(rowElement);
+                fragment.appendChild(rowElement);
+            }
+            this.shadowRoot.appendChild(fragment);
+        }
+
+        // remove elements that are not going to be used
+        if (diff < 0) {
+            for (let i = 0; i < Math.abs(diff); i++) {
+                const rowElement = rowElements.pop();
+                rowElement.remove();
+            }
+        }
+
+        // inflate the elements
+        for (let i = 0; i < data.length; i++) {
+            const record = data[i];
+            const rowElement = rowElements[i];
+            await this.#inflationFn(record, rowElement);
+        }
     }
 
     /**
@@ -383,12 +341,81 @@ export class DataTable extends HTMLElement {
      * @returns {Promise<void>}
      */
     async refresh(data = null) {
-        this.innerHTML = "";
-
         data ||= await crs.call("data_manager", "get_all", { manager: this.#dataManager });
-        await this.#buildTable(data);
+
+        if (this.#inflationFn == null) {
+            await this.#buildTable(data);
+        }
+        else {
+            await this.#updateRows(data);
+        }
     }
 
+    /**
+     * @method setExtension - you can enable or disable an extension here.
+     * you can also just update the properties on a already loaded extension.
+     * @param extName {String} - the name of the extension
+     * @param settings {*} - the settings for the extension
+     * @param enabled {Boolean} - if the extension is enabled or not
+     * @returns {Promise<*>}
+     */
+    async setExtension(extName, settings, enabled) {
+        const ext = this.#extensions[extName];
+        const extType = typeof ext;
+
+        // if this a string it is not loaded.
+        // if it is not loaded, and we enable it then load it.
+        // if it is not loaded, and we disable it, then do nothing.
+        if (extType === "string" && enabled === true) {
+            this.#extensions[extName] = new (await import(ext)).default(this, settings);
+            return;
+        }
+
+        // if this has been loaded, and we disable it then dispose of it.
+        if (extType === "object" && enabled === false) {
+            return this.disposeExtension(extName, true);
+        }
+
+        // this has been loaded, so we just want to update the settings
+        this.#extensions[extName].settings = settings;
+    }
+
+    /**
+     * @method callExtension - call a method on an extension
+     * This is used by any code that wants to execute a method on an extension if that extension has been loaded.
+     * If the extension is not loaded, the method will not be called
+     * @param extName {String} - the name of the extension
+     * @param method {String} - the name of the async method to call.
+     * @param args {*} - the arguments to pass to the method
+     * @returns {Promise<*>}
+     */
+    async callExtension(extName, method, args) {
+        if (typeof this.#extensions[extName] !== "string") {
+            return await this.#extensions[extName][method](args);
+        }
+    }
+
+    /**
+     * @method getColumnIndex - get the index of a column by its name
+     * @param columnName {String} - the name of the column
+     */
+    getColumnIndex(columnName) {
+        return this.#columnsManager.getColumnIndex(columnName);
+    }
+
+    /**
+     * @method updateInflation - update the inflation function.
+     * Call this when things like these happen.
+     * - Formatting changes
+     * - Column order changes
+     * @returns {Promise<void>}
+     */
+    async updateInflation() {
+        this.#inflationFn = await rowInflationFactory(this, this.#columnsManager.columns, this.#idField);
+
+        // JHR:  need to refresh the page to update the inflation
+        // Just need to think on what the best way for this is without having to cache the data it is currently rendering.
+    }
 }
 
 customElements.define("data-table", DataTable);
