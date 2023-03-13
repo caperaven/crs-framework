@@ -79,6 +79,14 @@ export class DataTable extends HTMLElement {
     #selectedRows;
     #selectedCells;
 
+    get dataManager() {
+        return this.#dataManager;
+    }
+
+    get dataManagerKey() {
+        return this.#dataManagerKey;
+    }
+
     get selectedRows() {
         return this.#selectedRows;
     }
@@ -415,6 +423,26 @@ export class DataTable extends HTMLElement {
 
         // JHR:  need to refresh the page to update the inflation
         // Just need to think on what the best way for this is without having to cache the data it is currently rendering.
+    }
+
+    /**
+     * @method addClickHandler - add a click handler to the table when you click on a element that matches a query to call the handler.
+     * This is intended to be used in extensions thus a "protected" scope but can also be used externally if required.
+     * @param query {String} - the query to match the element
+     * @param handler {Function} - the handler to call when the element is clicked
+     * @returns {Promise<void>}
+     */
+    async addClickHandler(query, handler) {
+        await this.#mouseInputManager.addClickHandler(query, handler);
+    }
+
+    /**
+     * @method removeClickHandler - remove a click handler from the table
+     * @param query {String} - the query to match the element
+     * @returns {Promise<void>}
+     */
+    async removeClickHandler(query) {
+        await this.#mouseInputManager.removeClickHandler(query);
     }
 }
 

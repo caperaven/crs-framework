@@ -1,3 +1,5 @@
+import "./../../packages/crs-process-api/action-systems/data-processing-actions.js";
+
 import {CHANGE_TYPES, MANAGER_TYPES} from "./data-manager-types.js";
 
 /**
