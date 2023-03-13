@@ -320,6 +320,7 @@ async function performEvent(event, target, options) {
     const eventObj = new EventMock(target || this, options);
 
     const eventsCollection = this.shadowRoot?.__events || this.__events;
+
     const events = eventsCollection.filter(item => item.event == event) || [];
 
     for (let eventItem of events) {

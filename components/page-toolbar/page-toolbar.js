@@ -155,6 +155,10 @@ export class PageToolbar extends HTMLElement {
      * @method #hoodDataManager - get the data manager and set the event listeners to be notified of change
      */
     async #hookDataManager() {
+        const element = document.querySelector(this.getAttribute("for"));
+        element.dataset.paged = true;
+        this.#dataManager = element.dataset.manager;
+
         await crs.call("data_manager", "on_change", {
             manager: this.#dataManager,
             callback: this.#dataManagerChangedHandler
@@ -169,8 +173,6 @@ export class PageToolbar extends HTMLElement {
         this.#calculateLastPage();
 
         if (this.#recordCount > 0) {
-            const element = document.querySelector(this.getAttribute("for"));
-
             await crs.call("component", "on_ready", {
                 element,
                 callback: async () => {
@@ -196,6 +198,7 @@ export class PageToolbar extends HTMLElement {
         if (args.action == CHANGE_TYPES.refresh) {
             this.#recordCount = args.count;
             this.#calculateLastPage();
+            await this.#updatePage();
         }
     }
 
