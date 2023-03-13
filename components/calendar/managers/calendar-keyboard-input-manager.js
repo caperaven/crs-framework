@@ -50,7 +50,7 @@ export class CalendarKeyboardInputManager {
 
    async #keyup(event) {
        if (this.#keyboardNavigation[event.key]) {
-           this.#getCurrentViewType();
+           await this.#getCurrentViewType();
            await this.#getAllNodeElements();
             event.key !== 'Enter' && (this.#elements[this.#currentIndex].tabIndex = -1);
             this.#keyboardNavigation[event.key].call(this, event);
