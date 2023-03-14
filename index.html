@@ -72,6 +72,8 @@
         import {HTMLParser} from "./packages/crs-schema/html/crs-html-parser.js";
         import "/src/binding-extensions/markdown-template.js";
         import "/src/binding-extensions/schema-template.js";
+        import "./packages/crs-process-api/action-systems/data-processing-actions.js";
+
 
         window.addEventListener("load", async (event) => {
             await crs.modules.enableBinding([
