@@ -182,6 +182,7 @@ export class DataTable extends HTMLElement {
         this.#keyboardInputManager = this.#keyboardInputManager.dispose();
         this.#mouseInputManager = this.#mouseInputManager.dispose();
 
+
         this.#extensions = null;
     }
 
