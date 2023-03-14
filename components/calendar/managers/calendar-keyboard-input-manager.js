@@ -14,7 +14,7 @@
 
 export class CalendarKeyboardInputManager {
     #calendar;
-    #keyupHandler;
+    #keydownHandler;
     #elements;
     #currentIndex;
     #columns;
@@ -34,13 +34,14 @@ export class CalendarKeyboardInputManager {
 
     constructor(calendar) {
         this.#calendar = calendar;
-        this.#calendar.shadowRoot.addEventListener('keydown', this.#keyup.bind(this));
+        this.#keydownHandler = this.#keydown.bind(this);
+        this.#calendar.shadowRoot.addEventListener('keydown', this.#keydownHandler);
     }
 
     dispose() {
-        this.#calendar.shadowRoot.removeEventListener('keydown', this.#keyupHandler);
+        this.#calendar.shadowRoot.removeEventListener('keydown', this.#keydownHandler);
         this.#calendar = null;
-        this.#keyupHandler = null;
+        this.#keydownHandler = null;
         this.#keyboardNavigation = null;
         this.#elements = null;
         this.#currentIndex = null;
@@ -48,7 +49,7 @@ export class CalendarKeyboardInputManager {
         return null;
     }
 
-   async #keyup(event) {
+   async #keydown(event) {
        if (this.#keyboardNavigation[event.key]) {
            await this.#getCurrentViewType();
            await this.#getAllNodeElements();
