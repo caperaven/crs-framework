@@ -37,4 +37,18 @@ export class SizeManager {
         this.#itemSize = null;
         this.#itemCount = null;
     }
+
+    /**
+     * @method getDataIndex - Returns the index of the data item that is at the top of the container.
+     * @param scrollTop {number} - The current scroll position of the container.
+     */
+    getDataIndex(scrollTop) {
+        const result = Math.floor(scrollTop / this.#itemSize);
+
+        if (result > this.#itemCount) {
+            return this.#itemCount;
+        }
+
+        return result;
+    }
 }

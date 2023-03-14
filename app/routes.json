@@ -138,6 +138,11 @@
             "title": "page-toolbar",
             "hash": "#page-toolbar",
             "view": "page-toolbar"
+        },
+        {
+            "title": "virtualization",
+            "hash": "#virtualization",
+            "view": "virtualization"
         }
     ]
 }
