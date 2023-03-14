@@ -1,5 +1,5 @@
 import "./../../components/page-toolbar/page-toolbar.js";
-import "./../../src/data-manager/data-manager-actions.js";
+import "../../src/managers/data-manager/data-manager-actions.js";
 import "./../../test/test-data.js";
 
 export default class PageToolbarViewModel extends crsbinding.classes.ViewBase {

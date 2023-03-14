@@ -6,7 +6,7 @@ import {formattingFromChildren} from "../../../../components/data-table/utils/fo
 await init();
 
 beforeAll(async () => {
-    await import("./../../../../src/data-manager/data-manager-actions.js");
+    await import("../../../../src/managers/data-manager/data-manager-actions.js");
     await import("./../../../../components/data-table/data-table-actions.js");
 })
 
