@@ -4,7 +4,27 @@ export class SizeManager {
     #containerSize;
     #contentHeight;
     #pageItemCount;
+    #batchSize;
 
+    /**
+     * @property batchSize - The number of items to virtualize.
+     * @returns {*}
+     */
+    get batchSize() {
+        return this.#batchSize;
+    }
+
+    get itemCount() {
+        return this.#itemCount;
+    }
+
+    /**
+     * @property itemSize - The size of each item in the container.
+     * @returns {*}
+     */
+    get itemSize() {
+        return this.#itemSize;
+    }
 
     /**
      * @property contentHeight - The height of all the content together.
@@ -31,6 +51,7 @@ export class SizeManager {
 
         this.#contentHeight = this.#itemSize * this.#itemCount;
         this.#pageItemCount = Math.ceil(containerSize / this.#itemSize);
+        this.#batchSize = Math.floor(this.#pageItemCount / 2);
     }
 
     dispose() {

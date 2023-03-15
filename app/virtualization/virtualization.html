@@ -1,1 +1,34 @@
+<style>
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        height: 600px;
+        width: 300px;
+        border: var(--border);
+    }
+
+    li {
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: var(--border);
+        height: 2rem;
+    }
+
+    .flex {
+        flex: 1;
+    }
+</style>
+
 <h2>${title}</h2>
+
+<template id="item-template">
+    <li></li>
+</template>
+
+<ul ref="ul"></ul>
+
+<button click.call="debug">debug</button>
