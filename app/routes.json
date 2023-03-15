@@ -143,6 +143,11 @@
             "title": "virtualization",
             "hash": "#virtualization",
             "view": "virtualization"
+        },
+        {
+            "title": "Combo Box",
+            "hash": "#combobox",
+            "view": "combobox"
         }
     ]
 }
