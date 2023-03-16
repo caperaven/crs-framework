@@ -5,6 +5,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     #month;
     #year;
     #keyboardInputManager;
+    #changeMonthHandler;
     #dateSelected;
     #viewLoadActions = Object.freeze({
         "yearsVisualSelection": this.#yearsVisualSelection.bind(this),
@@ -44,6 +45,8 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         await crsbinding.inflationManager.register("calendar-years", tplYears);
 
         this.#keyboardInputManager = new CalendarKeyboardInputManager(this);
+        this.#changeMonthHandler = this.#changeMonth.bind(this);
+        this.addEventListener("change-month", this.#changeMonthHandler);
     }
 
     async disconnectedCallback() {
@@ -55,6 +58,8 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         this.#dateSelected = null;
         this.#viewLoadActions = null;
         this.#keyboardInputManager = this.#keyboardInputManager.dispose();
+        this.#changeMonthHandler = null;
+        this.removeEventListener("change-month", this.#changeMonthHandler);
     }
 
     async preLoad() {
@@ -215,6 +220,24 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         }
     }
 
+    async #changeMonth(event) {
+        const element = event.detail;
+        await this.#trackFocus(element);
+
+        if (element.classList[0] === "non-current-day") {
+            if(this.#month > parseInt(element.dataset.month) && this.#year < parseInt(element.dataset.year)) {
+                await this.goToNext();
+            }
+            else if(this.#month < parseInt(element.dataset.month) && this.#year > parseInt(element.dataset.year)) {
+                await this.goToPrevious();
+            }
+            else {
+                this.#month > element.dataset.month ? await this.goToPrevious() : await this.goToNext();
+            }
+        }
+        event.stopPropagation();
+    }
+
     /**
      * @method #setDataStart - It sets the data-start attribute to the date selected by the user.
      * @param newValue - The new value of the attribute.
@@ -281,7 +304,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         }
     }
 
-    async #changeTabIndexAndSetFocus(element){
+    async #changeTabIndexAndSetFocus(element) {
         element.tabIndex = 0;
         element.focus();
     }

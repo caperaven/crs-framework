@@ -32,9 +32,13 @@ export class CalendarKeyboardInputManager {
         "default": this.#defaultColumns
     });
 
+    set currentIndex(newValue) {
+        this.#currentIndex = newValue;
+    }
+
     constructor(calendar) {
         this.#calendar = calendar;
-        this.#keydownHandler = this.#keydown.bind(this.#calendar);
+        this.#keydownHandler = this.#keydown.bind(this);
         this.#calendar.shadowRoot.addEventListener('keydown', this.#keydownHandler);
     }
 
@@ -49,14 +53,14 @@ export class CalendarKeyboardInputManager {
         return null;
     }
 
-   async #keydown(event) {
-       if (this.#keyboardNavigation[event.key]) {
-           await this.#getCurrentViewType();
-           await this.#getAllNodeElements();
+    async #keydown(event) {
+        if (this.#keyboardNavigation[event.key]) {
+            await this.#getCurrentViewType();
+            await this.#getAllNodeElements();
             event.key !== 'Enter' && (this.#elements[this.#currentIndex].tabIndex = -1);
             this.#keyboardNavigation[event.key].call(this, event);
-           await this.#setTabIndexAndFocus();
-       }
+            await this.#setTabIndexAndFocus();
+        }
     }
 
     async #enter(event) {
@@ -68,20 +72,30 @@ export class CalendarKeyboardInputManager {
     }
 
     async #arrowLeft(event) {
+        const query = this.#currentIndex - 1 < 0 && this.#currentViewType ==="default";
+
+        query && await this.#calendar.goToPrevious();
         this.#currentIndex = (this.#currentIndex - 1) < 0 ? this.#currentIndex : this.#currentIndex - 1;
     }
 
     async #arrowUp(event) {
+        const query = this.#currentIndex - this.#columns < 0  && this.#currentViewType ==="default";
+
+        query && await this.#calendar.goToPrevious();
         this.#currentIndex = this.#currentIndex - this.#columns < 0 ? this.#currentIndex : this.#currentIndex - this.#columns;
     }
 
     async #arrowDown(event) {
+        const query = this.#currentIndex + this.#columns >= this.#elements.length && this.#currentViewType ==="default";
+
+        query && await this.#calendar.goToNext();
         this.#currentIndex = (this.#currentIndex + this.#columns) >= this.#elements.length ? this.#currentIndex : this.#currentIndex + this.#columns;
     }
 
     async #setTabIndexAndFocus() {
         this.#elements[this.#currentIndex].tabIndex = 0;
         this.#elements[this.#currentIndex].focus();
+        this.#currentViewType === 'default' && await this.#dispatcher(this.#elements[this.#currentIndex]);
     }
 
     async #getAllNodeElements() {
@@ -92,7 +106,7 @@ export class CalendarKeyboardInputManager {
     async #getCurrentViewType() {
         this.#currentViewType = this.#calendar.selectedView;
 
-        if(this.#currentViewType != null){
+        if (this.#currentViewType != null) {
             await this.#columnLength[this.#currentViewType].call(this);
         }
     }
@@ -107,5 +121,13 @@ export class CalendarKeyboardInputManager {
 
     async #yearColumns() {
         this.#columns = 4;
+    }
+
+    async #dispatcher(element) {
+        this.#calendar.dispatchEvent(new CustomEvent('change-month', {
+            detail: element,
+            bubbles: true,
+            composed: true
+        }));
     }
 }
