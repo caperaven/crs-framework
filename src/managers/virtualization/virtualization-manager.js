@@ -184,8 +184,29 @@ export class VirtualizationManager {
         }
     }
 
-    async #onScrollUp(topIndex, itemsScrolled, index) {
-        console.log("scroll up:", this.#topIndex);
+    async #onScrollUp(scrollTopIndex) {
+        const count = scrollTopIndex - this.#topIndex;
+        const toMove = Math.abs(count - this.#virtualSize);
+
+        const startIndex = this.#bottomIndex;
+        const endIndex = startIndex - toMove;
+
+        for (let i = startIndex; i > endIndex; i--) {
+            const element = this.#rowMap[i];
+            const newIndex = this.#topIndex - 1;
+
+            if (newIndex < 0) {
+                return;
+            }
+
+            this.#rowMap[newIndex] = element;
+            delete this.#rowMap[i];
+            this.#setTop(element, newIndex * this.#sizeManager.itemSize);
+            await this.#inflationManager.inflate(element, newIndex);
+
+            this.#bottomIndex -= 1;
+            this.#topIndex -= 1;
+        }
     }
 
     async #onEndScroll(event, scrollTop, scrollOffset, direction) {
