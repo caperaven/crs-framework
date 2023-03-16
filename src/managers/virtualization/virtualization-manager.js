@@ -139,19 +139,21 @@ export class VirtualizationManager {
      * @method #scroll - Handles the scroll event.
      */
     #scroll(event) {
-        clearTimeout(this.#timeout);
+        requestAnimationFrame(() => {
+            clearTimeout(this.#timeout);
 
-        const scrollTop = this.#element.scrollTop;
-        const dataIndex = this.#sizeManager.getDataIndex(scrollTop);
+            const scrollTop = this.#element.scrollTop;
+            const dataIndex = this.#sizeManager.getDataIndex(scrollTop);
 
-        if (this.#oldScrollTop < scrollTop) {
-            this.#scrollDown(scrollTop);
-        }
-        else {
-            this.#scrollUp(scrollTop);
-        }
+            if (this.#oldScrollTop < scrollTop) {
+                this.#scrollDown(scrollTop);
+            }
+            else {
+                this.#scrollUp(scrollTop);
+            }
 
-        this.#oldScrollTop = scrollTop;
+            this.#oldScrollTop = scrollTop;
+        })
     }
 
     #scrollDown(scrollTop) {
