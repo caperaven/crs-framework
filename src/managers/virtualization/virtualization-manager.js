@@ -173,14 +173,7 @@ export class VirtualizationManager {
                 return;
             }
 
-            this.#rowMap[newIndex] = element;
-            delete this.#rowMap[i];
-
-            this.#setTop(element, newIndex * this.#sizeManager.itemSize);
-            await this.#inflationManager.inflate(element, newIndex);
-
-            this.#bottomIndex += 1;
-            this.#topIndex += 1;
+            await this.#scrollPropertiesUpdate(element, newIndex, i, 1);
         }
     }
 
@@ -199,14 +192,18 @@ export class VirtualizationManager {
                 return;
             }
 
-            this.#rowMap[newIndex] = element;
-            delete this.#rowMap[i];
-            this.#setTop(element, newIndex * this.#sizeManager.itemSize);
-            await this.#inflationManager.inflate(element, newIndex);
-
-            this.#bottomIndex -= 1;
-            this.#topIndex -= 1;
+            await this.#scrollPropertiesUpdate(element, newIndex, i, -1);
         }
+    }
+
+    async #scrollPropertiesUpdate(element, newIndex, dataIndex, indexOffset) {
+        this.#rowMap[newIndex] = element;
+        delete this.#rowMap[dataIndex];
+        this.#setTop(element, newIndex * this.#sizeManager.itemSize);
+        await this.#inflationManager.inflate(element, newIndex);
+
+        this.#bottomIndex += indexOffset;
+        this.#topIndex += indexOffset;
     }
 
     async #onEndScroll(event, scrollTop, scrollOffset, direction) {
