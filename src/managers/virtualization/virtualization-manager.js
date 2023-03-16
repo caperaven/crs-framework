@@ -1,13 +1,12 @@
 import {SizeManager} from "./size-manager.js";
+import {InflationManager} from "./inflation-manager.js";
 
 export class VirtualizationManager {
     #sizeManager;
     #scrollHandler = this.#scroll.bind(this);
     #element;
     #itemTemplate;
-    #inflationFn;
     #timeout;
-
     #rowMap = {};
     #topIndex = 0;
     #nextDownTrigger = 0;
@@ -15,41 +14,49 @@ export class VirtualizationManager {
     #nextUpTrigger = 0;
     #virtualSize = 5;
     #oldScrollTop = 0;
+    #inflationManager;
 
     /**
      * @constructor
      * @param element {HTMLElement} - The element to enable virtualization on.
      * @param itemTemplate {HTMLTemplateElement} - The template to use for each item.
      * @param inflationFn {function} - The function to call when an item is inflated.
+     * @param dataManager {string} - The data manager to use.
      * @param itemCount {number} - The number of items.
      * @param itemSize {number} - The size of each item.
      */
-    constructor(element, itemTemplate, inflationFn, itemCount, itemSize) {
+    constructor(element, itemTemplate, inflationFn, dataManager, itemSize) {
         this.#element = element;
         this.#itemTemplate = itemTemplate;
-        this.#inflationFn = inflationFn;
+        this.#inflationManager = new InflationManager(dataManager, inflationFn);
 
         const bounds = this.#element.getBoundingClientRect();
 
-        this.#sizeManager = new SizeManager(itemSize, itemCount, bounds.height);
-        this.#element.addEventListener("scroll", this.#scrollHandler);
+        crs.call("data_manager", "record_count", {manager: dataManager}).then((itemCount) => {
+            this.#sizeManager = new SizeManager(itemSize, itemCount, bounds.height);
+            this.#element.addEventListener("scroll", this.#scrollHandler);
 
-        this.#initialize();
+            this.#initialize();
+        })
     }
 
     dispose() {
         for (const key of Object.keys(this.#rowMap)) {
             this.#rowMap[key] = null;
         }
-
         this.#rowMap = null;
-
         this.#sizeManager = this.#sizeManager.dispose();
         this.#element.removeEventListener("scroll", this.#scrollHandler);
         this.#element = null;
-        this.#itemTemplate = null;
         this.#scrollHandler = null;
-        this.#inflationFn = null;
+        this.#itemTemplate = null;
+        this.#oldScrollTop = null;
+        this.#timeout = null;
+        this.#topIndex = null;
+        this.#nextUpTrigger = null;
+        this.#bottomIndex = null;
+        this.#virtualSize = null;
+        this.#oldScrollTop = null;
     }
 
     /**
@@ -100,6 +107,8 @@ export class VirtualizationManager {
             element.textContent = `Item ${i}`;
             element.style.willChange = "translate";
 
+            this.#inflationManager.inflate(element, i);
+
             this.#setTop(element, top);
             fragment.appendChild(clone);
         }
@@ -131,11 +140,6 @@ export class VirtualizationManager {
      */
     #scroll(event) {
         clearTimeout(this.#timeout);
-
-        // check the next trigger and if the top element based on the topIndex is greater than the trigger
-        // then move the items above that index down using translate.
-        // think about moving elements in an array, the array is 1:1 with the data and the elements for the rows bring rendered.
-        // when the user scrolls down, the top element is removed from the array and the bottom element is added to the array.
 
         const scrollTop = this.#element.scrollTop;
         const dataIndex = this.#sizeManager.getDataIndex(scrollTop);
@@ -174,6 +178,8 @@ export class VirtualizationManager {
                     this.#topIndex += 1;
                     this.#nextUpTrigger += 1;
                     this.#nextDownTrigger += 1;
+
+                    this.#inflationManager.inflate(element, nextIndex);
                 }
             }
         }, 0);
@@ -203,6 +209,8 @@ export class VirtualizationManager {
                     this.#bottomIndex -= 1;
                     this.#nextUpTrigger -= 1;
                     this.#nextDownTrigger -= 1;
+
+                    this.#inflationManager.inflate(element, nextIndex);
                 }
             }
         }, 0)

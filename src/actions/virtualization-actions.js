@@ -19,12 +19,12 @@ export class VirtualizationActions {
      */
     static async enable(step, context, process, item) {
         const element = await crs.dom.get_element(step, process, item);
-        const itemCount = await crs.process.getValue(step.args.itemCount, context, process, item);
         const itemSize = await crs.process.getValue(step.args.itemSize, context, process, item);
         const template = await crs.process.getValue(step.args.template, context, process, item);
         const inflationFn = await crs.process.getValue(step.args.inflation, context, process, item);
+        const manager = await crs.process.getValue(step.args.manager, context, process, item);
 
-        element.__virtualizationManager = new VirtualizationManager(element, template, inflationFn, itemCount, itemSize);
+        element.__virtualizationManager = new VirtualizationManager(element, template, inflationFn, manager, itemSize);
     }
 
     static async disable(step, context, process, item) {
