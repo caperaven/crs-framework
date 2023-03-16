@@ -13,7 +13,7 @@ export default class Virtualization extends crsbinding.classes.ViewBase {
                 code: "string:auto",
                 quantity: "int:1:100"
             },
-            count: 100
+            count: 10000
         });
 
         await crs.call("data_manager", "register", {
