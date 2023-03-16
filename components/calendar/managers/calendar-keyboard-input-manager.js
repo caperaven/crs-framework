@@ -34,7 +34,7 @@ export class CalendarKeyboardInputManager {
 
     constructor(calendar) {
         this.#calendar = calendar;
-        this.#keydownHandler = this.#keydown.bind(this);
+        this.#keydownHandler = this.#keydown.bind(this.#calendar);
         this.#calendar.shadowRoot.addEventListener('keydown', this.#keydownHandler);
     }
 
