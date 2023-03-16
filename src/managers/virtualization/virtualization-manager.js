@@ -131,6 +131,10 @@ export class VirtualizationManager {
     }
 
     #setTop(element, top) {
+        if (top >= this.#sizeManager.contentHeight) {
+            top = -this.#sizeManager.itemSize * 2;
+        }
+
         element.style.transform = `translate(0, ${top}px)`;
         element.dataset.top = top;
     }
@@ -169,10 +173,6 @@ export class VirtualizationManager {
             const element = this.#rowMap[i];
             const newIndex = this.#bottomIndex + 1;
 
-            if (newIndex > this.#sizeManager.itemCount) {
-                return;
-            }
-
             await this.#scrollPropertiesUpdate(element, newIndex, i, 1);
         }
     }
@@ -199,8 +199,11 @@ export class VirtualizationManager {
     async #scrollPropertiesUpdate(element, newIndex, dataIndex, indexOffset) {
         this.#rowMap[newIndex] = element;
         delete this.#rowMap[dataIndex];
-        this.#setTop(element, newIndex * this.#sizeManager.itemSize);
-        await this.#inflationManager.inflate(element, newIndex);
+
+        if (newIndex <= this.#sizeManager.itemCount) {
+            this.#setTop(element, newIndex * this.#sizeManager.itemSize);
+            await this.#inflationManager.inflate(element, newIndex);
+        }
 
         this.#bottomIndex += indexOffset;
         this.#topIndex += indexOffset;
