@@ -12,6 +12,7 @@ export class VirtualizationManager {
     #virtualSize = 0;
     #inflationManager;
     #scrollManager;
+    #syncPage = false;
 
     /**
      * @constructor
@@ -131,6 +132,10 @@ export class VirtualizationManager {
     }
 
     #setTop(element, top) {
+        if (top >= this.#sizeManager.contentHeight) {
+            top = -this.#sizeManager.itemSize * 2;
+        }
+
         element.style.transform = `translate(0, ${top}px)`;
         element.dataset.top = top;
     }
@@ -140,6 +145,8 @@ export class VirtualizationManager {
         const topIndex = Math.floor(scrollTop / this.#sizeManager.itemSize);
 
         if (itemsScrolled <= this.#virtualSize) {
+            this.#syncPage = false;
+
             if (direction === "down") {
                 await this.#onScrollDown(topIndex, itemsScrolled);
             } else {
@@ -150,7 +157,8 @@ export class VirtualizationManager {
             // if you scroll fast you can jump hundreds of records.
             // in that case the normal virtualization does not work.
             // instead you need to reset from the top down again
-            await this.#onSyncPage(topIndex);
+            //await this.#onSyncPage(topIndex);
+            this.#syncPage = true;
         }
     }
 
@@ -168,10 +176,6 @@ export class VirtualizationManager {
         for (let i = startIndex; i < endIndex; i++) {
             const element = this.#rowMap[i];
             const newIndex = this.#bottomIndex + 1;
-
-            if (newIndex > this.#sizeManager.itemCount) {
-                return;
-            }
 
             await this.#scrollPropertiesUpdate(element, newIndex, i, 1);
         }
@@ -199,15 +203,46 @@ export class VirtualizationManager {
     async #scrollPropertiesUpdate(element, newIndex, dataIndex, indexOffset) {
         this.#rowMap[newIndex] = element;
         delete this.#rowMap[dataIndex];
-        this.#setTop(element, newIndex * this.#sizeManager.itemSize);
-        await this.#inflationManager.inflate(element, newIndex);
+
+        if (newIndex <= this.#sizeManager.itemCount) {
+            this.#setTop(element, newIndex * this.#sizeManager.itemSize);
+            await this.#inflationManager.inflate(element, newIndex);
+        }
 
         this.#bottomIndex += indexOffset;
         this.#topIndex += indexOffset;
     }
 
     async #onEndScroll(event, scrollTop, scrollOffset, direction) {
-        console.log("done")
+        if (this.#syncPage) {
+            await this.#performSyncPage(scrollTop);
+        }
+    }
+
+    async #performSyncPage(scrollTop) {
+        const topIndex = Math.floor(scrollTop / this.#sizeManager.itemSize) - this.#virtualSize;
+        let count = 0;
+
+        const newMap = {};
+        for (let i = this.#topIndex; i <= this.#bottomIndex; i++) {
+            const element = this.#rowMap[i];
+            const newIndex = topIndex + count;
+            newMap[newIndex] = element;
+            count++;
+
+            if (newIndex <= this.#sizeManager.itemCount) {
+                this.#setTop(element, newIndex * this.#sizeManager.itemSize);
+                await this.#inflationManager.inflate(element, newIndex);
+            }
+        }
+
+        this.#rowMap = newMap;
+        this.#topIndex = topIndex;
+        this.#bottomIndex = topIndex + count - 1;
+
+        console.log("new map", newMap);
+        console.log("top index", this.#topIndex);
+        console.log("bottom index", this.#bottomIndex);
     }
 
     debug() {
