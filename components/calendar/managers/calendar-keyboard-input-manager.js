@@ -64,7 +64,7 @@ export class CalendarKeyboardInputManager {
     }
 
     async #enter(event) {
-        console.log("enter");
+        console.log("enter pressed");
     }
 
     async #arrowRight(event) {
