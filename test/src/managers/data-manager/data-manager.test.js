@@ -1,11 +1,11 @@
 import {beforeAll, afterAll, afterEach, beforeEach, describe, it} from "https://deno.land/std@0.157.0/testing/bdd.ts";
 import { assertEquals, assertExists, assert } from "https://deno.land/std@0.149.0/testing/asserts.ts";
-import {init} from "../../mockups/init.js";
+import {init} from "../../../mockups/init.js";
 
 await init();
 
 beforeAll(async () => {
-    await import("../../../src/data-manager/data-manager-actions.js");
+    await import("../../../../src/managers/data-manager/data-manager-actions.js");
 })
 
 describe("data manager tests", () => {

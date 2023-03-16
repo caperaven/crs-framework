@@ -8,7 +8,7 @@ import {createChildrenFromHtml} from "../../mockups/child-mock-factory.js";
 await init();
 
 beforeAll(async () => {
-    await import("../../../src/data-manager/data-manager-actions.js");
+    await import("../../../src/managers/data-manager/data-manager-actions.js");
     await import("../../../components/data-table/data-table.js");
 })
 

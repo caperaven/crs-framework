@@ -8,7 +8,7 @@ await init();
 
 beforeAll(async () => {
     await import("../../test-data.js");
-    await import("../../../src/data-manager/data-manager-actions.js");
+    await import("../../../src/managers/data-manager/data-manager-actions.js");
     await import("../../../components/page-toolbar/page-toolbar.js");
 })
 

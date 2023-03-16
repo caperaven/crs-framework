@@ -1,6 +1,6 @@
 import "./../../components/data-table/data-table-actions.js";
 import "./../../components/page-toolbar/page-toolbar.js";
-import "./../../src/data-manager/data-manager-actions.js";
+import "../../src/managers/data-manager/data-manager-actions.js";
 import "./../../test/test-data.js";
 
 export default class DataTableViewModel extends crsbinding.classes.ViewBase {

@@ -1,4 +1,4 @@
-import {CHANGE_TYPES} from "../../src/data-manager/data-manager-types.js";
+import {CHANGE_TYPES} from "../../src/managers/data-manager/data-manager-types.js";
 
 /**
  * @class PageToolbar - a custom element that displays a data table

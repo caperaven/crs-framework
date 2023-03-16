@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" style="overflow: hidden">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width">
@@ -28,6 +28,11 @@
             flex-direction: row;
             align-items: center;
             justify-content: center;
+        }
+
+        nav {
+            height: 100%;
+            overflow: auto;
         }
     </style>
 </head>
@@ -72,10 +77,10 @@
         import {HTMLParser} from "./packages/crs-schema/html/crs-html-parser.js";
         import "/src/binding-extensions/markdown-template.js";
         import "/src/binding-extensions/schema-template.js";
-        import "./packages/crs-process-api/action-systems/data-processing-actions.js";
-
 
         window.addEventListener("load", async (event) => {
+            import ("./packages/crs-process-api/action-systems/data-processing-actions.js");
+
             await crs.modules.enableBinding([
                 ["data-grid", "/components/data-grid/data-grid.js"],
                 ["kan-ban", "/components/kan-ban/kan-ban.js"],

@@ -1,4 +1,4 @@
-import {CHANGE_TYPES} from "../../src/data-manager/data-manager-types.js";
+import {CHANGE_TYPES} from "../../src/managers/data-manager/data-manager-types.js";
 import {ColumnsManager} from "./managers/columns-manager.js";
 import {columnsFromChildren} from "./utils/columnsFromChildren.js";
 import {columnsHeadersFactory} from "./factories/columns-headers-factory.js";
