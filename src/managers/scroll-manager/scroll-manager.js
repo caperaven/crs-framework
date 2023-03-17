@@ -117,6 +117,8 @@ export class ScrollManager {
                     await this.#onEndScroll(this.#event, this.#scrollTop, this.#scrollOffset, this.#direction);
                 }
                 this.#scrolling = false;
+
+                // This stops the timer, preventing the this.#scrollTimerHandler() from being called.
                 return;
             }
 
@@ -125,6 +127,8 @@ export class ScrollManager {
             }
 
             this.#lastScrollTop = this.#scrollTop;
+
+            // Call this timer recursively until the scroll has stopped.
             this.#scrollTimerHandler();
         })
     }
