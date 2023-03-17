@@ -225,13 +225,11 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         await this.#trackFocus(element);
 
         if (element.classList[0] === "non-current-day") {
-            if(this.#month > parseInt(element.dataset.month) && this.#year < parseInt(element.dataset.year)) {
+            if (this.#month > parseInt(element.dataset.month) && this.#year < parseInt(element.dataset.year)) {
                 await this.goToNext();
-            }
-            else if(this.#month < parseInt(element.dataset.month) && this.#year > parseInt(element.dataset.year)) {
+            } else if (this.#month < parseInt(element.dataset.month) && this.#year > parseInt(element.dataset.year)) {
                 await this.goToPrevious();
-            }
-            else {
+            } else {
                 this.#month > element.dataset.month ? await this.goToPrevious() : await this.goToNext();
             }
         }
@@ -302,6 +300,10 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         if (selectedElement != null && currentDate == null && focusDate != null) {
             await this.#changeTabIndexAndSetFocus(focusDate);
         }
+        const elements = this.shadowRoot.querySelectorAll("[role='cell'],[data-type='month-cell'],[data-type='year-cell']");
+        const currentIndex = Array.prototype.findIndex.call(elements, el => el.tabIndex === 0);
+
+        this.dispatchEvent(new CustomEvent("focus-changed", {detail: {index: currentIndex}, bubbles: true}));
     }
 
     async #changeTabIndexAndSetFocus(element) {
