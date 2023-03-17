@@ -213,7 +213,7 @@ export class VirtualizationManager {
         this.#topIndex += indexOffset;
     }
 
-    async #onEndScroll(event, scrollTop, scrollOffset, direction) {
+    async #onEndScroll(event, scrollTop) {
         if (this.#syncPage) {
             await this.#performSyncPage(scrollTop);
         }
@@ -231,7 +231,9 @@ export class VirtualizationManager {
             count++;
 
             if (newIndex <= this.#sizeManager.itemCount) {
-                this.#setTop(element, newIndex * this.#sizeManager.itemSize);
+                const newTop = newIndex * this.#sizeManager.itemSize;
+                this.#setTop(element, newTop);
+                // this.#setTop(element, scrollTop);
                 await this.#inflationManager.inflate(element, newIndex);
             }
         }
@@ -239,16 +241,5 @@ export class VirtualizationManager {
         this.#rowMap = newMap;
         this.#topIndex = topIndex;
         this.#bottomIndex = topIndex + count - 1;
-
-        console.log("new map", newMap);
-        console.log("top index", this.#topIndex);
-        console.log("bottom index", this.#bottomIndex);
-    }
-
-    debug() {
-        console.log("component debug");
-        console.log("top index", this.#topIndex);
-        console.log("bottom index", this.#bottomIndex);
-        console.log(this.#rowMap);
     }
 }
