@@ -1,3 +1,7 @@
+/**
+ * @enum ScrollDirection - what direction is the scroll going.
+ * @type {Readonly<{DOWN: string, UP: string, NONE: string}>}
+ */
 export const ScrollDirection = Object.freeze({
     UP: "up",
     DOWN: "down",
@@ -54,6 +58,9 @@ export class ScrollManager {
         this.#element.addEventListener("scroll", this.#scrollHandler);
     }
 
+    /**
+     * @method dispose - clean up memory
+     */
     dispose() {
         this.#element.removeEventListener("scroll", this.#scrollHandler);
         this.#element = null;
@@ -70,6 +77,14 @@ export class ScrollManager {
         this.#event = null;
     }
 
+    /**
+     * @method #scroll - The scroll event handler.
+     * We try and do the minimum amount of work here.
+     * It's primary function is to update the required values for the scrollTimer to use.
+     * It also starts the scroll timer when we start the scroll operation
+     * @param event
+     * @returns {Promise<void>}
+     */
     async #scroll(event) {
         this.#event = event;
         this.#scrollTop = this.#element.scrollTop;
@@ -87,6 +102,14 @@ export class ScrollManager {
         }
     }
 
+    /**
+     * @method #scrollTimer - This is the main loop during scrolling operations.
+     * It is responsible to check if the scroll has stopped.
+     * If it has then it will call the onEndScroll callback.
+     * If it has not then it will call the onScroll callback.
+     * This is a recursive function that will call itself until the scroll has stopped.
+     * @returns {Promise<void>}
+     */
     async #scrollTimer() {
         requestAnimationFrame(async () => {
             if (this.#lastScrollTop === this.#scrollTop) {
