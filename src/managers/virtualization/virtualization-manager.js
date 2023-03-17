@@ -233,7 +233,6 @@ export class VirtualizationManager {
             if (newIndex <= this.#sizeManager.itemCount) {
                 const newTop = newIndex * this.#sizeManager.itemSize;
                 this.#setTop(element, newTop);
-                // this.#setTop(element, scrollTop);
                 await this.#inflationManager.inflate(element, newIndex);
             }
         }
