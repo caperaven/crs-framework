@@ -44,6 +44,12 @@ export class SizeManager {
         return this.#pageItemCount;
     }
 
+    /**
+     * @constructor - Creates a new SizeManager.
+     * @param itemSize - How high is an element in pixels, used for size calculations.
+     * @param itemCount - How many items are there in total.
+     * @param containerSize - How big is the container in pixels.
+     */
     constructor(itemSize, itemCount, containerSize) {
         this.#itemSize = itemSize;
         this.#itemCount = itemCount;
@@ -54,9 +60,16 @@ export class SizeManager {
         this.#batchSize = Math.floor(this.#pageItemCount / 2);
     }
 
+    /**
+     * @method dispose - clean up memory
+     */
     dispose() {
         this.#itemSize = null;
         this.#itemCount = null;
+        this.#containerSize = null;
+        this.#contentHeight = null;
+        this.#pageItemCount = null;
+        this.#batchSize = null;
     }
 
     /**
