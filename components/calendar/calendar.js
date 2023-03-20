@@ -17,14 +17,6 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         return true;
     }
 
-    get month() {
-        return this.getProperty("selectedMonth");
-    }
-
-    get year() {
-        return this.getProperty("selectedYear");
-    }
-
     get selectedView() {
         return this.getProperty("selectedView");
     }
@@ -185,7 +177,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      * @param newValue - The new value of the selected month.
      */
     async selectedMonthChanged(newValue) {
-        if (this.month !== this.#month) {
+        if (newValue !== this.#month) {
             this.#month = newValue == null || Number.parseInt(newValue) > 11 ? parseInt(this.#month) : newValue;
             await this.#setMonthProperty();
             newValue != null && await this.#setDefaultView();
@@ -198,7 +190,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      * @param newValue - The new value of the property.
      */
     async selectedYearChanged(newValue) {
-        if (this.year !== this.#year) {
+        if (newValue !== this.#year) {
             this.#year = newValue == null || newValue.toString().length < 4 ? parseInt(this.#year) : newValue;
             await this.#setYearProperty();
             newValue != null && await this.#setDefaultView();
@@ -271,6 +263,10 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         const focusDate = await this.#get_element(this.calendars.dataset.position);
         await this.#resetFocus(elementList);
 
+        if (selectedElement == null && currentDate != null && focusDate == null) {
+            await this.#changeTabIndexAndSetFocus(currentDate);
+        }
+
         if (selectedElement == null && currentDate == null && focusDate == null) {
             const element = this.calendars.querySelector("[data-day='1']:not([class = '.non-current-day'])");
             await this.#changeTabIndexAndSetFocus(element);
@@ -300,10 +296,6 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         if (selectedElement != null && currentDate == null && focusDate != null) {
             await this.#changeTabIndexAndSetFocus(focusDate);
         }
-        const elements = this.shadowRoot.querySelectorAll("[role='cell'],[data-type='month-cell'],[data-type='year-cell']");
-        const currentIndex = Array.prototype.findIndex.call(elements, el => el.tabIndex === 0);
-
-        this.dispatchEvent(new CustomEvent("focus-changed", {detail: {index: currentIndex}, bubbles: true}));
     }
 
     async #changeTabIndexAndSetFocus(element) {

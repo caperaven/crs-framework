@@ -31,6 +31,11 @@ export class CalendarKeyboardInputManager {
         "years": this.#yearColumns,
         "default": this.#defaultColumns
     });
+    #enterActions = Object.freeze({
+        "months": this.#enterMonths,
+        "years": this.#enterYears,
+        "default": this.#enterDefault
+    })
 
     set currentIndex(newValue) {
         this.#currentIndex = newValue;
@@ -50,6 +55,8 @@ export class CalendarKeyboardInputManager {
         this.#elements = null;
         this.#currentIndex = null;
         this.#columns = null;
+        this.#enterActions = null;
+        this.#currentViewType = null;
         return null;
     }
 
@@ -59,37 +66,72 @@ export class CalendarKeyboardInputManager {
             await this.#getAllNodeElements();
             event.key !== 'Enter' && (this.#elements[this.#currentIndex].tabIndex = -1);
             this.#keyboardNavigation[event.key].call(this, event);
-            await this.#setTabIndexAndFocus();
         }
     }
 
     async #enter(event) {
-        console.log("enter pressed");
+        if (this.#currentViewType != null) {
+            await this.#enterActions[this.#currentViewType].call(this, event);
+        }
     }
 
     async #arrowRight(event) {
         this.#currentIndex = (this.#currentIndex + 1) >= this.#elements.length ? this.#currentIndex : this.#currentIndex + 1;
+        await this.#setTabIndexAndFocus();
     }
 
     async #arrowLeft(event) {
-        const query = this.#currentIndex - 1 < 0 && this.#currentViewType ==="default";
+        const query = this.#currentIndex - 1 < 0 && this.#currentViewType === "default";
 
-        query && await this.#calendar.goToPrevious();
-        this.#currentIndex = (this.#currentIndex - 1) < 0 ? this.#currentIndex : this.#currentIndex - 1;
+        if (query) {
+            await this.#calendar.goToPrevious();
+            this.#currentIndex = await this.#resetTabIndexOnRedraw("sub", 1);
+        } else {
+            this.#currentIndex = (this.#currentIndex - 1) < 0 ? this.#currentIndex : this.#currentIndex - 1;
+        }
+        await this.#setTabIndexAndFocus();
     }
 
     async #arrowUp(event) {
-        const query = this.#currentIndex - this.#columns < 0  && this.#currentViewType ==="default";
+        const query = this.#currentIndex - this.#columns < 0 && this.#currentViewType === "default";
 
-        query && await this.#calendar.goToPrevious();
-        this.#currentIndex = this.#currentIndex - this.#columns < 0 ? this.#currentIndex : this.#currentIndex - this.#columns;
+        if (query) {
+            await this.#calendar.goToPrevious();
+            this.#currentIndex = await this.#resetTabIndexOnRedraw("sub", this.#columns);
+        } else {
+            this.#currentIndex = this.#currentIndex - this.#columns < 0 ? this.#currentIndex : this.#currentIndex - this.#columns;
+        }
+        await this.#setTabIndexAndFocus();
     }
 
     async #arrowDown(event) {
-        const query = this.#currentIndex + this.#columns >= this.#elements.length && this.#currentViewType ==="default";
+        const query = this.#currentIndex + this.#columns >= this.#elements.length && this.#currentViewType === "default";
 
-        query && await this.#calendar.goToNext();
-        this.#currentIndex = (this.#currentIndex + this.#columns) >= this.#elements.length ? this.#currentIndex : this.#currentIndex + this.#columns;
+        if (query) {
+            await this.#calendar.goToNext();
+            this.#currentIndex = await this.#resetTabIndexOnRedraw("add", this.#columns);
+        } else {
+            this.#currentIndex = (this.#currentIndex + this.#columns) >= this.#elements.length ? this.#currentIndex : this.#currentIndex + this.#columns;
+        }
+        await this.#setTabIndexAndFocus();
+    }
+
+    async #resetTabIndexOnRedraw(action, value) {
+        await this.#getAllNodeElements();
+        this.#calendar.calendars.querySelector("[tabindex='0']").tabIndex = -1
+        return action === "add" ? this.#currentIndex + parseInt(value) : this.#currentIndex - parseInt(value)
+    }
+
+    async #enterDefault(event) {
+        await this.#calendar.selectedDate(event);
+    }
+
+    async #enterMonths(event) {
+        await this.#calendar.selectedMonthChanged(parseInt(event.target.dataset.value));
+    }
+
+    async #enterYears(event) {
+        await this.#calendar.selectedYearChanged(parseInt(event.target.dataset.value));
     }
 
     async #setTabIndexAndFocus() {
