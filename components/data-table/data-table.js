@@ -377,6 +377,8 @@ export class DataTable extends HTMLElement {
         // if it is not loaded, and we disable it, then do nothing.
         if (extType === "string" && enabled === true) {
             this.#extensions[extName] = new (await import(ext)).default(this, settings);
+            // this has been loaded, so we just want to update the settings
+            this.#extensions[extName].settings = settings;
             return;
         }
 
@@ -384,9 +386,6 @@ export class DataTable extends HTMLElement {
         if (extType === "object" && enabled === false) {
             return this.disposeExtension(extName, true);
         }
-
-        // this has been loaded, so we just want to update the settings
-        this.#extensions[extName].settings = settings;
     }
 
     /**
