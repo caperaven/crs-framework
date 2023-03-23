@@ -127,11 +127,15 @@ export class CalendarKeyboardInputManager {
     }
 
     async #enterMonths(event) {
-        await this.#calendar.selectedMonthChanged(parseInt(event.target.dataset.value));
+        if (isNaN(parseInt(event.target.dataset.value)) !== true) {
+            await this.#calendar.selectedMonthChanged(parseInt(event.target.dataset.value))
+        }
     }
 
     async #enterYears(event) {
-        await this.#calendar.selectedYearChanged(parseInt(event.target.dataset.value));
+        if (isNaN(parseInt(event.target.dataset.value)) !== true) {
+            await this.#calendar.selectedYearChanged(parseInt(event.target.dataset.value));
+        }
     }
 
     async #setTabIndexAndFocus() {

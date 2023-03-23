@@ -59,7 +59,6 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         this.#year = date.getFullYear();
         this.#month = date.getMonth();
         this.setProperty("selectedView", "default");
-        this.setProperty("tabindex", "-1");
         await this.#setMonthProperty();
         await this.#setYearProperty();
     }
@@ -177,8 +176,8 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      * @param newValue - The new value of the selected month.
      */
     async selectedMonthChanged(newValue) {
-        if (newValue !== this.#month) {
-            this.#month = newValue == null || Number.parseInt(newValue) > 11 ? parseInt(this.#month) : newValue;
+        if (newValue !== this.#month && newValue != null) {
+            this.#month = Number.parseInt(newValue) > 11 ? parseInt(this.#month) : newValue;
             await this.#setMonthProperty();
             newValue != null && await this.#setDefaultView();
         }
@@ -190,8 +189,8 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      * @param newValue - The new value of the property.
      */
     async selectedYearChanged(newValue) {
-        if (newValue !== this.#year) {
-            this.#year = newValue == null || newValue.toString().length < 4 ? parseInt(this.#year) : newValue;
+        if (newValue !== this.#year && newValue != null) {
+            this.#year = newValue.toString().length < 4 ? parseInt(this.#year) : newValue;
             await this.#setYearProperty();
             newValue != null && await this.#setDefaultView();
         }
@@ -257,10 +256,10 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      * 4. staying on the same month and changing selection, unset current focus and set it to the new selected date.
      */
     async #setFocus() {
-        const elementList = this.calendars.querySelectorAll("[tabindex='0']");
-        const selectedElement = this.calendars.querySelector("[aria-selected='true']");
-        const currentDate = this.calendars.querySelector(".today");
-        const focusDate = await this.#get_element(this.calendars.dataset.position);
+        const elementList = this.calendars?.querySelectorAll("[tabindex='0']");
+        const selectedElement = this.calendars?.querySelector("[aria-selected='true']");
+        const currentDate = this.calendars?.querySelector(".today");
+        const focusDate = await this.#get_element(this.calendars?.dataset.position);
         await this.#resetFocus(elementList);
 
         if (selectedElement == null && currentDate != null && focusDate == null) {
@@ -268,7 +267,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         }
 
         if (selectedElement == null && currentDate == null && focusDate == null) {
-            const element = this.calendars.querySelector("[data-day='1']:not([class = '.non-current-day'])");
+            const element = this.calendars?.querySelector("[data-day='1']:not([class = '.non-current-day'])");
             await this.#changeTabIndexAndSetFocus(element);
         }
 
@@ -299,11 +298,13 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     async #changeTabIndexAndSetFocus(element) {
+        if(element == null) return;
         element.tabIndex = 0;
         element.focus();
     }
 
     async #resetFocus(elements) {
+        if(elements == null) return;
         for (const element of elements) {
             element.tabIndex = -1;
         }
@@ -328,7 +329,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         const year = date.getFullYear();
         const month = date.getMonth();
         const day = date.getDate();
-        const element = this.calendars.querySelector(`[data-day= '${day}'][data-month= '${month}'][data-year= '${year}']`);
+        const element = this.calendars?.querySelector(`[data-day= '${day}'][data-month= '${month}'][data-year= '${year}']`);
 
         return element ? element : null;
     }
