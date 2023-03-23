@@ -91,8 +91,9 @@ class DataTableActions {
     static async set_filter(step, context, process, item) {
         const element = await crs.process.getValue(step.args.element, context, process, item);
         const enabled = await crs.process.getValue(step.args.enabled, context, process, item);
+        const settings = await crs.process.getValue(step.args.settings, context, process, item);
 
-        await element.setExtension(DataTableExtensions.FILTER.name, null, enabled);
+        await element.setExtension(DataTableExtensions.FILTER.name, settings, enabled);
     }
 }
 
