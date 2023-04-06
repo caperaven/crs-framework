@@ -1,20 +1,28 @@
 <style>
-    :host {
-        --remove: var(--red);
-        --add: var(--green);
-    }
 
     :host tab-list tab {
         padding: var(--half-padding);
     }
 
-    :host li {
+    :host ul {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
         list-style: none;
-        user-select: none;
+    }
+
+    :host ul[data-dragging="true"] li > * {
+        pointer-events: none;
+    }
+
+    :host li {
+        display: flex;
+        align-items: center;
+        background: var(--cl-primary-alt);
     }
 
     :host li label {
-        width: 100%;
+        flex: 1;
         padding-left: var(--padding);
     }
 
@@ -31,16 +39,6 @@
         border: 0;
         border-radius: var(--radius);
         outline: none;
-    }
-
-    :host li, :host li label {
-        height: var(--input-height);
-        justify-content: space-between;
-    }
-
-    :host li, :host li label, :host li button {
-        display: flex;
-        align-items: center;
     }
 
     :host li button:hover, :host li:hover {

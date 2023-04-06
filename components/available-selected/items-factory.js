@@ -87,10 +87,12 @@ export class ItemsFactory {
      */
     static async #inflate(templateToInflate, data, collection) {
         const template = document.createElement("template");
+        const ul = document.createElement("ul");
         for (const item of data[collection]) {
             const inflatedTemplateContent = await crs.call("html", "create", {html: templateToInflate.innerHTML, ctx: item});
-            await template.content.appendChild(inflatedTemplateContent);
+            await ul.appendChild(inflatedTemplateContent);
         }
+        template.content.appendChild(ul);
         return template;
     }
 
