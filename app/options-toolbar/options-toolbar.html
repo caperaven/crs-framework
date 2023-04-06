@@ -1,8 +1,5 @@
 <style>
-    button {
-        width: 48px;
-        height: 24px;
-    }
+
 
     .icon{
         font-family: crsfrw;
@@ -19,6 +16,14 @@
 </options-toolbar>
 
 <div>${state}</div>
+
+<h4>Using binding - the off button should be selected </h4>
+<button click.call="toggleSelected" class="primary">Toggle</button>
+
+<options-toolbar selected.one-way="selected">
+    <button data-value="on">On</button>
+    <button data-value="off">Off</button>
+</options-toolbar>
 
 <h4>Using Icon element within button to display Icon</h4>
 

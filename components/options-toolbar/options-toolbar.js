@@ -11,6 +11,20 @@ class OptionsToolbar extends HTMLElement {
     #previouslySelected;
     #parent;
 
+    get selected() {
+        return this.dataset.value;
+    }
+
+    set selected(value) {
+        if(value == null) return;
+        const element = this.querySelector(`[data-value='${value}']`);
+        if(element != null && this.dataset.ready === "true") {
+            this.#setSelected(element);
+        } else {
+            this.dataset.value = value;
+        }
+    }
+
     constructor() {
         super();
         this.attachShadow({mode: "open"});
@@ -38,7 +52,7 @@ class OptionsToolbar extends HTMLElement {
                 this.#marker = this.shadowRoot.querySelector(".marker");
                 this.#parent = this.shadowRoot.querySelector(".parent");
 
-                const selectedItem = this.querySelector(`[aria-selected='true']`) ?? this.firstElementChild;
+                const selectedItem = this.querySelector(`[data-value='${this.dataset.value}']`) ?? this.querySelector(`[aria-selected='true']`) ?? this.firstElementChild;
                 await this.#setSelected(selectedItem, false);
                 this.shadowRoot.addEventListener("click", this.#clickHandler);
 
