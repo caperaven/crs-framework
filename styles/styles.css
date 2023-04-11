@@ -8,6 +8,7 @@
 @import "./lib/color-classes.css";
 @import "./lib/input.css";
 @import "./lib/label-input.css";
+@import "./lib/dragdrop.css";
 
 @font-face {
     font-family: SourceSansPro;

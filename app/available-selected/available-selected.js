@@ -16,6 +16,14 @@ export default class AvailableSelected extends crsbinding.classes.ViewBase {
                 selected: true
             },
             {
+                title: "Item 5",
+                selected: true
+            },
+            {
+                title: "Item 6",
+                selected: true
+            },
+            {
                 title: "Item 3"
             },
             {

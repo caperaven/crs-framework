@@ -28,7 +28,7 @@ describe("Dialog", () => {
         const bodyDiv = document.createElement("div");
         bodyDiv.textContent = "my content";
         await instance.show(null, bodyDiv, null, null);
-        assertEquals(instance.shadowRoot.querySelector("#body").textContent, "my content");
+        assertEquals(instance.querySelector('[slot="body"]').textContent, "my content");
     });
 
     it("should be able to show elements in the header", async () => {

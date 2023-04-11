@@ -5,6 +5,12 @@ export default class OptionsToolbar extends crsbinding.classes.ViewBase {
 
     preLoad() {
         this.setProperty("state", "off");
+        this.setProperty("selected", "off");
+    }
+
+    async toggleSelected(event) {
+        const selected = this.getProperty("selected");
+        this.setProperty("selected", selected === "on" ? "off" : "on");
     }
 
     async selectedChanged(event) {
