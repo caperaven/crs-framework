@@ -215,14 +215,20 @@ export class Dialog extends HTMLElement {
     async #setBody(body) {
         if (body == null) return;
 
-        const bodyElement = this.shadowRoot.querySelector("#body");
+        let bodyElement = this.querySelector("[slot=body]");
+
+        if(bodyElement == null) {
+            bodyElement = document.createElement("div");
+            bodyElement.setAttribute("slot", "body");
+            this.appendChild(bodyElement);
+        }
+
 
         if (typeof body == "string") {
             bodyElement.textContent = body;
             return;
         }
 
-        bodyElement.innerHTML = "";
         bodyElement.appendChild(body);
     }
 
@@ -249,16 +255,17 @@ export class Dialog extends HTMLElement {
         const popup = this.shadowRoot.querySelector(".popup");
 
         if (options?.target == null) {
-            return await crs.call("fixed_position", "set", {element: popup, position: "center-screen", margin: 10});
+            return await crs.call("fixed_position", "set", {element: popup, container: options?.parent, position: "center-screen", margin: 10});
         }
 
         await crs.call("fixed_layout", "set", {
             target: options.target,
             element: popup,
+            container: options.parent,
             at: options.position.toLowerCase(),
             anchor: options.anchor.toLowerCase(),
             margin: options.margin
-        })
+        });
     }
 
     /**
@@ -266,7 +273,8 @@ export class Dialog extends HTMLElement {
      * If the stack is empty, hide the dialog.
      */
     async #popStack() {
-        this.#stack.pop();
+        const removedStruct = this.#stack.pop();
+        removedStruct.options.closeCallback && removedStruct.options.closeCallback(removedStruct);
 
         if (this.#stack.length == 0) {
             return await crs.call("dialog", 'force_close', {});
