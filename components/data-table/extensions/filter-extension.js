@@ -1,4 +1,5 @@
 import {DataTableExtensions} from "./../data-table-extensions.js";
+import "./../../checkbox/checkbox.js";
 
 /**
  * @class ResizeExtension - add resize elements to the column headers.
@@ -129,6 +130,11 @@ export default class FilterExtension {
     }
 
     async #callback(args) {
+        if (args.action === "loaded") {
+            console.log("dialog loaded");
+            return;
+        }
+
         if (args.action === "accept") {
             // todo ... get the relevant data to apply a filter.
 
@@ -138,6 +144,10 @@ export default class FilterExtension {
                 this.#dialog = null;
             }
             return;
+        }
+
+        if (args.action === "show-hide-selection") {
+            console.log("show / hide selection")
         }
     }
 }

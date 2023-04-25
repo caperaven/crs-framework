@@ -1,1 +1,24 @@
-<h2>body</h2>
+<style>
+    .filter-top {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem;
+        border-bottom: var(--border);
+    }
+
+    .filter-top .title {
+        flex: 1;
+    }
+
+    .filter-top .link {
+        color: var(--blue);
+        cursor: pointer;
+        user-select: none;
+    }
+</style>
+
+<div class="filter-top">
+    <check-box data-nullable="true"></check-box>
+    <div class="title">Value</div>
+    <div class="link" data-action="show-hide-selection">See Selection</div>
+</div>

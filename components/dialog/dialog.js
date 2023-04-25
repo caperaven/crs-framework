@@ -327,6 +327,12 @@ export class Dialog extends HTMLElement {
         const struct = {header, main, footer, options};
         this.#stack.push(struct);
         await this.#showStruct(struct);
+
+        if (options.callback != null) {
+            struct.action = "loaded";
+            await options.callback(struct);
+            delete struct.action;
+        }
     }
 
     /**
