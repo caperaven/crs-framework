@@ -18,6 +18,12 @@
  * 1. Allow push and pop of stack.
  * 2. Allow custom header, footer and content.
  * 3. Stack can have a custom size and the container needs to resize accordingly.
+ *
+ * Action Features:
+ * If you have buttons that needs particular implementation, you can add it as a data-action attribute.
+ * The callback will be called where the action property defines the attribute value.
+ * This allows you to close the dialog with a close button but also do something like "apply"
+ * See the filter-extension in the data table for an example.
  */
 export class Dialog extends HTMLElement {
     #stack = [];
@@ -81,8 +87,31 @@ export class Dialog extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #click(event) {
-        const action = event.target.dataset.action;
-        this.#actions[action]?.(event);
+        const target = event.composedPath()[0];
+        const action = target.dataset.action;
+
+        // 1. no action to perform so get out
+        if (action == null) return;
+
+        // 2. this is a predefined action like close or resize
+        // do that and then get out
+        if (this.#actions[action] != null) {
+            return this.#actions[action](event);
+        }
+
+        // 3. this is a custom action so call the callback if it exists
+        const struct = this.#stack[this.#stack.length - 1];
+
+        struct.action = action;
+        struct.event = event;
+
+        try {
+            await struct.options.callback?.(struct);
+        }
+        finally {
+            delete struct.action;
+            delete struct.event;
+        }
     }
 
     /**
@@ -274,7 +303,8 @@ export class Dialog extends HTMLElement {
      */
     async #popStack() {
         const removedStruct = this.#stack.pop();
-        removedStruct.options.closeCallback && removedStruct.options.closeCallback(removedStruct);
+        removedStruct.action = "close";
+        removedStruct.options.callback && removedStruct.options.callback(removedStruct);
 
         if (this.#stack.length == 0) {
             return await crs.call("dialog", 'force_close', {});
@@ -282,6 +312,7 @@ export class Dialog extends HTMLElement {
 
         const struct = this.#stack[this.#stack.length - 1];
         await this.#showStruct(struct);
+        return true;
     }
 
     /**
@@ -304,7 +335,7 @@ export class Dialog extends HTMLElement {
      * @returns {Promise<void>}
      */
     async close() {
-        await this.#popStack();
+        return await this.#popStack();
     }
 }
 
