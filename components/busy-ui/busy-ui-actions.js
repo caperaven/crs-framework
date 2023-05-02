@@ -37,7 +37,8 @@ export class BusyUIActions {
      */
     static async show(step, context, process, item) {
         const element = await crs.dom.get_element(step.args.element, context, process, item);
-        const message = await crs.process.getValue(step.args.message, context, process, item);
+        const message = await crs.process.getValue(step.args.message || "", context, process, item);
+        const progress = await crs.process.getValue(step.args.progress || "", context, process, item);
 
         if (element == null) {
             return console.error(`busy-ui, unable to find element ${step.args.element}`);
@@ -53,9 +54,22 @@ export class BusyUIActions {
         // 2. create the busy indicator and add it to the element.
         const busyElement = document.createElement("busy-ui");
         busyElement.dataset.message = message;
+        busyElement.dataset.progress = progress;
 
         // 3. add the busy indicator to the element.
         element.appendChild(busyElement);
+    }
+
+    static async update(step, context, process, item) {
+        const element = await crs.dom.get_element(step.args.element, context, process, item);
+        const message = await crs.process.getValue(step.args.message || "", context, process, item);
+        const progress = await crs.process.getValue(step.args.progress || "", context, process, item);
+
+        const busyElement = element.querySelector("busy-ui");
+        if (busyElement != null) {
+            busyElement.dataset.message = message;
+            busyElement.dataset.progress = progress;
+        }
     }
 
     /**

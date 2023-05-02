@@ -27,6 +27,12 @@ export class BusyUi extends HTMLElement {
      * @returns {Promise<void>}
      */
     async connectedCallback() {
+
+        /**
+         * TODO: Andre. add the attribute update code and add the ... animation stuff.
+         */
+
+
         this.shadowRoot.innerHTML = await fetch(import.meta.url.replace(".js", ".html")).then(response => response.text());
         await this.load();
         await crs.call("component", "notify_ready", { element: this });
