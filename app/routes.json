@@ -148,6 +148,11 @@
             "title": "Combo Box",
             "hash": "#combobox",
             "view": "combobox"
+        },
+        {
+            "title": "busy-ui",
+            "hash": "#busy-ui",
+            "view": "busy-ui"
         }
     ]
 }
