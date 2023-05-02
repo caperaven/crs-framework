@@ -70,7 +70,9 @@ export class Checkbox extends HTMLElement {
      * @returns {Promise<void>}
      */
     async connectedCallback() {
-        this.#checked = this.dataset.nullable === "true" ? "mixed" : false;
+        const ariaCheckedAttribute = this.getAttribute("aria-checked");
+
+        this.#checked = (ariaCheckedAttribute === "true") || (this.dataset.nullable === "true" ? "mixed" : false);
 
         this.shadowRoot.innerHTML = await fetch(this.html).then(result => result.text());
         await this.load();
