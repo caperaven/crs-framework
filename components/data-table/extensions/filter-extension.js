@@ -171,6 +171,7 @@ export default class FilterExtension {
 
     #inflationFn(element, data) {
         element.dataset.value = data.value;
+        element.querySelector("check-box").setAttribute("aria-selected", data.selected);
         element.querySelector(".title").textContent = data.value;
         element.querySelector(".count").textContent = data.count;
     }
@@ -226,7 +227,8 @@ function UniqueObjectToFilterArray(uniqueValues) {
     for (const key of Object.keys(uniqueValues)) {
         filterArray.push({
             value: key,
-            count: uniqueValues[key]
+            count: uniqueValues[key],
+            selected: true
         })
     }
 

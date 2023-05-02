@@ -29,7 +29,7 @@ export default class DataTableViewModel extends crsbinding.classes.ViewBase {
                 quantity: "int:1:100",
                 isValid: "bool"
             },
-            count: 100
+            count: 10000
         });
 
         await crs.call("data_manager", "register", {
