@@ -86,8 +86,9 @@ describe ("busy-ui tests", async () => {
         assert(myElement.querySelector("busy-ui") === null);
     })
 
-    it("instance test" , async () => {
+    it("create new element" , async () => {
         let myElement = new ElementMock("div", "myElement");
+        assert(myElement.querySelector("busy-ui") === null);
 
         await crs.call("busy_ui", "show", {
             "element": myElement,
@@ -96,14 +97,30 @@ describe ("busy-ui tests", async () => {
         });
 
         let loader = myElement.querySelector("busy-ui");
-        loader.connectedCallback();
 
         assert(loader.dataset.message === message);
         assert(loader.dataset.progress === progress);
         assert(myElement.style.position === "relative");
+
+        await crs.call("busy_ui", "update", {
+            "element": myElement,
+            "message": "TESTING",
+            "progress": "More testing"
+        });
+
+        assert(loader.dataset.message === "TESTING");
+        assert(loader.dataset.progress === "More testing");
+        assert(myElement.style.position === "relative");
+
+
+        await crs.call("busy_ui", "hide", {
+            "element": myElement,
+        });
+
+        assert(myElement.querySelector("busy-ui") === null);
     });
 
-    it("instance append test" , async () => {
+    it("append existing element test" , async () => {
         let myElement = new ElementMock("div", "myElement");
         myElement.appendChild(instance);
         myElement.id = "my-element";
