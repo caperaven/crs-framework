@@ -14,6 +14,7 @@
  * <busy-ui data-message="hello world"></busy-ui>
  */
 export class BusyUi extends HTMLElement {
+
     /**
      * @constructor
      */
@@ -51,6 +52,8 @@ export class BusyUi extends HTMLElement {
             });
         })
     }
+
+
 }
 
 customElements.define("busy-ui", BusyUi);

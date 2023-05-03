@@ -7,12 +7,81 @@
         translate: -50% -50%;
         user-select: none;
         pointer-events: none;
+        text-align: center;
     }
+
+    #lblMessage {
+        text-align: center;
+        margin-top: 2.5rem;
+        margin-bottom: 0.5rem;
+        font-size: 2rem;
+        font-weight: normal;
+    }
+
+    .loading span {
+        width: 1rem;
+        height: 1rem;
+        margin: 0 2px;
+        background: var(--cl-text);
+        border-radius: 100%;
+        display: inline-block;
+        -webkit-animation: dots 1.5s infinite ease-in-out both;
+        animation: dots 1.5s infinite ease-in-out both;
+    }
+
+    .loading span:nth-child(1) {
+        background-color: var(--cl-text);
+        -webkit-animation-delay: -0.32s;
+        animation-delay: -0.32s;
+    }
+
+    .loading span:nth-child(2) {
+        background-color: var(--blue);
+        -webkit-animation-delay: -0.16s;
+        animation-delay: -0.16s;
+    }
+
+    .loading span:nth-child(3) {
+        background-color: var(--red);
+    }
+
+    @-webkit-keyframes dots {
+        0%, 80%, 100% {
+            -webkit-transform: scale(0.3);
+        }
+        40% {
+            -webkit-transform: scale(0.8);
+        }
+    }
+
+    @keyframes dots {
+        0%, 80%, 100% {
+            transform: scale(0.3);
+        }
+        40% {
+            transform: scale(0.8);
+        }
+    }
+
+    #stopBtn {
+        /*display: none;*/
+        opacity: 0;
+    }
+
+    #stopBtn[data-progress="Loading..."] {
+        /*display: block;*/
+        opacity: 1;
+    }
+
 
 
 </style>
 
 <div id="lblMessage"></div>
+<div class="loading">
+    <span></span>
+    <span></span>
+    <span></span>
+</div>
 <div id="lblProgress"></div>
-<button></button>
-
+<button id="stopBtn">Stop</button>
