@@ -14,6 +14,13 @@
  * <busy-ui data-message="hello world"></busy-ui>
  */
 export class BusyUi extends HTMLElement {
+    /**
+     * @method observedAttributes - the attributes to watch for changes
+     * @return {[string]}
+     */
+    static get observedAttributes() {
+        return ['data-progress'];
+    }
 
     /**
      * @constructor
@@ -33,7 +40,6 @@ export class BusyUi extends HTMLElement {
          * TODO: Andre. add the attribute update code and add the ... animation stuff.
          */
 
-
         this.shadowRoot.innerHTML = await fetch(import.meta.url.replace(".js", ".html")).then(response => response.text());
         await this.load();
         await crs.call("component", "notify_ready", { element: this });
@@ -52,7 +58,6 @@ export class BusyUi extends HTMLElement {
             });
         })
     }
-
 
 }
 
