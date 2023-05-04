@@ -142,22 +142,25 @@ export class Dialog extends HTMLElement {
      * @param struct
      */
     async #showStruct(struct) {
-        const {header, main, footer, options} = struct;
+        return new Promise(async resolve => {
+            const {header, main, footer, options} = struct;
 
-        await crs.call("component", "on_ready", {
-            element: this,
-            caller: this,
-            callback: async () => {
-                await this.#setHeader(header, options);
-                await this.#setFooter(footer);
-                await this.#setBody(main);
-                await this.#setOptions(options);
+            await crs.call("component", "on_ready", {
+                element: this,
+                caller: this,
+                callback: async () => {
+                    await this.#setHeader(header, options);
+                    await this.#setFooter(footer);
+                    await this.#setBody(main);
+                    await this.#setOptions(options);
 
-                // Set position is called after the content is rendered in the dialog.
-                requestAnimationFrame(async () => {
-                    this.#setPosition(options);
-                });
-            }
+                    // Set position is called after the content is rendered in the dialog.
+                    requestAnimationFrame(async () => {
+                        await this.#setPosition(options);
+                        resolve();
+                    });
+                }
+            });
         });
     }
 

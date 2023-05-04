@@ -1,5 +1,8 @@
 import {DataTableExtensions} from "./../data-table-extensions.js";
+import "./../../../src/actions/virtualization-actions.js";
 import "./../../checkbox/checkbox.js";
+
+const FILTER_EXTENSION_DATA_MANAGER = "filter-extension";
 
 /**
  * @class ResizeExtension - add resize elements to the column headers.
@@ -9,15 +12,12 @@ export default class FilterExtension {
     #settings;
     #table;
     #parent;
+    #currentField;
     #filterHandler = this.#filter.bind(this);
-
-    #lookupTable = {
-
-    }
-
+    #lookupTable = {}
     #callbackHandler = this.#callback.bind(this);
-
     #dialog = null;
+    #itemTemplate = null;
 
     /**
      * @constructor
@@ -30,6 +30,8 @@ export default class FilterExtension {
     }
 
     dispose(removeUI) {
+        this.#itemTemplate = null;
+        this.#currentField = null;
         this.#callbackHandler = null;
         this.#dialog = null;
         this.#table.removeClickHandler(".filter");
@@ -81,21 +83,8 @@ export default class FilterExtension {
      */
     async #filter(event) {
         const columnCellElement = event.composedPath()[1];
-        const field = columnCellElement.dataset.field;
-
-        if (this.#lookupTable[field] != null) {
-            // show lookup values for filter operation
-            await this.#showFilterOptions(columnCellElement, this.#lookupTable[field]);
-            return;
-        }
-
-        const dataManager = this.#table.dataManager;
-
-        const data = await crs.call("data_manager", "get_all", { manager: dataManager });
-        const uniqueValues = await crs.call("data_processing", "unique_values", { source: data, fields: [field] });
-
-        this.#lookupTable[field] = uniqueValues[field];
-        await this.#showFilterOptions(columnCellElement, uniqueValues[field]);
+        this.#currentField = columnCellElement.dataset.field;
+        await this.#showFilterOptions(columnCellElement);
     }
 
     /**
@@ -105,14 +94,16 @@ export default class FilterExtension {
      * @param filterOptions {array} - the filter options to show.
      * @returns {Promise<void>}
      */
-    async #showFilterOptions(relativeElement, filterOptions) {
+    async #showFilterOptions(relativeElement) {
         const headerUrl = import.meta.url.replace(".js", "/header.html");
         const bodyUrl = import.meta.url.replace(".js", "/body.html");
         const footerUrl = import.meta.url.replace(".js", "/footer.html");
+        const itemTemplateUrl = import.meta.url.replace(".js", "/item-template.html");
 
         const headerTemplate = await crs.call("html", "template_from_file", { url: headerUrl });
         const bodyTemplate = await crs.call("html", "template_from_file", { url: bodyUrl });
         const footerTemplate = await crs.call("html", "template_from_file", { url: footerUrl });
+        this.#itemTemplate = await crs.call("html", "template_from_file", { url: itemTemplateUrl });
 
         this.#dialog = await crs.call("dialog", "show", {
             target: relativeElement,
@@ -131,7 +122,7 @@ export default class FilterExtension {
 
     async #callback(args) {
         if (args.action === "loaded") {
-            console.log("dialog loaded");
+            await this.#loadFilterOptions();
             return;
         }
 
@@ -143,11 +134,103 @@ export default class FilterExtension {
             if (isNotDone === false) {
                 this.#dialog = null;
             }
+
             return;
+        }
+
+        if (args.action === "close") {
+            this.#currentField = null;
+            await this.#disposeManagers();
         }
 
         if (args.action === "show-hide-selection") {
             console.log("show / hide selection")
         }
     }
+
+    async #createDataManager(data) {
+        return await crs.call("data_manager", "register", {
+            manager: FILTER_EXTENSION_DATA_MANAGER,
+            id_field: "id",
+            type: "memory",
+            records: data
+        })
+    }
+
+    async #disposeManagers() {
+        await crs.call("data_manager", "dispose", {
+            manager: FILTER_EXTENSION_DATA_MANAGER
+        });
+
+        const container = await this.#dialog.querySelector("#filter-list");
+
+        await crs.call("virtualization", "disable", {
+            element: container
+        });
+    }
+
+    #inflationFn(element, data) {
+        element.dataset.value = data.value;
+        element.querySelector("check-box").setAttribute("aria-selected", data.selected);
+        element.querySelector(".title").textContent = data.value;
+        element.querySelector(".count").textContent = data.count;
+    }
+
+    async #loadFilterOptions() {
+        const message = await crs.call("translations", "get", { key: "system.loadingMessage" });
+        const container = await this.#dialog.querySelector("#filter-list");
+
+        // Show the busy UI message while processing the data
+        await crs.call("busy_ui", "show", { // JHR: todo - make this use a animation frame so the UI updates before the rest of the code runs.
+            "element": container,
+            "message": message,
+        });
+
+        // Check if we have already fetched the data for this field.
+        // If we already have it use that.
+        // If not fetch it and store it in the lookup table.
+        let displayData = this.#lookupTable[this.#currentField];
+        if (displayData == null) {
+            const dataManager = this.#table.dataManager;
+            const data = await crs.call("data_manager", "get_all", { manager: dataManager });
+            const uniqueValues = await crs.call("data_processing", "unique_values", { source: data, fields: [this.#currentField] });
+
+            // the unique values is an object, but we want to transform it into an array for the virtualization
+            this.#lookupTable[this.#currentField] = UniqueObjectToFilterArray(uniqueValues[this.#currentField]);
+            displayData = this.#lookupTable[this.#currentField];
+        }
+
+        // Create the data manager used for the virtualization
+        await this.#createDataManager(displayData);
+
+
+        // Hide the busy UI message
+        await crs.call("busy_ui", "hide", {
+            "element": container
+        });
+
+        // Create the virtualization
+        await crs.call("virtualization", "enable", {
+            element: container,
+            manager: FILTER_EXTENSION_DATA_MANAGER,
+            itemSize: 32,
+            template: this.#itemTemplate,
+            inflation: this.#inflationFn
+        });
+
+    }
+}
+
+function UniqueObjectToFilterArray(uniqueValues) {
+    const filterArray = [];
+
+    for (const key of Object.keys(uniqueValues)) {
+        filterArray.push({
+            value: key,
+            count: uniqueValues[key],
+            selected: true
+        })
+    }
+
+    return filterArray;
 }

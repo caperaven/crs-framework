@@ -80,6 +80,7 @@
 
         window.addEventListener("load", async (event) => {
             import ("./packages/crs-process-api/action-systems/data-processing-actions.js");
+            import ("./components/busy-ui/busy-ui-actions.js");
 
             await crs.modules.enableBinding([
                 ["data-grid", "/components/data-grid/data-grid.js"],
@@ -98,6 +99,13 @@
                 id: "html",
                 parser: HTMLParser,
                 providers: []
+            })
+
+            await crs.call("translations", "add", {
+                "context": "system",
+                "translations": {
+                    "loadingMessage": "Loading..."
+                }
             })
 
             document.viewModel = new IndexViewModel(document.body);
