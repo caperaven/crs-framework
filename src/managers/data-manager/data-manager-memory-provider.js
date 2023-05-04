@@ -145,6 +145,42 @@ export class DataManagerMemoryProvider extends BaseDataManager {
 
         return {id, index, changes};
     }
+
+    setSelectedIndexes(indexes, selected) {
+        for (const index of indexes) {
+            this.#records[index]._selected = selected;
+        }
+    }
+
+    setSelectedIds(ids, selected) {
+        for (const id of ids) {
+            const index = this.#records.findIndex(item => item[this.idField] == id);
+            this.#records[index]._selected = selected;
+        }
+    }
+
+    getSelected() {
+        return this.#records.filter(item => item._selected);
+    }
+
+    toggleSelectedIndexes(indexes) {
+        for (const index of indexes) {
+            this.#records[index]._selected = !this.#records[index]._selected;
+        }
+    }
+
+    toggleSelectedIds(ids) {
+        for (const id of ids) {
+            const index = this.#records.findIndex(item => item[this.idField] == id);
+            this.#records[index]._selected = !this.#records[index]._selected;
+        }
+    }
+
+    setSelectedAll(selected) {
+        for (const record of this.#records) {
+            record._selected = selected;
+        }
+    }
 }
 
 

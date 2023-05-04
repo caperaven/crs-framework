@@ -1,6 +1,7 @@
 import "./../../src/actions/virtualization-actions.js";
 import "./../../test/test-data.js";
 import "../../src/managers/data-manager/data-manager-actions.js";
+import "../../components/checkbox/checkbox.js";
 
 export default class Virtualization extends crsbinding.classes.ViewBase {
     async connectedCallback() {
@@ -33,7 +34,8 @@ export default class Virtualization extends crsbinding.classes.ViewBase {
     }
 
     #inflationFn(element, data) {
-        element.textContent = data.code;
+        element.querySelector("check-box").checked = data._selected;
+        element.querySelector("div").textContent = data.code;
     }
 
     debug() {

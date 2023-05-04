@@ -25,9 +25,17 @@
 <h2>${title}</h2>
 
 <template id="item-template">
-    <li></li>
+    <li>
+        <check-box></check-box>
+        <div></div>
+    </li>
 </template>
 
+<div>
+    <div class="toolbar">
+        <check-box aria-checked="false"></check-box>
+    </div>
+</div>
 <ul ref="ul"></ul>
 
 <button click.call="debug">debug</button>
