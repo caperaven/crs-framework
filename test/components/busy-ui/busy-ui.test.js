@@ -132,21 +132,31 @@ describe ("busy-ui tests", async () => {
             "progress": progress
         });
 
+        instance.attributeChangedCallback("data-message", message, message);
+        instance.attributeChangedCallback("data-progress", progress, progress);
+
         assert(instance.shadowRoot.querySelector("#lblMessage").innerText === message);
         assert(instance.dataset.message === message);
         assert(instance.dataset.progress === progress);
         assert(myElement.style.position === "relative");
+        assert(instance.shadowRoot.querySelector("#lblMessage").innerText === message);
+        assert(instance.shadowRoot.querySelector("#lblProgress").innerText === progress);
 
 
         await crs.call("busy_ui", "update", {
             "element": myElement,
-            "message": "TESTING",
-            "progress": "More testing"
+            "message": "updating",
+            "progress": "loaded 50 out of 100"
         });
 
-        assert(instance.dataset.message === "TESTING");
-        assert(instance.dataset.progress === "More testing");
+        instance.attributeChangedCallback("data-message", message, "updating");
+        instance.attributeChangedCallback("data-progress", progress, "loaded 50 out of 100");
+
+        assert(instance.dataset.message === "updating");
+        assert(instance.dataset.progress === "loaded 50 out of 100");
         assert(myElement.style.position === "relative");
+        assert(instance.shadowRoot.querySelector("#lblMessage").innerText === "updating");
+        assert(instance.shadowRoot.querySelector("#lblProgress").innerText === "loaded 50 out of 100");
 
 
         await crs.call("busy_ui", "hide", {
