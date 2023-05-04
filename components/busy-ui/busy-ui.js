@@ -14,6 +14,13 @@
  * <busy-ui data-message="hello world"></busy-ui>
  */
 export class BusyUi extends HTMLElement {
+    /**
+     * @method observedAttributes - the attributes to watch for changes
+     * @return {[string]}
+     */
+    static get observedAttributes() {
+        return ['data-progress'];
+    }
 
     /**
      * @constructor
@@ -42,9 +49,25 @@ export class BusyUi extends HTMLElement {
             requestAnimationFrame(async () => {
                 // load resources
                 this.shadowRoot.querySelector("#lblMessage").innerText = this.dataset.message;
+                this.shadowRoot.querySelector("#lblProgress").innerText = this.dataset.progress;
                 resolve();
             });
         })
+    }
+
+    /**
+     * @method attributeChangedCallback - called when an attribute changes
+     * @return {Promise<void>}
+     */
+    async attributeChangedCallback(name, newVal, oldVal) {
+        const lblMessage = this.shadowRoot.querySelector("#lblMessage");
+        const lblProgress = this.shadowRoot.querySelector("#lblProgress");
+        if (lblMessage) {
+            lblMessage.innerText = this.dataset.message;
+        }
+        if (lblProgress) {
+            lblProgress.innerText = this.dataset.progress;
+        }
     }
 
 }
