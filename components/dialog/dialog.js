@@ -331,7 +331,7 @@ export class Dialog extends HTMLElement {
         this.#stack.push(struct);
         await this.#showStruct(struct);
 
-        if (options?.callback != null) {
+        if (options?.callback != null && options.callback !== false) {
             struct.action = "loaded";
             await options.callback(struct);
             delete struct.action;
