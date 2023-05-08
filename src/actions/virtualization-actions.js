@@ -28,7 +28,7 @@ export class VirtualizationActions {
     }
 
     static async disable(step, context, process, item) {
-        const element = await context.getElement(step, process, item);
+        const element = await crs.dom.get_element(step, process, item);
 
         if (element.__virtualizationManager != null) {
             element.__virtualizationManager.dispose();
