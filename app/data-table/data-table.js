@@ -2,6 +2,8 @@ import "./../../components/data-table/data-table-actions.js";
 import "./../../components/page-toolbar/page-toolbar.js";
 import "../../src/managers/data-manager/data-manager-actions.js";
 import "./../../test/test-data.js";
+import "./../../components/dialog/dialog-actions.js";
+import "./../../packages/crs-process-api/action-systems/html-actions.js";
 
 export default class DataTableViewModel extends crsbinding.classes.ViewBase {
     async connectedCallback() {
@@ -27,7 +29,7 @@ export default class DataTableViewModel extends crsbinding.classes.ViewBase {
                 quantity: "int:1:100",
                 isValid: "bool"
             },
-            count: 100
+            count: 10000
         });
 
         await crs.call("data_manager", "register", {

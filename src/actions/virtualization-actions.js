@@ -18,7 +18,7 @@ export class VirtualizationActions {
      * @returns {Promise<void>}
      */
     static async enable(step, context, process, item) {
-        const element = await crs.dom.get_element(step, process, item);
+        const element = await crs.dom.get_element(step, context, process, item);
         const itemSize = await crs.process.getValue(step.args.itemSize, context, process, item);
         const template = await crs.process.getValue(step.args.template, context, process, item);
         const inflationFn = await crs.process.getValue(step.args.inflation, context, process, item);
@@ -28,7 +28,7 @@ export class VirtualizationActions {
     }
 
     static async disable(step, context, process, item) {
-        const element = await crs.dom.get_element(step, process, item);
+        const element = await crs.dom.get_element(step, context, process, item);
 
         if (element.__virtualizationManager != null) {
             element.__virtualizationManager.dispose();

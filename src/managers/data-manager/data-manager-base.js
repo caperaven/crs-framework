@@ -70,6 +70,7 @@ export class BaseDataManager {
      * @method dispose - This method is called when the data manager is no longer needed. It should be used to clean up any resources that are being used.
      */
     dispose() {
+        this.#id = null;
         this.#idField = null;
         this.#events = null;
         this.#count = null;
