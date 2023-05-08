@@ -9,7 +9,9 @@ export class CollectionSelectionManager {
     #containerElement;
     #masterQuery;
     #selectionQuery;
+    #groupQuery;
     #manager;
+    #clickHandler = this.#click.bind(this);
 
     /**
      * @constructor
@@ -18,14 +20,18 @@ export class CollectionSelectionManager {
      * @param selectionQuery - the query that will be used to determine if an element is a selection element (select one)
      * @param manager - the data manager that will be used to update the selection state
      */
-    constructor(element, masterQuery, selectionQuery, manager) {
+    constructor(element, masterQuery, selectionQuery, groupQuery, manager) {
         this.#containerElement = element;
         this.#masterQuery = masterQuery;
         this.#selectionQuery = selectionQuery;
+        this.#groupQuery = groupQuery;
         this.#manager = manager;
+        this.#containerElement.addEventListener("click", this.#clickHandler);
     }
 
     dispose() {
+        this.#containerElement.removeEventListener("click", this.#clickHandler);
+        this.#clickHandler = null;
         this.#containerElement = null;
         this.#masterQuery = null;
         this.#selectionQuery = null;
@@ -44,5 +50,35 @@ export class CollectionSelectionManager {
     #isGroupElement(element) {
         // if you select a element and it is a group checkbox then use the "group_selected" instead of the "selected"
         return element.dataset.group !== undefined;
+    }
+
+    async #click(event) {
+        const target = event.composedPath()[0];
+
+        if (this.#isMasterElement(target)) {
+            return await this.#selectedAll(target.checked);
+        }
+    }
+
+    /**
+     * Mark all the records as selected or not selected based on the checked value
+     * @param checked {boolean} - true if all records should be selected, false if all records should be unselected
+     */
+    async #selectedAll(checked) {
+
+    }
+
+    /**
+     * Mark all the records for a group
+     * @param groupId
+     * @param checked
+     * @returns {Promise<void>}
+     */
+    async #selectedGroup(element, checked) {
+
+    }
+
+    async #selected(element, checked) {
+
     }
 }

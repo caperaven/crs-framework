@@ -22,6 +22,15 @@ import {CHANGE_TYPES, MANAGER_TYPES} from "./data-manager-types.js";
  * - Get all indexes from a data manager
  * - Get all records from a data manager
  */
+
+
+/**
+ * JHR: TEMP - Think notes
+ * - on a group perspective, mark each record with a "_groupId" property with the group id
+ * - on marking a record as selected, if that record has a "_groupId" mark the group's (perspective object) based on the group count.
+ * In other words if all the records for that group is selected the mark the group as selected, or not selected or mixed.
+ */
+
 class DataManagerActions {
     /**
      * @method perform - Perform an action on a data manager. Main interface for working with data managers via the process-api

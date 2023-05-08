@@ -7,10 +7,11 @@ export class CollectionSelectionActions {
 
     static async enable(step, context, process, item) {
         const element = await crs.dom.get_element(step, context, process, item);
-        const query = await crs.process.getValue(step.args.query, context, process, item);
-        const master = await crs.process.getValue(step.args.master, context, process, item);
+        const selectionQuery = await crs.process.getValue(step.args.selectionQuery, context, process, item);
+        const masterQuery = await crs.process.getValue(step.args.masterQuery, context, process, item);
+        const groupQuery = await crs.process.getValue(step.args.groupQuery, context, process, item);
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
-        element.__collectionSelectionManager = new CollectionSelectionManager(element, master, query, manager);
+        element.__collectionSelectionManager = new CollectionSelectionManager(element, master, query, groupQuery, manager);
     }
 
     static async disable(step, context, process, item) {

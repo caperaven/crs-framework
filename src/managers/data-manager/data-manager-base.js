@@ -29,7 +29,8 @@
 export class BaseDataManager {
     #id;
     #idField;
-    #count;
+    #count = 0;
+    #selectedCount = 0;
     #events = [];
 
     /**
@@ -38,6 +39,14 @@ export class BaseDataManager {
      */
     get count() {
         return this.#count;
+    }
+
+    get selectedCount() {
+        return this.#selectedCount;
+    }
+
+    set selectedCount(newValue) {
+        this.#selectedCount = newValue;
     }
 
     /**

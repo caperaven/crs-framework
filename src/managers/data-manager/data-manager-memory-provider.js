@@ -157,6 +157,8 @@ export class DataManagerMemoryProvider extends BaseDataManager {
             const index = this.#records.findIndex(item => item[this.idField] == id);
             this.#records[index]._selected = selected;
         }
+
+        this.selectedCount += selected ? ids.length : -ids.length;
     }
 
     getSelected() {
