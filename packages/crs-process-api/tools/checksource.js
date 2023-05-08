@@ -188,8 +188,8 @@ console.log("--------- check version: 1.1.0 ---------");
 if (Deno.args.length > 0) {
     console.log("running commandline")
     const testFilePath = Deno.mainModule;
-    const testDir = path.dirname(testFilePath);
-    const folder = path.fromFileUrl(testDir.replace(Deno.args[0], ""));
+    const testDir = (path.dirname(testFilePath)).replace(Deno.args[0], "");
+    const folder = path.fromFileUrl(testDir);
 
     const ignore = (Deno.args[1] || "").split(",").map(item => item.trim());
     const files = await getFiles(folder, ignore);
