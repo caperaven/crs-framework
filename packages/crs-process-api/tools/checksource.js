@@ -186,3 +186,5 @@ if (Deno.args.length > 0) {
         console.log(result);
     }
 }
+
+console.log("--------- check version: 1.0.0 ---------");
