@@ -30,11 +30,15 @@ export default class FilterExtension {
     }
 
     dispose(removeUI) {
+        this.#settings = null;
+        this.#table = null;
         this.#itemTemplate = null;
         this.#currentField = null;
         this.#callbackHandler = null;
         this.#dialog = null;
         this.#table.removeClickHandler(".filter");
+        this.#filterHandler = null;
+        this.#lookupTable = null;
 
         if (this.#parent) {
             this.#parent = null;
@@ -46,9 +50,6 @@ export default class FilterExtension {
                 filterElement.remove();
             }
         }
-
-        this.#filterHandler = null;
-        this.#lookupTable = null;
 
         return DataTableExtensions.FILTER.path;
     }

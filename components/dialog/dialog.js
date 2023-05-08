@@ -70,14 +70,7 @@ export class Dialog extends HTMLElement {
         this.shadowRoot.removeEventListener("click", this.#clickHandler);
         this.#clickHandler = null;
         await crsbinding.translations.delete("dialog");
-    }
-
-    /**
-     * This is called externally to dispose of the component.
-     * clean all internal data and remove all event listeners.
-     */
-    dispose() {
-        this.#stack = null;
+        // this.#stack = null;
         this.remove();
     }
 
@@ -331,7 +324,7 @@ export class Dialog extends HTMLElement {
         this.#stack.push(struct);
         await this.#showStruct(struct);
 
-        if (options?.callback != null) {
+        if (options?.callback != null && options.callback !== false) {
             struct.action = "loaded";
             await options.callback(struct);
             delete struct.action;

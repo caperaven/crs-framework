@@ -33,6 +33,14 @@ export default class Virtualization extends crsbinding.classes.ViewBase {
         });
     }
 
+    async disconnectedCallback() {
+        await crs.call("virtualization", "disable", {
+            element: this.ul
+        });
+
+        await super.disconnectedCallback();
+    }
+
     #inflationFn(element, data) {
         element.querySelector("check-box").checked = data._selected;
         element.querySelector("div").textContent = data.code;
