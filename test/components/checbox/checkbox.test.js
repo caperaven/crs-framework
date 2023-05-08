@@ -51,8 +51,8 @@ describe ("checkbox", async () => {
 
     it("tristate state click", async () => {
         await createInstance(true);
-        assertEquals(instance.getAttribute("aria-checked"), "mixed");
-        assertEquals(instance.shadowRoot.querySelector("#btnCheck").innerText, "check-box-mixed");
+        assertEquals(instance.getAttribute("aria-checked"), "null");
+        assertEquals(instance.shadowRoot.querySelector("#btnCheck").innerText, "check-box-null");
 
         instance.shadowRoot.dispatchEvent(new EventMock("click"));
         assertEquals(instance.getAttribute("aria-checked"), "true");
@@ -62,6 +62,24 @@ describe ("checkbox", async () => {
         assertEquals(instance.getAttribute("aria-checked"), "false");
         assertEquals(instance.shadowRoot.querySelector("#btnCheck").innerText, "check-box-blank");
     });
+
+    it ("mixed state click", async () => {
+        await createInstance(false);
+        assertEquals(instance.getAttribute("aria-checked"), "false");
+
+        instance.shadowRoot.dispatchEvent(new EventMock("click"));
+        assertEquals(instance.getAttribute("aria-checked"), "true");
+
+        instance.shadowRoot.dispatchEvent(new EventMock("click"));
+        assertEquals(instance.getAttribute("aria-checked"), "false");
+
+        instance.checked = "mixed";
+        assertEquals(instance.getAttribute("aria-checked"), "mixed");
+        assertEquals(instance.shadowRoot.querySelector("#btnCheck").innerText, "check-box-mixed");
+
+        instance.shadowRoot.dispatchEvent(new EventMock("click"));
+        assertEquals(instance.getAttribute("aria-checked"), "true");
+    })
 })
 
 
