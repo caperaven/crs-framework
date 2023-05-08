@@ -83,6 +83,7 @@ export class BaseDataManager {
         this.#idField = null;
         this.#events = null;
         this.#count = null;
+        this.#selectedCount = null;
     }
 
     /**

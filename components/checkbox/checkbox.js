@@ -151,7 +151,7 @@ export class Checkbox extends HTMLElement {
             true: "false",
             false: nullable ? null : "true",
             null: "true",
-            mixed: 'true'
+            mixed: "true"
         }[state];
 
         this.#setState(nextState);

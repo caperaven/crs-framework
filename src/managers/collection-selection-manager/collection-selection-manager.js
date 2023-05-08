@@ -36,6 +36,7 @@ export class CollectionSelectionManager {
         this.#masterQuery = null;
         this.#selectionQuery = null;
         this.#manager = null;
+        this.#groupQuery = null;
         return null;
     }
 
