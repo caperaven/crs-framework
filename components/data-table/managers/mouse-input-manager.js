@@ -20,6 +20,7 @@ export class MouseInputManager {
         this.#table = null;
         this.#clickHandler = null;
         this.#dblclickHandler = null;
+        this.#lookupTable = null;
         return null;
     }
 
