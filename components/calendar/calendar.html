@@ -17,6 +17,7 @@
         grid-template-rows: auto 1fr;
         user-select: none;
         height: 100%;
+        grid-row-gap: 0.75rem;
     }
 
     :focus{
@@ -25,12 +26,13 @@
 
     #calendar-toolbar {
         display: flex;
-        justify-content: space-between;
+        justify-content: center;
         align-items: center;
         height: var(--size);
         border:none;
         color: var(--grey);
     }
+
     #calendar-toolbar #month, #year, #previous-month, #next-month {
         display: inherit;
         justify-content: center;
@@ -39,10 +41,19 @@
         height: var(--size);
     }
 
+
     #calendar-toolbar #previous-month, #next-month {
         width: var(--size);
         cursor: pointer;
         border: none;
+    }
+
+    #calendar-toolbar #previous-month{
+        margin-right: 1.2rem;
+    }
+
+    #calendar-toolbar #next-month{
+        margin-left: 1.2rem;
     }
 
     #calendar-toolbar #month, #year {
@@ -67,7 +78,7 @@
     }
 
     #calendar-toolbar #month {
-        width: 8rem;
+        width: 7.5rem;
     }
 
     #calendar-toolbar #year:after,#month:after {
@@ -91,6 +102,10 @@
         rotate: 90deg;
     }
 
+    #perspective{
+        width: 328px;
+        height: 328px;
+    }
 </style>
 
 <svg style="display: none" viewBox="0 0 24 24">
@@ -117,7 +132,7 @@
     <button id="next-month" aria-label="Next month" tooltip="Next" click.call="goToNext"><svg id="chevron-right"><use href="#chevron-up"></use></svg></button>
 </div>
 
-<perspective-element view.bind="selectedView" ctx.once="contextId" data-folder="./components/calendar/" view-loaded.call="viewLoaded" ref="perspectiveContainer">
+<perspective-element id="perspective" view.bind="selectedView" ctx.once="contextId" data-folder="./components/calendar/" view-loaded.call="viewLoaded" ref="perspectiveContainer">
     <template data-id="default" data-default="true">
         <template src="./templates/days.html"></template>
     </template>
