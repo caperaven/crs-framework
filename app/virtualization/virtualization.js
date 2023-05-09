@@ -35,8 +35,8 @@ export default class Virtualization extends crsbinding.classes.ViewBase {
 
         await crs.call("collection_selection", "enable", {
             element: this._element,
-            master_query: "master-checkbox",
-            selection_query: 'role="checkbox"',
+            master_query: "#master-checkbox",
+            selection_query: '[role="checkbox"]',
             manager: "my_data"
         });
     }

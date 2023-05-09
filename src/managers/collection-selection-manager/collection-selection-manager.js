@@ -54,10 +54,17 @@ export class CollectionSelectionManager {
     }
 
     async #click(event) {
-        const target = event.composedPath()[0];
+        const checkbox = getCheckbox(event.composedPath()[0]);
+        const checked = checkbox.getAttribute("aria-checked") === "true";
+        const id = checkbox.dataset.id;
+        const index = checkbox.dataset.index;
 
-        if (this.#isMasterElement(target)) {
-            return await this.#selectedAll(target.checked);
+        if (this.#isMasterElement(checkbox)) {
+            return await this.#selectedAll(checked);
+        }
+
+        if (this.#isSelectionElement(checkbox)) {
+            return await this.#selected(checkbox, id, index, checked);
         }
     }
 
@@ -66,7 +73,7 @@ export class CollectionSelectionManager {
      * @param checked {boolean} - true if all records should be selected, false if all records should be unselected
      */
     async #selectedAll(checked) {
-
+        console.log("selected all", checked);
     }
 
     /**
@@ -76,10 +83,20 @@ export class CollectionSelectionManager {
      * @returns {Promise<void>}
      */
     async #selectedGroup(element, checked) {
-
+        console.log("selected group", element.dataset.group, checked);
     }
 
-    async #selected(element, checked) {
-
+    async #selected(element, id, index, checked) {
+        console.log("selected", id, index, checked);
     }
+}
+
+function getCheckbox(element) {
+    if (element.matches("check-box")) {
+        return element;
+    }
+
+    const shadowRoot = element.getRootNode();
+    const checkbox = shadowRoot.host;
+    return checkbox;
 }
