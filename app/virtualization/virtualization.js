@@ -2,6 +2,7 @@ import "./../../src/actions/virtualization-actions.js";
 import "./../../test/test-data.js";
 import "../../src/managers/data-manager/data-manager-actions.js";
 import "../../components/checkbox/checkbox.js";
+import "../../src/actions/collection-selection-actions.js";
 
 export default class Virtualization extends crsbinding.classes.ViewBase {
     async connectedCallback() {
@@ -31,6 +32,13 @@ export default class Virtualization extends crsbinding.classes.ViewBase {
             template: itemTemplate,
             inflation: this.#inflationFn
         });
+
+        await crs.call("collection_selection", "enable", {
+            element: this._element,
+            master_query: "master-checkbox",
+            selection_query: 'role="checkbox"',
+            manager: "my_data"
+        });
     }
 
     async disconnectedCallback() {
@@ -42,7 +50,7 @@ export default class Virtualization extends crsbinding.classes.ViewBase {
     }
 
     #inflationFn(element, data) {
-        element.querySelector("check-box").checked = data._selected;
+        element.querySelector("check-box").checked = data._selected || false;
         element.querySelector("div").textContent = data.code;
     }
 
