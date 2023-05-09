@@ -168,6 +168,7 @@ export class DialogActions {
      */
     static async force_close(step, context, process, item) {
         if (globalThis.dialog) {
+            globalThis.dialog.remove();
             globalThis.dialog = globalThis.dialog.dispose();
         }
 
