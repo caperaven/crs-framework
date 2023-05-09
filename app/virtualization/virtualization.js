@@ -50,7 +50,9 @@ export default class Virtualization extends crsbinding.classes.ViewBase {
     }
 
     #inflationFn(element, data) {
-        element.querySelector("check-box").checked = data._selected || false;
+        const checkbox = element.querySelector("check-box");
+        checkbox.checked = data._selected || false;
+        checkbox.dataset.index = data._index;
         element.querySelector("div").textContent = data.code;
     }
 

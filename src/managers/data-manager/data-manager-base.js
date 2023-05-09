@@ -93,6 +93,10 @@ export class BaseDataManager {
      */
     setRecords(records) {
         this.#count = records?.length || 0;
+
+        for(let i = 0; i < records.length; i++) {
+            records[i]._index = i;
+        }
     }
 
     /**
