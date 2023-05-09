@@ -58,8 +58,7 @@ export class CollectionSelectionManager {
 
     async #click(event) {
         const checkbox = getCheckbox(event.composedPath()[0]);
-
-        // JHR: TODO make sure you are clicking on a actual checkbox
+        if (checkbox == null) return;
 
         const checked = checkbox.getAttribute("aria-checked") === "true";
         const id = checkbox.dataset.id;
@@ -124,10 +123,10 @@ function getCheckbox(element) {
     }
 
     const shadowRoot = element.getRootNode();
-    const checkbox = shadowRoot.host;
+    if (shadowRoot.host == null) return null;
 
-    if (checkbox.matches("check-box")) {
-        return checkbox;
+    if (shadowRoot.host.matches("check-box")) {
+        return shadowRoot.host;
     }
 
     return null;
