@@ -11,6 +11,7 @@ export class CollectionSelectionManager {
     #selectionQuery;
     #groupQuery;
     #manager;
+    #virtualizedElement;
     #clickHandler = this.#click.bind(this);
 
     /**
@@ -20,12 +21,13 @@ export class CollectionSelectionManager {
      * @param selectionQuery - the query that will be used to determine if an element is a selection element (select one)
      * @param manager - the data manager that will be used to update the selection state
      */
-    constructor(element, masterQuery, selectionQuery, groupQuery, manager) {
+    constructor(element, masterQuery, selectionQuery, groupQuery, manager, virtualizedElement) {
         this.#containerElement = element;
         this.#masterQuery = masterQuery;
         this.#selectionQuery = selectionQuery;
         this.#groupQuery = groupQuery;
         this.#manager = manager;
+        this.#virtualizedElement = virtualizedElement;
         this.#containerElement.addEventListener("click", this.#clickHandler);
     }
 
@@ -37,6 +39,7 @@ export class CollectionSelectionManager {
         this.#selectionQuery = null;
         this.#manager = null;
         this.#groupQuery = null;
+        this.#virtualizedElement = null;
         return null;
     }
 
@@ -76,7 +79,11 @@ export class CollectionSelectionManager {
         await crs.call("data_manager", "set_select_all", {
             manager: this.#manager,
             selected
-        })
+        });
+
+        if (this.#virtualizedElement) {
+            await this.#virtualizedElement.__virtualizationManager.refreshCurrent();
+        }
     }
 
     /**

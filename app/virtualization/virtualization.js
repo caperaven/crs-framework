@@ -37,6 +37,7 @@ export default class Virtualization extends crsbinding.classes.ViewBase {
             element: this._element,
             master_query: "#master-checkbox",
             selection_query: '[role="checkbox"]',
+            virtualized_element: this.ul,
             manager: "my_data"
         });
     }

@@ -11,7 +11,9 @@ export class CollectionSelectionActions {
         const masterQuery = await crs.process.getValue(step.args.master_query, context, process, item);
         const groupQuery = await crs.process.getValue(step.args.group_query, context, process, item);
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
-        element.__collectionSelectionManager = new CollectionSelectionManager(element, masterQuery, selectionQuery, groupQuery, manager);
+        const virtualizedElement = await crs.process.getValue(step.args.virtualized_element, context, process, item);
+
+        element.__collectionSelectionManager = new CollectionSelectionManager(element, masterQuery, selectionQuery, groupQuery, manager, virtualizedElement);
     }
 
     static async disable(step, context, process, item) {
