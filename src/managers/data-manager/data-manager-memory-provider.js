@@ -189,7 +189,7 @@ export class DataManagerMemoryProvider extends BaseDataManager {
             record._selected = selected;
         }
 
-        this.selectedCount += selected == true ? this.#records.length : -this.#records.length;
+        this.selectedCount = selected == true ? this.#records.length : 0;
     }
 }
 
