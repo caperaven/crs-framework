@@ -951,6 +951,13 @@ class DataManagerActions {
         const callback = await crs.process.getValue(step.args.callback, context, process, item);
         return globalThis.dataManagers[manager].removeChangeCallback(callback);
     }
+
+    static async is_all_selected(step, context, process, item) {
+        const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return;
+
+        return globalThis.dataManagers[manager].isAllSelected;
+    }
 }
 
 crs.intent.data_manager = DataManagerActions;

@@ -105,6 +105,13 @@ export class CollectionSelectionManager {
             indexes,
             selected
         })
+
+        const isAllSelected = await crs.call("data_manager", "is_all_selected", {
+            manager: this.#manager
+        });
+
+        const masterElement = this.#containerElement.querySelector(this.#masterQuery);
+        masterElement.checked = isAllSelected;
     }
 }
 

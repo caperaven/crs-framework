@@ -41,12 +41,26 @@ export class BaseDataManager {
         return this.#count;
     }
 
+    /**
+     * @property selectedCount {number} - The number of records that are currently selected
+     * @returns {number}
+     */
     get selectedCount() {
         return this.#selectedCount;
     }
 
     set selectedCount(newValue) {
         this.#selectedCount = newValue;
+    }
+
+    /**
+     * @property isAllSelected {boolean} - Indicates if all of the records in the data manager are selected
+     * @returns {boolean}
+     */
+    get isAllSelected() {
+        if (this.selectedCount === 0) return false;
+        if (this.selectedCount === this.count) return true;
+        return "mixed";
     }
 
     /**

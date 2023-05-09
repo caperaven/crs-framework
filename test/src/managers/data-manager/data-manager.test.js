@@ -273,10 +273,24 @@ describe("data manager tests", () => {
     });
 
     it ("set_selected", async() => {
+        let isAllSelected;
+
+        isAllSelected = await crs.call("data_manager", "is_all_selected", {
+            manager: "store"
+        });
+
+        assertEquals(isAllSelected, false);
+
         await crs.call("data_manager", "set_selected", {
             manager: "store",
             ids: ["1000", "1001"]
         })
+
+        isAllSelected = await crs.call("data_manager", "is_all_selected", {
+            manager: "store"
+        });
+
+        assertEquals(isAllSelected, true);
 
         let selected = await crs.call("data_manager", "get_selected", {
             manager: "store"
@@ -294,6 +308,12 @@ describe("data manager tests", () => {
             selected: false
         })
 
+        isAllSelected = await crs.call("data_manager", "is_all_selected", {
+            manager: "store"
+        });
+
+        assertEquals(isAllSelected, false);
+
         selected = await crs.call("data_manager", "get_selected", {
             manager: "store"
         })
@@ -303,6 +323,18 @@ describe("data manager tests", () => {
         assertEquals(changeArgs[0].changes, true);
         assertEquals(changeArgs[1].action, "selected");
         assertEquals(changeArgs[0].changes, true);
+
+        await crs.call("data_manager", "set_selected", {
+            manager: "store",
+            ids: ["1000"],
+            selected: true
+        })
+
+        isAllSelected = await crs.call("data_manager", "is_all_selected", {
+            manager: "store"
+        });
+
+        assertEquals(isAllSelected, "mixed");
     });
 
     it ("toggle_selection", async() => {
