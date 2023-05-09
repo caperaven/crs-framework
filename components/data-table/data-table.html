@@ -20,6 +20,8 @@
     [role="row"] {
         display: grid;
         grid-template-columns: var(--columns);
+        border-left: var(--border-width) solid var(--grey-s2);
+        border-right: var(--border-width) solid var(--grey-s2);
     }
 
     [role="cell"], [role="columnheader"] {
@@ -27,6 +29,8 @@
         overflow: hidden;
         text-overflow: ellipsis;
         padding: var(--padding);
+        border-right: var(--border-width) solid var(--grey-s2);
+        border-bottom: var(--border-width) solid var(--grey-s2);
     }
 
     [role="columnheader"] {

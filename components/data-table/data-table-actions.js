@@ -22,7 +22,7 @@ class DataTableActions {
      * @returns {Promise<void>}
      */
     static async set_columns(step, context, process, item) {
-        const element = await crs.process.getValue(step.args.element, context, process, item);
+        const element = await crs.dom.get_element(step.args.element, context, process, item);
         const columns = await crs.process.getValue(step.args.columns, context, process, item);
     }
 

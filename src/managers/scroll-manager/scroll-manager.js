@@ -75,6 +75,10 @@ export class ScrollManager {
         this.#scrollTop = null;
         this.#scrollOffset = null;
         this.#event = null;
+        this.#lastScrollTop = null;
+        this.#lastStopScrollTop = null;
+        this.#timeout = null;
+        return null;
     }
 
     /**

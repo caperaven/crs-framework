@@ -145,12 +145,12 @@ export class DialogActions {
         const minHeight = await crs.process.getValue(step.args.min_height, context, process, item);
         const showHeader = await crs.process.getValue(step.args.show_header, context, process, item) ?? true;
         const autoClose = await crs.process.getValue(step.args.auto_close, context, process, item) ?? false;
-        const closeCallback = await crs.process.getValue(step.args.close_callback, context, process, item) ?? false;
+        const callback = await crs.process.getValue(step.args.callback, context, process, item) ?? false;
         const parent = await crs.call("dom", "get_element", {element: step.args.parent}, context, process, item) ?? document.body;
 
         const options = {
             target, position, anchor, size, margin, title, severity, allowResize,
-            allowMove, minWidth, minHeight, showHeader, autoClose, closeCallback, parent
+            allowMove, minWidth, minHeight, showHeader, autoClose, callback, parent
         };
 
         const dialog = await ensureDialog(close, parent);
@@ -170,6 +170,8 @@ export class DialogActions {
         if (globalThis.dialog) {
             globalThis.dialog = globalThis.dialog.dispose();
         }
+
+        return false;
     }
 }
 

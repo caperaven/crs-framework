@@ -63,6 +63,11 @@ export class VirtualizationManager {
         this.#topIndex = null;
         this.#bottomIndex = null;
         this.#virtualSize = null;
+        this.#sizeManager = null;
+        this.#inflationManager = null;
+        this.#scrollManager = null;
+        this.#syncPage = null;
+        return null;
     }
 
     /**
