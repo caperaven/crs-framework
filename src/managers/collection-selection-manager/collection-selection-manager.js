@@ -73,7 +73,12 @@ export class CollectionSelectionManager {
      * @param checked {boolean} - true if all records should be selected, false if all records should be unselected
      */
     async #selectedAll(checked) {
-        console.log("selected all", checked);
+        await crs.call("data_manager", "set_select_all", {
+            manager: this.#manager,
+            selected: checked
+        })
+
+        console.log(await crs.call("data_manager", "get_selected", { manager: this.#manager }));
     }
 
     /**
@@ -83,11 +88,9 @@ export class CollectionSelectionManager {
      * @returns {Promise<void>}
      */
     async #selectedGroup(element, checked) {
-        console.log("selected group", element.dataset.group, checked);
     }
 
     async #selected(element, id, index, checked) {
-        console.log("selected", id, index, checked);
     }
 }
 
