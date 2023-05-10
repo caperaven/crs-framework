@@ -68,7 +68,12 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     }
 
     async disconnectedCallback() {
-        this.removeEventListener("click", this.#clickHandler);
+        await crs.call("dom_interactive", "disable_resize", {
+            element: this.popup
+        });
+
+        this.shadowRoot.addEventListener("click", this.#clickHandler);
+
         this.#clickHandler = null;
         this.#options = null;
         this.#point = null;
@@ -80,6 +85,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         this.#item = null;
         this.#margin = null;
         this.#templates = null;
+        super.disconnectedCallback();
     }
 
     #optionById(id) {

@@ -13,6 +13,7 @@ export default class ContextMenu extends crsbinding.classes.ViewBase {
     async disconnectedCallback() {
         this._element.removeEventListener('contextmenu', this.#handler);
         this.#handler = null;
+        await super.disconnectedCallback();
     }
 
     async show(event) {

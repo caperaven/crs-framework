@@ -948,7 +948,7 @@ class DataManagerActions {
      */
     static async remove_change(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
-        if (manager == null) return;
+        if (manager == null || globalThis.dataManagers[manager] == null) return;
 
         const callback = await crs.process.getValue(step.args.callback, context, process, item);
         return globalThis.dataManagers[manager].removeChangeCallback(callback);
