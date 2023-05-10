@@ -67,6 +67,11 @@ export class Dialog extends HTMLElement {
      * @returns {Promise<void>}
      */
     async disconnectedCallback() {
+        const popup = this.shadowRoot.querySelector(".popup");
+        await crs.call("dom_interactive", "disable_move", {
+            element: popup
+        });
+
         this.shadowRoot.removeEventListener("click", this.#clickHandler);
         this.#clickHandler = null;
         await crsbinding.translations.delete("dialog");
