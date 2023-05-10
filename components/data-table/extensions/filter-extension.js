@@ -31,13 +31,13 @@ export default class FilterExtension {
     }
 
     dispose(removeUI) {
+        this.#table.removeClickHandler(".filter");
+
         this.#settings = null;
-        this.#table = null;
         this.#itemTemplate = null;
         this.#currentField = null;
         this.#callbackHandler = null;
         this.#dialog = null;
-        this.#table.removeClickHandler(".filter");
         this.#filterHandler = null;
         this.#lookupTable = null;
 
@@ -51,6 +51,8 @@ export default class FilterExtension {
                 filterElement.remove();
             }
         }
+
+        this.#table = null;
 
         return DataTableExtensions.FILTER.path;
     }
@@ -165,19 +167,20 @@ export default class FilterExtension {
     }
 
     async #disposeManagers() {
+        const layout = this.#dialog.querySelector(".layout");
+        const container = this.#dialog.querySelector("#filter-list");
+
+        await crs.call("collection_selection", "disable", {
+            element: layout
+        })
+
         await crs.call("data_manager", "dispose", {
             manager: FILTER_EXTENSION_DATA_MANAGER
         });
 
-        const container = await this.#dialog.querySelector("#filter-list");
-
         await crs.call("virtualization", "disable", {
             element: container
         });
-
-        await crs.call("collection_selection", "disable", {
-            element: container
-        })
     }
 
     #inflationFn(element, data) {

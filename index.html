@@ -46,6 +46,10 @@
     <header>
         <button aria-label="menu" class="icon" click.setValue="$globals.isMenuOpen = !$globals.isMenuOpen" classlist.if="$globals.isMenuOpen == true ? 'highlight-fill'"><svg><use xlink:href="#menu" /></svg></button>
         <h1>My Application</h1>
+        <options-toolbar change.call="debugStateChanged">
+            <button data-value="on">On</button>
+            <button data-value="off" aria-selected="true">Off</button>
+        </options-toolbar>
     </header>
 
     <main autofocus tabindex="0">
