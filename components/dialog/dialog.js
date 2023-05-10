@@ -28,10 +28,10 @@
 export class Dialog extends HTMLElement {
     #stack = [];
     #clickHandler = this.#click.bind(this);
-    #actions = Object.freeze({
+    #actions = {
         "close": this.#closeClicked.bind(this),
         "resize": this.#resizeClicked.bind(this),
-    });
+    };
 
     /**
      * @constructor
@@ -71,6 +71,12 @@ export class Dialog extends HTMLElement {
         this.#clickHandler = null;
         await crsbinding.translations.delete("dialog");
         this.#stack = null;
+
+        for (const key of Object.keys(this.#actions)) {
+            this.#actions[key] = null;
+        }
+
+        this.#actions = null;
     }
 
     /**
