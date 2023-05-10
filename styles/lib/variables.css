@@ -54,6 +54,6 @@ html {
 
     /* complex */
     --border: var(--border-width) solid var(--grey-s2);
-    --drop-shadow: 0px 2px 3px silver;
+    --drop-shadow: 0px 2px 3px #c0c0c0de;
     --box-shadow: 0px 2px 3px silver;
 }
