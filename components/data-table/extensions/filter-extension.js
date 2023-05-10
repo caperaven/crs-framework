@@ -1,5 +1,6 @@
 import {DataTableExtensions} from "./../data-table-extensions.js";
 import "./../../../src/actions/virtualization-actions.js";
+import "./../../../src/actions/collection-selection-actions.js";
 import "./../../checkbox/checkbox.js";
 
 const FILTER_EXTENSION_DATA_MANAGER = "filter-extension";
@@ -30,13 +31,13 @@ export default class FilterExtension {
     }
 
     dispose(removeUI) {
+        this.#table.removeClickHandler(".filter");
+
         this.#settings = null;
-        this.#table = null;
         this.#itemTemplate = null;
         this.#currentField = null;
         this.#callbackHandler = null;
         this.#dialog = null;
-        this.#table.removeClickHandler(".filter");
         this.#filterHandler = null;
         this.#lookupTable = null;
 
@@ -50,6 +51,8 @@ export default class FilterExtension {
                 filterElement.remove();
             }
         }
+
+        this.#table = null;
 
         return DataTableExtensions.FILTER.path;
     }
@@ -150,20 +153,30 @@ export default class FilterExtension {
     }
 
     async #createDataManager(data) {
+        for (const record of data) {
+            record._selected = true;
+        }
+
         return await crs.call("data_manager", "register", {
             manager: FILTER_EXTENSION_DATA_MANAGER,
             id_field: "id",
             type: "memory",
-            records: data
+            records: data,
+            selected_count: data.length
         })
     }
 
     async #disposeManagers() {
+        const layout = this.#dialog.querySelector(".layout");
+        const container = this.#dialog.querySelector("#filter-list");
+
+        await crs.call("collection_selection", "disable", {
+            element: layout
+        });
+
         await crs.call("data_manager", "dispose", {
             manager: FILTER_EXTENSION_DATA_MANAGER
         });
-
-        const container = await this.#dialog.querySelector("#filter-list");
 
         await crs.call("virtualization", "disable", {
             element: container
@@ -172,7 +185,11 @@ export default class FilterExtension {
 
     #inflationFn(element, data) {
         element.dataset.value = data.value;
-        element.querySelector("check-box").setAttribute("aria-selected", data.selected);
+
+        const checkbox = element.querySelector("check-box");
+        checkbox.checked = data._selected || false;
+        checkbox.dataset.index = data._index;
+
         element.querySelector(".title").textContent = data.value;
         element.querySelector(".count").textContent = data.count;
     }
@@ -219,6 +236,14 @@ export default class FilterExtension {
             inflation: this.#inflationFn
         });
 
+        const layout = this.#dialog.querySelector(".layout");
+        await crs.call("collection_selection", "enable", {
+            element: layout,
+            master_query: "#master-checkbox",
+            selection_query: '[role="checkbox"]',
+            virtualized_element: container,
+            manager: FILTER_EXTENSION_DATA_MANAGER
+        });
     }
 }
 

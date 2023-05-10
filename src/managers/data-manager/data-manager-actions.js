@@ -82,6 +82,7 @@ class DataManagerActions {
         const dataField = await crs.process.getValue(step.args.id_field || "id", context, process, item);
         const type = await crs.process.getValue(step.args.type || "indexdb", context, process, item);
         const records = await crs.process.getValue(step.args.records || [], context, process, item);
+        const selectedCount = await crs.process.getValue(step.args.selected_count || 0, context, process, item);
 
         globalThis.dataManagers ||= {};
 
@@ -90,6 +91,7 @@ class DataManagerActions {
         }
 
         globalThis.dataManagers[manager].setRecords(records);
+        globalThis.dataManagers[manager].selectedCount = selectedCount;
         return globalThis.dataManagers[manager];
     }
 
@@ -946,7 +948,7 @@ class DataManagerActions {
      */
     static async remove_change(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
-        if (manager == null) return;
+        if (manager == null || globalThis.dataManagers[manager] == null) return;
 
         const callback = await crs.process.getValue(step.args.callback, context, process, item);
         return globalThis.dataManagers[manager].removeChangeCallback(callback);

@@ -17,6 +17,9 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     #item;
     #margin;
     #templates;
+    #filterCloseHandler = this.#filterClose.bind(this);
+    #filterFocusOutHandler = this.#filterFocusOut.bind(this);
+    #filterHeader;
 
     get shadowDom() {
         return true;
@@ -61,6 +64,10 @@ class ContextMenu extends crsbinding.classes.BindableElement {
                     options: {}
                 });
 
+                this.#filterHeader = this.shadowRoot.querySelector("filter-header");
+                this.#filterHeader.addEventListener("close", this.#filterCloseHandler);
+                this.#filterHeader.addEventListener("focus-out", this.#filterFocusOutHandler);
+
                 await crs.call("component", "notify_ready", {element: this});
                 resolve();
             })
@@ -68,7 +75,17 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     }
 
     async disconnectedCallback() {
-        this.removeEventListener("click", this.#clickHandler);
+        await crs.call("dom_interactive", "disable_resize", {
+            element: this.popup
+        });
+
+        this.#filterHeader.removeEventListener("close", this.#filterCloseHandler);
+        this.#filterHeader.removeEventListener("focus-out", this.#filterFocusOutHandler);
+        this.shadowRoot.removeEventListener("click", this.#clickHandler);
+
+        this.#filterHeader = null;
+        this.#filterCloseHandler = null;
+        this.#filterFocusOutHandler = null;
         this.#clickHandler = null;
         this.#options = null;
         this.#point = null;
@@ -80,6 +97,8 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         this.#item = null;
         this.#margin = null;
         this.#templates = null;
+
+        await super.disconnectedCallback();
     }
 
     #optionById(id) {
@@ -106,7 +125,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
 
     async #click(event) {
         if (event.target.matches(".back")) {
-            return await this.close();
+            return await this.#filterClose();
         }
 
         const li = await crs.call("dom_utils", "find_parent_of_type", {
@@ -126,7 +145,15 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         this.dataset.value = option.id;
         this.dispatchEvent(new CustomEvent("change", {detail: option.id}));
 
-        await this.close();
+        await this.#filterClose();
+    }
+
+    async #filterClose(event) {
+        await crs.call("context_menu", "close");
+    }
+
+    async #filterFocusOut(event) {
+        // JHR: todo, filter the items as you type.
     }
 
     /**
@@ -178,18 +205,6 @@ class ContextMenu extends crsbinding.classes.BindableElement {
                 this.style.setProperty(key, args.style[key]);
             }
         }
-    }
-
-    /**
-     * @method open - Opens the context menu.
-     * @returns {Promise<void>}
-     */
-    async close() {
-        await crs.call("context_menu", "close");
-    }
-
-    async focus() {
-        // console.log("focus first");
     }
 }
 

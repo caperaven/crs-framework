@@ -23,7 +23,7 @@
         margin: 0;
         border: var(--border);
         background: var(--grey-surface);
-        filter: var(--drop-shadow);
+        box-shadow: var(--drop-shadow);
         width: max-content;
         height: var(--height);
         min-width: 200px;
@@ -125,7 +125,7 @@
 <div class="back"></div>
 
 <div class="popup" ref="popup">
-    <filter-header for="ul" close.call="close" focus-out.call="focus"></filter-header>
+    <filter-header for="ul"></filter-header>
     <ul ref="container" role="menu" tabindex="0" class="scrollbar"></ul>
     <svg id="resize" width="16" height="16">
         <use href="#resize-handle"></use>

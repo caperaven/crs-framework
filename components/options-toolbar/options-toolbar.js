@@ -43,9 +43,6 @@ class OptionsToolbar extends HTMLElement {
     load() {
         return new Promise(resolve => {
             requestAnimationFrame(async () => {
-                await crs.call("component", "notify_ready", {
-                    element: this
-                });
                 this.setAttribute("role", "toggle-switch");
                 this.setAttribute("aria-label", "toggle-switch");
 
@@ -62,6 +59,10 @@ class OptionsToolbar extends HTMLElement {
                     }
                     clearTimeout(timeout);
                 }, 0.5)
+
+                await crs.call("component", "notify_ready", {
+                    element: this
+                });
 
                 resolve();
             });
