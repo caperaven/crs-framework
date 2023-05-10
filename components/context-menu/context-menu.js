@@ -85,7 +85,8 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         this.#item = null;
         this.#margin = null;
         this.#templates = null;
-        super.disconnectedCallback();
+
+        await super.disconnectedCallback();
     }
 
     #optionById(id) {
