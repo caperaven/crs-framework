@@ -125,7 +125,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
 
     async #click(event) {
         if (event.target.matches(".back")) {
-            return await this.close();
+            return await this.#filterClose();
         }
 
         const li = await crs.call("dom_utils", "find_parent_of_type", {
@@ -145,7 +145,15 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         this.dataset.value = option.id;
         this.dispatchEvent(new CustomEvent("change", {detail: option.id}));
 
-        await this.close();
+        await this.#filterClose();
+    }
+
+    async #filterClose(event) {
+        await crs.call("context_menu", "close");
+    }
+
+    async #filterFocusOut(event) {
+        // JHR: todo, filter the items as you type.
     }
 
     /**
@@ -198,15 +206,6 @@ class ContextMenu extends crsbinding.classes.BindableElement {
             }
         }
     }
-
-    async #filterClose(event) {
-        await crs.call("context_menu", "close");
-    }
-
-    async #filterFocusOut(event) {
-        // JHR: todo, filter the items as you type.
-    }
-
 }
 
 /**

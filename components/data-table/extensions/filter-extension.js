@@ -172,7 +172,7 @@ export default class FilterExtension {
 
         await crs.call("collection_selection", "disable", {
             element: layout
-        })
+        });
 
         await crs.call("data_manager", "dispose", {
             manager: FILTER_EXTENSION_DATA_MANAGER
