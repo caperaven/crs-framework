@@ -1,5 +1,6 @@
 import {DataTableExtensions} from "./../data-table-extensions.js";
 import "./../../../src/actions/virtualization-actions.js";
+import "./../../../src/actions/collection-selection-actions.js";
 import "./../../checkbox/checkbox.js";
 
 const FILTER_EXTENSION_DATA_MANAGER = "filter-extension";
@@ -150,11 +151,16 @@ export default class FilterExtension {
     }
 
     async #createDataManager(data) {
+        for (const record of data) {
+            record._selected = true;
+        }
+
         return await crs.call("data_manager", "register", {
             manager: FILTER_EXTENSION_DATA_MANAGER,
             id_field: "id",
             type: "memory",
-            records: data
+            records: data,
+            selected_count: data.length
         })
     }
 
@@ -168,11 +174,19 @@ export default class FilterExtension {
         await crs.call("virtualization", "disable", {
             element: container
         });
+
+        await crs.call("collection_selection", "disable", {
+            element: container
+        })
     }
 
     #inflationFn(element, data) {
         element.dataset.value = data.value;
-        element.querySelector("check-box").setAttribute("aria-selected", data.selected);
+
+        const checkbox = element.querySelector("check-box");
+        checkbox.checked = data._selected || false;
+        checkbox.dataset.index = data._index;
+
         element.querySelector(".title").textContent = data.value;
         element.querySelector(".count").textContent = data.count;
     }
@@ -219,6 +233,14 @@ export default class FilterExtension {
             inflation: this.#inflationFn
         });
 
+        const layout = this.#dialog.querySelector(".layout");
+        await crs.call("collection_selection", "enable", {
+            element: layout,
+            master_query: "#master-checkbox",
+            selection_query: '[role="checkbox"]',
+            virtualized_element: container,
+            manager: FILTER_EXTENSION_DATA_MANAGER
+        });
     }
 }
 
