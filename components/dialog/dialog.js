@@ -70,8 +70,7 @@ export class Dialog extends HTMLElement {
         this.shadowRoot.removeEventListener("click", this.#clickHandler);
         this.#clickHandler = null;
         await crsbinding.translations.delete("dialog");
-         this.#stack = null;
-
+        this.#stack = null;
     }
 
     /**

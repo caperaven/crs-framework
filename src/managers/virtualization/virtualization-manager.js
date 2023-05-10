@@ -13,6 +13,7 @@ export class VirtualizationManager {
     #inflationManager;
     #scrollManager;
     #syncPage = false;
+    #scrollTop = 0;
 
     /**
      * @constructor
@@ -67,6 +68,7 @@ export class VirtualizationManager {
         this.#inflationManager = null;
         this.#scrollManager = null;
         this.#syncPage = null;
+        this.#scrollTop = null;
         return null;
     }
 
@@ -278,6 +280,8 @@ export class VirtualizationManager {
         if (this.#syncPage) {
             await this.#performSyncPage(scrollTop);
         }
+
+        this.#scrollTop = scrollTop;
     }
 
     /**
@@ -310,5 +314,9 @@ export class VirtualizationManager {
         this.#rowMap = newMap;
         this.#topIndex = topIndex;
         this.#bottomIndex = topIndex + count - 1;
+    }
+
+    async refreshCurrent() {
+        await this.#performSyncPage(this.#scrollTop);
     }
 }

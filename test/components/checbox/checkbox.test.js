@@ -1,8 +1,6 @@
-import { beforeAll, beforeEach, describe, it} from "https://deno.land/std@0.157.0/testing/bdd.ts";
+import { beforeAll, describe, it} from "https://deno.land/std@0.157.0/testing/bdd.ts";
 import { assertEquals } from "https://deno.land/std@0.149.0/testing/asserts.ts";
 import {init} from "./../../../test/mockups/init.js";
-import {createMockChildren} from "../../mockups/child-mock-factory.js";
-import {ElementMock} from "../../mockups/element-mock.js";
 import {EventMock} from "../../mockups/event-mock.js";
 import {afterEach} from "../../dependencies.js";
 
@@ -51,8 +49,8 @@ describe ("checkbox", async () => {
 
     it("tristate state click", async () => {
         await createInstance(true);
-        assertEquals(instance.getAttribute("aria-checked"), "mixed");
-        assertEquals(instance.shadowRoot.querySelector("#btnCheck").innerText, "check-box-mixed");
+        assertEquals(instance.getAttribute("aria-checked"), "null");
+        assertEquals(instance.shadowRoot.querySelector("#btnCheck").innerText, "check-box-null");
 
         instance.shadowRoot.dispatchEvent(new EventMock("click"));
         assertEquals(instance.getAttribute("aria-checked"), "true");
@@ -62,6 +60,24 @@ describe ("checkbox", async () => {
         assertEquals(instance.getAttribute("aria-checked"), "false");
         assertEquals(instance.shadowRoot.querySelector("#btnCheck").innerText, "check-box-blank");
     });
+
+    it ("mixed state click", async () => {
+        await createInstance(false);
+        assertEquals(instance.getAttribute("aria-checked"), "false");
+
+        instance.shadowRoot.dispatchEvent(new EventMock("click"));
+        assertEquals(instance.getAttribute("aria-checked"), "true");
+
+        instance.shadowRoot.dispatchEvent(new EventMock("click"));
+        assertEquals(instance.getAttribute("aria-checked"), "false");
+
+        instance.checked = "mixed";
+        assertEquals(instance.getAttribute("aria-checked"), "mixed");
+        assertEquals(instance.shadowRoot.querySelector("#btnCheck").innerText, "check-box-mixed");
+
+        instance.shadowRoot.dispatchEvent(new EventMock("click"));
+        assertEquals(instance.getAttribute("aria-checked"), "true");
+    })
 })
 
 
