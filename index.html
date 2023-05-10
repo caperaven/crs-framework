@@ -85,19 +85,20 @@
         window.addEventListener("load", async (event) => {
             import ("./packages/crs-process-api/action-systems/data-processing-actions.js");
             import ("./components/busy-ui/busy-ui-actions.js");
+            import ("./components/options-toolbar/options-toolbar.js");
 
-            await crs.modules.enableBinding([
-                ["data-grid", "/components/data-grid/data-grid.js"],
-                ["kan-ban", "/components/kan-ban/kan-ban.js"],
-                ["options-toolbar", "/components/options-toolbar/options-toolbar.js"],
-                ["tab-list", "/components/tab-list/tab-list.js"],
-                ["check-list", "/components/check-list/check-list.js"],
-                ["color-picker", "/components/color-picker/color-picker.js"],
-                ["text-editor", "/components/text-editor/text-editor.js"],
-                ["available-selected", "/components/available-selected/available-selected.js"],
-                ["markdown-editor", "/components/markdown/markdown-editor/markdown-editor.js"],
-                ["schema-editor", "/components/schema/schema-editor/schema-editor.js"]
-            ]);
+            // await crs.modules.enableBinding([
+            //     ["data-grid", "/components/data-grid/data-grid.js"],
+            //     ["kan-ban", "/components/kan-ban/kan-ban.js"],
+            //     ["options-toolbar", "/components/options-toolbar/options-toolbar.js"],
+            //     ["tab-list", "/components/tab-list/tab-list.js"],
+            //     ["check-list", "/components/check-list/check-list.js"],
+            //     ["color-picker", "/components/color-picker/color-picker.js"],
+            //     ["text-editor", "/components/text-editor/text-editor.js"],
+            //     ["available-selected", "/components/available-selected/available-selected.js"],
+            //     ["markdown-editor", "/components/markdown/markdown-editor/markdown-editor.js"],
+            //     ["schema-editor", "/components/schema/schema-editor/schema-editor.js"]
+            // ]);
 
             await crs.call("schema", "register", {
                 id: "html",
