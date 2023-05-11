@@ -65,16 +65,12 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         this.#year = null;
         this.#dateSelected = null;
 
-        for (const key of Object.keys(this.#viewLoadActions)) {
-            this.#viewLoadActions[key] = null;
-        }
+        await this.#cleaner(this.#viewLoadActions);
         this.#viewLoadActions = null;
         this.#keyboardInputManager = this.#keyboardInputManager.dispose();
         this.#changeMonthHandler = null;
 
-        for (const key of Object.keys(this.#actions)) {
-            this.#actions[key] = null;
-        }
+        await this.#cleaner(this.#actions);
         this.#actions = null;
 
         this.removeEventListener("click", this.#clickHandler);
@@ -404,6 +400,11 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         await this.#setMonthProperty();
         await this.#setYearProperty();
         await this.#render();
+    }
+    async #cleaner(object){
+        for (const key of Object.keys(object)) {
+            object[key] = null;
+        }
     }
 }
 customElements.define("calendar-component", Calendar);
