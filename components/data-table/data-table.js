@@ -8,6 +8,7 @@ import {MouseInputManager} from "./managers/mouse-input-manager.js";
 import {KeyboardInputManager} from "./managers/keyboard-input-manager.js";
 import {DataTableExtensions} from "./data-table-extensions.js";
 import {formattingFromChildren} from "./utils/formattingFromChildren.js";
+import "./../../src/managers/perspective-manager/perspective-manager-actions.js";
 
 /**
  * @class DataTable - a custom element that displays a data table
@@ -64,6 +65,7 @@ import {formattingFromChildren} from "./utils/formattingFromChildren.js";
 export class DataTable extends HTMLElement {
     #columnsManager = new ColumnsManager();
     #dataManager;
+    #perspective;
     #dataManagerKey;
     #dataManagerChangedHandler = this.#dataManagerChanged.bind(this);
     #inflationFn;
@@ -144,6 +146,7 @@ export class DataTable extends HTMLElement {
         return new Promise(resolve => {
             requestAnimationFrame(async () => {
                 this.#dataManager = this.dataset["manager"];
+                this.#perspective = this.dataset["perspective"];
                 this.#dataManagerKey = this.dataset["manager-key"];
 
                 await this.#hookDataManager();
@@ -159,6 +162,8 @@ export class DataTable extends HTMLElement {
                     await crs.call("data_table", "set_resize", { element: this, enabled: true });
                 }
 
+                await crs.call("perspective", "register", { perspective: this.#perspective });
+
                 resolve();
             });
         })
@@ -169,6 +174,9 @@ export class DataTable extends HTMLElement {
      * @returns {Promise<void>}
      */
     async disconnectedCallback() {
+        await crs.call("dom_interactive", "disable_resize", { element: this });
+        await crs.call("perspective", "unregister", { perspective: this.#perspective });
+
         for (const extension of Object.values(DataTableExtensions)) {
             this.disposeExtension(extension.name);
         }
@@ -177,11 +185,9 @@ export class DataTable extends HTMLElement {
 
         await this.#unhookDataManager();
         this.#dataManagerChangedHandler = null;
-        await crs.call("dom_interactive", "disable_resize", { element: this });
         this.#inflationFn = null;
         this.#keyboardInputManager = this.#keyboardInputManager.dispose();
         this.#mouseInputManager = this.#mouseInputManager.dispose();
-
 
         this.#extensions = null;
     }

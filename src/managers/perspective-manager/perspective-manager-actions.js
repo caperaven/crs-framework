@@ -13,6 +13,7 @@ class PerspectiveManagerActions {
      */
     static async register(step, context, process, item) {
         const perspective = await crs.process.getValue(step.args.perspective, context, process, item);
+        if (perspective == null) return;
 
         if (globalThis.perspectives == null) {
             globalThis.perspectives = {};
@@ -38,6 +39,7 @@ class PerspectiveManagerActions {
      */
     static async unregister(step, context, process, item) {
         const perspective = await crs.process.getValue(step.args.perspective, context, process, item);
+        if (perspective == null) return;
 
         const definition = globalThis.perspectives[perspective];
         if (definition == null) return;
