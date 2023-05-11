@@ -163,8 +163,8 @@ export class DataManagerMemoryProvider extends BaseDataManager {
         this.selectedCount += selected ? ids.length : -ids.length;
     }
 
-    getSelected() {
-        return this.#records.filter(item => item._selected);
+    getSelected(isSelected = true) {
+        return this.#records.filter(item => item._selected === isSelected);
     }
 
     toggleSelectedIndexes(indexes) {

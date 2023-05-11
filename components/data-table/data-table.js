@@ -85,6 +85,10 @@ export class DataTable extends HTMLElement {
         return this.#dataManager;
     }
 
+    get perspective() {
+        return this.#perspective;
+    }
+
     get dataManagerKey() {
         return this.#dataManagerKey;
     }
