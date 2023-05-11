@@ -159,6 +159,30 @@ class DataManagerActions {
     }
 
     /**
+     * @method selected_count - Get the count of selected records in a data manager
+     * @param step {object} - The step that contains the action to perform
+     * @param context {object} - The context of the process
+     * @param process {object} - The process
+     * @param item {object} - Current item in a process loop
+     * @returns {Promise<number|*|number>}
+     */
+    static async selected_count(step, context, process, item) {
+        const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return 0;
+
+        const dataManager = globalThis.dataManagers[manager];
+        return dataManager.selectedCount;
+    }
+
+    static async get_counts(step, context, process, item) {
+        const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return 0;
+
+        const dataManager = globalThis.dataManagers[manager];
+        return { total: dataManager.count, selected: dataManager.selectedCount };
+    }
+
+    /**
      * @method set_records - Set records for a data manager
      * @param step {object} - The step that contains the action to perform
      * @param context {object} - The context of the process
@@ -602,6 +626,14 @@ class DataManagerActions {
 
         const dataManager = globalThis.dataManagers[manager];
         return dataManager.getSelected();
+    }
+
+    static async get_unselected(step, context, process, item) {
+        const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return;
+
+        const dataManager = globalThis.dataManagers[manager];
+        return dataManager.getSelected(false);
     }
 
     /**

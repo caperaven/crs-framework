@@ -2,6 +2,8 @@ import {DataTableExtensions} from "./../data-table-extensions.js";
 import "./../../../src/actions/virtualization-actions.js";
 import "./../../../src/actions/collection-selection-actions.js";
 import "./../../checkbox/checkbox.js";
+import "./filter-extension/update-filter.js";
+import {updateFilter} from "./filter-extension/update-filter.js";
 
 const FILTER_EXTENSION_DATA_MANAGER = "filter-extension";
 
@@ -131,7 +133,7 @@ export default class FilterExtension {
         }
 
         if (args.action === "accept") {
-            // todo ... get the relevant data to apply a filter.
+            await updateFilter(this.#table.perspective, this.#currentField, FILTER_EXTENSION_DATA_MANAGER);
 
             const isNotDone = await this.#dialog.close();
 
