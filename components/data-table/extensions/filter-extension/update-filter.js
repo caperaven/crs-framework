@@ -3,8 +3,12 @@ export async function updateFilter(perspective, field, dataManager) {
         manager: dataManager
     })
 
-    // nothing was selected and you can't have a filter with nothing so do nothing
+    // nothing was selected, and you can't have a filter with nothing so do nothing
     if (counts.selected === 0) return;
+
+    if (counts.total == counts.selected) {
+        return await crs.call("perspective", "remove_filter", { perspective, field });
+    }
 
     let operator = "eq";
 
