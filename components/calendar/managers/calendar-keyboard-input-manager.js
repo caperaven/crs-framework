@@ -19,23 +19,23 @@ export class CalendarKeyboardInputManager {
     #currentIndex;
     #columns;
     #currentViewType;
-    #keyboardNavigation = Object.freeze({
+    #keyboardNavigation = {
         "ArrowRight": this.#arrowRight,
         "ArrowLeft": this.#arrowLeft,
         "ArrowUp": this.#arrowUp,
         "ArrowDown": this.#arrowDown,
-        "Enter": this.#enter,
-    });
-    #columnLength = Object.freeze({
+        "Enter": this.#enter
+    };
+    #columnLength = {
         "months": this.#monthColumns,
         "years": this.#yearColumns,
         "default": this.#defaultColumns
-    });
-    #enterActions = Object.freeze({
+    };
+    #enterActions ={
         "months": this.#enterMonths,
         "years": this.#enterYears,
         "default": this.#enterDefault
-    })
+    };
 
     set currentIndex(newValue) {
         this.#currentIndex = newValue;
@@ -51,12 +51,20 @@ export class CalendarKeyboardInputManager {
         this.#calendar.shadowRoot.removeEventListener('keydown', this.#keydownHandler);
         this.#calendar = null;
         this.#keydownHandler = null;
-        this.#keyboardNavigation = null;
         this.#elements = null;
         this.#currentIndex = null;
         this.#columns = null;
-        this.#enterActions = null;
         this.#currentViewType = null;
+
+        this.#cleaner(this.#keyboardNavigation);
+        this.#keyboardNavigation = null;
+
+        this.#cleaner(this.#columnLength);
+        this.#columnLength = null;
+
+        this.#cleaner(this.#enterActions);
+        this.#enterActions = null;
+
         return null;
     }
 
@@ -123,7 +131,7 @@ export class CalendarKeyboardInputManager {
     }
 
     async #enterDefault(event) {
-        await this.#calendar.selectedDate(event);
+        await this.#calendar.selectedDate(null, event.target);
     }
 
     async #enterMonths(event) {
@@ -175,5 +183,11 @@ export class CalendarKeyboardInputManager {
             bubbles: true,
             composed: true
         }));
+    }
+
+     #cleaner(object){
+        for (const key of Object.keys(object)) {
+            object[key] = null;
+        }
     }
 }

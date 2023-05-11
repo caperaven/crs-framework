@@ -7,11 +7,20 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     #keyboardInputManager;
     #changeMonthHandler;
     #dateSelected;
-    #viewLoadActions = Object.freeze({
+    #clickHandler;
+    #perspectiveElement;
+    #perspectiveHandler;
+    #viewLoadActions = {
         "yearsVisualSelection": this.#yearsVisualSelection.bind(this),
         "monthsVisualSelection": this.#monthsVisualSelection.bind(this),
         "defaultVisualSelection": this.#defaultVisualSelection.bind(this)
-    });
+    };
+    #actions = {
+        "goToPrevious": this.goToPrevious.bind(this),
+        "goToNext": this.goToNext.bind(this),
+        "selectView": this.#selectView.bind(this),
+        "selectedDate": this.selectedDate.bind(this)
+    };
 
     get shadowDom() {
         return true;
@@ -30,6 +39,10 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     async load() {
+        this.#perspectiveElement = this.shadowRoot.querySelector("#perspectiveElement");
+        this.#perspectiveHandler = this.#viewLoaded.bind(this);
+        this.#perspectiveElement.addEventListener("view-loaded", this.#perspectiveHandler);
+
         const tplCell = this.shadowRoot.querySelector("#tplCell");
         await crsbinding.inflationManager.register("calendar-cell", tplCell);
 
@@ -39,25 +52,42 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         this.#keyboardInputManager = new CalendarKeyboardInputManager(this);
         this.#changeMonthHandler = this.#changeMonth.bind(this);
         this.addEventListener("change-month", this.#changeMonthHandler);
+
+        this.#clickHandler = this.#click.bind(this);
+        this.addEventListener("click", this.#clickHandler);
     }
 
     async disconnectedCallback() {
-        await super.disconnectedCallback();
         await crsbinding.inflationManager.unregister("calendar-cell");
         await crsbinding.inflationManager.unregister("calendar-years");
+        this.removeEventListener("change-month", this.#changeMonthHandler);
         this.#month = null;
         this.#year = null;
         this.#dateSelected = null;
+
+        for (const key of Object.keys(this.#viewLoadActions)) {
+            this.#viewLoadActions[key] = null;
+        }
         this.#viewLoadActions = null;
         this.#keyboardInputManager = this.#keyboardInputManager.dispose();
         this.#changeMonthHandler = null;
-        this.removeEventListener("change-month", this.#changeMonthHandler);
+
+        for (const key of Object.keys(this.#actions)) {
+            this.#actions[key] = null;
+        }
+        this.#actions = null;
+
+        this.removeEventListener("click", this.#clickHandler);
+        this.#clickHandler = null;
+
+        this.#perspectiveElement.removeEventListener("view-loaded", this.#perspectiveHandler);
+        this.#perspectiveElement = null;
+        this.#perspectiveHandler = null;
+
+        await super.disconnectedCallback();
     }
 
     async preLoad() {
-        const date = new Date();
-        this.#year = date.getFullYear();
-        this.#month = date.getMonth();
         this.setProperty("selectedView", "default");
         await this.#setMonthProperty();
         await this.#setYearProperty();
@@ -163,7 +193,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         });
     }
 
-    async viewLoaded() {
+    async #viewLoaded() {
         const view = this.selectedView;
         if (this.#viewLoadActions[`${view}VisualSelection`]) {
             await this.#viewLoadActions[`${view}VisualSelection`]();
@@ -200,15 +230,14 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      * @method selectedDate - The function is called when a user clicks on a date in the calendar
      * @param event - The event that triggered the function.
      */
-    async selectedDate(event) {
-        const newValue = event.target;
-        if (newValue.getAttribute("role") === 'cell') {
-            await this.#setDataStart(newValue);
-            await this.#trackFocus(newValue);
-            this.dispatchEvent(new CustomEvent("date-selected", {detail: {date: this.dataset.start}, bubbles: true}));
-            await this.#setSelection(newValue);
-            await this.#setFocus();
-        }
+    async selectedDate(event, target) {
+        if (target.getAttribute("role") !== 'cell') return;
+
+        await this.#setDataStart(target);
+        await this.#trackFocus(target);
+        this.dispatchEvent(new CustomEvent("date-selected", {detail: {date: this.dataset.start}, bubbles: true}));
+        await this.#setSelection(target);
+        await this.#setFocus();
     }
 
     async #changeMonth(event) {
@@ -216,12 +245,14 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         await this.#trackFocus(element);
 
         if (element.classList[0] === "non-current-day") {
-            if (this.#month > parseInt(element.dataset.month) && this.#year < parseInt(element.dataset.year)) {
+            const month = parseInt(element.dataset.month);
+            const year = parseInt(element.dataset.year);
+            if (this.#month > month && this.#year < year) {
                 await this.goToNext();
-            } else if (this.#month < parseInt(element.dataset.month) && this.#year > parseInt(element.dataset.year)) {
+            } else if (this.#month < month && this.#year > year) {
                 await this.goToPrevious();
             } else {
-                this.#month > element.dataset.month ? await this.goToPrevious() : await this.goToNext();
+                this.#month > month ? await this.goToPrevious() : await this.goToNext();
             }
         }
         event.stopPropagation();
@@ -254,57 +285,46 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      * 2. no current date or previous focus date ,set selected date as focused date
      * 3. changing months focus must move to new focus date and all other tab indexes must be set to -1.
      * 4. staying on the same month and changing selection, unset current focus and set it to the new selected date.
+     * 5.
+     * 6.
+     * 7.
+     * 8.
      */
     async #setFocus() {
         const elementList = this.calendars?.querySelectorAll("[tabindex='0']");
         const selectedElement = this.calendars?.querySelector("[aria-selected='true']");
         const currentDate = this.calendars?.querySelector(".today");
         const focusDate = await this.#get_element(this.calendars?.dataset.position);
+        const firstDayOfMonth = this.calendars?.querySelector("[data-day='1']:not([class = '.non-current-day'])")
         await this.#resetFocus(elementList);
 
-        if (selectedElement == null && currentDate != null && focusDate == null) {
-            await this.#changeTabIndexAndSetFocus(currentDate);
-        }
+        const focusConditions = [
+            { condition: selectedElement == null && currentDate != null && focusDate == null, element: currentDate },
+            { condition: selectedElement == null && currentDate == null && focusDate == null, element: firstDayOfMonth},
+            { condition: selectedElement != null && currentDate == null && focusDate == null, element: selectedElement },
+            { condition: selectedElement != null && currentDate != null && focusDate == null, element: selectedElement },
+            { condition: selectedElement != null && currentDate != null && focusDate != null, element: focusDate, tabIndex: -1 },
+            { condition: selectedElement == null && currentDate == null && focusDate != null, element: focusDate },
+            { condition: selectedElement == null && currentDate != null && focusDate != null, element: focusDate },
+            { condition: selectedElement != null && currentDate == null && focusDate != null, element: focusDate },
+        ];
 
-        if (selectedElement == null && currentDate == null && focusDate == null) {
-            const element = this.calendars?.querySelector("[data-day='1']:not([class = '.non-current-day'])");
-            await this.#changeTabIndexAndSetFocus(element);
-        }
-
-        if (selectedElement != null && currentDate == null && focusDate == null) {
-            await this.#changeTabIndexAndSetFocus(selectedElement);
-        }
-
-        if (selectedElement != null && currentDate != null && focusDate == null) {
-            await this.#changeTabIndexAndSetFocus(selectedElement);
-        }
-
-        if (selectedElement != null && currentDate != null && focusDate != null) {
-            selectedElement.tabIndex = -1;
-            await this.#changeTabIndexAndSetFocus(focusDate);
-        }
-
-        if (selectedElement == null && currentDate == null && focusDate != null) {
-            await this.#changeTabIndexAndSetFocus(focusDate);
-        }
-
-        if (selectedElement == null && currentDate != null && focusDate != null) {
-            await this.#changeTabIndexAndSetFocus(focusDate);
-        }
-
-        if (selectedElement != null && currentDate == null && focusDate != null) {
-            await this.#changeTabIndexAndSetFocus(focusDate);
+        for (const condition of focusConditions) {
+            if (condition.condition) {
+                await this.#changeTabIndexAndSetFocus(condition.element, condition.tabIndex);
+                break;
+            }
         }
     }
 
-    async #changeTabIndexAndSetFocus(element) {
-        if(element == null) return;
+    async #changeTabIndexAndSetFocus(element, status) {
+        if (element == null) return;
         element.tabIndex = 0;
         element.focus();
     }
 
     async #resetFocus(elements) {
-        if(elements == null) return;
+        if (elements == null) return;
         for (const element of elements) {
             element.tabIndex = -1;
         }
@@ -332,6 +352,26 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         const element = this.calendars?.querySelector(`[data-day= '${day}'][data-month= '${month}'][data-year= '${year}']`);
 
         return element ? element : null;
+    }
+
+    async #click(event) {
+        const target = event.composedPath()[0];
+        const action = target.dataset.action || target.parentElement?.dataset.action;
+
+        if (action == null) return;
+        if (this.#actions[action] != null) {
+            await this.#actions[action](event, target);
+        }
+    }
+
+    async #selectView(event, target) {
+        const views = {
+            "default": {month: "months", year: "years"},
+            "months": {year: "years"},
+            "years": {month: "months"}
+        }
+        const selectedView = views[this.selectedView]?.[target.id] || "default";
+        this.setProperty("selectedView", selectedView);
     }
 
     /**
