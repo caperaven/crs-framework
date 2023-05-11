@@ -108,7 +108,7 @@ export class VirtualizationManager {
      */
     #createItems() {
         const fragment = document.createDocumentFragment();
-        const childCount = this.#sizeManager.pageItemCount + (this.#virtualSize * 2);
+        let childCount = this.#sizeManager.pageItemCount + (this.#virtualSize * 2);
 
         // half of virtualize elements at the top and half at the bottom.
         for (let i = -this.#virtualSize; i < childCount - this.#virtualSize; i++) {
