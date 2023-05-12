@@ -145,7 +145,7 @@ export class DialogActions {
         const minHeight = await crs.process.getValue(step.args.min_height, context, process, item);
         const showHeader = await crs.process.getValue(step.args.show_header, context, process, item) ?? true;
         const autoClose = await crs.process.getValue(step.args.auto_close, context, process, item) ?? false;
-        const callback = await crs.process.getValue(step.args.callback, context, process, item) ?? false;
+        const callback = await crs.process.getValue(step.args.callback, context, process, item) ?? null;
         const parent = await crs.call("dom", "get_element", {element: step.args.parent}, context, process, item) ?? document.body;
 
         const options = {

@@ -97,6 +97,8 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         this.#year = date.getFullYear();
         await this.#setMonthProperty();
         await this.#setYearProperty();
+
+        (newValue !== oldValue) && await this.#defaultVisualSelection();
     }
 
     /**
@@ -355,6 +357,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         const action = target.dataset.action || target.parentElement?.dataset.action;
 
         if (action == null) return;
+
         if (this.#actions[action] != null) {
             await this.#actions[action](event, target);
         }
