@@ -53,7 +53,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         this.#changeMonthHandler = this.#changeMonth.bind(this);
         this.addEventListener("change-month", this.#changeMonthHandler);
 
-        this.#clickHandler = this.#click.bind(this);
+        this.#clickHandler = this.#clickValidator.bind(this);
         this.addEventListener("click", this.#clickHandler);
     }
 
@@ -350,7 +350,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         return element ? element : null;
     }
 
-    async #click(event) {
+    async #clickValidator(event) {
         const target = event.composedPath()[0];
         const action = target.dataset.action || target.parentElement?.dataset.action;
 
