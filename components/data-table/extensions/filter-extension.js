@@ -21,6 +21,8 @@ export default class FilterExtension {
     #callbackHandler = this.#callback.bind(this);
     #dialog = null;
     #itemTemplate = null;
+    #backupData = null;
+    #isSaving = false;
 
     /**
      * @constructor
@@ -35,6 +37,7 @@ export default class FilterExtension {
     dispose(removeUI) {
         this.#table.removeClickHandler(".filter");
 
+        this.#isSaving = null;
         this.#settings = null;
         this.#itemTemplate = null;
         this.#currentField = null;
@@ -42,6 +45,7 @@ export default class FilterExtension {
         this.#dialog = null;
         this.#filterHandler = null;
         this.#lookupTable = null;
+        this.#backupData = null;
 
         if (this.#parent) {
             this.#parent = null;
@@ -63,7 +67,7 @@ export default class FilterExtension {
         this.#table.addClickHandler(".filter", this.#filterHandler.bind(this));
 
         for (const column of columnsRow.children) {
-            if (column.children.length == 0) {
+            if (column.children.length === 0) {
                 const text = column.textContent;
 
                 const textDiv = document.createElement("div");
@@ -126,6 +130,12 @@ export default class FilterExtension {
         });
     }
 
+    async #restoreBackup() {
+        this.#lookupTable[this.#currentField] = this.#backupData;
+        this.#backupData = null;
+        console.log(this.#lookupTable[this.#currentField]);
+    }
+
     async #callback(args) {
         if (args.action === "loaded") {
             await this.#loadFilterOptions();
@@ -133,6 +143,8 @@ export default class FilterExtension {
         }
 
         if (args.action === "accept") {
+            this.#isSaving = true;
+
             await updateFilter(this.#table.perspective, this.#currentField, FILTER_EXTENSION_DATA_MANAGER);
 
             const isNotDone = await this.#dialog.close();
@@ -145,8 +157,12 @@ export default class FilterExtension {
         }
 
         if (args.action === "close") {
-            this.#currentField = null;
+            if (this.#isSaving === false) {
+                await this.#restoreBackup();
+            }
+
             await this.#disposeManagers();
+            this.#isSaving = false;
         }
 
         if (args.action === "show-hide-selection") {
@@ -155,10 +171,6 @@ export default class FilterExtension {
     }
 
     async #createDataManager(data) {
-        for (const record of data) {
-            record._selected = true;
-        }
-
         return await crs.call("data_manager", "register", {
             manager: FILTER_EXTENSION_DATA_MANAGER,
             id_field: "id",
@@ -220,6 +232,8 @@ export default class FilterExtension {
             displayData = this.#lookupTable[this.#currentField];
         }
 
+        this.#backupData = JSON.parse(JSON.stringify(displayData));
+
         // Create the data manager used for the virtualization
         await this.#createDataManager(displayData);
 
@@ -256,7 +270,7 @@ function UniqueObjectToFilterArray(uniqueValues) {
         filterArray.push({
             value: key,
             count: uniqueValues[key],
-            selected: true
+            _selected: true
         })
     }
 
