@@ -80,6 +80,14 @@ class PerspectiveManagerActions {
 
         await notifyPerspectiveChanged(perspective);
     }
+
+    static async expand_grouping(step, context, process, item) {
+        const perspective = await crs.process.getValue(step.args.perspective, context, process, item);
+    }
+
+    static async collapse_grouping(step, context, process, item) {
+        const perspective = await crs.process.getValue(step.args.perspective, context, process, item);
+    }
 }
 
 /**
@@ -88,6 +96,8 @@ class PerspectiveManagerActions {
  * @returns {Promise<void>}
  */
 export async function notifyPerspectiveChanged(perspective) {
+    if (globalThis.dataManagers == null) return;
+
     for (const key of Object.keys(globalThis.dataManagers)) {
         const dataManager = globalThis.dataManagers[key];
         if (dataManager.perspective === perspective) {
