@@ -31,7 +31,6 @@ export class DataManagerPerspectiveProvider extends BaseDataManager {
         this.#manager = newValue;
     }
 
-
     setRecords(records) {
         return globalThis.dataManagers[this.#manager].setRecords(records);
     }

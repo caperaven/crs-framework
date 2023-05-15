@@ -6,6 +6,7 @@ await init();
 
 beforeAll(async () => {
     await import("../../../../src/managers/data-manager/data-manager-actions.js");
+    await import("../../../../src/managers/perspective-manager/perspective-manager-actions.js");
 
     const records = [];
 
@@ -23,11 +24,19 @@ beforeAll(async () => {
         type: "memory",
         records: records
     })
+
+    await crs.call("perspective", "register", {
+        perspective: "my_perspective"
+    })
 });
 
 afterAll(async () => {
     await crs.call("data_manager", "unregister", {
         manager: "store"
+    })
+
+    await crs.call("perspective", "unregister", {
+        perspective: "my_perspective"
     })
 });
 
@@ -54,5 +63,19 @@ describe("data manager tests", () => {
         assertEquals(instance.constructor.name, "DataManagerPerspectiveProvider");
         assertEquals(instance.perspective, "my_perspective");
         assertEquals(instance.manager, "store");
+    })
+
+    it("perspective is registered", async () => {
+        let perspectiveChanged = false;
+        instance.perspectiveChanged = () => perspectiveChanged = true;
+
+        await crs.call("perspective", "add_filter", {
+            perspective: "my_perspective",
+            field: "id",
+            operator: "gt",
+            value: 50
+        });
+
+        assertEquals(perspectiveChanged, true);
     })
 });

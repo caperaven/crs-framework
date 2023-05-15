@@ -88,10 +88,11 @@ class PerspectiveManagerActions {
  * @returns {Promise<void>}
  */
 export async function notifyPerspectiveChanged(perspective) {
-    // 1. get perspective data sources for the defined perspective
-    const dataManagers = globalThis.dataManagers.filter(manager => manager.perspective === perspective);
-    for (const dataManager of dataManagers) {
-        await dataManagers.perspectiveChanged();
+    for (const key of Object.keys(globalThis.dataManagers)) {
+        const dataManager = globalThis.dataManagers[key];
+        if (dataManager.perspective === perspective) {
+            await dataManager.perspectiveChanged();
+        }
     }
 }
 
