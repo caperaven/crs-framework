@@ -131,9 +131,12 @@ export default class FilterExtension {
     }
 
     async #restoreBackup() {
-        this.#lookupTable[this.#currentField] = this.#backupData;
+        if (this.#isSaving === false) {
+            this.#lookupTable[this.#currentField] = this.#backupData;
+        }
+
         this.#backupData = null;
-        console.log(this.#lookupTable[this.#currentField]);
+        this.#isSaving = false;
     }
 
     async #callback(args) {
@@ -157,12 +160,8 @@ export default class FilterExtension {
         }
 
         if (args.action === "close") {
-            if (this.#isSaving === false) {
-                await this.#restoreBackup();
-            }
-
+            await this.#restoreBackup();
             await this.#disposeManagers();
-            this.#isSaving = false;
         }
 
         if (args.action === "show-hide-selection") {
