@@ -61,6 +61,8 @@ class PerspectiveManagerActions {
         definition.filter[field] ||= {}
         definition.filter[field].operator = operator;
         definition.filter[field].value = value;
+
+        await notifyPerspectiveChanged(perspective);
     }
 
     static async remove_filter(step, context, process, item) {
@@ -75,6 +77,21 @@ class PerspectiveManagerActions {
         if (Object.keys(definition.filter).length === 0) {
             delete definition.filter;
         }
+
+        await notifyPerspectiveChanged(perspective);
+    }
+}
+
+/**
+ * @method notifyPerspectiveChanged - notify the perspective manager that a perspective has changed
+ * @param perspective
+ * @returns {Promise<void>}
+ */
+export async function notifyPerspectiveChanged(perspective) {
+    // 1. get perspective data sources for the defined perspective
+    const dataManagers = globalThis.dataManagers.filter(manager => manager.perspective === perspective);
+    for (const dataManager of dataManagers) {
+        await dataManagers.perspectiveChanged();
     }
 }
 
