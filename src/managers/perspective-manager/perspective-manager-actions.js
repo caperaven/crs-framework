@@ -67,16 +67,28 @@ class PerspectiveManagerActions {
 
     static async remove_filter(step, context, process, item) {
         const perspective = await crs.process.getValue(step.args.perspective, context, process, item);
-        const field = await crs.process.getValue(step.args.field, context, process, item);
 
         const definition = globalThis.perspectives[perspective];
         if (definition == null) return;
 
+        const field = await crs.process.getValue(step.args.field, context, process, item);
         delete definition.filter[field];
 
         if (Object.keys(definition.filter).length === 0) {
             delete definition.filter;
         }
+
+        await notifyPerspectiveChanged(perspective);
+    }
+
+    static async set_grouping(step, context, process, item) {
+        const perspective = await crs.process.getValue(step.args.perspective, context, process, item);
+
+        const definition = globalThis.perspectives[perspective];
+        if (definition == null) return;
+
+        const fields = await crs.process.getValue(step.args.fields, context, process, item);
+        definition.grouping = fields;
 
         await notifyPerspectiveChanged(perspective);
     }

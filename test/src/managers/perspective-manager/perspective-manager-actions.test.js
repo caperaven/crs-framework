@@ -60,4 +60,15 @@ describe("perspective manager tests", () => {
         const filterDefinition = globalThis.perspectives[PERSPECTIVE_NAME].filter;
         assert(filterDefinition == null);
     })
+
+    it ("add grouping", async () => {
+        await crs.call("perspective", "set_grouping", {
+            perspective: PERSPECTIVE_NAME,
+            fields: ["isActive", "site"]
+        })
+
+        const groupDefinition = globalThis.perspectives[PERSPECTIVE_NAME].grouping;
+        assertExists(groupDefinition);
+        assertEquals(groupDefinition, ["isActive", "site"]);
+    });
 })
