@@ -11,7 +11,18 @@ import {BaseDataManager} from "./data-manager-base.js";
  * 2. This needs to be updated when the source data manager changes (records added / removed ...)
  */
 export class DataManagerPerspectiveProvider extends BaseDataManager {
+    /**
+     * @field records - The records that are currently in the perspective
+     * When working with sorting and filtering this is just an array of indexes.
+     * When working with grouping however this needs to represent the group as it stands now, expanded or collapsed.
+     * If expanded then the array will also contain the ids but if collapsed then it will only contain the group item.
+     */
     #records;
+    /**
+     * @field grouping - This is the grouping perspective that we use to populate the records with.
+     * When you expand a grouping this is queried to know what to add or remove from the records.
+     */
+    #grouping;
     #manager;
     #perspective;
 
@@ -29,6 +40,22 @@ export class DataManagerPerspectiveProvider extends BaseDataManager {
 
     set manager(newValue) {
         this.#manager = newValue;
+    }
+
+    get records() {
+        return this.#records;
+    }
+
+    set records(newValue) {
+        this.#records = newValue;
+    }
+
+    get grouping() {
+        return this.#grouping;
+    }
+
+    set grouping(newValue) {
+        this.#grouping = newValue;
     }
 
     setRecords(records) {
