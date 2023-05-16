@@ -62,12 +62,24 @@ class PerspectiveManagerActions {
         const field = await crs.process.getValue(step.args.field, context, process, item);
         const operator = await crs.process.getValue(step.args.operator, context, process, item);
         const value = await crs.process.getValue(step.args.value, context, process, item);
+        const replace = await crs.process.getValue(step.args.replace || false, context, process, item);
 
         const definition = globalThis.perspectives[perspective];
-        definition.filter ||= {};
-        definition.filter[field] ||= {}
-        definition.filter[field].operator = operator;
-        definition.filter[field].value = value;
+        definition.filter ||= [];
+
+        if (replace) {
+            const removeItems = definition.filter.filter(f => f.field !== field);
+            for (const removeItem of removeItems) {
+                const index = definition.filter.indexOf(removeItem);
+                definition.filter.splice(index, 1);
+            }
+        }
+
+        const filterDef = {
+            field, operator, value
+        }
+
+        definition.filter.push(filterDef);
 
         await notifyPerspectiveChanged(perspective);
     }
@@ -79,9 +91,13 @@ class PerspectiveManagerActions {
         if (definition == null) return;
 
         const field = await crs.process.getValue(step.args.field, context, process, item);
-        delete definition.filter[field];
+        const removeItem = definition.filter.find(f => f.field === field);
+        if (removeItem == null) return;
 
-        if (Object.keys(definition.filter).length === 0) {
+        const index = definition.filter.indexOf(removeItem);
+        definition.filter.splice(index, 1);
+
+        if (definition.filter.length === 0) {
             delete definition.filter;
         }
 
