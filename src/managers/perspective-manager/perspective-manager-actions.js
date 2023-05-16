@@ -62,13 +62,13 @@ class PerspectiveManagerActions {
         const field = await crs.process.getValue(step.args.field, context, process, item);
         const operator = await crs.process.getValue(step.args.operator, context, process, item);
         const value = await crs.process.getValue(step.args.value, context, process, item);
-        const replace = await crs.process.getValue(step.args.replace || false, context, process, item);
+        const replace = await crs.process.getValue(step.args.replace || true, context, process, item);
 
         const definition = globalThis.perspectives[perspective];
         definition.filter ||= [];
 
         if (replace) {
-            const removeItems = definition.filter.filter(f => f.field !== field);
+            const removeItems = definition.filter.filter(f => f.field === field);
             for (const removeItem of removeItems) {
                 const index = definition.filter.indexOf(removeItem);
                 definition.filter.splice(index, 1);
