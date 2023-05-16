@@ -138,9 +138,18 @@ export class DataManagerPerspectiveProvider extends BaseDataManager {
     }
 
     async perspectiveChanged() {
+        console.log("Perspective changed <-------------------")
+
         const definition = await crs.call("perspective", "get", { perspective: this.#perspective });
         const data = await crs.call("data_manager", "get_all", { manager: this.#manager });
 
-        console.log(definition, data);
+        console.log(definition);
+
+        const result = await crs.call("data_processing", "get_perspective", {
+            source: data,
+            intent: definition
+        });
+
+        console.log(result);
     }
 }

@@ -5,6 +5,7 @@ import {init} from "../../../mockups/init.js";
 await init();
 
 beforeAll(async () => {
+    await import("./../../../../packages/crs-process-api/action-systems/data-processing-actions.js");
     await import("../../../../src/managers/data-manager/data-manager-actions.js");
     await import("../../../../src/managers/perspective-manager/perspective-manager-actions.js");
 
