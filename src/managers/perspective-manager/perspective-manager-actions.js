@@ -50,6 +50,13 @@ class PerspectiveManagerActions {
         }
     }
 
+    static async get(step, context, process, item) {
+        const perspective = await crs.process.getValue(step.args.perspective, context, process, item);
+        if (perspective == null) return;
+
+        return globalThis.perspectives[perspective];
+    }
+
     static async add_filter(step, context, process, item) {
         const perspective = await crs.process.getValue(step.args.perspective, context, process, item);
         const field = await crs.process.getValue(step.args.field, context, process, item);

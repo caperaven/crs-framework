@@ -67,6 +67,7 @@ describe("data manager tests", () => {
 
     it("perspective is registered", async () => {
         let perspectiveChanged = false;
+        const perspectiveChangedBackup = instance.perspectiveChanged;
         instance.perspectiveChanged = () => perspectiveChanged = true;
 
         await crs.call("perspective", "add_filter", {
@@ -77,5 +78,15 @@ describe("data manager tests", () => {
         });
 
         assertEquals(perspectiveChanged, true);
+        instance.perspectiveChanged = perspectiveChangedBackup;
+    })
+
+    it ("perspective, update records", async () => {
+        await crs.call("perspective", "add_filter", {
+            perspective: "my_perspective",
+            field: "id",
+            operator: "gt",
+            value: 50
+        });
     })
 });

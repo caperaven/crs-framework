@@ -7,6 +7,10 @@ import {BaseDataManager} from "./data-manager-base.js";
 export class DataManagerMemoryProvider extends BaseDataManager {
     #records;
 
+    set records(newValue) {
+        this.setRecords(newValue);
+    }
+
     /**
      * @method setRecords - This method is called to set the records in the data manager.
      * @param records

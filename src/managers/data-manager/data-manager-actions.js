@@ -98,8 +98,10 @@ class DataManagerActions {
             instance.manager = await crs.process.getValue(step.args["source_manager"], context, process, item);
         }
 
-        instance.setRecords(records);
-        instance.selectedCount = selectedCount;
+        if (type !== "perspective") {
+            instance.setRecords(records);
+            instance.selectedCount = selectedCount;
+        }
 
         return globalThis.dataManagers[manager];
     }
