@@ -100,4 +100,25 @@ describe("data manager tests", () => {
         assertEquals(records[0].id, 51);
         assertEquals(records[48].id, 99);
     })
+
+    it ("perspective, get page after filter", async () => {
+        await crs.call("perspective", "add_filter", {
+            perspective: "my_perspective",
+            field: "id",
+            operator: "gt",
+            value: 50
+        });
+
+        const records = await crs.call("data_manager", "get_page", {
+            manager: "perspective_store",
+            page: 1,
+            size: 10
+        });
+
+        // filter was applied and the records set
+        // assert the array length, the first item and last item
+        assertEquals(records.length, 10);
+        assertEquals(records[0].id, 51);
+        assertEquals(records[9].id, 60);
+    })
 });

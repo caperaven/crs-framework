@@ -54,7 +54,7 @@ class PerspectiveManagerActions {
         const perspective = await crs.process.getValue(step.args.perspective, context, process, item);
         if (perspective == null) return;
 
-        return globalThis.perspectives[perspective];
+        return JSON.parse(JSON.stringify(globalThis.perspectives[perspective]));
     }
 
     static async add_filter(step, context, process, item) {
