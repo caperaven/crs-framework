@@ -72,7 +72,14 @@ export class DataManagerPerspectiveProvider extends BaseDataManager {
      * If there is a grouping defined, get all will return the expanded group records including the group item it self.
      */
     getAll() {
+        const manager = globalThis.dataManagers[this.#manager];
+        const result = [];
 
+        for (const record of this.#records) {
+            result.push(manager.getByIndex(record));
+        }
+
+        return result;
     }
 
     /**
@@ -82,7 +89,15 @@ export class DataManagerPerspectiveProvider extends BaseDataManager {
      * @param to {number} - the end index
      */
     getPage(from, to) {
+        const manager = globalThis.dataManagers[this.#manager];
+        const records = this.#records.slice(from, to);
+        const result = [];
 
+        for (const record of records) {
+            result.push(manager.getByIndex(record));
+        }
+
+        return result;
     }
 
     getByIndex(index) {
@@ -138,13 +153,19 @@ export class DataManagerPerspectiveProvider extends BaseDataManager {
     }
 
     async perspectiveChanged() {
-        console.log("Perspective changed <-------------------")
-
         const definition = await crs.call("perspective", "get", { perspective: this.#perspective });
         const data = await crs.call("data_manager", "get_all", { manager: this.#manager });
 
         if (definition.filter.length === 1) {
             definition.filter = definition.filter[0];
+        }
+        else {
+            const filters = definition.filter;
+
+            definition.filter = {
+                "operator": "and",
+                "expressions": filters
+            }
         }
 
         const result = await crs.call("data_processing", "get_perspective", {
@@ -152,6 +173,8 @@ export class DataManagerPerspectiveProvider extends BaseDataManager {
             intent: definition
         });
 
-        console.log(result);
+        if (Array.isArray(result)) {
+            this.#records = result;
+        }
     }
 }

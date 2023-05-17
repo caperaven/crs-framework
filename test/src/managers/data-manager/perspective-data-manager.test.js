@@ -89,5 +89,15 @@ describe("data manager tests", () => {
             operator: "gt",
             value: 50
         });
+
+        const records = await crs.call("data_manager", "get_all", {
+            manager: "perspective_store"
+        });
+
+        // filter was applied and the records set
+        // assert the array length, the first item and last item
+        assertEquals(records.length, 49);
+        assertEquals(records[0].id, 51);
+        assertEquals(records[48].id, 99);
     })
 });
