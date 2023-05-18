@@ -13,7 +13,6 @@ export const CHANGE_TYPES = Object.freeze({
     update: "update",
     delete: "delete",
     refresh: "refresh",
-    filter: "filter",
     selected: "selected",
     perspectiveChanged: "perspective_changed"
 });

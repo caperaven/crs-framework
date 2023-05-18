@@ -16,6 +16,7 @@ export default class FilterExtension {
     #table;
     #parent;
     #currentField;
+    #currentDataType;
     #filterHandler = this.#filter.bind(this);
     #lookupTable = {}
     #callbackHandler = this.#callback.bind(this);
@@ -41,6 +42,7 @@ export default class FilterExtension {
         this.#settings = null;
         this.#itemTemplate = null;
         this.#currentField = null;
+        this.#currentDataType = null;
         this.#callbackHandler = null;
         this.#dialog = null;
         this.#filterHandler = null;
@@ -94,6 +96,7 @@ export default class FilterExtension {
     async #filter(event) {
         const columnCellElement = event.composedPath()[1];
         this.#currentField = columnCellElement.dataset.field;
+        this.#currentDataType = columnCellElement.dataset.type || "string";
         await this.#showFilterOptions(columnCellElement);
     }
 
@@ -161,7 +164,7 @@ export default class FilterExtension {
                 this.#table.dataManager = this.#table.perspectiveDataManagerKey;
             }
 
-            await updateFilter(this.#table.perspective, this.#currentField, FILTER_EXTENSION_DATA_MANAGER);
+            await updateFilter(this.#table.perspective, this.#currentField, this.#currentDataType, FILTER_EXTENSION_DATA_MANAGER);
 
             const isNotDone = await this.#dialog.close();
 
