@@ -53,7 +53,8 @@ class DataManagerActions {
      *
      * @param step.args.manager {string} - The name of the data manager. You will use this when performing operations on the data manager.
      * @param step.args.id_field {string} - The name of the field that contains the id of the record. Default is "id"
-     * @param step.args.type {string} - The type of data manager to use. Default is "indexdb" but you can also use "memory"
+     * @param step.args.type {string} - The type of data manager to use. Default is "indexdb" but you can also use "memory" or "perspective"
+     * @param step.args.perspective {string} - The name of the perspective to use. Only used if type is "perspective"
      *
      * @example <caption>javascript example</caption>
      * await crs.call("data_manager", "register" {
@@ -90,8 +91,18 @@ class DataManagerActions {
             globalThis.dataManagers[manager] = new MANAGER_TYPES[type](manager, dataField);
         }
 
-        globalThis.dataManagers[manager].setRecords(records);
-        globalThis.dataManagers[manager].selectedCount = selectedCount;
+        const instance = globalThis.dataManagers[manager];
+
+        if (type === "perspective") {
+            instance.perspective = await crs.process.getValue(step.args["perspective"], context, process, item);
+            instance.manager = await crs.process.getValue(step.args["source_manager"], context, process, item);
+        }
+
+        if (type !== "perspective") {
+            instance.setRecords(records);
+            instance.selectedCount = selectedCount;
+        }
+
         return globalThis.dataManagers[manager];
     }
 

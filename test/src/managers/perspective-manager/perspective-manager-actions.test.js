@@ -38,8 +38,9 @@ describe("perspective manager tests", () => {
 
         const filterDefinition = globalThis.perspectives[PERSPECTIVE_NAME].filter;
         assertExists(filterDefinition);
-        assertEquals(filterDefinition.isActive.operator, "eq");
-        assertEquals(filterDefinition.isActive.value, true);
+        assertEquals(filterDefinition[0].field, "isActive");
+        assertEquals(filterDefinition[0].operator, "eq");
+        assertEquals(filterDefinition[0].value, true);
     })
 
     it ("remove filter", async () => {
@@ -60,4 +61,15 @@ describe("perspective manager tests", () => {
         const filterDefinition = globalThis.perspectives[PERSPECTIVE_NAME].filter;
         assert(filterDefinition == null);
     })
+
+    it ("add grouping", async () => {
+        await crs.call("perspective", "set_grouping", {
+            perspective: PERSPECTIVE_NAME,
+            fields: ["isActive", "site"]
+        })
+
+        const groupDefinition = globalThis.perspectives[PERSPECTIVE_NAME].grouping;
+        assertExists(groupDefinition);
+        assertEquals(groupDefinition, ["isActive", "site"]);
+    });
 })

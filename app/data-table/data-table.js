@@ -23,6 +23,7 @@ export default class DataTableViewModel extends crsbinding.classes.ViewBase {
             id_field: "id",
             type: "memory",
 
+
             // records: [
             //     { id: 1, code: "code 1", description: "description 1" },
             //     { id: 2, code: "code 2", description: "description 2" },
