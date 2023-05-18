@@ -67,6 +67,7 @@
         cursor: pointer;
         border-radius: var(--radius);
         border: none;
+        font-family: 'SourceSansPro', sans-serif;
     }
 
     #calendar-toolbar #previous-month:hover,#next-month:hover {
@@ -108,6 +109,15 @@
 
     #perspectiveElement{
         height: 19.125rem;
+    }
+
+    @media screen and (max-width: 480px) {
+        #calendar-toolbar  #next-month {
+            margin-left: 2.2rem;
+        }
+        #calendar-toolbar  #previous-month{
+            margin-right: 2.2rem;
+        }
     }
 
 </style>
