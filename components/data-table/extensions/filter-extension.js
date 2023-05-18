@@ -148,6 +148,19 @@ export default class FilterExtension {
         if (args.action === "accept") {
             this.#isSaving = true;
 
+            if (this.#table.dataManager !== this.#table.perspectiveDataManagerKey) {
+                await crs.call("data_manager", "register", {
+                    manager: this.#table.perspectiveDataManagerKey,
+                    id_field: this.#table.idField,
+                    type: "perspective",
+                    source_manager: this.#table.dataManager,
+                    perspective: this.#table.perspective
+                })
+
+                this.#table.oldDatamanager = this.#table.dataManager;
+                this.#table.dataManager = this.#table.perspectiveDataManagerKey;
+            }
+
             await updateFilter(this.#table.perspective, this.#currentField, FILTER_EXTENSION_DATA_MANAGER);
 
             const isNotDone = await this.#dialog.close();
@@ -170,12 +183,14 @@ export default class FilterExtension {
     }
 
     async #createDataManager(data) {
+        const selectedCount = data.filter(item => item._selected === true).length;
+
         return await crs.call("data_manager", "register", {
             manager: FILTER_EXTENSION_DATA_MANAGER,
             id_field: "id",
             type: "memory",
             records: data,
-            selected_count: data.length
+            selected_count: selectedCount
         })
     }
 

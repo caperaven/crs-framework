@@ -19,7 +19,7 @@ export async function updateFilter(perspective, field, dataManager) {
     const values = await getValues(dataManager, useSelected);
 
     if (values.length > 1) {
-        operator = useSelected ? "one_of" : "not_one_of";
+        operator = useSelected ? "in" : "not_in";
     }
 
     const value = values.length === 1 ? values[0] : values;
