@@ -310,12 +310,18 @@ export class PageToolbar extends HTMLElement {
         target?.refresh(data);
     }
 
+    /**
+     * This calculates what the last page number is based on the record count and the page size
+     */
     #calculateLastPage() {
         this.#lastPage = Math.ceil(this.#recordCount / this.pageSize);
 
         if (this.#lastPage < 1) {
             this.#lastPage = 1;
         }
+
+        this.shadowRoot.querySelector("#divPageCount").textContent = this.#lastPage;
+        this.shadowRoot.querySelector("#divTotalCount").textContent = this.#recordCount;
     }
 
     /**
@@ -326,7 +332,7 @@ export class PageToolbar extends HTMLElement {
         switch (args.action) {
             case "data-manager-changed": {
                 this.#dataManager = args.manager;
-                const count = (await crs.call("data_manager", "get_counts", { manager: this.#dataManager })).count;
+                const count = (await crs.call("data_manager", "get_counts", { manager: this.#dataManager })).total;
 
                 await this.#dataManagerChangedHandler({
                     action: CHANGE_TYPES.refresh,

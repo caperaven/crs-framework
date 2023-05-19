@@ -42,6 +42,15 @@ export class BaseDataManager {
     }
 
     /**
+     * @property count {number} - The number of records in the data manager
+     * This is for internal use of the data managers only.
+     * @param newValue
+     */
+    set count(newValue) {
+        this.#count = newValue;
+    }
+
+    /**
      * @property selectedCount {number} - The number of records that are currently selected
      * @returns {number}
      */

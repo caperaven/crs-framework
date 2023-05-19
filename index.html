@@ -107,6 +107,13 @@
             })
 
             await crs.call("translations", "add", {
+                "context": "pageToolbar",
+                "translations": {
+                    "rowsPerPage": "Rows per page"
+                }
+            })
+
+            await crs.call("translations", "add", {
                 "context": "system",
                 "translations": {
                     "loadingMessage": "Loading..."
