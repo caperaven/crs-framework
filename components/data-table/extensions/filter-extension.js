@@ -160,7 +160,7 @@ export default class FilterExtension {
                     perspective: this.#table.perspective
                 })
 
-                this.#table.oldDatamanager = this.#table.dataManager;
+                this.#table.oldDataManager = this.#table.dataManager;
                 this.#table.dataManager = this.#table.perspectiveDataManagerKey;
             }
 

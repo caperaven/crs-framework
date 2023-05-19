@@ -163,6 +163,15 @@ export class DataManagerPerspectiveProvider extends BaseDataManager {
 
     async perspectiveChanged() {
         const definition = await crs.call("perspective", "get", { perspective: this.#perspective });
+
+        // does the definition only contain the count property ?
+        // if so then we need to swap back to the source data manager
+        if (Object.keys(definition).length === 1) {
+            return await this.notifyChanges({
+                action: CHANGE_TYPES.perspectiveRollback
+            });
+        }
+
         const data = await crs.call("data_manager", "get_all", { manager: this.#manager });
 
         if (definition.filter.length === 1) {

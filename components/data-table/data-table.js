@@ -122,7 +122,8 @@ export class DataTable extends HTMLElement {
         [CHANGE_TYPES.delete]: this.#deleteRecord,
         [CHANGE_TYPES.filter]: this.#filterRecords,
         [CHANGE_TYPES.refresh]: this.refresh,
-        [CHANGE_TYPES.perspectiveChanged]: this.#updateFromPerspective
+        [CHANGE_TYPES.perspectiveChanged]: this.#updateFromPerspective,
+        [CHANGE_TYPES.perspectiveRollback]: this.#perspectiveRollback
     };
 
     /**
@@ -376,6 +377,20 @@ export class DataTable extends HTMLElement {
      */
     async #updateFromPerspective() {
         // update toolbar if it exists to update
+        await crsbinding.events.emitter.postMessage(`[for="#${this.id}"]`, {
+            action: "data-manager-changed",
+            manager: this.#dataManager
+        });
+    }
+
+    /**
+     * @method #perspectiveRollback - the perspective has changed, update accordingly
+     * This is fired from the perspective data manager to return to the origional data manager
+     * @returns {Promise<void>}
+     */
+    async #perspectiveRollback() {
+        this.#dataManager = this.#oldDataManager;
+
         await crsbinding.events.emitter.postMessage(`[for="#${this.id}"]`, {
             action: "data-manager-changed",
             manager: this.#dataManager
