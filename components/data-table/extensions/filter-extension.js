@@ -16,6 +16,7 @@ export default class FilterExtension {
     #table;
     #parent;
     #currentField;
+    #currentDataType;
     #filterHandler = this.#filter.bind(this);
     #lookupTable = {}
     #callbackHandler = this.#callback.bind(this);
@@ -41,6 +42,7 @@ export default class FilterExtension {
         this.#settings = null;
         this.#itemTemplate = null;
         this.#currentField = null;
+        this.#currentDataType = null;
         this.#callbackHandler = null;
         this.#dialog = null;
         this.#filterHandler = null;
@@ -94,6 +96,7 @@ export default class FilterExtension {
     async #filter(event) {
         const columnCellElement = event.composedPath()[1];
         this.#currentField = columnCellElement.dataset.field;
+        this.#currentDataType = columnCellElement.dataset.type || "string";
         await this.#showFilterOptions(columnCellElement);
     }
 
@@ -148,7 +151,20 @@ export default class FilterExtension {
         if (args.action === "accept") {
             this.#isSaving = true;
 
-            await updateFilter(this.#table.perspective, this.#currentField, FILTER_EXTENSION_DATA_MANAGER);
+            if (this.#table.dataManager !== this.#table.perspectiveDataManagerKey) {
+                await crs.call("data_manager", "register", {
+                    manager: this.#table.perspectiveDataManagerKey,
+                    id_field: this.#table.idField,
+                    type: "perspective",
+                    source_manager: this.#table.dataManager,
+                    perspective: this.#table.perspective
+                })
+
+                this.#table.oldDatamanager = this.#table.dataManager;
+                this.#table.dataManager = this.#table.perspectiveDataManagerKey;
+            }
+
+            await updateFilter(this.#table.perspective, this.#currentField, this.#currentDataType, FILTER_EXTENSION_DATA_MANAGER);
 
             const isNotDone = await this.#dialog.close();
 
@@ -170,12 +186,14 @@ export default class FilterExtension {
     }
 
     async #createDataManager(data) {
+        const selectedCount = data.filter(item => item._selected === true).length;
+
         return await crs.call("data_manager", "register", {
             manager: FILTER_EXTENSION_DATA_MANAGER,
             id_field: "id",
             type: "memory",
             records: data,
-            selected_count: data.length
+            selected_count: selectedCount
         })
     }
 

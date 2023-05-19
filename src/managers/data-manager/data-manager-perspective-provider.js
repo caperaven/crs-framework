@@ -1,4 +1,5 @@
 import {BaseDataManager} from "./data-manager-base.js";
+import {CHANGE_TYPES} from "./data-manager-types.js";
 
 /**
  * @class DataManagerPerspectiveProvider - This class is used to provide a perspective based data manager.
@@ -58,6 +59,10 @@ export class DataManagerPerspectiveProvider extends BaseDataManager {
         this.#grouping = newValue;
     }
 
+    async notifyChanges(args) {
+        return globalThis.dataManagers[this.#manager].notifyChanges(args);
+    }
+
     setRecords(records) {
         return globalThis.dataManagers[this.#manager].setRecords(records);
     }
@@ -89,6 +94,10 @@ export class DataManagerPerspectiveProvider extends BaseDataManager {
      * @param to {number} - the end index
      */
     getPage(from, to) {
+        if (this.#records == null || this.#records.length === 0) {
+            return [];
+        }
+
         const manager = globalThis.dataManagers[this.#manager];
         const records = this.#records.slice(from, to);
         const result = [];
@@ -176,5 +185,10 @@ export class DataManagerPerspectiveProvider extends BaseDataManager {
         if (Array.isArray(result)) {
             this.#records = result;
         }
+
+        await this.notifyChanges({
+            action: CHANGE_TYPES.perspectiveChanged,
+            count: result.length
+        })
     }
 }
