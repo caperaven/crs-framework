@@ -283,10 +283,6 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      * 2. no current date or previous focus date ,set selected date as focused date
      * 3. changing months focus must move to new focus date and all other tab indexes must be set to -1.
      * 4. staying on the same month and changing selection, unset current focus and set it to the new selected date.
-     * 5.
-     * 6.
-     * 7.
-     * 8.
      */
     async #setFocus() {
         const elementList = this.calendars?.querySelectorAll("[tabindex='0']");
