@@ -193,6 +193,8 @@ export class DataManagerPerspectiveProvider extends BaseDataManager {
 
         if (Array.isArray(result)) {
             this.#records = result;
+            this.count = result.length;
+            this.selectedCount = 0;
         }
 
         await this.notifyChanges({
