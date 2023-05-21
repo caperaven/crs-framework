@@ -90,7 +90,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     async attributeChangedCallback(name, oldValue, newValue) {
-        if (!newValue) return;
+        if (newValue == null) return;
 
         const date = new Date(newValue);
         this.#month = date.getMonth();

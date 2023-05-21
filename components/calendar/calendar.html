@@ -20,61 +20,51 @@
         grid-row-gap: 0.75rem;
     }
 
-    :focus{
+    :focus {
         outline: 0;
-        box-shadow: inset 0 0 0 2px var(--blue);
+        box-shadow: inset 0 0 0 0.125rem var(--blue);
     }
 
     #calendar-toolbar {
         display: flex;
-        justify-content: center;
-        align-items: center;
         height: var(--size);
-        border:none;
+        border: none;
         color: var(--grey);
+
     }
 
     #calendar-toolbar #month, #year, #previous-month, #next-month {
         display: inherit;
-        justify-content: center;
-        align-items: center;
         background: transparent;
         height: var(--size);
-    }
-
-
-    #calendar-toolbar #previous-month, #next-month {
-        width: var(--size);
         cursor: pointer;
         border-radius: var(--radius);
         border: none;
+    }
+
+    #calendar-toolbar, #month, #year, #previous-month, #next-month {
+        justify-content: center;
+        align-items: center;
+    }
+
+    #calendar-toolbar #previous-month, #next-month {
+        width: var(--size);
         font-family: var(--icon-font-family);
         font-size: 1.5rem;
     }
 
-    #calendar-toolbar #previous-month{
+    #calendar-toolbar #previous-month, #year {
         margin-right: 1.2rem;
     }
 
-    #calendar-toolbar #next-month{
-        margin-left: 1.2rem;
-    }
-
     #calendar-toolbar #month, #year {
+        font-family: 'SourceSansPro', sans-serif;
         text-align: center;
         font-size: var(--text-size);
         font-weight: bold;
-        cursor: pointer;
-        border-radius: var(--radius);
-        border: none;
-        font-family: 'SourceSansPro', sans-serif;
     }
 
-    #calendar-toolbar #previous-month:hover,#next-month:hover {
-        background: var(--grey-s3);
-    }
-
-    #calendar-toolbar #month:hover, #year:hover {
+    #calendar-toolbar #previous-month:hover, #next-month:hover, #month:hover, #year:hover {
         background: var(--grey-s3);
     }
 
@@ -86,7 +76,7 @@
         width: 7.5rem;
     }
 
-    #calendar-toolbar #year:after,#month:after {
+    #calendar-toolbar #year:after, #month:after {
         font-family: var(--icon-font-family);
         content: var(--chevron-down-icon);
         padding-left: var(--chevron-padding);
@@ -107,46 +97,43 @@
         rotate: 90deg;
     }
 
-    #perspectiveElement{
+    #perspectiveElement {
         height: 19.125rem;
     }
 
     @media screen and (max-width: 480px) {
-        #calendar-toolbar  #next-month {
-            margin-left: 2.2rem;
-        }
-        #calendar-toolbar  #previous-month{
+        #calendar-toolbar #previous-month, #year {
             margin-right: 2.2rem;
         }
     }
 
 </style>
 
-<svg style="display: none" viewBox="0 0 24 24">
-    <symbol id="chevron-up" width="24" height="24">
-        <path d="M7.14541 15.6446L12.0063 10.9309L16.8671 15.6446C17.3557 16.1185 18.145 16.1185 18.6336 15.6446C19.1221 15.1708 19.1221 14.4055 18.6336 13.9317L12.8832 8.35535C12.3946 7.88155 11.6054 7.88155 11.1168 8.35535L5.36644 13.9317C4.87785 14.4055 4.87785 15.1708 5.36644 15.6446C5.85503 16.1063 6.65682 16.1185 7.14541 15.6446Z" fill="#272C37"/>
-    </symbol>
-
-    <symbol id="chevron-down" width="24" height="24">
-        <path d="M7.14541 8.35535L12.0063 13.0691L16.8671 8.35535C17.3557 7.88155 18.145 7.88155 18.6336 8.35535C19.1221 8.82916 19.1221 9.59453 18.6336 10.0683L12.8832 15.6446C12.3946 16.1185 11.6054 16.1185 11.1168 15.6446L5.36644 10.0683C4.87785 9.59453 4.87785 8.82916 5.36644 8.35535C5.85503 7.8937 6.65682 7.88155 7.14541 8.35535Z" fill="#272C37"/>
-    </symbol>
-</svg>
-
 <template id="tplCell">
-    <div role="cell" tabindex="-1" aria-selected="${selected}" data-day="${date.getDate()}" data-month="${date.getMonth()}" data-year="${date.getFullYear()}" classlist.case="current == false: 'non-current-day', new Date().toLocaleDateString() === date.toLocaleDateString(): 'today'">${number}</div>
+    <div role="cell" tabindex="-1" aria-selected="${selected}" data-day="${date.getDate()}"
+         data-month="${date.getMonth()}" data-year="${date.getFullYear()}"
+         classlist.case="current == false: 'non-current-day', new Date().toLocaleDateString() === date.toLocaleDateString(): 'today'">
+        ${number}
+    </div>
 </template>
 <template id="tplYears">
     <div data-type="year-cell" tabindex="-1" data-value="${year}">${year}</div>
 </template>
 
 <div id="calendar-toolbar" role="toolbar" ref="tools">
-    <button id="previous-month" aria-label="Previous month" tooltip="Previous"  data-action="goToPrevious">chevron-left</button>
-    <button id="month" aria-label="Month selector" value="months" tooltip="Months" data-action="selectView" classlist.if="selectedView == 'months' ? 'current-view'">${selectedMonthText}</button>
-    <button id="year" aria-label="Year selector" value="years" tooltip="Years" data-action="selectView" classlist.if="selectedView == 'years' ? 'current-view'">${selectedYearText}</button>
-    <button id="next-month" aria-label="Next month" tooltip="Next" data-action ="goToNext">chevron-right</button>
+    <button id="previous-month" aria-label="Previous month" tooltip="Previous" data-action="goToPrevious">chevron-left
+    </button>
+    <button id="month" aria-label="Month selector" value="months" tooltip="Months" data-action="selectView"
+            classlist.if="selectedView == 'months' ? 'current-view'">${selectedMonthText}
+    </button>
+    <button id="year" aria-label="Year selector" value="years" tooltip="Years" data-action="selectView"
+            classlist.if="selectedView == 'years' ? 'current-view'">${selectedYearText}
+    </button>
+    <button id="next-month" aria-label="Next month" tooltip="Next" data-action="goToNext">chevron-right</button>
 </div>
 
-<perspective-element id="perspectiveElement" view.bind="selectedView" ctx.once="contextId" data-folder="./components/calendar/" ref="perspectiveElement">
+<perspective-element id="perspectiveElement" view.bind="selectedView" ctx.once="contextId"
+                     data-folder="./packages/crs-framework/components/calendar/" ref="perspectiveElement">
     <template data-id="default" data-default="true">
         <template src="./templates/days.html"></template>
     </template>
