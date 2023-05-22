@@ -16,13 +16,13 @@ export default class FileSystem extends crs.binding.classes.BindableElement {
     async load() {
         const tplFolder = this.shadowRoot.querySelector("#tplFolder");
         const tplFile = this.shadowRoot.querySelector("#tplFile");
-        await crs.binding.inflationManager.register("file-system-folder", tplFolder);
-        await crs.binding.inflationManager.register("file-system-file", tplFile);
+        await crs.binding.inflation.manager.register("file-system-folder", tplFolder);
+        await crs.binding.inflation.manager.register("file-system-file", tplFile);
     }
 
     async disconnectedCallback() {
-        await crs.binding.inflationManager.unregister("file-system-folder");
-        await crs.binding.inflationManager.unregister("file-system-file");
+        await crs.binding.inflation.manager.unregister("file-system-folder");
+        await crs.binding.inflation.manager.unregister("file-system-file");
         await super.disconnectedCallback();
     }
 

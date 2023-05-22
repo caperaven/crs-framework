@@ -55,10 +55,10 @@ export default class Calendar extends crs.binding.classes.BindableElement {
 
     async load() {
         const tplCell = this.shadowRoot.querySelector("#tplCell");
-        await crs.binding.inflationManager.register("calendar-cell", tplCell);
+        await crs.binding.inflation.manager.register("calendar-cell", tplCell);
 
         const tplYears = this.shadowRoot.querySelector("#tplYears");
-        await crs.binding.inflationManager.register("calendar-years", tplYears);
+        await crs.binding.inflation.manager.register("calendar-years", tplYears);
 
         this.#tabHandler = this.#tabNavigation.bind(this);
         this.shadowRoot.addEventListener('keydown', this.#tabHandler);
@@ -66,8 +66,8 @@ export default class Calendar extends crs.binding.classes.BindableElement {
 
     async disconnectedCallback() {
         await super.disconnectedCallback();
-        await crs.binding.inflationManager.unregister("calendar-cell");
-        await crs.binding.inflationManager.unregister("calendar-years");
+        await crs.binding.inflation.manager.unregister("calendar-cell");
+        await crs.binding.inflation.manager.unregister("calendar-years");
         this.shadowRoot.removeEventListener('keydown', this.#tabHandler);
         this.#tabHandler = null;
         this.#month = null;
