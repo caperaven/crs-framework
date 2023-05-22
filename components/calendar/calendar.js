@@ -39,6 +39,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     async load() {
+        await this.#initMonthTranslations();
         this.#perspectiveElement = this.shadowRoot.querySelector("#perspectiveElement");
         this.#perspectiveHandler = this.#viewLoaded.bind(this);
         this.#perspectiveElement.addEventListener("view-loaded", this.#perspectiveHandler);
@@ -79,7 +80,9 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         this.#perspectiveElement.removeEventListener("view-loaded", this.#perspectiveHandler);
         this.#perspectiveElement = null;
         this.#perspectiveHandler = null;
-
+        await crs.call("translations", "delete", {
+            context: "calendar"
+        });
         await super.disconnectedCallback();
     }
 
@@ -99,6 +102,30 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         await this.#setYearProperty();
 
         (newValue !== oldValue) && await this.#defaultVisualSelection();
+    }
+
+    /***
+     * @method #initMonthTranslations - translations for the months for framework.
+     * @return {Promise<void>}
+     */
+    async #initMonthTranslations() {
+        await crs.call("translations", "add", {
+            context: "calendar",
+            translations: {
+                "january": "January",
+                "february": "February",
+                "march": "March",
+                "april": "April",
+                "may": "May",
+                "june": "June",
+                "july": "July",
+                "august": "August",
+                "september": "September",
+                "october": "October",
+                "november": "November",
+                "december": "December",
+            }
+        });
     }
 
     /**
@@ -133,7 +160,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      * view is months, it sets the months view.
      */
     async #setMonthProperty() {
-        this.setProperty("selectedMonthText", new Date(this.#year, this.#month).toLocaleString('en-US', {month: 'long'}));
+        this.setProperty("selectedMonthText", new Date(this.#year, this.#month).toLocaleString(navigator.language, {month: 'long'}));
         this.setProperty("selectedMonth", this.#month);
         this.selectedView === "months" && await this.#monthsVisualSelection();
     }
@@ -277,7 +304,6 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      * @method setFocusOnRender - The function gets the currently selected tab, then gets all the tabs, then sets the tabIndex of the currently
      * selected tab to -1, and the tabIndex of the newly selected tab to 0
      *
-     *
      * Scenarios:
      * 1. no selection or previous focus use current date
      * 2. no current date or previous focus date ,set selected date as focused date
@@ -333,7 +359,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
 
     /**
      * @method #get_elements - Takes in a date object and returns and element that matches the date, month, and year.
-     * @param date
+     * @param data
      * @returns {Element}
      */
     async #get_element(data) {
