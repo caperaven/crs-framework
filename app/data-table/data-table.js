@@ -5,7 +5,7 @@ import "./../../test/test-data.js";
 import "./../../components/dialog/dialog-actions.js";
 import "./../../packages/crs-process-api/action-systems/html-actions.js";
 
-export default class DataTableViewModel extends crsbinding.classes.ViewBase {
+export default class DataTableViewModel extends crs.binding.classes.ViewBase {
     async preLoad() {
         const data = await crs.call("test_data", "get", {
             fields: {

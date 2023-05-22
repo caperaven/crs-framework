@@ -1,6 +1,6 @@
 import "./../../components/busy-ui/busy-ui-actions.js";
 
-export default class BusyUIViewModel extends crsbinding.classes.ViewBase {
+export default class BusyUIViewModel extends crs.binding.classes.ViewBase {
     #hasBusy = "";
     async connectedCallback() {
         await super.connectedCallback();

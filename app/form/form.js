@@ -1,12 +1,12 @@
 import "../../components/masked-input/masked-input.js"
 
-export default class Form extends crsbinding.classes.ViewBase {
+export default class Form extends crs.binding.classes.ViewBase {
     async connectedCallback() {
         await super.connectedCallback();
     }
 
     preLoad() {
-        crsbinding.translations.add({
+        crs.binding.translations.add({
             firstName: "First Name",
             lastName: "Last Name",
             duration: "Duration",

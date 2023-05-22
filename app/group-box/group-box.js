@@ -1,6 +1,6 @@
 import "/components/group-box/group-box.js";
 
-export default class GroupBox extends crsbinding.classes.ViewBase {
+export default class GroupBox extends crs.binding.classes.ViewBase {
 
     async connectedCallback() {
         await super.connectedCallback();

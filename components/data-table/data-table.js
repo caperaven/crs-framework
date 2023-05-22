@@ -377,7 +377,7 @@ export class DataTable extends HTMLElement {
      */
     async #updateFromPerspective() {
         // update toolbar if it exists to update
-        await crsbinding.events.emitter.postMessage(`[for="#${this.id}"]`, {
+        await crs.binding.events.emitter.postMessage(`[for="#${this.id}"]`, {
             action: "data-manager-changed",
             manager: this.#dataManager
         });
@@ -391,7 +391,7 @@ export class DataTable extends HTMLElement {
     async #perspectiveRollback() {
         this.#dataManager = this.#oldDataManager;
 
-        await crsbinding.events.emitter.postMessage(`[for="#${this.id}"]`, {
+        await crs.binding.events.emitter.postMessage(`[for="#${this.id}"]`, {
             action: "data-manager-changed",
             manager: this.#dataManager
         });

@@ -4,7 +4,7 @@ import {addSelectionFeature} from "./selection.js";
 import {selectedConverter} from "./value-converters/selected-converter.js";
 import {enableInput, disableInput} from "./input.js";
 
-export default class DataGrid extends crsbinding.classes.BindableElement {
+export default class DataGrid extends crs.binding.classes.BindableElement {
     #columns;
     #columnGroups;
 
@@ -31,7 +31,7 @@ export default class DataGrid extends crsbinding.classes.BindableElement {
     async connectedCallback() {
         await super.connectedCallback();
 
-        crsbinding.valueConvertersManager.add("selected", selectedConverter);
+        crs.binding.valueConvertersManager.add("selected", selectedConverter);
 
         this.#columns = [];
         this.#columnGroups = [];
@@ -48,7 +48,7 @@ export default class DataGrid extends crsbinding.classes.BindableElement {
     }
 
     async disconnectedCallback() {
-        crsbinding.valueConvertersManager.remove("selected");
+        crs.binding.valueConvertersManager.remove("selected");
 
         this.#columns = null;
         this.#columnGroups = null;
@@ -84,7 +84,7 @@ export default class DataGrid extends crsbinding.classes.BindableElement {
 
     async modifyRecord(rowIndex, field, value, convert) {
         if (convert != null) {
-            value = await crsbinding.valueConvertersManager.convert(value, convert.converter, "set", convert.parameter);
+            value = await crs.binding.valueConvertersManager.convert(value, convert.converter, "set", convert.parameter);
         }
 
         // await crs.call("data_manager", "update", {

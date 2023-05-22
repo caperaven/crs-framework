@@ -38,7 +38,7 @@ export class TabList extends HTMLElement {
             requestAnimationFrame( async () => {
                 this.shadowRoot.addEventListener("click", this.#clickHandler);
                 this.#target = this.#target || document.querySelector(this.getAttribute("for"));
-                await crsbinding.translations.parseElement(this);
+                await crs.binding.translations.parseElement(this);
 
                 await crs.call("component", "notify_ready", { element: this });
                 resolve();

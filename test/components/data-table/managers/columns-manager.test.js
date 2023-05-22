@@ -84,7 +84,7 @@ describe ("ColumnsManager tests", async () => {
     });
 
     it ("append with translations", async () => {
-        await crsbinding.translations.add({
+        await crs.binding.translations.add({
             code: "MyCode"
         }, "test");
 
@@ -95,14 +95,14 @@ describe ("ColumnsManager tests", async () => {
     });
 
     it ("insert with translations", async () => {
-        await crsbinding.translations.add({
+        await crs.binding.translations.add({
             code: "MyCode"
         }, "test");
 
         await instance.insert(0, "&{test.code}", 100);
         assertEquals(instance.columns[0].title, "MyCode");
 
-        await crsbinding.translations.delete("test");
+        await crs.binding.translations.delete("test");
     });
 
     it ("set", async () => {

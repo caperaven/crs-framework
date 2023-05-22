@@ -1,4 +1,4 @@
-export default class CheckList extends crsbinding.classes.ViewBase {
+export default class CheckList extends crs.binding.classes.ViewBase {
     async preLoad() {
         const translations = {
             item1: "Item 1",
@@ -7,7 +7,7 @@ export default class CheckList extends crsbinding.classes.ViewBase {
             item4: "Item 4"
         }
 
-        await crsbinding.translations.add(translations, "checklist");
+        await crs.binding.translations.add(translations, "checklist");
     }
 
     async connectedCallback() {
@@ -15,7 +15,7 @@ export default class CheckList extends crsbinding.classes.ViewBase {
     }
 
     async disconnectedCallback() {
-        await crsbinding.translations.delete("checklist");
+        await crs.binding.translations.delete("checklist");
         await super.disconnectedCallback();
     }
 

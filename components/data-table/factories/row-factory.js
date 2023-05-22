@@ -20,5 +20,5 @@ export function rowFactory (columns, idField) {
     code.push('parent.appendChild(row);');
     code.push('return row;');
 
-    return new crsbinding.classes.AsyncFunction("item", "parent", code.join("\n"));
+    return new crs.binding.classes.AsyncFunction("item", "parent", code.join("\n"));
 }

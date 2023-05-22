@@ -145,7 +145,7 @@ export class PageToolbar extends HTMLElement {
 
     async #translate() {
         const element = this.shadowRoot.querySelector("#divLabel");
-        await crsbinding.translations.parseElement(element);
+        await crs.binding.translations.parseElement(element);
     }
 
     /**

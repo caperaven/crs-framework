@@ -1,6 +1,6 @@
 import {CalendarUtils} from "./calendar-utils.js";
 
-export default class Calendar extends crsbinding.classes.BindableElement {
+export default class Calendar extends crs.binding.classes.BindableElement {
     #month;
     #year;
     #dateSelected;
@@ -55,10 +55,10 @@ export default class Calendar extends crsbinding.classes.BindableElement {
 
     async load() {
         const tplCell = this.shadowRoot.querySelector("#tplCell");
-        await crsbinding.inflationManager.register("calendar-cell", tplCell);
+        await crs.binding.inflationManager.register("calendar-cell", tplCell);
 
         const tplYears = this.shadowRoot.querySelector("#tplYears");
-        await crsbinding.inflationManager.register("calendar-years", tplYears);
+        await crs.binding.inflationManager.register("calendar-years", tplYears);
 
         this.#tabHandler = this.#tabNavigation.bind(this);
         this.shadowRoot.addEventListener('keydown', this.#tabHandler);
@@ -66,8 +66,8 @@ export default class Calendar extends crsbinding.classes.BindableElement {
 
     async disconnectedCallback() {
         await super.disconnectedCallback();
-        await crsbinding.inflationManager.unregister("calendar-cell");
-        await crsbinding.inflationManager.unregister("calendar-years");
+        await crs.binding.inflationManager.unregister("calendar-cell");
+        await crs.binding.inflationManager.unregister("calendar-years");
         this.shadowRoot.removeEventListener('keydown', this.#tabHandler);
         this.#tabHandler = null;
         this.#month = null;
@@ -108,7 +108,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
 
         const data = await crs.call("date", "get_days", {month: this.#month, year: this.#year, only_current: false});
         const cells = this.shadowRoot.querySelectorAll("[role='cell']");
-        crsbinding.inflationManager.get("calendar-cell", data, cells);
+        crs.binding.inflationManager.get("calendar-cell", data, cells);
         await this.#setFocusOnRender();
     }
 
@@ -119,7 +119,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         const year = new Date().getFullYear();
         const years = CalendarUtils.getYearsAround(year, -30, 30);
         const cells = this.shadowRoot.querySelectorAll("[data-type='year-cell']");
-        crsbinding.inflationManager.get("calendar-years", years, cells);
+        crs.binding.inflationManager.get("calendar-years", years, cells);
         const element = await this.#setMonthAndYearAria(this.#year);
         element.scrollIntoView({block: 'start', behavior: 'smooth'});
         element.focus();

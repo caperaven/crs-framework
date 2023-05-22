@@ -49,7 +49,7 @@ export class AvailableSelected extends HTMLElement {
             this.shadowRoot.addEventListener("click", this.#clickHandler);
             this.#tablist = this.shadowRoot.querySelector("tab-list");
             this.#currentView = "selected";
-            await crsbinding.translations.parseElement(this);
+            await crs.binding.translations.parseElement(this);
             await crs.call("component", "notify_ready", {element: this});
         })
     }
@@ -140,7 +140,7 @@ export class AvailableSelected extends HTMLElement {
 
     async #addDragAndDrop() {
         if (this.#perspectiveElement.view === "selected") {
-            crsbinding.idleTaskManager.add(async () => {
+            crs.binding.idleTaskManager.add(async () => {
                 const target = this.#perspectiveElement.querySelector("ul");
 
                 await crs.call("dom_interactive", "enable_dragdrop", {

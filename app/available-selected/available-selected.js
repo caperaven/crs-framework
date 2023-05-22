@@ -1,6 +1,6 @@
 import "./../../components/available-selected/available-selected-actions.js";
 
-export default class AvailableSelected extends crsbinding.classes.ViewBase {
+export default class AvailableSelected extends crs.binding.classes.ViewBase {
     async preLoad() {}
 
     async connectedCallback() {

@@ -1,6 +1,6 @@
 import {addColumnFeatures} from "./columns.js";
 
-export default class KanBan extends crsbinding.classes.BindableElement {
+export default class KanBan extends crs.binding.classes.BindableElement {
     #columns = [];
     #refreshHandler = this.refresh.bind(this);
     #allowDropHandler = this.#allowDrop.bind(this);
@@ -72,7 +72,7 @@ export default class KanBan extends crsbinding.classes.BindableElement {
     async #drawAll() {
         const rows = await crs.call("data_manager", "get_all", { manager: this.dataset.manager });
 
-        const instances = crsbinding.inflationManager.get(this.dataset.template, rows);
+        const instances = crs.binding.inflationManager.get(this.dataset.template, rows);
         await this.#addInstancesToUI(instances);
     }
 
@@ -83,7 +83,7 @@ export default class KanBan extends crsbinding.classes.BindableElement {
     }
 
     async #add(args) {
-        const instances = crsbinding.inflationManager.get(this.dataset.template, args.models);
+        const instances = crs.binding.inflationManager.get(this.dataset.template, args.models);
         await this.#addInstancesToUI(instances);
     }
 
@@ -104,7 +104,7 @@ export default class KanBan extends crsbinding.classes.BindableElement {
     async #update(args) {
         const element = this.container.querySelector(`[data-id="${args.id}"]`);
         const row = await crs.call("data_manager", "get", { manager: this.dataset.manager, id: args.id })
-        crsbinding.inflationManager.get(this.dataset.template, [row], [element]);
+        crs.binding.inflationManager.get(this.dataset.template, [row], [element]);
     }
 
     async refresh(args) {

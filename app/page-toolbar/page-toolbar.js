@@ -2,13 +2,13 @@ import "./../../components/page-toolbar/page-toolbar.js";
 import "../../src/managers/data-manager/data-manager-actions.js";
 import "./../../test/test-data.js";
 
-export default class PageToolbarViewModel extends crsbinding.classes.ViewBase {
+export default class PageToolbarViewModel extends crs.binding.classes.ViewBase {
     async connectedCallback() {
         await super.connectedCallback();
     }
 
     async preLoad() {
-        await crsbinding.translations.add({
+        await crs.binding.translations.add({
             rowsPerPage: "rows per page"
         }, "pageToolbar");
 

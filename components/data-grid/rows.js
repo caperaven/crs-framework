@@ -16,7 +16,7 @@ export function createRowInflation(grid, idField, rowFormatting, cellFormatting)
 
         if (column.convert != null) {
             const target = column.html == true ? "innerHTML" : "textContent";
-            code.push(`element.children[${i}].${target} = crsbinding.valueConvertersManager.convert(model.${column.field}, "${column.convert.converter}", "get")`);
+            code.push(`element.children[${i}].${target} = crs.binding.valueConvertersManager.convert(model.${column.field}, "${column.convert.converter}", "get")`);
         }
         else {
             code.push(`element.children[${i}].textContent = model.${column.field}`);

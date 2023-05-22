@@ -1,12 +1,12 @@
 import "../../components/markdown/markdown-viewer/markdown-viewer-actions.js"
 
-export default class MarkdownViewer extends crsbinding.classes.ViewBase {
+export default class MarkdownViewer extends crs.binding.classes.ViewBase {
     async connectedCallback() {
         await super.connectedCallback();
     }
 
     preLoad() {
-        crsbinding.translations.add({
+        crs.binding.translations.add({
             hello: "Hello",
             world: "World"
         }, "md")

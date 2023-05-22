@@ -1,7 +1,7 @@
 import "./color-gradient.js";
 import "./color-panel.js";
 
-class ColorPicker extends crsbinding.classes.BindableElement {
+class ColorPicker extends crs.binding.classes.BindableElement {
     #bounds;
     #panelBounds;
     #gradientBounds;

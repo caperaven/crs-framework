@@ -1,4 +1,4 @@
-export default class FileSystem extends crsbinding.classes.BindableElement {
+export default class FileSystem extends crs.binding.classes.BindableElement {
     #data = [];
 
     get shadowDom() {
@@ -16,13 +16,13 @@ export default class FileSystem extends crsbinding.classes.BindableElement {
     async load() {
         const tplFolder = this.shadowRoot.querySelector("#tplFolder");
         const tplFile = this.shadowRoot.querySelector("#tplFile");
-        await crsbinding.inflationManager.register("file-system-folder", tplFolder);
-        await crsbinding.inflationManager.register("file-system-file", tplFile);
+        await crs.binding.inflationManager.register("file-system-folder", tplFolder);
+        await crs.binding.inflationManager.register("file-system-file", tplFile);
     }
 
     async disconnectedCallback() {
-        await crsbinding.inflationManager.unregister("file-system-folder");
-        await crsbinding.inflationManager.unregister("file-system-file");
+        await crs.binding.inflationManager.unregister("file-system-folder");
+        await crs.binding.inflationManager.unregister("file-system-file");
         await super.disconnectedCallback();
     }
 
@@ -203,7 +203,7 @@ function sortArray(array) {
 function buildUI(array, fragment, key, level) {
     if (array.length == 0) return;
 
-    const items = crsbinding.inflationManager.get(key, array);
+    const items = crs.binding.inflationManager.get(key, array);
 
     while (items?.firstElementChild) {
         const element = items.firstElementChild.cloneNode(true);

@@ -1,6 +1,6 @@
 import "./../../components/tab-list/tab-list.js";
 
-export default class TabList extends crsbinding.classes.ViewBase {
+export default class TabList extends crs.binding.classes.ViewBase {
     get html() {
         return import.meta.url;
     }
@@ -12,11 +12,11 @@ export default class TabList extends crsbinding.classes.ViewBase {
             view3: "View 3"
         }
 
-        await crsbinding.translations.add(translations, "tab");
+        await crs.binding.translations.add(translations, "tab");
     }
 
     async disconnectedCallback() {
-        await crsbinding.translations.delete("tab");
+        await crs.binding.translations.delete("tab");
         await super.disconnectedCallback();
     }
 }

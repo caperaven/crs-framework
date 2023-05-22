@@ -44,7 +44,7 @@ export class Checklist extends HTMLElement {
     async load() {
         requestAnimationFrame(async () => {
             this.setAttribute("role", "listbox");
-            await crsbinding.translations.parseElement(this);
+            await crs.binding.translations.parseElement(this);
             this.shadowRoot.addEventListener("click", this.#clickHandler);
         })
     }

@@ -1,6 +1,6 @@
 import "/components/checkbox/checkbox.js";
 
-export default class Checkbox extends crsbinding.classes.ViewBase {
+export default class Checkbox extends crs.binding.classes.ViewBase {
     async preLoad() {
         this.setProperty("isActive", true);
         this.setProperty("isTrue", null);

@@ -70,7 +70,7 @@ export class ColumnsManager {
      */
     async append(title, width, property) {
         if (title.indexOf("&{") !== -1) {
-            title = await crsbinding.translations.get_with_markup(title);
+            title = await crs.binding.translations.get_with_markup(title);
         }
 
         this.#widths.push(width);
@@ -91,7 +91,7 @@ export class ColumnsManager {
         }
 
         if (title.indexOf("&{") !== -1) {
-            title = await crsbinding.translations.get_with_markup(title);
+            title = await crs.binding.translations.get_with_markup(title);
         }
 
         this.#widths.splice(index, 0, width);

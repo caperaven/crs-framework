@@ -1,2 +1,2 @@
-export default class Buttons extends crsbinding.classes.ViewBase {
+export default class Buttons extends crs.binding.classes.ViewBase {
 }

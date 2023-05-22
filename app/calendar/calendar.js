@@ -1,6 +1,6 @@
 import "../../components/calendar/calendar.js";
 
-export default class Calendar extends crsbinding.classes.ViewBase {
+export default class Calendar extends crs.binding.classes.ViewBase {
     #dateSelectedHandler;
 
     async connectedCallback() {

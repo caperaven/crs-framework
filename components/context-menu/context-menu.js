@@ -5,7 +5,7 @@ import "./../filter-header/filter-header.js";
  * This can either be a flat list or a nested list.
  * You should not be using this component directly but instead use the context_menu process api action instead.
  */
-class ContextMenu extends crsbinding.classes.BindableElement {
+class ContextMenu extends crs.binding.classes.BindableElement {
     #options;
     #point;
     #at;
@@ -119,7 +119,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         this.container.appendChild(fragment);
 
         if (this.#context) {
-            await crsbinding.staticInflationManager.inflateElements(this.container.children, this.#context);
+            await crs.binding.staticInflationManager.inflateElements(this.container.children, this.#context);
         }
     }
 

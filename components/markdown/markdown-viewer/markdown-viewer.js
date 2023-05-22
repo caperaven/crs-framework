@@ -18,7 +18,7 @@ class MarkdownViewer extends HTMLElement {
         this.shadowRoot.querySelector("article").innerHTML = html;
 
         if (markdown.indexOf("&{") != -1) {
-            await crsbinding.translations.parseElement(this);
+            await crs.binding.translations.parseElement(this);
         }
     }
 }

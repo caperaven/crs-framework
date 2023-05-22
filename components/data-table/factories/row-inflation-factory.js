@@ -15,5 +15,5 @@ export async function rowInflationFactory(table, columns, idField) {
 
     await table.callExtension(DataTableExtensions.FORMATTING.name, "createFormattingCode", code);
 
-    return new crsbinding.classes.AsyncFunction("model", "rowElement", code.join("\n"));
+    return new crs.binding.classes.AsyncFunction("model", "rowElement", code.join("\n"));
 }

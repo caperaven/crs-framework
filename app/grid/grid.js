@@ -3,16 +3,16 @@ import {data} from "./../../data/static.js";
 import {createRowInflation, createRowElement} from "./../../components/data-grid/rows.js";
 import "../../src/managers/data-manager/data-manager-memory-provider.js"
 
-export default class Grid extends crsbinding.classes.ViewBase {
+export default class Grid extends crs.binding.classes.ViewBase {
     async connectedCallback() {
         await super.connectedCallback();
-        crsbinding.valueConvertersManager.add("udf", udfConverter);
-        crsbinding.valueConvertersManager.add("svg", svgConverter);
+        crs.binding.valueConvertersManager.add("udf", udfConverter);
+        crs.binding.valueConvertersManager.add("svg", svgConverter);
     }
 
     async disconnectedCallback() {
-        crsbinding.valueConvertersManager.remove("udf");
-        crsbinding.valueConvertersManager.remove("svg");
+        crs.binding.valueConvertersManager.remove("udf");
+        crs.binding.valueConvertersManager.remove("svg");
         await super.disconnectedCallback();
     }
 

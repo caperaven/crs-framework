@@ -74,7 +74,7 @@ export class Dialog extends HTMLElement {
 
         this.shadowRoot.removeEventListener("click", this.#clickHandler);
         this.#clickHandler = null;
-        await crsbinding.translations.delete("dialog");
+        await crs.binding.translations.delete("dialog");
         this.#stack = null;
 
         for (const key of Object.keys(this.#actions)) {
@@ -238,8 +238,8 @@ export class Dialog extends HTMLElement {
             "close": options?.closeText ?? "Close",
             "resize": options?.resizeText ?? "Resize"
         }
-        await crsbinding.translations.add(translations, "dialog");
-        await crsbinding.translations.parseElement(headerElement);
+        await crs.binding.translations.add(translations, "dialog");
+        await crs.binding.translations.parseElement(headerElement);
     }
 
     /**
