@@ -1,3 +1,3 @@
-import m,{markdown_to_html as w}from"./../bin/markdown.js";await m();class g{static async perform(a,t,r,n){await this[a.action](a,t,r,n)}static async to_html(a,t,r,n){let s=await crs.process.getValue(a.args.markdown,t,r,n);const l=await crs.process.getValue(a.args.parameters,t,r,n);if(l!=null||s.indexOf("&{")!=-1){const c=[],e=s.split(`
-`);for(let i=0;i<e.length;i++)e[i].indexOf("$template")==-1&&c.push(await crs.call("string","inflate",{template:e[i],parameters:l}));s=c.join(`
-`)}const o=w(s);return a.args.target!=null&&await crs.process.setValue(a.args.target,o,t,r,n),o}}crs.intent.markdown=g;export{g as MarkdownActions};
+import m,{markdown_to_html as w}from"./../bin/markdown.js";await m();class g{static async perform(t,r,s,i){await this[t.action](t,r,s,i)}static async to_html(t,r,s,i){let a=t.args.markdown;(a.startsWith("$context.")||a.startsWith("$process.")||a.startsWith("$item."))&&(a=await crs.process.getValue(t.args.markdown,r,s,i));const o=await crs.process.getValue(t.args.parameters,r,s,i);if(o!=null||a.indexOf("&{")!=-1){const c=[],e=a.split(`
+`);for(let n=0;n<e.length;n++)e[n].indexOf("$template")==-1&&c.push(await crs.call("string","inflate",{template:e[n],parameters:o}));a=c.join(`
+`)}const l=w(a);return t.args.target!=null&&await crs.process.setValue(t.args.target,l,r,s,i),l}}crs.intent.markdown=g;export{g as MarkdownActions};

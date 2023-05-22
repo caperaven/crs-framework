@@ -1,4 +1,4 @@
-import {CHANGE_TYPES} from "../../src/data-manager/data-manager-types.js";
+import {CHANGE_TYPES} from "../../src/managers/data-manager/data-manager-types.js";
 
 /**
  * @class PageToolbar - a custom element that displays a data table
@@ -31,7 +31,6 @@ export class PageToolbar extends HTMLElement {
     #recordCount = 0;
     #lastPage;
     #dataManager;
-    #dataManagerKey;
     #dataManagerChangedHandler = this.#dataManagerChanged.bind(this);
     #clickHandler = this.#click.bind(this);
     #changeHandler = this.#change.bind(this);
@@ -111,14 +110,10 @@ export class PageToolbar extends HTMLElement {
                 this.#edtPageSize = this.shadowRoot.querySelector("#edtPageSize");
                 this.#edtPageNumber = this.shadowRoot.querySelector("#edtPageNumber");
 
-                const size = this.dataset["page-size"];
-                this.pageSize = size ? parseInt(size) : 10;
-
                 this.#dataManager = this.dataset["manager"];
 
                 await this.#translate();
                 this.#dataManager = this.dataset["manager"];
-                this.#dataManagerKey = this.dataset["manager-key"];
                 await this.#hookDataManager();
 
                 this.shadowRoot.addEventListener("click", this.#clickHandler);
@@ -143,6 +138,9 @@ export class PageToolbar extends HTMLElement {
         this.#changeHandler = null;
         this.#edtPageSize = null;
         this.#edtPageNumber = null;
+        this.#dataManager = null;
+        this.#lastPage = null;
+        this.#recordCount = null;
     }
 
     async #translate() {
@@ -155,6 +153,10 @@ export class PageToolbar extends HTMLElement {
      * @method #hoodDataManager - get the data manager and set the event listeners to be notified of change
      */
     async #hookDataManager() {
+        const element = document.querySelector(this.getAttribute("for"));
+        element.dataset.paged = true;
+        this.#dataManager = element.dataset.manager;
+
         await crs.call("data_manager", "on_change", {
             manager: this.#dataManager,
             callback: this.#dataManagerChangedHandler
@@ -169,8 +171,6 @@ export class PageToolbar extends HTMLElement {
         this.#calculateLastPage();
 
         if (this.#recordCount > 0) {
-            const element = document.querySelector(this.getAttribute("for"));
-
             await crs.call("component", "on_ready", {
                 element,
                 callback: async () => {
@@ -196,6 +196,7 @@ export class PageToolbar extends HTMLElement {
         if (args.action == CHANGE_TYPES.refresh) {
             this.#recordCount = args.count;
             this.#calculateLastPage();
+            await this.#updatePage();
         }
     }
 
@@ -241,6 +242,7 @@ export class PageToolbar extends HTMLElement {
         }
 
         this.pageSize = value;
+        this.#calculateLastPage();
         await this.#updatePage();
     }
 
@@ -308,13 +310,39 @@ export class PageToolbar extends HTMLElement {
         target?.refresh(data);
     }
 
+    /**
+     * This calculates what the last page number is based on the record count and the page size
+     */
     #calculateLastPage() {
         this.#lastPage = Math.ceil(this.#recordCount / this.pageSize);
 
         if (this.#lastPage < 1) {
             this.#lastPage = 1;
         }
+
+        this.shadowRoot.querySelector("#divPageCount").textContent = this.#lastPage;
+        this.shadowRoot.querySelector("#divTotalCount").textContent = this.#recordCount;
     }
+
+    /**
+     * provide a decoupled way of accept communicating changes
+     * @param args
+     */
+    async onMessage(args) {
+        switch (args.action) {
+            case "data-manager-changed": {
+                this.#dataManager = args.manager;
+                const count = (await crs.call("data_manager", "get_counts", { manager: this.#dataManager })).total;
+
+                await this.#dataManagerChangedHandler({
+                    action: CHANGE_TYPES.refresh,
+                    count
+                })
+                break;
+            }
+        }
+    }
+
 }
 
 customElements.define("page-toolbar", PageToolbar);

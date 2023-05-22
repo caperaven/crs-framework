@@ -63,6 +63,7 @@ export function mockElement(instance, tag, id) {
     instance.attachShadow = attachShadow.bind(instance);
     instance.getBoundingClientRect = getBoundingClientRect.bind(instance);
     instance.remove = remove.bind(instance);
+    instance.focus = focus.bind(instance);
 
     Object.defineProperty(instance, "firstElementChild", {
         get() {
@@ -319,6 +320,7 @@ async function performEvent(event, target, options) {
     const eventObj = new EventMock(target || this, options);
 
     const eventsCollection = this.shadowRoot?.__events || this.__events;
+
     const events = eventsCollection.filter(item => item.event == event) || [];
 
     for (let eventItem of events) {
@@ -340,4 +342,8 @@ function getBoundingClientRect() {
 
 function remove() {
     this.parentElement.removeChild(this);
+}
+
+function focus() {
+    globalThis.activeElement = this;
 }
