@@ -39,7 +39,6 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     }
 
     async load() {
-        await this.#initMonthTranslations();
         this.#perspectiveElement = this.shadowRoot.querySelector("#perspectiveElement");
         this.#perspectiveHandler = this.#viewLoaded.bind(this);
         this.#perspectiveElement.addEventListener("view-loaded", this.#perspectiveHandler);
@@ -80,9 +79,6 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         this.#perspectiveElement.removeEventListener("view-loaded", this.#perspectiveHandler);
         this.#perspectiveElement = null;
         this.#perspectiveHandler = null;
-        await crs.call("translations", "delete", {
-            context: "calendar"
-        });
         await super.disconnectedCallback();
     }
 
@@ -102,30 +98,6 @@ export default class Calendar extends crsbinding.classes.BindableElement {
         await this.#setYearProperty();
 
         (newValue !== oldValue) && await this.#defaultVisualSelection();
-    }
-
-    /***
-     * @method #initMonthTranslations - translations for the months for framework.
-     * @return {Promise<void>}
-     */
-    async #initMonthTranslations() {
-        await crs.call("translations", "add", {
-            context: "calendar",
-            translations: {
-                "january": "January",
-                "february": "February",
-                "march": "March",
-                "april": "April",
-                "may": "May",
-                "june": "June",
-                "july": "July",
-                "august": "August",
-                "september": "September",
-                "october": "October",
-                "november": "November",
-                "december": "December",
-            }
-        });
     }
 
     /**

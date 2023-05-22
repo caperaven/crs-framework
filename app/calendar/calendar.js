@@ -5,6 +5,7 @@ export default class Calendar extends crsbinding.classes.ViewBase {
 
     async connectedCallback() {
         await super.connectedCallback();
+        await this.#initMonthTranslations();
         this.setProperty("start", new Date());
         this.#dateSelectedHandler = this.#setStartDate.bind(this);
         this.calendar.addEventListener("date-selected", this.#dateSelectedHandler);
@@ -13,7 +14,34 @@ export default class Calendar extends crsbinding.classes.ViewBase {
     async disconnectedCallback() {
         this.calendar.removeEventListener("date-selected", this.#dateSelectedHandler);
         this.#dateSelectedHandler = null;
+        await crs.call("translations", "delete", {
+            context: "calendar"
+        });
         await super.disconnectedCallback();
+    }
+
+    /***
+     * @method #initMonthTranslations - translations for the months for framework.
+     * @return {Promise<void>}
+     */
+    async #initMonthTranslations() {
+        await crs.call("translations", "add", {
+            context: "calendar",
+            translations: {
+                "january": "January",
+                "february": "February",
+                "march": "March",
+                "april": "April",
+                "may": "May",
+                "june": "June",
+                "july": "July",
+                "august": "August",
+                "september": "September",
+                "october": "October",
+                "november": "November",
+                "december": "December",
+            }
+        });
     }
 
     async #setStartDate(event) {
