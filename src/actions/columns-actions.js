@@ -134,10 +134,10 @@ export class ColumnsActions {
 function addToCollection(collection, items) {
     for (const item of items) {
         if (item.field.indexOf(":") != -1) {
-            item.convert = crsbinding.utils.getConverterParts(item.field);
+            item.convert = crs.binding.utils.getConverterParts(item.field);
 
             if (item.convert.postExp != null) {
-                const code = `return crsbinding.valueConvertersManager.convert(value, "${item.convert.converter}", "get")`;
+                const code = `return crs.binding.valueConvertersManager.convert(value, "${item.convert.converter}", "get")`;
                 item.convert.fn = new Function("value", code);
             }
 

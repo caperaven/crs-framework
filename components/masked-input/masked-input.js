@@ -14,8 +14,8 @@ export class MaskedInput extends HTMLInputElement {
     }
 
     async disconnectedCallback() {
-        this.#actions = crsbinding.utils.disposeProperties(this.#actions);
-        crsbinding.dom.disableEvents(this);
+        this.#actions = crs.binding.utils.disposeProperties(this.#actions);
+        crs.binding.dom.disableEvents(this);
         this.#maskManager = this.#maskManager.dispose();
         this.#updateHandler = null;
     }
@@ -29,7 +29,7 @@ export class MaskedInput extends HTMLInputElement {
     }
 
     #enableEvents() {
-        crsbinding.dom.enableEvents(this);
+        crs.binding.dom.enableEvents(this);
         this.registerEvent(this, "focus", this.#focus.bind(this));
         this.registerEvent(this, "keydown", this.#keydown.bind(this));
         this.registerEvent(this, "click", this.#click.bind(this));
