@@ -15,7 +15,6 @@ import "./../../src/managers/perspective-manager/perspective-manager-actions.js"
  *
  * Properties:
  * - dataManager {String} - name of the data manager to use
- * - dataManagerKey {String} - key to use for the data manager
  * - columns {Array} - array of column objects
  *
  * Events:
@@ -64,9 +63,10 @@ import "./../../src/managers/perspective-manager/perspective-manager-actions.js"
  */
 export class DataTable extends HTMLElement {
     #columnsManager = new ColumnsManager();
+    #oldDataManager;
     #dataManager;
     #perspective;
-    #dataManagerKey;
+    #perspectiveDataManagerKey;
     #dataManagerChangedHandler = this.#dataManagerChanged.bind(this);
     #inflationFn;
     #keyboardInputManager;
@@ -81,16 +81,28 @@ export class DataTable extends HTMLElement {
     #selectedRows;
     #selectedCells;
 
+    get oldDataManager() {
+        return this.#oldDataManager;
+    }
+
+    set oldDataManager(newValue) {
+        this.#oldDataManager = newValue;
+    }
+
     get dataManager() {
         return this.#dataManager;
     }
 
-    get perspective() {
-        return this.#perspective;
+    set dataManager(newValue) {
+        this.#dataManager = newValue;
     }
 
-    get dataManagerKey() {
-        return this.#dataManagerKey;
+    get perspectiveDataManagerKey() {
+        return this.#perspectiveDataManagerKey;
+    }
+
+    get perspective() {
+        return this.#perspective;
     }
 
     get selectedRows() {
@@ -110,6 +122,8 @@ export class DataTable extends HTMLElement {
         [CHANGE_TYPES.delete]: this.#deleteRecord,
         [CHANGE_TYPES.filter]: this.#filterRecords,
         [CHANGE_TYPES.refresh]: this.refresh,
+        [CHANGE_TYPES.perspectiveChanged]: this.#updateFromPerspective,
+        [CHANGE_TYPES.perspectiveRollback]: this.#perspectiveRollback
     };
 
     /**
@@ -151,7 +165,7 @@ export class DataTable extends HTMLElement {
             requestAnimationFrame(async () => {
                 this.#dataManager = this.dataset["manager"];
                 this.#perspective = this.dataset["perspective"];
-                this.#dataManagerKey = this.dataset["manager-key"];
+                this.#perspectiveDataManagerKey = `${this.id}_${this.#perspective}`;
 
                 await this.#hookDataManager();
 
@@ -192,8 +206,12 @@ export class DataTable extends HTMLElement {
         this.#inflationFn = null;
         this.#keyboardInputManager = this.#keyboardInputManager.dispose();
         this.#mouseInputManager = this.#mouseInputManager.dispose();
-
         this.#extensions = null;
+        this.#oldDataManager = null;
+        this.#dataManager = null;
+        this.#perspective = null;
+        this.#selectedRows = null;
+        this.#selectedCells = null;
     }
 
     /**
@@ -350,6 +368,33 @@ export class DataTable extends HTMLElement {
             const rowElement = rowElements[i];
             await this.#inflationFn(record, rowElement);
         }
+    }
+
+    /**
+     * @method #updateFromPerspective - the perspective has changed, update accordingly
+     * normally this means a refresh of what is currently on display
+     * @returns {Promise<void>}
+     */
+    async #updateFromPerspective() {
+        // update toolbar if it exists to update
+        await crsbinding.events.emitter.postMessage(`[for="#${this.id}"]`, {
+            action: "data-manager-changed",
+            manager: this.#dataManager
+        });
+    }
+
+    /**
+     * @method #perspectiveRollback - the perspective has changed, update accordingly
+     * This is fired from the perspective data manager to return to the origional data manager
+     * @returns {Promise<void>}
+     */
+    async #perspectiveRollback() {
+        this.#dataManager = this.#oldDataManager;
+
+        await crsbinding.events.emitter.postMessage(`[for="#${this.id}"]`, {
+            action: "data-manager-changed",
+            manager: this.#dataManager
+        });
     }
 
     /**

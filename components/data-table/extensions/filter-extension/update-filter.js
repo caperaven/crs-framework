@@ -1,4 +1,4 @@
-export async function updateFilter(perspective, field, dataManager) {
+export async function updateFilter(perspective, field, dataType, dataManager) {
     const counts = await crs.call("data_manager", "get_counts", {
         manager: dataManager
     })
@@ -18,8 +18,24 @@ export async function updateFilter(perspective, field, dataManager) {
 
     const values = await getValues(dataManager, useSelected);
 
+    switch(dataType) {
+        case "number": {
+            for (let i = 0; i < values.length; i++) {
+                values[i] = Number(values[i]);
+            }
+            break;
+        }
+        case "boolean": {
+            for (let i = 0; i < values.length; i++) {
+                values[i] = values[i].toLowerCase() === "true";
+            }
+            break;
+        }
+        default: break;
+    }
+
     if (values.length > 1) {
-        operator = useSelected ? "one_of" : "not_one_of";
+        operator = useSelected ? "in" : "not_in";
     }
 
     const value = values.length === 1 ? values[0] : values;

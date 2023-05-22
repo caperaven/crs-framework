@@ -12,7 +12,8 @@ export async function columnsFromChildren(table, columnsManager) {
         columns.push({
             title: columnElement.dataset.heading,
             width: columnElement.dataset.width,
-            property: columnElement.dataset.property
+            property: columnElement.dataset.property,
+            dataType: columnElement.dataset.type || "string"
         });
     }
 

@@ -1,4 +1,5 @@
 import {BaseDataManager} from "./data-manager-base.js";
+import {CHANGE_TYPES} from "./data-manager-types.js";
 
 /**
  * @class DataManagerPerspectiveProvider - This class is used to provide a perspective based data manager.
@@ -58,6 +59,10 @@ export class DataManagerPerspectiveProvider extends BaseDataManager {
         this.#grouping = newValue;
     }
 
+    async notifyChanges(args) {
+        return globalThis.dataManagers[this.#manager].notifyChanges(args);
+    }
+
     setRecords(records) {
         return globalThis.dataManagers[this.#manager].setRecords(records);
     }
@@ -89,6 +94,10 @@ export class DataManagerPerspectiveProvider extends BaseDataManager {
      * @param to {number} - the end index
      */
     getPage(from, to) {
+        if (this.#records == null || this.#records.length === 0) {
+            return [];
+        }
+
         const manager = globalThis.dataManagers[this.#manager];
         const records = this.#records.slice(from, to);
         const result = [];
@@ -154,6 +163,15 @@ export class DataManagerPerspectiveProvider extends BaseDataManager {
 
     async perspectiveChanged() {
         const definition = await crs.call("perspective", "get", { perspective: this.#perspective });
+
+        // does the definition only contain the count property ?
+        // if so then we need to swap back to the source data manager
+        if (Object.keys(definition).length === 1) {
+            return await this.notifyChanges({
+                action: CHANGE_TYPES.perspectiveRollback
+            });
+        }
+
         const data = await crs.call("data_manager", "get_all", { manager: this.#manager });
 
         if (definition.filter.length === 1) {
@@ -175,6 +193,13 @@ export class DataManagerPerspectiveProvider extends BaseDataManager {
 
         if (Array.isArray(result)) {
             this.#records = result;
+            this.count = result.length;
+            this.selectedCount = 0;
         }
+
+        await this.notifyChanges({
+            action: CHANGE_TYPES.perspectiveChanged,
+            count: result.length
+        })
     }
 }

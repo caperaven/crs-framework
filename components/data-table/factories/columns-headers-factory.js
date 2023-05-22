@@ -18,6 +18,7 @@ export async function columnsHeadersFactory(columns, table) {
         let th = document.createElement("div");
         th.role = "columnheader";
         th.dataset.field = column.property;
+        th.dataset.type = column.dataType;
         th.textContent = column.title;
         header.appendChild(th);
     }
