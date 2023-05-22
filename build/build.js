@@ -21,7 +21,6 @@ await copyDirectory("./packages/crs-modules", "./dist/packages/crs-modules");
 await copyDirectory("./packages/crs-process-api", "./dist/packages/crs-process-api");
 await copyDirectory("./packages/crs-router", "./dist/packages/crs-router");
 await copyDirectory("./packages/crs-schema", "./dist/packages/crs-schema");
-await copyDirectory("./packages/crs-data-processing", "./dist/packages/crs-data-processing");
 await copyDirectory("./styles", "./dist/styles");
 await copyDirectory("./resources", "./dist/resources");
 await copyDirectory("./documents", "./dist/documents");

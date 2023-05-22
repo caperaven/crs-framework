@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" style="overflow: hidden">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width">
@@ -29,6 +29,11 @@
             align-items: center;
             justify-content: center;
         }
+
+        nav {
+            height: 100%;
+            overflow: auto;
+        }
     </style>
 </head>
 <body style="visibility: hidden" oncontextmenu="return false;">
@@ -41,6 +46,10 @@
     <header>
         <button aria-label="menu" class="icon" click.setValue="$globals.isMenuOpen = !$globals.isMenuOpen" classlist.if="$globals.isMenuOpen == true ? 'highlight-fill'"><svg><use xlink:href="#menu" /></svg></button>
         <h1>My Application</h1>
+        <options-toolbar change.call="debugStateChanged">
+            <button data-value="on">On</button>
+            <button data-value="off" aria-selected="true">Off</button>
+        </options-toolbar>
     </header>
 
     <main autofocus tabindex="0">
@@ -73,25 +82,42 @@
         import "/src/binding-extensions/markdown-template.js";
         import "/src/binding-extensions/schema-template.js";
 
-
         window.addEventListener("load", async (event) => {
-            await crs.modules.enableBinding([
-                ["data-grid", "/components/data-grid/data-grid.js"],
-                ["kan-ban", "/components/kan-ban/kan-ban.js"],
-                ["options-toolbar", "/components/options-toolbar/options-toolbar.js"],
-                ["tab-list", "/components/tab-list/tab-list.js"],
-                ["check-list", "/components/check-list/check-list.js"],
-                ["color-picker", "/components/color-picker/color-picker.js"],
-                ["text-editor", "/components/text-editor/text-editor.js"],
-                ["available-selected", "/components/available-selected/available-selected.js"],
-                ["markdown-editor", "/components/markdown/markdown-editor/markdown-editor.js"],
-                ["schema-editor", "/components/schema/schema-editor/schema-editor.js"]
-            ]);
+            import ("./packages/crs-process-api/action-systems/data-processing-actions.js");
+            import ("./components/busy-ui/busy-ui-actions.js");
+            import ("./components/options-toolbar/options-toolbar.js");
+
+            // await crs.modules.enableBinding([
+            //     ["data-grid", "/components/data-grid/data-grid.js"],
+            //     ["kan-ban", "/components/kan-ban/kan-ban.js"],
+            //     ["options-toolbar", "/components/options-toolbar/options-toolbar.js"],
+            //     ["tab-list", "/components/tab-list/tab-list.js"],
+            //     ["check-list", "/components/check-list/check-list.js"],
+            //     ["color-picker", "/components/color-picker/color-picker.js"],
+            //     ["text-editor", "/components/text-editor/text-editor.js"],
+            //     ["available-selected", "/components/available-selected/available-selected.js"],
+            //     ["markdown-editor", "/components/markdown/markdown-editor/markdown-editor.js"],
+            //     ["schema-editor", "/components/schema/schema-editor/schema-editor.js"]
+            // ]);
 
             await crs.call("schema", "register", {
                 id: "html",
                 parser: HTMLParser,
                 providers: []
+            })
+
+            await crs.call("translations", "add", {
+                "context": "pageToolbar",
+                "translations": {
+                    "rowsPerPage": "Rows per page"
+                }
+            })
+
+            await crs.call("translations", "add", {
+                "context": "system",
+                "translations": {
+                    "loadingMessage": "Loading..."
+                }
             })
 
             document.viewModel = new IndexViewModel(document.body);

@@ -18,14 +18,20 @@
  * 1. Allow push and pop of stack.
  * 2. Allow custom header, footer and content.
  * 3. Stack can have a custom size and the container needs to resize accordingly.
+ *
+ * Action Features:
+ * If you have buttons that needs particular implementation, you can add it as a data-action attribute.
+ * The callback will be called where the action property defines the attribute value.
+ * This allows you to close the dialog with a close button but also do something like "apply"
+ * See the filter-extension in the data table for an example.
  */
 export class Dialog extends HTMLElement {
     #stack = [];
     #clickHandler = this.#click.bind(this);
-    #actions = Object.freeze({
+    #actions = {
         "close": this.#closeClicked.bind(this),
         "resize": this.#resizeClicked.bind(this),
-    });
+    };
 
     /**
      * @constructor
@@ -61,18 +67,21 @@ export class Dialog extends HTMLElement {
      * @returns {Promise<void>}
      */
     async disconnectedCallback() {
+        const popup = this.shadowRoot.querySelector(".popup");
+        await crs.call("dom_interactive", "disable_move", {
+            element: popup
+        });
+
         this.shadowRoot.removeEventListener("click", this.#clickHandler);
         this.#clickHandler = null;
         await crsbinding.translations.delete("dialog");
-    }
-
-    /**
-     * This is called externally to dispose of the component.
-     * clean all internal data and remove all event listeners.
-     */
-    dispose() {
         this.#stack = null;
-        this.remove();
+
+        for (const key of Object.keys(this.#actions)) {
+            this.#actions[key] = null;
+        }
+
+        this.#actions = null;
     }
 
     /**
@@ -81,8 +90,31 @@ export class Dialog extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #click(event) {
-        const action = event.target.dataset.action;
-        this.#actions[action]?.(event);
+        const target = event.composedPath()[0];
+        const action = target.dataset.action;
+
+        // 1. no action to perform so get out
+        if (action == null) return;
+
+        // 2. this is a predefined action like close or resize
+        // do that and then get out
+        if (this.#actions[action] != null) {
+            return this.#actions[action](event);
+        }
+
+        // 3. this is a custom action so call the callback if it exists
+        const struct = this.#stack[this.#stack.length - 1];
+
+        struct.action = action;
+        struct.event = event;
+
+        try {
+            await struct.options.callback?.(struct);
+        }
+        finally {
+            delete struct.action;
+            delete struct.event;
+        }
     }
 
     /**
@@ -113,22 +145,25 @@ export class Dialog extends HTMLElement {
      * @param struct
      */
     async #showStruct(struct) {
-        const {header, main, footer, options} = struct;
+        return new Promise(async resolve => {
+            const {header, main, footer, options} = struct;
 
-        await crs.call("component", "on_ready", {
-            element: this,
-            caller: this,
-            callback: async () => {
-                await this.#setHeader(header, options);
-                await this.#setFooter(footer);
-                await this.#setBody(main);
-                await this.#setOptions(options);
+            await crs.call("component", "on_ready", {
+                element: this,
+                caller: this,
+                callback: async () => {
+                    await this.#setHeader(header, options);
+                    await this.#setFooter(footer);
+                    await this.#setBody(main);
+                    await this.#setOptions(options);
 
-                // Set position is called after the content is rendered in the dialog.
-                requestAnimationFrame(async () => {
-                    this.#setPosition(options);
-                });
-            }
+                    // Set position is called after the content is rendered in the dialog.
+                    requestAnimationFrame(async () => {
+                        await this.#setPosition(options);
+                        resolve();
+                    });
+                }
+            });
         });
     }
 
@@ -215,14 +250,20 @@ export class Dialog extends HTMLElement {
     async #setBody(body) {
         if (body == null) return;
 
-        const bodyElement = this.shadowRoot.querySelector("#body");
+        let bodyElement = this.querySelector("[slot=body]");
+
+        if(bodyElement == null) {
+            bodyElement = document.createElement("div");
+            bodyElement.setAttribute("slot", "body");
+            this.appendChild(bodyElement);
+        }
+
 
         if (typeof body == "string") {
             bodyElement.textContent = body;
             return;
         }
 
-        bodyElement.innerHTML = "";
         bodyElement.appendChild(body);
     }
 
@@ -249,16 +290,17 @@ export class Dialog extends HTMLElement {
         const popup = this.shadowRoot.querySelector(".popup");
 
         if (options?.target == null) {
-            return await crs.call("fixed_position", "set", {element: popup, position: "center-screen", margin: 10});
+            return await crs.call("fixed_position", "set", {element: popup, container: options?.parent, position: "center-screen", margin: 10});
         }
 
         await crs.call("fixed_layout", "set", {
             target: options.target,
             element: popup,
+            container: options.parent,
             at: options.position.toLowerCase(),
             anchor: options.anchor.toLowerCase(),
             margin: options.margin
-        })
+        });
     }
 
     /**
@@ -266,7 +308,9 @@ export class Dialog extends HTMLElement {
      * If the stack is empty, hide the dialog.
      */
     async #popStack() {
-        this.#stack.pop();
+        const removedStruct = this.#stack.pop();
+        removedStruct.action = "close";
+        removedStruct.options.callback && removedStruct.options.callback(removedStruct);
 
         if (this.#stack.length == 0) {
             return await crs.call("dialog", 'force_close', {});
@@ -274,6 +318,7 @@ export class Dialog extends HTMLElement {
 
         const struct = this.#stack[this.#stack.length - 1];
         await this.#showStruct(struct);
+        return true;
     }
 
     /**
@@ -288,6 +333,12 @@ export class Dialog extends HTMLElement {
         const struct = {header, main, footer, options};
         this.#stack.push(struct);
         await this.#showStruct(struct);
+
+        if (options?.callback != null && options.callback !== false) {
+            struct.action = "loaded";
+            await options.callback(struct);
+            delete struct.action;
+        }
     }
 
     /**
@@ -296,7 +347,7 @@ export class Dialog extends HTMLElement {
      * @returns {Promise<void>}
      */
     async close() {
-        await this.#popStack();
+        return await this.#popStack();
     }
 }
 

@@ -14,6 +14,10 @@
         left: 0;
     }
 
+    :host([data-allow-resize="true"]) .popup {
+        resize: both;
+    }
+
     :host(.fullscreen) .popup {
         top: 0;
         left: 0;
@@ -43,7 +47,7 @@
         border: var(--border);
         box-shadow: var(--box-shadow);
         border-radius: var(--radius);
-        resize: both;
+        resize: none;
         overflow: auto;
         min-width: var(--min-width, 18.75rem);
         min-height: var(--min-height, 9rem);
@@ -76,7 +80,7 @@
         font-size: 1.2rem;
     }
 
-    #body {
+    ::slotted([slot="body"]) {
         padding: var(--padding);
     }
 
@@ -107,7 +111,7 @@
         <button class="icon transparent" id="btnClose" data-action="close" aria-label="&{dialog.close}">close</button>
     </header>
 
-    <div id="body"></div>
+    <slot name="body" id="body"></slot>
 
     <footer></footer>
 </div>

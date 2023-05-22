@@ -48,8 +48,14 @@ export class TabList extends HTMLElement {
 
     async #clicked(event) {
         const target = event.composedPath()[0];
-        this.#target.view = target.dataset.view;
+        await this.selectTab(target.dataset.view, target);
+    }
+
+    async selectTab(tab, target) {
+        target = target || this.querySelector(`[data-view="${tab}"]`);
+        this.#target.view = tab;
         await crs.call("dom_collection", "toggle_selection", { target });
+        this.dispatchEvent(new CustomEvent("change", { detail: { tab } }));
     }
 }
 
