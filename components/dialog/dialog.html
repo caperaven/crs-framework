@@ -70,6 +70,10 @@
         border-bottom: var(--border);
     }
 
+    #btnToday:hover, #btnDatePickerClose:hover {
+        background-color: var(--grey-s3) !important;
+    }
+
     header:active {
         cursor: grabbing;
     }
@@ -99,6 +103,13 @@
 
     footer button {
         margin-left: 0.5rem;
+    }
+
+    @media screen and (max-width: 480px) {
+        .popup{
+            translate: 0 14.0625rem !important;
+            min-width: 100%;
+        }
     }
 </style>
 
