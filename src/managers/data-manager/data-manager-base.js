@@ -29,7 +29,8 @@
 export class BaseDataManager {
     #id;
     #idField;
-    #count;
+    #count = 0;
+    #selectedCount = 0;
     #events = [];
 
     /**
@@ -38,6 +39,28 @@ export class BaseDataManager {
      */
     get count() {
         return this.#count;
+    }
+
+    /**
+     * @property selectedCount {number} - The number of records that are currently selected
+     * @returns {number}
+     */
+    get selectedCount() {
+        return this.#selectedCount;
+    }
+
+    set selectedCount(newValue) {
+        this.#selectedCount = newValue;
+    }
+
+    /**
+     * @property isAllSelected {boolean} - Indicates if all of the records in the data manager are selected
+     * @returns {boolean}
+     */
+    get isAllSelected() {
+        if (this.selectedCount === 0) return false;
+        if (this.selectedCount === this.count) return true;
+        return "mixed";
     }
 
     /**
@@ -70,9 +93,11 @@ export class BaseDataManager {
      * @method dispose - This method is called when the data manager is no longer needed. It should be used to clean up any resources that are being used.
      */
     dispose() {
+        this.#id = null;
         this.#idField = null;
         this.#events = null;
         this.#count = null;
+        this.#selectedCount = null;
     }
 
     /**
@@ -82,6 +107,10 @@ export class BaseDataManager {
      */
     setRecords(records) {
         this.#count = records?.length || 0;
+
+        for(let i = 0; i < records.length; i++) {
+            records[i]._index = i;
+        }
     }
 
     /**

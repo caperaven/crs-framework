@@ -1,6 +1,9 @@
 import {DataTableExtensions} from "./../data-table-extensions.js";
 import "./../../../src/actions/virtualization-actions.js";
+import "./../../../src/actions/collection-selection-actions.js";
 import "./../../checkbox/checkbox.js";
+import "./filter-extension/update-filter.js";
+import {updateFilter} from "./filter-extension/update-filter.js";
 
 const FILTER_EXTENSION_DATA_MANAGER = "filter-extension";
 
@@ -18,6 +21,8 @@ export default class FilterExtension {
     #callbackHandler = this.#callback.bind(this);
     #dialog = null;
     #itemTemplate = null;
+    #backupData = null;
+    #isSaving = false;
 
     /**
      * @constructor
@@ -30,11 +35,17 @@ export default class FilterExtension {
     }
 
     dispose(removeUI) {
+        this.#table.removeClickHandler(".filter");
+
+        this.#isSaving = null;
+        this.#settings = null;
         this.#itemTemplate = null;
         this.#currentField = null;
         this.#callbackHandler = null;
         this.#dialog = null;
-        this.#table.removeClickHandler(".filter");
+        this.#filterHandler = null;
+        this.#lookupTable = null;
+        this.#backupData = null;
 
         if (this.#parent) {
             this.#parent = null;
@@ -47,8 +58,7 @@ export default class FilterExtension {
             }
         }
 
-        this.#filterHandler = null;
-        this.#lookupTable = null;
+        this.#table = null;
 
         return DataTableExtensions.FILTER.path;
     }
@@ -57,7 +67,7 @@ export default class FilterExtension {
         this.#table.addClickHandler(".filter", this.#filterHandler.bind(this));
 
         for (const column of columnsRow.children) {
-            if (column.children.length == 0) {
+            if (column.children.length === 0) {
                 const text = column.textContent;
 
                 const textDiv = document.createElement("div");
@@ -120,6 +130,15 @@ export default class FilterExtension {
         });
     }
 
+    async #restoreBackup() {
+        if (this.#isSaving === false) {
+            this.#lookupTable[this.#currentField] = this.#backupData;
+        }
+
+        this.#backupData = null;
+        this.#isSaving = false;
+    }
+
     async #callback(args) {
         if (args.action === "loaded") {
             await this.#loadFilterOptions();
@@ -127,7 +146,9 @@ export default class FilterExtension {
         }
 
         if (args.action === "accept") {
-            // todo ... get the relevant data to apply a filter.
+            this.#isSaving = true;
+
+            await updateFilter(this.#table.perspective, this.#currentField, FILTER_EXTENSION_DATA_MANAGER);
 
             const isNotDone = await this.#dialog.close();
 
@@ -139,7 +160,7 @@ export default class FilterExtension {
         }
 
         if (args.action === "close") {
-            this.#currentField = null;
+            await this.#restoreBackup();
             await this.#disposeManagers();
         }
 
@@ -153,16 +174,22 @@ export default class FilterExtension {
             manager: FILTER_EXTENSION_DATA_MANAGER,
             id_field: "id",
             type: "memory",
-            records: data
+            records: data,
+            selected_count: data.length
         })
     }
 
     async #disposeManagers() {
+        const layout = this.#dialog.querySelector(".layout");
+        const container = this.#dialog.querySelector("#filter-list");
+
+        await crs.call("collection_selection", "disable", {
+            element: layout
+        });
+
         await crs.call("data_manager", "dispose", {
             manager: FILTER_EXTENSION_DATA_MANAGER
         });
-
-        const container = await this.#dialog.querySelector("#filter-list");
 
         await crs.call("virtualization", "disable", {
             element: container
@@ -171,7 +198,11 @@ export default class FilterExtension {
 
     #inflationFn(element, data) {
         element.dataset.value = data.value;
-        element.querySelector("check-box").setAttribute("aria-selected", data.selected);
+
+        const checkbox = element.querySelector("check-box");
+        checkbox.checked = data._selected || false;
+        checkbox.dataset.index = data._index;
+
         element.querySelector(".title").textContent = data.value;
         element.querySelector(".count").textContent = data.count;
     }
@@ -200,6 +231,8 @@ export default class FilterExtension {
             displayData = this.#lookupTable[this.#currentField];
         }
 
+        this.#backupData = JSON.parse(JSON.stringify(displayData));
+
         // Create the data manager used for the virtualization
         await this.#createDataManager(displayData);
 
@@ -218,6 +251,14 @@ export default class FilterExtension {
             inflation: this.#inflationFn
         });
 
+        const layout = this.#dialog.querySelector(".layout");
+        await crs.call("collection_selection", "enable", {
+            element: layout,
+            master_query: "#master-checkbox",
+            selection_query: '[role="checkbox"]',
+            virtualized_element: container,
+            manager: FILTER_EXTENSION_DATA_MANAGER
+        });
     }
 }
 
@@ -228,7 +269,7 @@ function UniqueObjectToFilterArray(uniqueValues) {
         filterArray.push({
             value: key,
             count: uniqueValues[key],
-            selected: true
+            _selected: true
         })
     }
 

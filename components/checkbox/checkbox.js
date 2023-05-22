@@ -35,7 +35,7 @@ export class Checkbox extends HTMLElement {
      * @returns {*}
      */
     get checked() {
-        if (this.#checked === "mixed") return null;
+        if (this.#checked === "null") return null;
         return this.#checked;
     }
 
@@ -49,10 +49,6 @@ export class Checkbox extends HTMLElement {
      * 3. "mixed"
      */
     set checked(newValue) {
-        if (newValue == null) {
-            newValue = "mixed";
-        }
-
         this.#checked = newValue;
         this.#setState(newValue);
     }
@@ -72,7 +68,7 @@ export class Checkbox extends HTMLElement {
     async connectedCallback() {
         const ariaCheckedAttribute = this.getAttribute("aria-checked");
 
-        this.#checked = (ariaCheckedAttribute === "true") || (this.dataset.nullable === "true" ? "mixed" : false);
+        this.#checked = (ariaCheckedAttribute === "true") || (this.dataset.nullable === "true" ? "null" : false);
 
         this.shadowRoot.innerHTML = await fetch(this.html).then(result => result.text());
         await this.load();
@@ -120,7 +116,8 @@ export class Checkbox extends HTMLElement {
         const state = {
             true: true,
             false: false,
-            mixed: nullable ? "mixed" : false
+            null: nullable ? null : false,
+            mixed: "mixed"
         }
 
         value = state[value];
@@ -131,6 +128,7 @@ export class Checkbox extends HTMLElement {
         this.#iconElement.innerText = {
             true: "check-box",
             false: "check-box-blank",
+            null: "check-box-null",
             mixed: "check-box-mixed"
         }[value];
 
@@ -151,7 +149,8 @@ export class Checkbox extends HTMLElement {
 
         const nextState = {
             true: "false",
-            false: nullable ? "mixed" : "true",
+            false: nullable ? null : "true",
+            null: "true",
             mixed: "true"
         }[state];
 

@@ -6,20 +6,6 @@ import "./../../components/dialog/dialog-actions.js";
 import "./../../packages/crs-process-api/action-systems/html-actions.js";
 
 export default class DataTableViewModel extends crsbinding.classes.ViewBase {
-    async connectedCallback() {
-        await super.connectedCallback();
-
-        // const dataTable = this._element.querySelector("data-table");
-        //
-        // await crs.call("component", "on_ready", {
-        //     element: dataTable,
-        //     callback: () => {
-        //         dataTable.refresh();
-        //     },
-        //     caller: this
-        // });
-    }
-
     async preLoad() {
         const data = await crs.call("test_data", "get", {
             fields: {
@@ -37,6 +23,7 @@ export default class DataTableViewModel extends crsbinding.classes.ViewBase {
             id_field: "id",
             type: "memory",
 
+
             // records: [
             //     { id: 1, code: "code 1", description: "description 1" },
             //     { id: 2, code: "code 2", description: "description 2" },
@@ -53,6 +40,14 @@ export default class DataTableViewModel extends crsbinding.classes.ViewBase {
             records: data
 
         })
+    }
+
+    async disconnectedCallback() {
+        await crs.call("data_manager", "dispose", {
+            manager: "my_data",
+        })
+
+        await super.disconnectedCallback();
     }
 
     async addRecord() {

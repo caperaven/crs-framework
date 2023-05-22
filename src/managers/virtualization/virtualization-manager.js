@@ -13,6 +13,7 @@ export class VirtualizationManager {
     #inflationManager;
     #scrollManager;
     #syncPage = false;
+    #scrollTop = 0;
 
     /**
      * @constructor
@@ -63,6 +64,12 @@ export class VirtualizationManager {
         this.#topIndex = null;
         this.#bottomIndex = null;
         this.#virtualSize = null;
+        this.#sizeManager = null;
+        this.#inflationManager = null;
+        this.#scrollManager = null;
+        this.#syncPage = null;
+        this.#scrollTop = null;
+        return null;
     }
 
     /**
@@ -101,7 +108,7 @@ export class VirtualizationManager {
      */
     #createItems() {
         const fragment = document.createDocumentFragment();
-        const childCount = this.#sizeManager.pageItemCount + (this.#virtualSize * 2);
+        let childCount = this.#sizeManager.pageItemCount + (this.#virtualSize * 2);
 
         // half of virtualize elements at the top and half at the bottom.
         for (let i = -this.#virtualSize; i < childCount - this.#virtualSize; i++) {
@@ -273,6 +280,8 @@ export class VirtualizationManager {
         if (this.#syncPage) {
             await this.#performSyncPage(scrollTop);
         }
+
+        this.#scrollTop = scrollTop;
     }
 
     /**
@@ -305,5 +314,9 @@ export class VirtualizationManager {
         this.#rowMap = newMap;
         this.#topIndex = topIndex;
         this.#bottomIndex = topIndex + count - 1;
+    }
+
+    async refreshCurrent() {
+        await this.#performSyncPage(this.#scrollTop);
     }
 }

@@ -28,10 +28,10 @@
 export class Dialog extends HTMLElement {
     #stack = [];
     #clickHandler = this.#click.bind(this);
-    #actions = Object.freeze({
+    #actions = {
         "close": this.#closeClicked.bind(this),
         "resize": this.#resizeClicked.bind(this),
-    });
+    };
 
     /**
      * @constructor
@@ -67,18 +67,21 @@ export class Dialog extends HTMLElement {
      * @returns {Promise<void>}
      */
     async disconnectedCallback() {
+        const popup = this.shadowRoot.querySelector(".popup");
+        await crs.call("dom_interactive", "disable_move", {
+            element: popup
+        });
+
         this.shadowRoot.removeEventListener("click", this.#clickHandler);
         this.#clickHandler = null;
         await crsbinding.translations.delete("dialog");
-    }
-
-    /**
-     * This is called externally to dispose of the component.
-     * clean all internal data and remove all event listeners.
-     */
-    dispose() {
         this.#stack = null;
-        this.remove();
+
+        for (const key of Object.keys(this.#actions)) {
+            this.#actions[key] = null;
+        }
+
+        this.#actions = null;
     }
 
     /**
@@ -331,7 +334,7 @@ export class Dialog extends HTMLElement {
         this.#stack.push(struct);
         await this.#showStruct(struct);
 
-        if (options?.callback != null) {
+        if (options?.callback != null && options.callback !== false) {
             struct.action = "loaded";
             await options.callback(struct);
             delete struct.action;

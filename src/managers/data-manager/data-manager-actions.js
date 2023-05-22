@@ -22,6 +22,15 @@ import {CHANGE_TYPES, MANAGER_TYPES} from "./data-manager-types.js";
  * - Get all indexes from a data manager
  * - Get all records from a data manager
  */
+
+
+/**
+ * JHR: TEMP - Think notes
+ * - on a group perspective, mark each record with a "_groupId" property with the group id
+ * - on marking a record as selected, if that record has a "_groupId" mark the group's (perspective object) based on the group count.
+ * In other words if all the records for that group is selected the mark the group as selected, or not selected or mixed.
+ */
+
 class DataManagerActions {
     /**
      * @method perform - Perform an action on a data manager. Main interface for working with data managers via the process-api
@@ -44,7 +53,8 @@ class DataManagerActions {
      *
      * @param step.args.manager {string} - The name of the data manager. You will use this when performing operations on the data manager.
      * @param step.args.id_field {string} - The name of the field that contains the id of the record. Default is "id"
-     * @param step.args.type {string} - The type of data manager to use. Default is "indexdb" but you can also use "memory"
+     * @param step.args.type {string} - The type of data manager to use. Default is "indexdb" but you can also use "memory" or "perspective"
+     * @param step.args.perspective {string} - The name of the perspective to use. Only used if type is "perspective"
      *
      * @example <caption>javascript example</caption>
      * await crs.call("data_manager", "register" {
@@ -73,6 +83,7 @@ class DataManagerActions {
         const dataField = await crs.process.getValue(step.args.id_field || "id", context, process, item);
         const type = await crs.process.getValue(step.args.type || "indexdb", context, process, item);
         const records = await crs.process.getValue(step.args.records || [], context, process, item);
+        const selectedCount = await crs.process.getValue(step.args.selected_count || 0, context, process, item);
 
         globalThis.dataManagers ||= {};
 
@@ -80,7 +91,18 @@ class DataManagerActions {
             globalThis.dataManagers[manager] = new MANAGER_TYPES[type](manager, dataField);
         }
 
-        globalThis.dataManagers[manager].setRecords(records);
+        const instance = globalThis.dataManagers[manager];
+
+        if (type === "perspective") {
+            instance.perspective = await crs.process.getValue(step.args["perspective"], context, process, item);
+            instance.manager = await crs.process.getValue(step.args["source_manager"], context, process, item);
+        }
+
+        if (type !== "perspective") {
+            instance.setRecords(records);
+            instance.selectedCount = selectedCount;
+        }
+
         return globalThis.dataManagers[manager];
     }
 
@@ -145,6 +167,30 @@ class DataManagerActions {
 
         const dataManager = globalThis.dataManagers[manager];
         return dataManager.count;
+    }
+
+    /**
+     * @method selected_count - Get the count of selected records in a data manager
+     * @param step {object} - The step that contains the action to perform
+     * @param context {object} - The context of the process
+     * @param process {object} - The process
+     * @param item {object} - Current item in a process loop
+     * @returns {Promise<number|*|number>}
+     */
+    static async selected_count(step, context, process, item) {
+        const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return 0;
+
+        const dataManager = globalThis.dataManagers[manager];
+        return dataManager.selectedCount;
+    }
+
+    static async get_counts(step, context, process, item) {
+        const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return 0;
+
+        const dataManager = globalThis.dataManagers[manager];
+        return { total: dataManager.count, selected: dataManager.selectedCount };
     }
 
     /**
@@ -361,6 +407,244 @@ class DataManagerActions {
             index: result.index,
             changes: result.changes
         })
+    }
+
+    /**
+     * @method set_group_selected - given a group id, check the records in that group (in the perspective definition) and then select them.
+     * @param step {object} - The step that contains the action to perform
+     * @param context {object} - The context of the process
+     * @param process {object} - The process
+     * @param item {object} - Current item in a process loop
+     *
+     * @param step.args.manager {string} - The name of the data manager. You will use this when performing operations on the data manager.
+     * @param step.args.group_id {string} - The id of the group to select
+     * @param step.args.select {boolean} - Whether to select or deselect the group
+     * @returns {Promise<void>}
+     */
+    static async set_group_selected(step, context, process, item) {
+
+    }
+
+    /**
+     * @method set_selected - mark a given record as selected by setting the _selected property to true or falce.
+     * @param step {object} - The step that contains the action to perform
+     * @param context {object} - The context of the process
+     * @param process {object} - The process
+     * @param item {object} - Current item in a process loop
+     *
+     * @param step.args.manager {string} - The name of the data manager. You will use this when performing operations on the data manager.
+     * @param [step.args.index] {number[]} - Collection of indexes of the records to select
+     * @param [step.args.id] {number[]} - Collection of ids of the records to select
+     * @param step.args.selected {boolean} - The value to set the _selected property to
+     *
+     * @returns {Promise<void>}
+     *
+     * @example <caption>javascript example using index</caption>
+     * await crs.call("data_manager", "select" {
+     *    manager: "my_data_manager",
+     *    index: [0],
+     *    selected: true
+     * });
+     *
+     * @example <caption>json example using index</caption>
+     * {
+     *   "type": "data_manager",
+     *   "action": "select",
+     *   "args": {
+     *      "manager": "my_data_manager",
+     *      "index": [0],
+     *      "selected": true
+     *   }
+     * }
+     */
+    static async set_selected(step, context, process, item) {
+        const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return;
+
+        const selected = await crs.process.getValue(step.args.selected ?? true, context, process, item);
+        const indexes = await crs.process.getValue(step.args.indexes, context, process, item);
+        const ids = await crs.process.getValue(step.args.ids, context, process, item);
+        const dataManager = globalThis.dataManagers[manager];
+
+        if (indexes != null) {
+            dataManager.setSelectedIndexes(indexes, selected);
+        }
+        else {
+            dataManager.setSelectedIds(ids, selected);
+        }
+
+        await dataManager.notifyChanges({
+            action: CHANGE_TYPES.selected,
+            id: ids,
+            index: indexes,
+            changes: selected
+        })
+    }
+
+    /**
+     * @method toggle_selection - Toggle the selection of a given record to the opioste of its current state.
+     * If no selection has been set yet, it will be set to true.
+     * @param step  {object} - The step that contains the action to perform
+     * @param context {object} - The context of the process
+     * @param process {object} - The process
+     * @param item {object} - Current item in a process loop
+     *
+     * @param step.args.manager {string} - The name of the data manager. You will use this when performing operations on the data manager.
+     * @param [step.args.index] {number[]} - Collection of indexes of the records to select
+     * @param [step.args.id] {number[]} - Collection of ids of the records to select
+     * @returns {Promise<void>}
+     *
+     * @example <caption>javascript example using index</caption>
+     * await crs.call("data_manager", "toggle_selection" {
+     *   manager: "my_data_manager",
+     *   index: 0
+     * });
+     *
+     * @example <caption>json example using index</caption>
+     * {
+     *  "type": "data_manager",
+     *  "action": "toggle_selection",
+     *  "args": {
+     *      "manager": "my_data_manager",
+     *      "index": [0]
+     *   }
+     * }
+     */
+    static async toggle_selection(step, context, process, item) {
+        const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return;
+
+        const indexes = await crs.process.getValue(step.args.indexes, context, process, item);
+        const ids = await crs.process.getValue(step.args.ids, context, process, item);
+        const dataManager = globalThis.dataManagers[manager];
+
+        if (indexes != null) {
+            dataManager.toggleSelectedIndexes(indexes);
+        }
+        else {
+            dataManager.toggleSelectedIds(ids);
+        }
+
+        await dataManager.notifyChanges({
+            action: CHANGE_TYPES.selected,
+            id: ids,
+            index: indexes,
+            changes: "toggle"
+        })
+    }
+
+    /**
+     * @method set_select_all - Select all records in a data manager nor none depending on the value of the selected argument.
+     * @param step {object} - The step that contains the action to perform
+     * @param context {object} - The context of the process
+     * @param process {object} - The process
+     * @param item {object} - Current item in a process loop
+     *
+     * @param step.args.manager {string} - The name of the data manager. You will use this when performing operations on the data manager.
+     * @param step.args.selected {boolean} - The value to set the _selected property to
+     * @returns {Promise<void>}
+     *
+     * @example <caption>javascript example</caption>
+     * await crs.call("data_manager", "select_all" {
+     *   manager: "my_data_manager",
+     *   selected: true
+     * });
+     *
+     * @example <caption>json example</caption>
+     * {
+     *  "type": "data_manager",
+     *  "action": "select_all",
+     *  "args": {
+     *    "manager": "my_data_manager",
+     *    "selected": true
+     *   }
+     * }
+     */
+    static async set_select_all(step, context, process, item) {
+        const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return;
+
+        const selected = await crs.process.getValue(step.args.selected ?? true, context, process, item);
+        const dataManager = globalThis.dataManagers[manager];
+
+        dataManager.setSelectedAll(selected);
+
+        await dataManager.notifyChanges({
+            action: CHANGE_TYPES.selected,
+            changes: selected ? "all" : "none"
+        })
+    }
+
+    /**
+     * @method filter_selected - show only selected records in a data manager or those not selected.
+     * the selected property is used to determine if you want to show the selected or the non selected values.
+     * set selected to true to only show those that are selected and false to show those that are not selected.
+     * @param step {object} - The step that contains the action to perform
+     * @param context {object} - The context of the process
+     * @param process {object} - The process
+     * @param item {object} - Current item in a process loop
+     *
+     * @param step.args.manager {string} - The name of the data manager. You will use this when performing operations on the data manager.
+     * @returns {Promise<void>}
+     *
+     * @example <caption>javascript example</caption>
+     * await crs.call("data_manager", "filter_selected" {
+     *    manager: "my_data_manager",
+     *    selected: true
+     * });
+     *
+     * @example <caption>json example</caption>
+     * {
+     *   "type": "data_manager",
+     *   "action": "filter_selected",
+     *   "args": {
+     *      "manager": "my_data_manager",
+     *      "selected": true
+     *   }
+     * }
+     */
+    static async filter_selected(step, context, process, item) {
+
+    }
+
+    /**
+     * @method get_selected - Get the selected records in a data manager.
+     * @param step {object} - The step that contains the action to perform
+     * @param context {object} - The context of the process
+     * @param process {object} - The process
+     * @param item {object} - Current item in a process loop
+     *
+     * @param step.args.manager {string} - The name of the data manager. You will use this when performing operations on the data manager.
+     * @returns {Promise<void>}
+     *
+     * @example <caption>javascript example</caption>
+     * const selected = await crs.call("data_manager", "get_selected" {
+     *   manager: "my_data_manager"
+     * });
+     *
+     * @example <caption>json example</caption>
+     * {
+     *    "type": "data_manager",
+     *    "action": "get_selected",
+     *    "args": {
+     *        "manager": "my_data_manager"
+     *     }
+     * }
+     */
+    static async get_selected(step, context, process, item) {
+        const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return;
+
+        const dataManager = globalThis.dataManagers[manager];
+        return dataManager.getSelected();
+    }
+
+    static async get_unselected(step, context, process, item) {
+        const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return;
+
+        const dataManager = globalThis.dataManagers[manager];
+        return dataManager.getSelected(false);
     }
 
     /**
@@ -707,10 +991,17 @@ class DataManagerActions {
      */
     static async remove_change(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
-        if (manager == null) return;
+        if (manager == null || globalThis.dataManagers[manager] == null) return;
 
         const callback = await crs.process.getValue(step.args.callback, context, process, item);
         return globalThis.dataManagers[manager].removeChangeCallback(callback);
+    }
+
+    static async is_all_selected(step, context, process, item) {
+        const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return;
+
+        return globalThis.dataManagers[manager].isAllSelected;
     }
 }
 

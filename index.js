@@ -33,4 +33,12 @@ export default class IndexViewModel extends crsbinding.classes.ViewBase {
                 router.addEventListener("ready", fn);}
         })
     }
+
+    async debugStateChanged(event) {
+        if (event.detail == "on") {
+            return await crs.call("debug", "start_monitor_events", {});
+        }
+
+        return await crs.call("debug", "stop_monitor_events", {});
+    }
 }
