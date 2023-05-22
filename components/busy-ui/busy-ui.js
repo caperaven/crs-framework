@@ -62,10 +62,10 @@ export class BusyUi extends HTMLElement {
     async attributeChangedCallback(name, newVal, oldVal) {
         const lblMessage = this.shadowRoot.querySelector("#lblMessage");
         const lblProgress = this.shadowRoot.querySelector("#lblProgress");
-        if (lblMessage) {
+        if (lblMessage != null) {
             lblMessage.innerText = this.dataset.message;
         }
-        if (lblProgress) {
+        if (lblProgress != null) {
             lblProgress.innerText = this.dataset.progress;
         }
     }
