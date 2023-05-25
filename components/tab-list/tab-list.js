@@ -55,7 +55,11 @@ export class TabList extends HTMLElement {
         target = target || this.querySelector(`[data-view="${tab}"]`);
         this.#target.view = tab;
         await crs.call("dom_collection", "toggle_selection", { target });
-        this.dispatchEvent(new CustomEvent("change", { detail: { tab } }));
+        this.dispatchEvent(new CustomEvent("change", {
+            bubbles: true,
+            composed: true,
+            detail: { tab }
+        }));
     }
 }
 

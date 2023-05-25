@@ -143,7 +143,11 @@ class ContextMenu extends crs.classes.BindableElement {
         }
 
         this.dataset.value = option.id;
-        this.dispatchEvent(new CustomEvent("change", {detail: option.id}));
+        this.dispatchEvent(new CustomEvent("change", {
+            bubbles: true,
+            composed: true,
+            detail: option.id
+        }));
 
         await this.#filterClose();
     }

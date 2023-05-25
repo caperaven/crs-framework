@@ -1227,7 +1227,10 @@ var EventStore = class {
   }
   register(event, uuid, intent, isCollection = false) {
     if (this.#store[event] == null) {
-      document.addEventListener(event, this.#eventHandler, true);
+      document.addEventListener(event, this.#eventHandler, {
+        capture: true,
+        passive: true
+      });
       this.#store[event] = {};
     }
     if (isCollection) {

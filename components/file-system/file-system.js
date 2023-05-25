@@ -33,10 +33,14 @@ export default class FileSystem extends crs.classes.BindableElement {
     }
 
     async #expandFolder(element) {
-        this.dispatchEvent(new CustomEvent("change", { detail: {
-            kind: "directory",
-            name: element.textContent.split("\n").join("")
-        }}));
+        this.dispatchEvent(new CustomEvent("change", {
+            bubbles: true,
+            composed: true,
+            detail: {
+                kind: "directory",
+                name: element.textContent.split("\n").join("")
+            }
+        }));
 
         if (element.matches('[aria-expanded="true"]')) {
             return await this.#collapseFolder(element);
@@ -80,6 +84,8 @@ export default class FileSystem extends crs.classes.BindableElement {
         const result = await crs.call("fs", "read_file", { handle });
 
         this.dispatchEvent(new CustomEvent("change", {
+            bubbles: true,
+            composed: true,
             detail: {
                 kind: 'file',
                 name: element.textContent.split("\n").join(""),

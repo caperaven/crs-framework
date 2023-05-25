@@ -22,7 +22,7 @@ class FilterHeader extends crs.classes.BindableElement {
 
     async filter(event) {
         if (event.code == "ArrowDown") {
-            return this.dispatchEvent(new CustomEvent("focus-out"));
+            return this.dispatchEvent(new CustomEvent("focus-out", { bubbles: true, composed: true }));
         }
 
         await crs.call("dom_collection", "filter_children", {
@@ -32,7 +32,7 @@ class FilterHeader extends crs.classes.BindableElement {
     }
 
     async close() {
-        this.dispatchEvent(new CustomEvent("close"));
+        this.dispatchEvent(new CustomEvent("close", { bubbles: true, composed: true }));
     }
 }
 

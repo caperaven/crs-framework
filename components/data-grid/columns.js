@@ -22,7 +22,7 @@ async function addColumnElements(columns) {
         this.rowContainer.parentElement.insertBefore(header, this.rowContainer);
     }
 
-    dispatchEvent(new CustomEvent("columns-added", {detail: this}));
+    dispatchEvent(new CustomEvent("columns-added", { composed: true, bubbles: true, detail: this }));
 }
 
 /**
@@ -32,7 +32,7 @@ async function addColumnElements(columns) {
  * @returns {Promise<void>}
  */
 async function removeColumnElements(index, count) {
-    dispatchEvent(new CustomEvent("columns-removed", {detail: this}));
+    dispatchEvent(new CustomEvent("columns-removed", { composed: true, bubbles: true, detail: this }));
 }
 
 /**
@@ -42,5 +42,5 @@ async function removeColumnElements(index, count) {
  * @returns {Promise<void>}
  */
 async function moveColumnElement(from, to) {
-    dispatchEvent(new CustomEvent("columns-moved", {detail: this}));
+    dispatchEvent(new CustomEvent("columns-moved", { composed: true, bubbles: true, detail: this }));
 }

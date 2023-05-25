@@ -42,7 +42,12 @@ export class LabelCounter extends HTMLElement {
             await this[event.target.dataset.action](event);
         }
         this.shadowRoot.querySelector("[data-id='value']").textContent = this.#counter;
-        this.dispatchEvent(new CustomEvent("change", {detail: {value: this.#counter}}))
+        this.dispatchEvent(new CustomEvent("change", {
+            bubbles: true,
+            composed: true,
+            detail: { value: this.#counter }
+        }))
+
         event.stopPropagation();
     }
 

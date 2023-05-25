@@ -30,7 +30,7 @@ class BindableElement extends HTMLElement {
     await load(this);
     await setName(this);
     this.dataset.ready = "true";
-    this.dispatchEvent(new CustomEvent("ready", { bubbles: false }));
+    this.dispatchEvent(new CustomEvent("ready", { bubbles: true, composed: true }));
   }
   async disconnectedCallback() {
     this.dispose();

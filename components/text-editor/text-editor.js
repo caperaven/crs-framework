@@ -39,7 +39,7 @@ class TextEditor extends HTMLElement {
 
         this.#update = EditorView.updateListener.of(update => {
             if (update.docChanged == true) {
-                this.dispatchEvent(new CustomEvent("change",  { detail: this.#getValue() }));
+                this.dispatchEvent(new CustomEvent("change",  { detail: this.#getValue(), bubbles: true, composed: true }));
             }
         })
 

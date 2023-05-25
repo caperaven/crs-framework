@@ -32,7 +32,7 @@ class ColorPicker extends crs.classes.BindableElement {
     set baseColor(newValue) {
         this.value = newValue;
         this.setAttribute("value", newValue);
-        this.dispatchEvent(new CustomEvent("change"));
+        this.dispatchEvent(new CustomEvent("change", { bubbles: true, composed: true }));
     }
 
     static get observedAttributes() { return ["value"]; }

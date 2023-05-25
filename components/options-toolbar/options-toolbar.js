@@ -97,7 +97,11 @@ class OptionsToolbar extends HTMLElement {
         this.#previouslySelected = element;
 
         if (dispatchEvent === true) {
-            this.dispatchEvent(new CustomEvent("change", {detail: element.dataset.value}));
+            this.dispatchEvent(new CustomEvent("change", {
+                bubbles: true,
+                composed: true,
+                detail: element.dataset.value
+            }));
         }
     }
 

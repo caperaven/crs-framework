@@ -289,9 +289,11 @@ export default class Calendar extends crs.classes.BindableElement {
         await this.#setDataStart(this.#elements[this.#currentIndex]);
         await this.#setFocusOnRender();
         this.dispatchEvent(new CustomEvent("date-selected", {
+            bubbles: true,
+            composed: true,
             detail: {
                 date: this.dataset.start
-            }, bubbles: true
+            }
         }));
     }
 
@@ -382,9 +384,11 @@ export default class Calendar extends crs.classes.BindableElement {
             await this.#setDataStart(newValue);
             await this.#setFocusOnRender();
             this.dispatchEvent(new CustomEvent("date-selected", {
+                bubbles: true,
+                composed: true,
                 detail: {
                     date: this.dataset.start
-                }, bubbles: true
+                }
             }));
         }
     }

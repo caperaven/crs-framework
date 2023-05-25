@@ -66,7 +66,14 @@ export class Checklist extends HTMLElement {
     async #clicked(event) {
         const target = event.composedPath()[0];
         await crs.call("dom_collection", "toggle_selection", {target: target, multiple: true});
-        this.dispatchEvent(new CustomEvent('selection-changed', {detail: {value: target.dataset.value, selected: target.getAttribute("aria-selected") == "true"}}));
+        this.dispatchEvent(new CustomEvent('selection-changed', {
+            bubbles: true,
+            composed: true,
+            detail: {
+                value: target.dataset.value,
+                selected: target.getAttribute("aria-selected") == "true"
+            }
+        }));
     }
 }
 

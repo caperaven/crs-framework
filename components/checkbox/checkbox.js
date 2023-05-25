@@ -133,7 +133,10 @@ export class Checkbox extends HTMLElement {
         }[value];
 
         this.#checked = value;
-        this.dispatchEvent(new CustomEvent("checkedChange", {}));
+        this.dispatchEvent(new CustomEvent("checkedChange", {
+            bubbles: true,
+            composed: true
+        }));
     }
 
     /**

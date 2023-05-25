@@ -39,7 +39,11 @@ async function addColumnElements(columns) {
         index += 1;
     }
 
-    dispatchEvent(new CustomEvent("columns-added", {detail: this}));
+    dispatchEvent(new CustomEvent("columns-added", {
+        bubbles: true,
+        composed: true,
+        detail: this
+    }));
 }
 
 /**
@@ -49,7 +53,11 @@ async function addColumnElements(columns) {
  * @returns {Promise<void>}
  */
 async function removeColumnElements(index, count) {
-    dispatchEvent(new CustomEvent("columns-removed", {detail: this}));
+    dispatchEvent(new CustomEvent("columns-removed", {
+        bubbles: true,
+        composed: true,
+        detail: this
+    }));
 }
 
 /**
@@ -59,5 +67,9 @@ async function removeColumnElements(index, count) {
  * @returns {Promise<void>}
  */
 async function moveColumnElement(from, to) {
-    dispatchEvent(new CustomEvent("columns-moved", {detail: this}));
+    dispatchEvent(new CustomEvent("columns-moved", {
+        bubbles: true,
+        composed: true,
+        detail: this
+    }));
 }
