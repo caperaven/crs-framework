@@ -14,10 +14,10 @@ class TranslationsManager {
     if (element.children.length == 0 && element.textContent.indexOf("&{") != -1) {
       element.textContent = await this.get_with_markup(element.textContent.trim());
     }
-    for (let attribute of element.attributes) {
+    for (let attribute of element.attributes || []) {
       await this.parseAttribute(attribute);
     }
-    for (let child of element.children) {
+    for (let child of element.children || []) {
       await this.parseElement(child);
     }
   }

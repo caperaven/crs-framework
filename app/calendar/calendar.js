@@ -3,12 +3,16 @@ import "../../components/calendar/calendar.js";
 export default class Calendar extends crs.classes.ViewBase {
     #dateSelectedHandler = this.#setStartDate.bind(this);
 
-    async connectedCallback() {
-        await super.connectedCallback();
-        await this.#initMonthTranslations();
+    async preLoad() {
         this.setProperty("start", new Date());
-        this.#dateSelectedHandler = this.#setStartDate.bind(this);
-        this.calendar.addEventListener("date-selected", this.#dateSelectedHandler);
+    }
+
+    async load() {
+        requestAnimationFrame(async () => {
+            await this.#initMonthTranslations();
+            this.calendar.addEventListener("date-selected", this.#dateSelectedHandler);
+            await super.load();
+        })
     }
 
     async disconnectedCallback() {

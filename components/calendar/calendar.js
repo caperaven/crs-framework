@@ -38,6 +38,13 @@ export default class Calendar extends crs.classes.BindableElement {
         return ["data-start"];
     }
 
+    async preLoad() {
+        this.setProperty("folder", import.meta.url.replace("/calendar.js", "/templates"));
+        this.setProperty("selectedView", "default");
+        await this.#setMonthProperty();
+        await this.#setYearProperty();
+    }
+
     async load() {
         this.#perspectiveElement = this.shadowRoot.querySelector("#perspectiveElement");
         this.#perspectiveHandler = this.#viewLoaded.bind(this);
@@ -58,8 +65,8 @@ export default class Calendar extends crs.classes.BindableElement {
     }
 
     async disconnectedCallback() {
-        await crsbinding.inflationManager.unregister("calendar-cell");
-        await crsbinding.inflationManager.unregister("calendar-years");
+        await crs.binding.inflation.manager.unregister("calendar-cell");
+        await crs.binding.inflation.manager.unregister("calendar-years");
         this.removeEventListener("change-month", this.#changeMonthHandler);
         this.#month = null;
         this.#year = null;
@@ -80,12 +87,6 @@ export default class Calendar extends crs.classes.BindableElement {
         this.#perspectiveElement = null;
         this.#perspectiveHandler = null;
         await super.disconnectedCallback();
-    }
-
-    async preLoad() {
-        this.setProperty("selectedView", "default");
-        await this.#setMonthProperty();
-        await this.#setYearProperty();
     }
 
     async attributeChangedCallback(name, oldValue, newValue) {
@@ -109,7 +110,7 @@ export default class Calendar extends crs.classes.BindableElement {
 
         const data = await crs.call("date", "get_days", {month: this.#month, year: this.#year, only_current: false});
         const cells = this.shadowRoot.querySelectorAll("[role='cell']");
-        crsbinding.inflationManager.get("calendar-cell", data, cells);
+        await crs.binding.inflation.manager.get("calendar-cell", data, cells);
         await this.#setSelection();
         await this.#setFocus();
     }
@@ -144,7 +145,6 @@ export default class Calendar extends crs.classes.BindableElement {
     async #setYearProperty() {
         this.setProperty("selectedYearText", this.#year);
         this.setProperty("selectedYear", this.#year);
-        // JHR / Charles: this.#selectedView === "years" && await this.#yearsVisualSelection();
     }
 
     /**
