@@ -1,7 +1,7 @@
 import "./../../components/dialog/dialog-actions.js";
 import "./../../components/calendar/calendar.js";
 
-export default class Dialog extends crs.binding.classes.ViewBase {
+export default class Dialog extends crs.classes.ViewBase {
     async connectedCallback() {
         await super.connectedCallback();
     }

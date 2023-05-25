@@ -1,4 +1,4 @@
-export default class FileSystem extends crs.binding.classes.BindableElement {
+export default class FileSystem extends crs.classes.BindableElement {
     #data = [];
 
     get shadowDom() {
@@ -113,8 +113,8 @@ export default class FileSystem extends crs.binding.classes.BindableElement {
 
         const fragment = document.createDocumentFragment();
 
-        buildUI(folders, fragment, "file-system-folder", level);
-        buildUI(files, fragment, "file-system-file", level);
+        await buildUI(folders, fragment, "file-system-folder", level);
+        await buildUI(files, fragment, "file-system-file", level);
 
         return fragment;
     }
@@ -200,10 +200,10 @@ function sortArray(array) {
     });
 }
 
-function buildUI(array, fragment, key, level) {
+async function buildUI(array, fragment, key, level) {
     if (array.length == 0) return;
 
-    const items = crs.binding.inflationManager.get(key, array);
+    const items = await crs.binding.inflation.manager.get(key, array);
 
     while (items?.firstElementChild) {
         const element = items.firstElementChild.cloneNode(true);

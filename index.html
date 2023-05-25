@@ -44,7 +44,7 @@
     </svg>
 
     <header>
-        <button aria-label="menu" class="icon" click.setValue="$globals.isMenuOpen = !$globals.isMenuOpen" classlist.if="$globals.isMenuOpen == true ? 'highlight-fill'"><svg><use xlink:href="#menu" /></svg></button>
+        <button aria-label="menu" class="icon" click.setvalue="$globals.isMenuOpen = !$globals.isMenuOpen" classlist.if="$globals.isMenuOpen == true ? 'highlight-fill'"><svg><use xlink:href="#menu" /></svg></button>
         <h1>My Application</h1>
         <options-toolbar change.call="debugStateChanged">
             <button data-value="on">On</button>
@@ -56,11 +56,11 @@
         <crs-router routes="app/routes.json"></crs-router>
     </main>
 
-    <aside classlist.if="$globals.isMenuOpen ==  true? 'open'" click.setValue="$globals.isMenuOpen = !$globals.isMenuOpen">
+    <aside classlist.if="$globals.isMenuOpen ==  true? 'open'" click.setvalue="$globals.isMenuOpen = !$globals.isMenuOpen">
         <nav id="main-menu" aria-label="main menu">
             <ol>
                 <template for="route of routes">
-                    <li><a href.one-way="route.hash">${route.title}</a></li>
+                    <li><a href.attr="route.hash">${route.title}</a></li>
                 </template>
             </ol>
         </nav>
@@ -73,6 +73,13 @@
     <script type="module">
         import "./packages/crs-schema/crs-schema.js";
         import "./packages/crs-binding/crs-binding.js";
+        import "./packages/crs-binding/events/event-emitter.js";
+        import "./packages/crs-binding/classes/view-base.js";
+        import "./packages/crs-binding/classes/bindable-element.js";
+        import "./packages/crs-binding/expressions/code-factories/if.js";
+        import "./packages/crs-binding/expressions/code-factories/case.js";
+        import "./packages/crs-binding/managers/inflation-manager.js";
+        import "./packages/crs-binding/classes/perspective-element.js";
         import "./packages/crs-modules/crs-modules.js";
         import "./packages/crs-router/crs-router.js";
         import {initialize} from "./packages/crs-process-api/crs-process-api.js";
@@ -81,12 +88,12 @@
         import {HTMLParser} from "./packages/crs-schema/html/crs-html-parser.js";
         import "/src/binding-extensions/markdown-template.js";
         import "/src/binding-extensions/schema-template.js";
+        import ("./packages/crs-process-api/action-systems/data-processing-actions.js");
+        import ("./packages/crs-process-api/action-systems/schema-actions.js")
+        import ("./components/busy-ui/busy-ui-actions.js");
+        import ("./components/options-toolbar/options-toolbar.js");
 
-        window.addEventListener("load", async (event) => {
-            import ("./packages/crs-process-api/action-systems/data-processing-actions.js");
-            import ("./components/busy-ui/busy-ui-actions.js");
-            import ("./components/options-toolbar/options-toolbar.js");
-
+        const load = async (event) => {
             // await crs.modules.enableBinding([
             //     ["data-grid", "/components/data-grid/data-grid.js"],
             //     ["kan-ban", "/components/kan-ban/kan-ban.js"],
@@ -122,9 +129,12 @@
 
             document.viewModel = new IndexViewModel(document.body);
             await document.viewModel.connectedCallback();
-        });
+            document.body.style.visibility = "";
+        };
 
         await initialize("/packages/crs-process-api");
+        load();
+
     </script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 import "./../../components/tab-list/tab-list.js";
 
-export default class TabList extends crs.binding.classes.ViewBase {
+export default class TabList extends crs.classes.ViewBase {
     get html() {
         return import.meta.url;
     }

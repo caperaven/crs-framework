@@ -4,7 +4,7 @@ import "../../src/managers/data-manager/data-manager-actions.js";
 import "../../components/checkbox/checkbox.js";
 import "../../src/actions/collection-selection-actions.js";
 
-export default class Virtualization extends crs.binding.classes.ViewBase {
+export default class Virtualization extends crs.classes.ViewBase {
     async connectedCallback() {
         await super.connectedCallback();
 

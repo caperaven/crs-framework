@@ -1,1 +1,38 @@
-function o(i,u){if(i.__uuid)return i.__uuid;const n=u.bid;return i.__uuid==null&&(i.__uuid||=crypto.randomUUID(),crs.binding.elements[i.__uuid]=i),i.__bid||=n,u.boundElements||=new Set,u.boundElements.add(i.__uuid),i.__uuid}function r(i){if(i.nodeName==="STYLE")return;i.children.length>0&&d(i.children);const u=i.__uuid;u!=null&&(crs.binding.providers.clear(u).catch(n=>console.error(n)),crs.binding.elements[u]&&delete crs.binding.elements[u])}function d(i){for(const u of i)r(u)}export{o as markElement,r as unmarkElement,d as unmarkElements};
+function markElement(element, context) {
+  if (element["__uuid"])
+    return element["__uuid"];
+  const bid = context.bid;
+  if (element["__uuid"] == null) {
+    element["__uuid"] ||= crypto.randomUUID();
+    crs.binding.elements[element["__uuid"]] = element;
+  }
+  element["__bid"] ||= bid;
+  context.boundElements ||= /* @__PURE__ */ new Set();
+  context.boundElements.add(element["__uuid"]);
+  return element["__uuid"];
+}
+function unmarkElement(element) {
+  if (element.nodeName === "STYLE")
+    return;
+  if (element.children.length > 0) {
+    unmarkElements(element.children);
+  }
+  const uuid = element["__uuid"];
+  if (uuid == null)
+    return;
+  crs.binding.providers.clear(uuid).catch((error) => console.error(error));
+  if (crs.binding.elements[uuid]) {
+    delete crs.binding.elements[uuid];
+  }
+  crs.binding.utils.disposeProperties(element);
+}
+function unmarkElements(elements) {
+  for (const element of elements) {
+    unmarkElement(element);
+  }
+}
+export {
+  markElement,
+  unmarkElement,
+  unmarkElements
+};

@@ -1,6 +1,6 @@
 import "/components/label-counter/label-counter.js"
 
-export default class Welcome extends crs.binding.classes.ViewBase {
+export default class Welcome extends crs.classes.ViewBase {
     async connectedCallback() {
         await super.connectedCallback();
     }

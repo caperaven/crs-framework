@@ -1,6 +1,6 @@
 import {CalendarUtils} from "./calendar-utils.js";
 
-export default class Calendar extends crs.binding.classes.BindableElement {
+export default class Calendar extends crs.classes.BindableElement {
     #month;
     #year;
     #dateSelected;
@@ -108,7 +108,7 @@ export default class Calendar extends crs.binding.classes.BindableElement {
 
         const data = await crs.call("date", "get_days", {month: this.#month, year: this.#year, only_current: false});
         const cells = this.shadowRoot.querySelectorAll("[role='cell']");
-        crs.binding.inflationManager.get("calendar-cell", data, cells);
+        await crs.binding.inflation.manager.get("calendar-cell", data, cells);
         await this.#setFocusOnRender();
     }
 
@@ -119,7 +119,7 @@ export default class Calendar extends crs.binding.classes.BindableElement {
         const year = new Date().getFullYear();
         const years = CalendarUtils.getYearsAround(year, -30, 30);
         const cells = this.shadowRoot.querySelectorAll("[data-type='year-cell']");
-        crs.binding.inflationManager.get("calendar-years", years, cells);
+        await crs.binding.inflation.manager.get("calendar-years", years, cells);
         const element = await this.#setMonthAndYearAria(this.#year);
         element.scrollIntoView({block: 'start', behavior: 'smooth'});
         element.focus();

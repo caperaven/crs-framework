@@ -1,6 +1,6 @@
 import "../../components/masked-input/masked-input.js"
 
-export default class Form extends crs.binding.classes.ViewBase {
+export default class Form extends crs.classes.ViewBase {
     async connectedCallback() {
         await super.connectedCallback();
     }

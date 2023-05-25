@@ -3,7 +3,7 @@ import "/src/data-manager/data-manager-memory-provider.js";
 import {records} from "./data.js";
 import {schema} from "./schema.js";
 
-export default class KanBan extends crs.binding.classes.ViewBase {
+export default class KanBan extends crs.classes.ViewBase {
     async connectedCallback() {
         await super.connectedCallback();
 
@@ -13,7 +13,7 @@ export default class KanBan extends crs.binding.classes.ViewBase {
     }
 
     async disconnectedCallback() {
-        crs.binding.inflationManager.unregister("simple");
+        await crs.binding.inflation.manager.unregister("simple");
         await crs.call("data_manager", "dispose", {
             manager: "kanban_data"
         })

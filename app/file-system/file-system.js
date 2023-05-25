@@ -1,7 +1,7 @@
 import "./../../components/file-system/file-system.js";
 import "./../../components/text-editor/text-editor.js";
 
-export default class FileSystemViewModel extends crs.binding.classes.ViewBase {
+export default class FileSystemViewModel extends crs.classes.ViewBase {
     async connectedCallback() {
         await super.connectedCallback();
     }

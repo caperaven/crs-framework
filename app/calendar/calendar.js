@@ -1,13 +1,21 @@
 import "../../components/calendar/calendar.js";
 
-export default class Calendar extends crs.binding.classes.ViewBase {
-    #dateSelectedHandler;
+export default class Calendar extends crs.classes.ViewBase {
+    #dateSelectedHandler = this.#setStartDate.bind(this);
 
     async connectedCallback() {
         await super.connectedCallback();
+    }
+
+    async preLoad() {
         this.setProperty("start", "2023-01-15");
-        this.#dateSelectedHandler = this.#setStartDate.bind(this);
-        this.calendar.addEventListener("date-selected", this.#dateSelectedHandler);
+    }
+
+    async load() {
+        requestAnimationFrame(() => {
+            this.calendar.addEventListener("date-selected", this.#dateSelectedHandler);
+            super.load();
+        })
     }
 
     async disconnectedCallback() {

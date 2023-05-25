@@ -1,6 +1,6 @@
 import "./../../components/__element__/__element__.js";
 
-export default class __class__ViewModel extends crs.binding.classes.ViewBase {
+export default class __class__ViewModel extends crs.classes.ViewBase {
     async connectedCallback() {
         await super.connectedCallback();
     }

@@ -1,4 +1,4 @@
-export default class CheckList extends crs.binding.classes.ViewBase {
+export default class CheckList extends crs.classes.ViewBase {
     async preLoad() {
         const translations = {
             item1: "Item 1",

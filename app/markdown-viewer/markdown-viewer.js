@@ -1,6 +1,6 @@
 import "../../components/markdown/markdown-viewer/markdown-viewer-actions.js"
 
-export default class MarkdownViewer extends crs.binding.classes.ViewBase {
+export default class MarkdownViewer extends crs.classes.ViewBase {
     async connectedCallback() {
         await super.connectedCallback();
     }

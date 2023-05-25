@@ -18,11 +18,16 @@ export async function init() {
     globalThis.HTMLInputElement = ElementMock;
     globalThis.requestAnimationFrame = (callback) => callback();
 
+    const crs_binding_root = path.join(packages, "crs-binding");
     const crs_binding = path.join(packages, "crs-binding/crs-binding.js");
     const crs_modules = path.join(packages, "crs-modules/crs-modules.js");
     const crs_process = path.join(packages, "crs-process-api/crs-process-api.js");
 
     await import(crs_binding);
+    await import(`${crs_binding_root}/events/event-emitter.js`);
+    await import(`${crs_binding_root}/expressions/code-factories/if.js`);
+    await import(`${crs_binding_root}/expressions/code-factories/case.js`);
+    await import(`${crs_binding_root}/classes/perspective-element.js`);
     await import(crs_modules);
 
     const processModule = await import(crs_process);

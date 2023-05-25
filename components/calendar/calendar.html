@@ -110,7 +110,7 @@
          tabindex="${new Date().toLocaleDateString() === date.toLocaleDateString() ? '0': tabindex == null ? '-1': tabindex}"
          aria-selected="${selected}" data-day="${date.getDate()}" data-month="${date.getMonth()}"
          data-year="${date.getFullYear()}"
-         classlist.case="current == false: 'non-current-day', new Date().toLocaleDateString() === date.toLocaleDateString(): 'today'">
+         classlist.case="current == false ? 'non-current-day', new Date().toLocaleDateString() === date.toLocaleDateString() ? 'today'">
         ${number}
     </div>
 </template>
@@ -139,7 +139,7 @@
     </button>
 </div>
 
-<perspective-element view.bind="selectedView" ctx.once="contextId" data-folder="components/calendar/"
+<perspective-element view.bind="selectedView" ctx.once="bid" data-folder="components/calendar/"
                      view-loaded.call="viewLoaded" ref="perspectiveContainer">
     <template data-id="default" data-default="true">
         <style>

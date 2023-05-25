@@ -21,11 +21,6 @@
             "view": "form"
         },
         {
-            "title": "Grid",
-            "hash": "#grid",
-            "view": "grid"
-        },
-        {
             "title": "Kan Ban",
             "hash": "#kan-ban",
             "view": "kan-ban"

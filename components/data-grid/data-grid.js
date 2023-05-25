@@ -4,7 +4,7 @@ import {addSelectionFeature} from "./selection.js";
 import {selectedConverter} from "./value-converters/selected-converter.js";
 import {enableInput, disableInput} from "./input.js";
 
-export default class DataGrid extends crs.binding.classes.BindableElement {
+export default class DataGrid extends crs.classes.BindableElement {
     #columns;
     #columnGroups;
 

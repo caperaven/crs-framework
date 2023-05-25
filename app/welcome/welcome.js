@@ -1,4 +1,4 @@
 
-export default class Welcome extends crs.binding.classes.ViewBase {
+export default class Welcome extends crs.classes.ViewBase {
 
 }

@@ -5,7 +5,7 @@ import "./../filter-header/filter-header.js";
  * This can either be a flat list or a nested list.
  * You should not be using this component directly but instead use the context_menu process api action instead.
  */
-class ContextMenu extends crs.binding.classes.BindableElement {
+class ContextMenu extends crs.classes.BindableElement {
     #options;
     #point;
     #at;

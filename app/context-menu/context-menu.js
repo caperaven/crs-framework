@@ -1,6 +1,6 @@
 import "./../../components/context-menu/context-menu-actions.js";
 
-export default class ContextMenu extends crs.binding.classes.ViewBase {
+export default class ContextMenu extends crs.classes.ViewBase {
     #handler = this.#showContext.bind(this);
 
     async connectedCallback() {

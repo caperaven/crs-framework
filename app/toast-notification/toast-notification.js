@@ -1,6 +1,6 @@
 import "../../components/toast-notification/toast-notification-actions.js";
 
-export default class ToastNotification extends crs.binding.classes.ViewBase {
+export default class ToastNotification extends crs.classes.ViewBase {
     async connectedCallback() {
         await super.connectedCallback();
         await crs.call("toast_notification", "enable", { position: "bottom-center", margin: 10 });

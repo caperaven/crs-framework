@@ -1,4 +1,4 @@
-export default class OptionsToolbar extends crs.binding.classes.ViewBase {
+export default class OptionsToolbar extends crs.classes.ViewBase {
     async connectedCallback() {
         await super.connectedCallback();
     }

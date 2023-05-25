@@ -1,4 +1,4 @@
-class FilterHeader extends crs.binding.classes.BindableElement {
+class FilterHeader extends crs.classes.BindableElement {
     #container;
 
     get shadowDom() {

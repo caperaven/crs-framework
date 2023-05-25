@@ -1,1 +1,12 @@
-class r{async parse(t){const c=t.getAttribute("src"),n=await fetch(c).then(a=>a.text()),e=document.createElement("template");e.innerHTML=n,t.replaceWith(e.content.cloneNode(!0))}}export{r as default};
+class TemplateSrcProvider {
+  async parse(element) {
+    const path = element.getAttribute("src");
+    const content = await fetch(path).then((result) => result.text());
+    const template = document.createElement("template");
+    template.innerHTML = content;
+    element.replaceWith(template.content.cloneNode(true));
+  }
+}
+export {
+  TemplateSrcProvider as default
+};
