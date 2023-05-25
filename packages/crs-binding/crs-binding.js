@@ -445,6 +445,7 @@ var BindingData = class {
     return crs.binding.utils.getValueOnPath(this.getData(id)?.data, property);
   }
   async setProperty(id, property, value) {
+    const oldValue = this.getProperty(id, property);
     let setProperty = property;
     if (setProperty.indexOf(GLOBALS) !== -1) {
       id = 0;
@@ -458,6 +459,9 @@ var BindingData = class {
     }
     crs.binding.utils.setValueOnPath(this.getData(id)?.data, setProperty, value);
     await this.#performUpdate(id, setProperty);
+    const context = this.#context[id];
+    context["propertyChanged"]?.(property, value, oldValue);
+    context[`${property}Changed`]?.(value, oldValue);
   }
   setName(id, name) {
     id = this.#getContextId(id);

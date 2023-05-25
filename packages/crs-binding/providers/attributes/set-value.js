@@ -49,7 +49,7 @@ function getRight(exp, context, left, preArray) {
   if (exp.indexOf(left) != -1) {
     exp = exp.replace(left, `crs.binding.data.getProperty(${context}, "${left}")`);
   }
-  exp = exp.replace("$event", "event");
+  exp = exp.replace("$event", "event").replace("$target", "event.composedPath()[0]");
   return exp;
 }
 function genAttr(exp, preArray) {

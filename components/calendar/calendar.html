@@ -290,7 +290,7 @@
             }
         </style>
 
-        <div id="months" click.setValue="selectedMonth = $event.target.dataset.value">
+        <div id="months" click.setValue="selectedMonth = $target.dataset.value">
             <div data-type="month-cell" tabindex="-1" data-value="0">January</div>
             <div data-type="month-cell" tabindex="-1" data-value="1">February</div>
             <div data-type="month-cell" tabindex="-1" data-value="2">March</div>
@@ -357,7 +357,7 @@
             }
 
         </style>
-        <div id="years" ref="years" click.setValue="selectedYear = $event.target.dataset.value">
+        <div id="years" ref="years" click.setValue="selectedYear = $target.dataset.value">
             <div data-type="year-cell"></div>
             <div data-type="year-cell"></div>
             <div data-type="year-cell"></div>
