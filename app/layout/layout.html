@@ -1,0 +1,33 @@
+<style>
+    layout-component {
+        height: 50rem;
+        width: 50rem;
+        margin: 0;
+        padding: 0;
+        border: 1px solid black;
+    }
+
+    div {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #Left {
+        background: var(--blue-s2);
+    }
+
+    #Center {
+        background: var(--blue-s1);
+    }
+
+    #Right {
+        background: var(--blue);
+    }
+
+</style>
+<layout-component data-columns="1fr 1fr 1fr" data-rows="1fr">
+    <div id="Left" slot="content">Left</div>
+    <div id="Center" slot="content">Center</div>
+    <div id="Right" slot="content">Right</div>
+</layout-component>
