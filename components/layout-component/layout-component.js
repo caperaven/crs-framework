@@ -18,6 +18,7 @@ export default class LayoutComponent extends crsbinding.classes.BindableElement 
             requestAnimationFrame(async () => {
                 // render grid
                 await this.#renderGrid();
+                resolve();
             });
         })
     }
@@ -27,16 +28,19 @@ export default class LayoutComponent extends crsbinding.classes.BindableElement 
     }
 
     async #renderGrid() {
-        //set grid columns
+        const columns = this.dataset.columns;
+        const rows = this.dataset.rows;
+
+        if (columns == null && rows == null) return;
+
         await crs.call("cssgrid", "set_columns",{
             element: this,
-            columns: this.dataset.columns
+            columns: columns
         });
 
-        //set grid rows
         await crs.call("cssgrid", "set_rows",{
             element: this,
-            rows: this.dataset.rows
+            rows: rows
         });
     }
 }
