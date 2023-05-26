@@ -131,18 +131,20 @@ export class CalendarKeyboardInputManager {
     }
 
     async #enterDefault(event) {
-        await this.#calendar.selectedDate(null, event.target);
+        await this.#calendar.selectedDate(null, event.composedPath()[0]);
     }
 
     async #enterMonths(event) {
-        if (isNaN(parseInt(event.target.dataset.value)) !== true) {
-            await this.#calendar.selectedMonthChanged(parseInt(event.target.dataset.value))
+        const target = event.composedPath()[0];
+        if (isNaN(parseInt(target.dataset.value)) !== true) {
+            await this.#calendar.selectedMonthChanged(parseInt(target.dataset.value))
         }
     }
 
     async #enterYears(event) {
-        if (isNaN(parseInt(event.target.dataset.value)) !== true) {
-            await this.#calendar.selectedYearChanged(parseInt(event.target.dataset.value));
+        const target = event.composedPath()[0]
+        if (isNaN(parseInt(target.dataset.value)) !== true) {
+            await this.#calendar.selectedYearChanged(parseInt(target.dataset.value));
         }
     }
 

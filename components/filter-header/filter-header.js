@@ -25,8 +25,10 @@ class FilterHeader extends crs.classes.BindableElement {
             return this.dispatchEvent(new CustomEvent("focus-out", { bubbles: true, composed: true }));
         }
 
+        const target = event.composedPath()[0];
+
         await crs.call("dom_collection", "filter_children", {
-            filter: event.target.value.toLowerCase(),
+            filter: target.value.toLowerCase(),
             element: this.#container
         })
     }

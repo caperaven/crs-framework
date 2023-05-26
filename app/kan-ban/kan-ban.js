@@ -28,7 +28,7 @@ export default class KanBan extends crs.classes.ViewBase {
     }
 
     load() {
-        const template = this._element.querySelector("#tplSimple");
+        const template = this.element.querySelector("#tplSimple");
         crs.binding.inflation.manager.register("simple", template);
 
         super.load();

@@ -12,16 +12,17 @@ export async function disableInput(grid) {
 
 async function click(event) {
     event.preventDefault();
+    const target = event.composedPath()[0];
 
     // click on cell for selection
-    if (event.target.dataset.field == "_selected") {
-        return await markSelected(this, event.target);
+    if (target.dataset.field == "_selected") {
+        return await markSelected(this, target);
     }
 
     // click on selection header
-    if (event.target.classList.contains("selection")) {
-        const checked = event.target.textContent == "check";
+    if (target.classList.contains("selection")) {
+        const checked = target.textContent == "check";
         await markAllSelected(this, !checked);
-        return event.target.textContent = checked ? "uncheck" : "check";
+        return target.textContent = checked ? "uncheck" : "check";
     }
 }

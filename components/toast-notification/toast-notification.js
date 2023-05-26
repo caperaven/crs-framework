@@ -50,8 +50,12 @@ class ToastNotification extends HTMLElement {
      * @param event - The event that triggered the function.
      */
     async #click(event) {
-        if (event.target.id === "btnClose") {
-            await this.#removeElement(event.target.parentElement);
+        const composition = event.composedPath();
+        const target = composition[0];
+        const parent = composition[1];
+
+        if (target.id === "btnClose") {
+            await this.#removeElement(parent);
         }
     }
 

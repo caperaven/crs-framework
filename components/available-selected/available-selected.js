@@ -67,7 +67,7 @@ export class AvailableSelected extends HTMLElement {
     }
 
     async #click(event) {
-        const target = event.target;
+        const target = event.composedPath()[0];
         if (target.dataset.action != null) {
             this[target.dataset.action] != null && await this[target.dataset.action](event);
         }
@@ -79,7 +79,7 @@ export class AvailableSelected extends HTMLElement {
      * @returns {Promise<void>}
      */
     async toggle(event) {
-        const li = event.target.parentElement;
+        const li = event.composedPath()[1];
 
         const source = li.getAttribute("class");
         if (source !== this.#currentView) this.#currentView = source;

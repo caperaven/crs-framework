@@ -1,11 +1,8 @@
 class Observable {
   #events = [];
-  #eventEmitter;
+  #eventEmitter = new EventTarget();
   get events() {
     return Object.freeze(this.#events);
-  }
-  constructor() {
-    this.#eventEmitter = new EventTarget();
   }
   dispose() {
     for (const { event, listener } of this.#events) {

@@ -10,7 +10,7 @@ export default class Icons extends crs.classes.ViewBase {
     }
 
     async copy(event) {
-        const icon = event.target.dataset.tags;
+        const icon = event.composedPath()[0].dataset.tags;
         if (!icon) return;
         await crs.call("system", "copy_to_clipboard", {source: icon});
         this.setProperty("copyText", `"${icon}" copied to clipboard.`);

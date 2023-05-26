@@ -108,7 +108,7 @@ export class GroupBox extends HTMLElement {
      * @param event {MouseEvent} - The event object that was triggered.
      */
     async #click(event) {
-        const target = event.target;
+        const target = event.composedPath()[0];
         if (target.id === 'btnToggleExpand') {
             await this.#toggleExpanded();
         }

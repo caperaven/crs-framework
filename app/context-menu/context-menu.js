@@ -5,18 +5,18 @@ export default class ContextMenu extends crs.classes.ViewBase {
 
     async connectedCallback() {
         await super.connectedCallback();
-        this._element.addEventListener('contextmenu', this.#handler);
+        this.element.addEventListener('contextmenu', this.#handler);
     }
 
     async disconnectedCallback() {
-        this._element.removeEventListener('contextmenu', this.#handler);
+        this.element.removeEventListener('contextmenu', this.#handler);
         this.#handler = null;
         await super.disconnectedCallback();
     }
 
     async show(event) {
         await crs.call("context_menu", "show", {
-            element: event.target,
+            element: event.composedPath()[0],
             icon_font_family: "crsfrw",
             height: 304,
             templates: {"statuses": "<b>${statusCode}</b>&nbsp;<span>${statusDescription}</span>"},
@@ -38,7 +38,7 @@ export default class ContextMenu extends crs.classes.ViewBase {
 
     async showHierarchy(event) {
         await crs.call("context_menu", "show", {
-            element: event.target,
+            element: event.composedPath()[0],
             icon_font_family: "crsfrw",
             options: [
                 { id: "item1", title: "Master Item", children: [

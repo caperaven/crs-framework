@@ -68,17 +68,18 @@ export default class DataGrid extends crs.classes.BindableElement {
          * ctrl + execute = open cell item in dialog - working on cell
          */
 
+        const target = event.composedPath()[0];
 
         // JHR: make this to work with ctrl + click instead
         if (event.ctrlKey == true) {
-            return await crs.call("grid_editing", "edit", { element: event.target });
+            return await crs.call("grid_editing", "edit", { element: target });
         }
 
         event.preventDefault();
         this.dispatchEvent(new CustomEvent("row-execute", {
             bubbles: true,
             composed: true,
-            detail: event.target
+            detail: target
         }));
     }
 

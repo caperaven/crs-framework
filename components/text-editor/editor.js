@@ -7586,7 +7586,7 @@ class InputState {
             this.registeredEvents.push(type);
         }
         view.scrollDOM.addEventListener("mousedown", (event) => {
-            if (event.target == view.scrollDOM)
+            if (event.composedPath()[0] == view.scrollDOM)
                 handleEvent(handlers.mousedown, event);
         });
         if (browser.chrome && browser.chrome_version == 102) { // FIXME remove at some point
@@ -7875,7 +7875,7 @@ function eventBelongsToEditor(view, event) {
         return true;
     if (event.defaultPrevented)
         return false;
-    for (let node = event.target, cView; node != view.contentDOM; node = node.parentNode)
+    for (let node = event.composedPath()[0], cView; node != view.contentDOM; node = node.parentNode)
         if (!node || node.nodeType == 11 || ((cView = ContentView.get(node)) && cView.ignoreEvent(event)))
             return false;
     return true;
@@ -10001,7 +10001,7 @@ class DOMObserver {
         });
         if (useCharData)
             this.onCharData = (event) => {
-                this.queue.push({ target: event.target,
+                this.queue.push({ target: event.composedPath()[0],
                     type: "characterData",
                     oldValue: event.prevValue });
                 this.flushSoon();
@@ -11935,7 +11935,7 @@ const drawDropCursor = /*@__PURE__*/ViewPlugin.fromClass(class {
             this.setDropPos(this.view.posAtCoords({ x: event.clientX, y: event.clientY }));
         },
         dragleave(event) {
-            if (event.target == this.view.contentDOM || !this.view.contentDOM.contains(event.relatedTarget))
+            if (event.composedPath()[0] == this.view.contentDOM || !this.view.contentDOM.contains(event.relatedTarget))
                 this.setDropPos(null);
         },
         dragend() {
@@ -12824,7 +12824,7 @@ class HoverPlugin {
     }
     mousemove(event) {
         var _a;
-        this.lastMove = { x: event.clientX, y: event.clientY, target: event.target, time: Date.now() };
+        this.lastMove = { x: event.clientX, y: event.clientY, target: event.composedPath()[0], time: Date.now() };
         if (this.hoverTimeout < 0)
             this.hoverTimeout = setTimeout(this.checkHover, this.hoverTime);
         let tooltip = this.active;
@@ -13346,7 +13346,7 @@ class SingleGutterView {
         this.dom.className = "cm-gutter" + (this.config.class ? " " + this.config.class : "");
         for (let prop in config.domEventHandlers) {
             this.dom.addEventListener(prop, (event) => {
-                let target = event.target, y;
+                let target = event.composedPath()[0], y;
                 if (target != this.dom && this.dom.contains(target)) {
                     while (target.parentNode != this.dom)
                         target = target.parentNode;
@@ -17357,7 +17357,7 @@ const foldWidget = /*@__PURE__*/Decoration.replace({ widget: /*@__PURE__*/new cl
         toDOM(view) {
             let { state } = view, conf = state.facet(foldConfig);
             let onclick = (event) => {
-                let line = view.lineBlockAt(view.posAtDOM(event.target));
+                let line = view.lineBlockAt(view.posAtDOM(event.composedPath()[0]));
                 let folded = findFold(view.state, line.from, line.to);
                 if (folded)
                     view.dispatch({ effects: unfoldEffect.of(folded) });
@@ -22577,8 +22577,9 @@ class LintPanel {
             event.preventDefault();
         };
         let onclick = (event) => {
+            const target = event.composedPath()[0];
             for (let i = 0; i < this.items.length; i++) {
-                if (this.items[i].dom.contains(event.target))
+                if (this.items[i].dom.contains(target))
                     this.moveSelection(i);
             }
         };

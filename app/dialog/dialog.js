@@ -7,7 +7,7 @@ export default class Dialog extends crs.classes.ViewBase {
     }
 
     async show() {
-        const instance = this._element.querySelector("#dialog-content").content.cloneNode(true);
+        const instance = this.element.querySelector("#dialog-content").content.cloneNode(true);
 
         await crs.call("dialog", "show", {
             title: "My Title",
@@ -17,7 +17,7 @@ export default class Dialog extends crs.classes.ViewBase {
     }
 
     async showRelative(event) {
-        const instance = this._element.querySelector("#dialog-content").content.cloneNode(true);
+        const instance = this.element.querySelector("#dialog-content").content.cloneNode(true);
         const position = document.querySelector("#positionOptions").value;
 
         const anchor = {
@@ -29,7 +29,7 @@ export default class Dialog extends crs.classes.ViewBase {
         await crs.call("dialog", "show", {
             title: "My Title",
             main: instance,
-            target: event.target,
+            target: event.composedPath()[0],
             position: position,
             anchor: anchor[position],
             margin: 10,
@@ -38,7 +38,7 @@ export default class Dialog extends crs.classes.ViewBase {
     }
 
     async handleMessage(event) {
-        const target = event.target;
+        const target = event.composedPath()[0];
         const action = target.dataset.action;
         if (action == null) return;
 
@@ -133,7 +133,7 @@ export default class Dialog extends crs.classes.ViewBase {
             parent: "main",
             position: "bottom",
             anchor: "left",
-            target: event.target,
+            target: event.composedPath()[0],
             auto_close: true,
             min_width: "22rem",
             min_height: "25rem"

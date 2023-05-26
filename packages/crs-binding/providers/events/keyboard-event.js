@@ -16,20 +16,22 @@ class KeyboardEventProvider {
       keys.push("shift");
     keys.push(event.key.toLowerCase());
     const key = keys.join("_");
-    intent = intent.find((i) => i.keys == key);
-    if (!intent)
+    intent = intent.filter((i) => i.keys == key || i.keys == "");
+    if (intent.length == 0)
       return;
-    const executeIntent = intent.value;
-    const module = await crs.binding.providers.getAttrModule(executeIntent.provider);
-    await module.onEvent(event, bid, executeIntent);
+    for (const i of intent) {
+      const executeIntent = i.value;
+      const module = await crs.binding.providers.getAttrModule(executeIntent.provider);
+      await module.onEvent(event, bid, executeIntent);
+    }
   }
   async parse(attr) {
     const name = attr.name;
     const value = attr.value;
     const nameParts = name.split(".");
     const event = nameParts[0];
-    const keys = nameParts[1];
-    const provider = nameParts[2];
+    const keys = nameParts.length == 3 ? nameParts[1] : "";
+    const provider = nameParts.length == 3 ? nameParts[2] : nameParts[1];
     const module = await crs.binding.providers.getAttrModule(providersMap[provider]);
     const intentValue = await module.getIntent(value);
     const intentObj = {

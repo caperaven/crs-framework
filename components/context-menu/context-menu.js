@@ -124,12 +124,14 @@ class ContextMenu extends crs.classes.BindableElement {
     }
 
     async #click(event) {
-        if (event.target.matches(".back")) {
+        const target = event.composedPath()[0];
+
+        if (target.matches(".back")) {
             return await this.#filterClose();
         }
 
         const li = await crs.call("dom_utils", "find_parent_of_type", {
-            element: event.target,
+            element: target,
             nodeName: "li",
             stopAtNodeName: "ul"
         });

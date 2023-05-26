@@ -34,7 +34,7 @@ export default class Virtualization extends crs.classes.ViewBase {
         });
 
         await crs.call("collection_selection", "enable", {
-            element: this._element,
+            element: this.element,
             master_query: "#master-checkbox",
             selection_query: '[role="checkbox"]',
             virtualized_element: this.ul,

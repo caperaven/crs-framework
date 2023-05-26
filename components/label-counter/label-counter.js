@@ -38,8 +38,9 @@ export class LabelCounter extends HTMLElement {
     }
 
     async #clicked(event) {
-        if(event.target.dataset.action != null) {
-            await this[event.target.dataset.action](event);
+        const target = event.composedPath()[0];
+        if(target.dataset.action != null) {
+            await this[target.dataset.action](event);
         }
         this.shadowRoot.querySelector("[data-id='value']").textContent = this.#counter;
         this.dispatchEvent(new CustomEvent("change", {
