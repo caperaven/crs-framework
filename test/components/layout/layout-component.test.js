@@ -8,11 +8,11 @@ await init();
 describe("Layout", () => {
     let instance;
     beforeAll(async () => {
-        await import("./../../../components/layout-component/layout-component.js");
+        await import("../../../components/layout-container/layout-container.js");
     });
 
     beforeEach(async () => {
-        instance = document.createElement("layout-component");
+        instance = document.createElement("layout-container");
     });
 
     it("should have grid-template-columns and grid-template-rows", async () => {
@@ -33,6 +33,5 @@ describe("Layout", () => {
         assertEquals(styles.gridTemplateColumns, "");
         assertEquals(styles.gridTemplateRows, "");
     });
-
-
+    
 });

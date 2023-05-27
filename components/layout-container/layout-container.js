@@ -1,4 +1,4 @@
-export default class LayoutComponent extends crsbinding.classes.BindableElement {
+export default class LayoutContainer extends crsbinding.classes.BindableElement {
 
     get shadowDom() {
         return true;
@@ -44,4 +44,4 @@ export default class LayoutComponent extends crsbinding.classes.BindableElement 
         });
     }
 }
-customElements.define("layout-component", LayoutComponent);
+customElements.define("layout-container", LayoutContainer);

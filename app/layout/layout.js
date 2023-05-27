@@ -1,4 +1,4 @@
-import "../../components/layout-component/layout-component.js";
+import "../../components/layout-container/layout-container.js";
 
 export default class Layout extends crsbinding.classes.ViewBase {
 
