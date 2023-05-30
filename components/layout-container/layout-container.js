@@ -1,10 +1,6 @@
 export default class LayoutContainer extends HTMLElement {
 
     async connectedCallback() {
-        await this.load();
-    }
-
-    async load() {
         await this.#renderGrid();
     }
 

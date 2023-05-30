@@ -19,7 +19,7 @@ describe("Layout", () => {
         instance.dataset.columns = "1fr 1fr 1fr";
         instance.dataset.rows = "1fr";
 
-        await instance.load();
+        await instance.connectedCallback();
         const styles = instance.style;
 
         assertEquals(styles.gridTemplateColumns, "1fr 1fr 1fr");
@@ -27,7 +27,7 @@ describe("Layout", () => {
     });
 
     it("should set not grid-template-rows or grid-template-columns if columns or rows = null/empty", async () => {
-        await instance.load();
+        await instance.connectedCallback();
         const styles = instance.style;
 
         assertEquals(styles.gridTemplateColumns, "");
