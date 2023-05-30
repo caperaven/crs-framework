@@ -1,30 +1,11 @@
-export default class LayoutContainer extends crsbinding.classes.BindableElement {
-
-    get shadowDom() {
-        return true;
-    }
-
-    get html() {
-        return import.meta.url.replace(".js", ".html");
-    }
+export default class LayoutContainer extends HTMLElement {
 
     async connectedCallback() {
-        await super.connectedCallback();
         await this.load();
     }
 
-    load() {
-        return new Promise(resolve => {
-            requestAnimationFrame(async () => {
-                // render grid
-                await this.#renderGrid();
-                resolve();
-            });
-        })
-    }
-
-    async disconnectedCallback() {
-        await super.disconnectedCallback();
+    async load() {
+        await this.#renderGrid();
     }
 
     async #renderGrid() {
@@ -33,12 +14,16 @@ export default class LayoutContainer extends crsbinding.classes.BindableElement 
 
         if (columns == null && rows == null) return;
 
-        await crs.call("cssgrid", "set_columns",{
+        await crs.call("cssgrid", "init", {
+            element: this
+        });
+
+        await crs.call("cssgrid", "set_columns", {
             element: this,
             columns: columns
         });
 
-        await crs.call("cssgrid", "set_rows",{
+        await crs.call("cssgrid", "set_rows", {
             element: this,
             rows: rows
         });
