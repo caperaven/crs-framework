@@ -33,5 +33,4 @@ describe("Layout", () => {
         assertEquals(styles.gridTemplateColumns, "");
         assertEquals(styles.gridTemplateRows, "");
     });
-    
 });
