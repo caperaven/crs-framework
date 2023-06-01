@@ -109,7 +109,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
             return await this.#filterClose();
         }
 
-        await handleSelection(event, this.#options, this);
+        await handleSelection(event, this.#options, this, this.#filterHeader);
     }
 
     async #filterClose(event) {

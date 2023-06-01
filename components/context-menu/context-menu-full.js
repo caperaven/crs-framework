@@ -34,6 +34,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
 
                 this.#filterHeader = this.shadowRoot.querySelector("filter-header");
                 this.#filterHeader.addEventListener("close", this.#filterCloseHandler);
+                this.#filterHeader.container = this.container;
 
                 await crs.call("component", "notify_ready", {element: this});
                 resolve();
@@ -48,6 +49,8 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         this.#process = null;
         this.#item = null;
         this.#templates = null;
+
+        this.#filterHeader.container = null;
         this.#filterHeader = null;
         super.disconnectedCallback();
     }
@@ -61,17 +64,26 @@ class ContextMenu extends crsbinding.classes.BindableElement {
             return this.#closeSubGroup();
         }
 
-        await handleSelection(event, this.#options, this);
+        await handleSelection(event, this.#options, this, this.#filterHeader);
 
         if (this.btnBack == null) return;
 
-        const hasSubGroup = this.shadowRoot.querySelectorAll(".parent-menu-item[aria-expanded='true']").length > 0
+        const subGroups = this.shadowRoot.querySelectorAll(".parent-menu-item[aria-expanded='true']");
+        const hasSubGroup = subGroups.length > 0;
 
         if (!hasSubGroup) {
             this.btnBack.classList.remove("visible");
         }
         else if (!this.btnBack.classList.contains("visible")) {
             this.btnBack.classList.add("visible");
+        }
+
+        if (subGroups.length > 0) {
+            const container = subGroups[subGroups.length - 1].querySelector("ul");
+            this.#filterHeader.container = container;
+        }
+        else {
+            this.#filterHeader.container = this.container;
         }
     }
 

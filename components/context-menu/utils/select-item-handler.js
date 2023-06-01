@@ -1,4 +1,4 @@
-export async function handleSelection(event, options, component) {
+export async function handleSelection(event, options, component, filterHeader) {
     const li = await crs.call("dom_utils", "find_parent_of_type", {
         element: event.composedPath()[0],
         nodeName: "li",
@@ -8,6 +8,7 @@ export async function handleSelection(event, options, component) {
     if (li == null) return;
 
     if (li.matches(".parent-menu-item")) {
+        filterHeader.clear();
         const isExpanded = li.getAttribute("aria-expanded") === "true";
         return li.setAttribute("aria-expanded", !isExpanded);
     }
