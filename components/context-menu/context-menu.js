@@ -110,25 +110,6 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         }
 
         await handleSelection(event, this.#options, this);
-
-        // const li = await crs.call("dom_utils", "find_parent_of_type", {
-        //     element: event.target,
-        //     nodeName: "li",
-        //     stopAtNodeName: "ul"
-        // });
-        //
-        // if (li == null) return;
-        //
-        // const option = this.#optionById(li.id);
-        //
-        // if (option.type != null) {
-        //     crs.call(option.type, option.action, option.args);
-        // }
-        //
-        // this.dataset.value = option.id;
-        // this.dispatchEvent(new CustomEvent("change", {detail: option.id}));
-        //
-        // await this.#filterClose();
     }
 
     async #filterClose(event) {

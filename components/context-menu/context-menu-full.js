@@ -1,5 +1,6 @@
 import "./../filter-header/filter-header.js";
 import {buildElements} from "./utils/build-elements.js";
+import {handleSelection} from "./utils/select-item-handler.js";
 
 class ContextMenu extends crsbinding.classes.BindableElement {
     #options;
@@ -56,13 +57,31 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     }
 
     async #click(event) {
-        const li = await crs.call("dom_utils", "find_parent_of_type", {
-            element: event.target,
-            nodeName: "li",
-            stopAtNodeName: "ul"
-        });
+        if (event.composedPath()[0] === this.btnBack) {
+            return this.#closeSubGroup();
+        }
 
-        if (li == null) return;
+        await handleSelection(event, this.#options, this);
+
+        if (this.btnBack == null) return;
+
+        const hasSubGroup = this.shadowRoot.querySelectorAll(".parent-menu-item[aria-expanded='true']").length > 0
+
+        if (!hasSubGroup) {
+            this.btnBack.classList.remove("visible");
+        }
+        else if (!this.btnBack.classList.contains("visible")) {
+            this.btnBack.classList.add("visible");
+        }
+    }
+
+    #closeSubGroup() {
+        const groups = this.shadowRoot.querySelectorAll(".parent-menu-item[aria-expanded='true']");
+        groups[groups.length -1].removeAttribute("aria-expanded");
+
+        if (groups.length == 1) {
+            this.btnBack.classList.remove("visible")
+        }
     }
 
     setOptions(args) {

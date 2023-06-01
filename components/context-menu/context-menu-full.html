@@ -38,7 +38,6 @@
         padding: 0;
         list-style: none;
         background: var(--window);
-        overflow: scroll;
     }
 
     hr {
@@ -116,6 +115,13 @@
         height: 100%;
     }
 
+    .parent-menu-item[aria-expanded="true"] > .submenu {
+        display: block;
+        z-index: 1;
+        width: 100vw;
+        height: 100vh;
+    }
+
     .parent-menu-item:after {
         font-family: var(--icon-font);
         font-size: 1.5rem;
@@ -128,11 +134,33 @@
         align-items: center;
         justify-content: center;
     }
+
+    #btnBack {
+        font-family: var(--icon-font);
+        font-size: 1.5rem;
+        height: 2.5rem;
+        width: 2.5rem;
+        padding: 0;
+        display: none;
+    }
+
+    #btnBack.visible {
+        display: block;
+    }
+
+    .toolbar {
+        display: flex;
+        flex-direction: row;
+        height: 2.5rem;
+    }
 </style>
 
 <div class="back"></div>
 
 <div class="popup" ref="popup">
-    <filter-header for="ul"></filter-header>
+    <div class="toolbar">
+        <button id="btnBack" ref="btnBack">chevron-left</button>
+        <filter-header for="ul"></filter-header>
+    </div>
     <ul ref="container" role="menu" tabindex="0" class="scrollbar"></ul>
 </div>
