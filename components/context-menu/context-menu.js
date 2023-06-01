@@ -18,8 +18,8 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     #margin;
     #templates;
     #filterCloseHandler = this.#filterClose.bind(this);
-    #filterFocusOutHandler = this.#filterFocusOut.bind(this);
     #filterHeader;
+    #isHierarchical = false;
 
     get shadowDom() {
         return true;
@@ -58,15 +58,16 @@ class ContextMenu extends crsbinding.classes.BindableElement {
                     margin: this.#margin || 0
                 })
 
-                await crs.call("dom_interactive", "enable_resize", {
-                    element: this.popup,
-                    resize_query: "#resize",
-                    options: {}
-                });
+                if (this.#isHierarchical === false) {
+                    await crs.call("dom_interactive", "enable_resize", {
+                        element: this.popup,
+                        resize_query: "#resize",
+                        options: {}
+                    });
+                }
 
                 this.#filterHeader = this.shadowRoot.querySelector("filter-header");
                 this.#filterHeader.addEventListener("close", this.#filterCloseHandler);
-                this.#filterHeader.addEventListener("focus-out", this.#filterFocusOutHandler);
 
                 await crs.call("component", "notify_ready", {element: this});
                 resolve();
@@ -80,12 +81,10 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         });
 
         this.#filterHeader.removeEventListener("close", this.#filterCloseHandler);
-        this.#filterHeader.removeEventListener("focus-out", this.#filterFocusOutHandler);
         this.shadowRoot.removeEventListener("click", this.#clickHandler);
 
         this.#filterHeader = null;
         this.#filterCloseHandler = null;
-        this.#filterFocusOutHandler = null;
         this.#clickHandler = null;
         this.#options = null;
         this.#point = null;
@@ -97,6 +96,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         this.#item = null;
         this.#margin = null;
         this.#templates = null;
+        this.#isHierarchical = null;
 
         await super.disconnectedCallback();
     }
@@ -117,6 +117,11 @@ class ContextMenu extends crsbinding.classes.BindableElement {
 
         this.container.innerHTML = "";
         this.container.appendChild(fragment);
+
+        this.#isHierarchical = this.container.querySelector(".parent-menu-item") != null;
+        if (this.#isHierarchical === true) {
+            this.container.classList.add("hierarchy")
+        }
 
         if (this.#context) {
             await crsbinding.staticInflationManager.inflateElements(this.container.children, this.#context);
@@ -150,10 +155,6 @@ class ContextMenu extends crsbinding.classes.BindableElement {
 
     async #filterClose(event) {
         await crs.call("context_menu", "close");
-    }
-
-    async #filterFocusOut(event) {
-        // JHR: todo, filter the items as you type.
     }
 
     /**
@@ -256,6 +257,8 @@ async function createListItems(parentElement, collection, templates) {
                 li.textContent = option.title;
             }
             else {
+                li.classList.add("parent-menu-item")
+
                 await crs.call("dom", "create_element", {
                     parent: li,
                     tag_name: "div",
@@ -264,7 +267,8 @@ async function createListItems(parentElement, collection, templates) {
 
                 const ul = await crs.call("dom", "create_element", {
                     parent: li,
-                    tag_name: "ul"
+                    tag_name: "ul",
+                    classes: ["submenu"]
                 });
 
                 await createListItems(ul, option.children, templates);

@@ -34,10 +34,14 @@
     }
 
     ul {
+        position: relative;
         margin: 0;
         padding: 0;
         list-style: none;
         background: var(--window);
+    }
+
+    ul[role="menu"] {
         overflow: auto;
     }
 
@@ -91,16 +95,16 @@
         cursor: nwse-resize;
     }
 
-    ul::-webkit-scrollbar-track {
+    ul[role="menu"]::-webkit-scrollbar-track {
         padding: 0.25rem 0;
         background-color: transparent;
     }
 
-    ul::-webkit-scrollbar {
+    ul[role="menu"]::-webkit-scrollbar {
         width: 0.25rem;
     }
 
-    ul::-webkit-scrollbar-thumb {
+    ul[role="menu"]::-webkit-scrollbar-thumb {
         border-radius: 1rem;
         box-shadow: inset 0 0 5px var(--grey-s1);
         background-color: transparent;
@@ -112,6 +116,48 @@
 
     filter-header {
         --close-display: inline-block;
+    }
+
+    .submenu {
+        position: absolute;
+        top: 0;
+        left: 100%;
+        display: none;
+
+        border: var(--border);
+        background: var(--window);
+        box-shadow: var(--drop-shadow);
+        width: max-content;
+        height: max-content;
+        min-width: 200px;
+        border-radius: var(--radius);
+    }
+
+    li:hover > .submenu {
+        display: block;
+    }
+
+    .hierarchy {
+        overflow: inherit !important;
+    }
+
+    .hierarchy + #resize {
+        visibility: hidden;
+        pointer-events: none;
+    }
+
+    .parent-menu-item:after {
+        font-family: var(--icon-font);
+        font-size: 1.5rem;
+        color: var(--cl-icon);
+        content: "chevron-right";
+        position: absolute;
+        right: var(--padding);
+        top: 0;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 </style>
 
