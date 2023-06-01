@@ -43,6 +43,9 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     }
 
     async disconnectedCallback() {
+        this.shadowRoot.removeEventListener("click", this.#clickHandler);
+        this.#filterHeader.removeEventListener("close", this.#filterCloseHandler);
+
         this.#options = null;
         this.#target = null;
         this.#context = null;
