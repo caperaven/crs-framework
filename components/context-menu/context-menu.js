@@ -1,5 +1,5 @@
 import "./../filter-header/filter-header.js";
-
+import {buildElements} from "./utils/build-elements.js"
 /**
  * @class ContextMenu - A context menu component that can be used to display a list of options.
  * This can either be a flat list or a nested list.
@@ -11,7 +11,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     #at;
     #anchor;
     #target;
-    #clickHandler;
+    #clickHandler = this.#click.bind(this);
     #context;
     #process;
     #item;
@@ -30,16 +30,17 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     }
 
     async connectedCallback() {
+        await super.connectedCallback();
+        await this.load();
+    }
+
+    async load() {
         return new Promise(async (resolve) => {
-            await super.connectedCallback();
-
-            this.#clickHandler = this.#click.bind(this);
-            this.shadowRoot.addEventListener("click", this.#clickHandler);
-
             requestAnimationFrame(async () => {
+                this.shadowRoot.addEventListener("click", this.#clickHandler);
                 const ul = this.shadowRoot.querySelector(".popup");
 
-                await this.#buildElements();
+                this.#isHierarchical = await buildElements.call(this, this.#options, this.#templates, this.#context, this.container);
 
                 let at = "right";
                 let anchor = "top";
@@ -104,28 +105,6 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     #optionById(id) {
         const item = this.#options.find(item => item.id == id);
         return item;
-    }
-
-    /**
-     * @method #buildElements - Builds the elements for the context menu.
-     * @returns {Promise<void>}
-     */
-    async #buildElements() {
-        const fragment = document.createDocumentFragment();
-
-        await createListItems(fragment, this.#options, this.#templates);
-
-        this.container.innerHTML = "";
-        this.container.appendChild(fragment);
-
-        this.#isHierarchical = this.container.querySelector(".parent-menu-item") != null;
-        if (this.#isHierarchical === true) {
-            this.container.classList.add("hierarchy")
-        }
-
-        if (this.#context) {
-            await crsbinding.staticInflationManager.inflateElements(this.container.children, this.#context);
-        }
     }
 
     async #click(event) {
@@ -204,74 +183,6 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         if (args.style != null) {
             for (const key of Object.keys(args.style)) {
                 this.style.setProperty(key, args.style[key]);
-            }
-        }
-    }
-}
-
-/**
- * @method createListItems - Creates the list items for the context menu.
- * @param parentElement {HTMLElement} - The parent element to add the list items to.
- * @param collection {Array} - The collection of options to create the list items from.
- * @param templates {Object} - The templates to use when creating the list items.
- * @returns {Promise<void>}
- */
-async function createListItems(parentElement, collection, templates) {
-    for (const option of collection) {
-        if (option.title?.trim() == "-") {
-            parentElement.appendChild(document.createElement("hr"));
-            continue;
-        }
-
-        const li = await crs.call("dom", "create_element", {
-            parent: parentElement,
-            id: option.id,
-            tag_name: "li",
-            dataset: {
-                icon: option.icon,
-                ic: option.icon_color || "black",
-                tags: option.tags || "",
-                ...(option.dataset || {})
-            },
-            attributes: {
-                role: "menuitem",
-                "aria-selected": option.selected == true,
-                ...(option.attributes || {})
-            },
-            styles: option.styles,
-            variables: {
-                "--cl-icon": option.icon_color || "black"
-            }
-        });
-
-        if (templates != null && option.template != null) {
-            const template = templates[option.template];
-            const fragment = await crs.call("html", "create", {
-                ctx: option,
-                html: template
-            });
-            li.appendChild(fragment);
-        }
-        else {
-            if (option.children == null) {
-                li.textContent = option.title;
-            }
-            else {
-                li.classList.add("parent-menu-item")
-
-                await crs.call("dom", "create_element", {
-                    parent: li,
-                    tag_name: "div",
-                    text_content: option.title
-                });
-
-                const ul = await crs.call("dom", "create_element", {
-                    parent: li,
-                    tag_name: "ul",
-                    classes: ["submenu"]
-                });
-
-                await createListItems(ul, option.children, templates);
             }
         }
     }
