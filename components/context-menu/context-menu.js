@@ -1,5 +1,6 @@
 import "./../filter-header/filter-header.js";
 import {buildElements} from "./utils/build-elements.js";
+import {handleSelection} from "./utils/select-item-handler.js";
 
 /**
  * @class ContextMenu - A context menu component that can be used to display a list of options.
@@ -103,34 +104,31 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         await super.disconnectedCallback();
     }
 
-    #optionById(id) {
-        const item = this.#options.find(item => item.id == id);
-        return item;
-    }
-
     async #click(event) {
         if (event.target.matches(".back")) {
             return await this.#filterClose();
         }
 
-        const li = await crs.call("dom_utils", "find_parent_of_type", {
-            element: event.target,
-            nodeName: "li",
-            stopAtNodeName: "ul"
-        });
+        await handleSelection(event, this.#options, this);
 
-        if (li == null) return;
-
-        const option = this.#optionById(li.id);
-
-        if (option.type != null) {
-            crs.call(option.type, option.action, option.args);
-        }
-
-        this.dataset.value = option.id;
-        this.dispatchEvent(new CustomEvent("change", {detail: option.id}));
-
-        await this.#filterClose();
+        // const li = await crs.call("dom_utils", "find_parent_of_type", {
+        //     element: event.target,
+        //     nodeName: "li",
+        //     stopAtNodeName: "ul"
+        // });
+        //
+        // if (li == null) return;
+        //
+        // const option = this.#optionById(li.id);
+        //
+        // if (option.type != null) {
+        //     crs.call(option.type, option.action, option.args);
+        // }
+        //
+        // this.dataset.value = option.id;
+        // this.dispatchEvent(new CustomEvent("change", {detail: option.id}));
+        //
+        // await this.#filterClose();
     }
 
     async #filterClose(event) {

@@ -61,6 +61,8 @@ class ContextMenu extends crsbinding.classes.BindableElement {
             nodeName: "li",
             stopAtNodeName: "ul"
         });
+
+        if (li == null) return;
     }
 
     setOptions(args) {
