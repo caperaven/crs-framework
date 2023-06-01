@@ -41,24 +41,24 @@ export default class ContextMenu extends crsbinding.classes.ViewBase {
             element: event.target,
             icon_font_family: "crsfrw",
             options: [
-                { id: "item1", title: "Master Item", icon: "browse", icon_color: "#ff9000", children: [
-                        { id: "sub item 1", title: "sub item 1", children: [
-                                { id: "sub item child 1", title: "sub item child 1", icon: "date-and-time"},
-                                { id: "sub item child 2", title: "sub item child 2", icon: "condition" },
-                                { id: "sub item child 3", title: "sub item child 3" }]
+                { id: "item1", tags: "master item", title: "Master Item", icon: "browse", icon_color: "#ff9000", children: [
+                        { id: "sub item 1", tags: "sub item 1", title: "sub item 1", children: [
+                                { id: "sub item child 1", tags: "sub item child 1", title: "sub item child 1", icon: "date-and-time"},
+                                { id: "sub item child 2", tags: "sub item child 2", title: "sub item child 2", icon: "condition" },
+                                { id: "sub item child 3", tags: "sub item child 3", title: "sub item child 3" }]
                         },
-                        { id: "sub item 2", title: "sub item 1", icon: "calendar" },
-                        { id: "sub item 3", title: "sub item 1" }]
+                        { id: "sub item 2", tags: "sub item 2",  title: "sub item 1", icon: "calendar" },
+                        { id: "sub item 3", tags: "sub item 3", title: "sub item 1" }]
                 },
-                { id: "item2", title: "Item 2" },
-                { id: "item3", title: "Item 3" },
-                { id: "item4", title: "Item 4" },
-                { id: "item5", title: "Item 5" },
-                { id: "item6", title: "Item 6" },
-                { id: "item7", title: "Item 7" },
-                { id: "item8", title: "Item 8" },
-                { id: "item9", title: "Item 9" },
-                { id: "item10", title: "Item 10" }
+                { id: "item2", title: "Item 2", tags: "item 2" },
+                { id: "item3", title: "Item 3", tags: "item 3" },
+                { id: "item4", title: "Item 4", tags: "item 4" },
+                { id: "item5", title: "Item 5", tags: "item 5" },
+                { id: "item6", title: "Item 6", tags: "item 6" },
+                { id: "item7", title: "Item 7", tags: "item 7" },
+                { id: "item8", title: "Item 8", tags: "item 8" },
+                { id: "item9", title: "Item 9", tags: "item 9" },
+                { id: "item10", title: "Item 10", tags: "item 10" }
             ],
         }, { status: "a" });
 
