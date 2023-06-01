@@ -1,3 +1,6 @@
+import "./../filter-header/filter-header.js";
+import {buildElements} from "./utils/build-elements.js";
+
 class ContextMenu extends crsbinding.classes.BindableElement {
     #options;
     #target;
@@ -26,7 +29,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
             requestAnimationFrame(async () => {
                 this.shadowRoot.addEventListener("click", this.#clickHandler);
 
-                await this.#buildElements();
+                await buildElements.call(this, this.#options, this.#templates, this.#context, this.container);
 
                 this.#filterHeader = this.shadowRoot.querySelector("filter-header");
                 this.#filterHeader.addEventListener("close", this.#filterCloseHandler);
@@ -48,16 +51,16 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         super.disconnectedCallback();
     }
 
-    async #buildElements() {
-
-    }
-
     async #filterClose() {
         await crs.call("context_menu", "close");
     }
 
-    #click(event) {
-
+    async #click(event) {
+        const li = await crs.call("dom_utils", "find_parent_of_type", {
+            element: event.target,
+            nodeName: "li",
+            stopAtNodeName: "ul"
+        });
     }
 
     setOptions(args) {

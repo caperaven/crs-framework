@@ -1,5 +1,6 @@
 import "./../filter-header/filter-header.js";
-import {buildElements} from "./utils/build-elements.js"
+import {buildElements} from "./utils/build-elements.js";
+
 /**
  * @class ContextMenu - A context menu component that can be used to display a list of options.
  * This can either be a flat list or a nested list.
