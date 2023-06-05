@@ -71,6 +71,11 @@
             "view": "label-counter"
         },
         {
+            "title": "Layout Component",
+            "hash": "#layout",
+            "view": "layout"
+        },
+        {
             "title": "Template Loading",
             "hash": "#template-loading",
             "view": "template-loading"
