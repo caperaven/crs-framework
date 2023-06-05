@@ -2,7 +2,7 @@ import "./../filter-header/filter-header.js";
 import {buildElements} from "./utils/build-elements.js";
 import {handleSelection} from "./utils/select-item-handler.js";
 
-class ContextMenu extends crsbinding.classes.BindableElement {
+class ContextMenu extends crs.classes.BindableElement {
     #options;
     #target;
     #context;

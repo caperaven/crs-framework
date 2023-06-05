@@ -16,7 +16,7 @@ export async function buildElements(options, templates, context, container) {
     }
 
     if (context) {
-        await crsbinding.staticInflationManager.inflateElements(container.children, context);
+        await crs.binding.staticInflationManager.inflateElements(container.children, context);
     }
 
     return isHierarchical;

@@ -235,13 +235,13 @@ function createModel(manager) {
     return model;
 }
 
-function compileConditionalExp(definition) {
+async function compileConditionalExp(definition) {
     for (const field of definition.fields) {
         if (field.conditionalDefaults != null) {
             const conditionalDefaultsMap = definition["conditionalDefaultsMap"] ||= {};
 
             for (const rule of field.conditionalDefaults) {
-                const expr = crsbinding.expression.sanitize(rule.conditionExpr, "model");
+                const expr = await crs.binding.expression.sanitize(rule.conditionExpr, "model");
                 const properties = expr.properties;
 
                 for (const property of properties) {
