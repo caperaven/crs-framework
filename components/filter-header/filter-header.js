@@ -1,6 +1,14 @@
 class FilterHeader extends crs.classes.BindableElement {
     #container;
 
+    get container() {
+        return this.#container;
+    }
+
+    set container(newValue) {
+        this.#container = newValue;
+    }
+
     get shadowDom() {
         return true;
     }
@@ -31,6 +39,10 @@ class FilterHeader extends crs.classes.BindableElement {
             filter: target.value.toLowerCase(),
             element: this.#container
         })
+    }
+
+    async clear() {
+        this.shadowRoot.querySelector("input").value = "";
     }
 
     async close() {

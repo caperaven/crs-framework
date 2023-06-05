@@ -1,4 +1,4 @@
-import "./context-menu.js";
+import "./context-loader.js";
 
 /**
  * @class ContextMenuActions - This class contains the actions for the context_menu process api action.
