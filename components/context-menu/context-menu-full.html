@@ -1,7 +1,7 @@
 <style>
     :host {
         --icon-font: "";
-        --height: max-content;
+        --height: 100%;
 
         display: block;
         position: fixed;
@@ -9,7 +9,7 @@
         left: 0;
         bottom: 0;
         right: 0;
-        background: transparent;
+        background: var(--window);
         z-index: 999999;
         user-select: none;
     }
@@ -20,15 +20,14 @@
     }
 
     .popup {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
         margin: 0;
         border: var(--border);
         background: var(--grey-surface);
-        box-shadow: var(--drop-shadow);
-        width: max-content;
-        height: var(--height);
-        min-width: 200px;
-        min-height: 300px;
-        border-radius: var(--radius);
         display: grid;
         grid-template-rows: auto 1fr;
     }
@@ -39,10 +38,6 @@
         padding: 0;
         list-style: none;
         background: var(--window);
-    }
-
-    ul[role="menu"] {
-        overflow: auto;
     }
 
     hr {
@@ -87,31 +82,19 @@
         display: none !important;
     }
 
-    #resize {
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        fill: gray;
-        cursor: nwse-resize;
-    }
-
-    ul[role="menu"]::-webkit-scrollbar-track {
+    ul::-webkit-scrollbar-track {
         padding: 0.25rem 0;
         background-color: transparent;
     }
 
-    ul[role="menu"]::-webkit-scrollbar {
+    ul::-webkit-scrollbar {
         width: 0.25rem;
     }
 
-    ul[role="menu"]::-webkit-scrollbar-thumb {
+    ul::-webkit-scrollbar-thumb {
         border-radius: 1rem;
         box-shadow: inset 0 0 5px var(--grey-s1);
         background-color: transparent;
-    }
-
-    #symbols {
-        display: none;
     }
 
     filter-header {
@@ -121,29 +104,22 @@
     .submenu {
         position: absolute;
         top: 0;
-        left: 100%;
+        left:0;
+        right: 0;
+        bottom: 0;
         display: none;
 
         border: var(--border);
         background: var(--window);
-        box-shadow: var(--drop-shadow);
-        width: max-content;
-        height: max-content;
-        min-width: 200px;
-        border-radius: var(--radius);
+        width: 100%;
+        height: 100%;
     }
 
-    li[aria-expanded="true"] > .submenu {
+    .parent-menu-item[aria-expanded="true"] > .submenu {
         display: block;
-    }
-
-    .hierarchy {
-        overflow: inherit !important;
-    }
-
-    .hierarchy + #resize {
-        visibility: hidden;
-        pointer-events: none;
+        z-index: 1;
+        width: 100vw;
+        height: 100vh;
     }
 
     .parent-menu-item:after {
@@ -158,21 +134,33 @@
         align-items: center;
         justify-content: center;
     }
-</style>
 
-<svg id="symbols">
-    <symbol id="resize-handle" viewBox="0 0 32 32">
-        <path d="M28.744 6.016c0.766-0.766 0.766-2.008 0-2.774s-2.008-0.766-2.774 0l-22.728 22.728c-0.766 0.766-0.766 2.008 0 2.774s2.008 0.766 2.774 0l22.728-22.728z"></path>
-        <path d="M28.759 21.332c0.766-0.766 0.766-2.008 0-2.774s-2.008-0.766-2.774 0l-7.427 7.427c-0.766 0.766-0.766 2.008 0 2.774s2.008 0.766 2.774 0l7.427-7.427z"></path>
-    </symbol>
-</svg>
+    #btnBack {
+        font-family: var(--icon-font);
+        font-size: 1.5rem;
+        height: 2.5rem;
+        width: 2.5rem;
+        padding: 0;
+        display: none;
+    }
+
+    #btnBack.visible {
+        display: block;
+    }
+
+    .toolbar {
+        display: flex;
+        flex-direction: row;
+        height: 2.5rem;
+    }
+</style>
 
 <div class="back"></div>
 
 <div class="popup" ref="popup">
-    <filter-header for="ul"></filter-header>
+    <div class="toolbar">
+        <button id="btnBack" ref="btnBack">chevron-left</button>
+        <filter-header for="ul"></filter-header>
+    </div>
     <ul ref="container" role="menu" tabindex="0" class="scrollbar"></ul>
-    <svg id="resize" width="16" height="16">
-        <use href="#resize-handle"></use>
-    </svg>
 </div>
