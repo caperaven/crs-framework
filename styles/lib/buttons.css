@@ -93,9 +93,11 @@ button.icon {
     font-size: 1rem;
 }
 
-button.icon[data-icon-left]:before {
-    content: attr(data-icon-left);
+button[data-icon]:before {
+    content: attr(data-icon);
     margin-right: 0.5rem;
+    font-family: crsfrw;
+    font-size: 1rem;
 }
 
 button.icon svg {
