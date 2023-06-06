@@ -93,6 +93,11 @@ button.icon {
     font-size: 1rem;
 }
 
+button.icon[data-icon-left]:before {
+    content: attr(data-icon-left);
+    margin-right: 0.5rem;
+}
+
 button.icon svg {
     width: 2rem;
     height: 2rem;
