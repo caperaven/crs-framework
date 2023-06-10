@@ -1,3 +1,6 @@
+import "./../../components/check-list/check-list.js";
+import "./../../components/checkbox/checkbox.js";
+
 export default class CheckList extends crsbinding.classes.ViewBase {
     async preLoad() {
         const translations = {

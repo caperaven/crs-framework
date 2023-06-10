@@ -1,10 +1,34 @@
+<style>
+    #container {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+    }
+</style>
+
 <h2>${title}</h2>
-<button click.call="getAll">Get all</button>
 
-<check-list ref="checklist">
-    <li role="option" data-value="item1" aria-selected="true">&{checklist.item1}</li>
-    <li role="option" data-value="item2">&{checklist.item2}</li>
-    <li role="option" data-value="item3">&{checklist.item3}</li>
-    <li role="option" data-value="item4" aria-selected="true">&{checklist.item4}</li>
-</check-list>
+<div id="container">
+    <span class="example">
+        <button click.call="getAll">Get all</button>
 
+        <check-list ref="checklist">
+            <li role="option" data-value="item1" aria-selected="true">&{checklist.item1}</li>
+            <li role="option" data-value="item2">&{checklist.item2}</li>
+            <li role="option" data-value="item3">&{checklist.item3}</li>
+            <li role="option" data-value="item4" aria-selected="true">&{checklist.item4}</li>
+        </check-list>
+    </span>
+
+    <span class="example">
+        <check-list ref="checklist">
+            <div slot="header">
+                <check-box data-master="true" aria-label="Parent"></check-box>
+            </div>
+            <check-box data-value="item1" aria-label="&{checklist.item1}"></check-box>
+            <check-box data-value="item2" aria-label="&{checklist.item2}"></check-box>
+            <check-box data-value="item3" aria-label="&{checklist.item3}"></check-box>
+            <check-box data-value="item4" aria-label="&{checklist.item4}"></check-box>
+        </check-list>
+    </span>
+</div>
