@@ -129,6 +129,7 @@ describe("selection manager state tests", () => {
 
     it ("master checkbox toggled to true, child checkboxes should be toggled true", async() => {
         //Arrange
+        masterCheckbox.setAttribute("aria-checked", "true");
         await container.dispatchEvent("click", {composedPath: () => {return [masterCheckbox, container]}});
 
         //Assert
@@ -139,7 +140,7 @@ describe("selection manager state tests", () => {
 
     it ("master checkbox toggled to false, child checkboxes should be toggled false", async() => {
         //Arrange
-        masterCheckbox.setAttribute("aria-checked", "true");
+        masterCheckbox.setAttribute("aria-checked", "false");
         item1.setAttribute("aria-checked", "true");
         item2.setAttribute("aria-checked", "true");
 
@@ -153,6 +154,10 @@ describe("selection manager state tests", () => {
     });
 
     it ("all child checkboxes toggled to true, master checkbox should be toggled true", async() => {
+        //Arrange
+        item1.setAttribute("aria-checked", "true");
+        item2.setAttribute("aria-checked", "true");
+
         //Act
         await container.dispatchEvent("click", {composedPath: () => {return [item1, container]}});
         await container.dispatchEvent("click", {composedPath: () => {return [item2, container]}});
@@ -165,8 +170,8 @@ describe("selection manager state tests", () => {
 
     it ("all child checkboxes toggled to fasle, master checkbox should be toggled fasle", async() => {
         //Arrange
-        item1.setAttribute("aria-checked", "true");
-        item2.setAttribute("aria-checked", "true");
+        item1.setAttribute("aria-checked", "false");
+        item2.setAttribute("aria-checked", "false");
 
         //Act
         await container.dispatchEvent("click", {composedPath: () => {return [item1, container]}});
@@ -179,6 +184,9 @@ describe("selection manager state tests", () => {
     });
 
     it ("one child checkbox toggled to true, one toggled to false, master checkbox should be toggled mixed", async() => {
+        //Arrange
+        item1.setAttribute("aria-checked", "true");
+
         //Act
         await container.dispatchEvent("click", {composedPath: () => {return [item1, container]}});
 
@@ -190,7 +198,7 @@ describe("selection manager state tests", () => {
 
     it ("master checkbox set to mixed, toggled to true, child checkboxes should be toggled true", async() => {
         //Arrange
-        masterCheckbox.setAttribute("aria-checked", "mixed");
+        masterCheckbox.setAttribute("aria-checked", "true");
         item1.setAttribute("aria-checked", "true");
         item2.setAttribute("aria-checked", "false");
 
@@ -207,7 +215,7 @@ describe("selection manager state tests", () => {
         //Arrange
         masterCheckbox.setAttribute("aria-checked", "mixed");
         item1.setAttribute("aria-checked", "true");
-        item2.setAttribute("aria-checked", "false");
+        item2.setAttribute("aria-checked", "true");
 
         //Act
         await container.dispatchEvent("click", {composedPath: () => {return [item2, container]}});
@@ -221,7 +229,7 @@ describe("selection manager state tests", () => {
     it ("master checkbox set to mixed, child checkbox toggle to false, master checkbox should be toggled false", async() => {
         //Arrange
         masterCheckbox.setAttribute("aria-checked", "mixed");
-        item1.setAttribute("aria-checked", "true");
+        item1.setAttribute("aria-checked", "false");
         item2.setAttribute("aria-checked", "false");
 
         //Act

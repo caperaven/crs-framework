@@ -46,12 +46,12 @@ export class SelectionManager {
 
         //if we're clicking the master element, update all the selection elements
         if (checkbox.matches(this.#masterQuery)) {
-            await this.#setMasterState(!checked, checkbox);
+            await this.#setMasterState(checked, checkbox);
         }
 
         //if we're clicking a selection element, update the master element
         if (checkbox.matches(this.#selectionQuery)) {
-            await this.#setDependentState(!checked, checkbox);
+            await this.#setDependentState(checked, checkbox);
             await this.#checkDependentsState();
         }
     }

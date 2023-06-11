@@ -1,3 +1,5 @@
+import "./../../src/actions/selection-actions.js";
+
 /**
  * @class Checklist - A simple checklist container component
  * clicking on a list item will toggle the aria-selected attribute on that list item.
@@ -67,12 +69,12 @@ export class Checklist extends HTMLElement {
             this.setAttribute("role", "listbox");
             await crsbinding.translations.parseElement(this);
 
-            const masterCheckbox = await this.querySelector("check-box[data-master]");
+            const masterCheckbox = this.querySelector("check-box[data-master]");
             if (masterCheckbox != null) {
                 await crs.call("selection", "enable", {
                     element: this,
-                    master_query: "[data-master]",
-                    selection_query: "check-box:not([data-master])",
+                    master_query: "check-box[data-master]",
+                    selection_query: "check-box:not(check-box[data-master])",
                 });
             } else {
                 this.shadowRoot.addEventListener("click", this.#clickHandler);
@@ -85,6 +87,14 @@ export class Checklist extends HTMLElement {
      * @returns {Promise<void>}
      */
     async disconnectedCallback() {
+        console.log(this.__selectionManager)
+        if (this.__selectionManager != null) {
+            await crs.call("selection", "disable", {
+                element: this
+            });
+        }
+
+
         await this.shadowRoot.removeEventListener("click",this.#clickHandler);
         this.#clickHandler = null;
     }

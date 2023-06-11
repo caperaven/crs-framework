@@ -18,6 +18,13 @@ export default class CheckList extends crsbinding.classes.ViewBase {
     }
 
     async disconnectedCallback() {
+        const checklists = document.querySelectorAll("check-list");
+        for (const checklist of checklists) {
+            if (checklist.__selectionManager != null) {
+                await crs.call("selection", "disable", {element: checklist});
+            }
+        }
+
         await crsbinding.translations.delete("checklist");
         await super.disconnectedCallback();
     }
