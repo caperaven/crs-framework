@@ -4,15 +4,6 @@ import "./../../src/actions/selection-actions.js";
  * @class Checklist - A simple checklist container component
  * clicking on a list item will toggle the aria-selected attribute on that list item.
  *
- * Properties:
- *
- * Events:
- *
- * Attributes:
- *
- * Methods:
- *
- *
  * @example <caption>html use example - simple implementation</caption>
  * <check-list ref="checklist">
  *     <li role="option" data-value="item1" aria-selected="true">&{checklist.item1}</li>
