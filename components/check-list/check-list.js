@@ -87,7 +87,6 @@ export class Checklist extends HTMLElement {
      * @returns {Promise<void>}
      */
     async disconnectedCallback() {
-        console.log(this.__selectionManager)
         if (this.__selectionManager != null) {
             await crs.call("selection", "disable", {
                 element: this
