@@ -87,16 +87,16 @@ function setAttr(exp, preArray) {
 function genProp(exp, preArray) {
   const parts = exp.replace("prop(", "").replace(")", "").split(",");
   const query = parts[0].trim();
-  const property = parts[1].trim();
+  const property = parts[1].trim().replaceAll("'", "");
   const right = (parts[2] ?? "").trim();
   const rightParts = right.split(" ");
   const global = rightParts[0] == "true";
-  if (query == "$element") {
+  if (query == "$element" || query == "this") {
     preArray.push(`const getPropElement = element;`);
   } else {
     preArray.push(`const getPropElement = ${global ? "document" : "element"}.querySelector("${query}");`);
   }
-  preArray.push(`const propValue = getPropElement["${property}"];`);
+  preArray.push(`const propValue = getPropElement.${property};`);
   const index = exp.indexOf(")");
   const array = Array.from(exp);
   array.splice(0, index + 1, "propValue");

@@ -220,11 +220,9 @@ var Providers = class {
     if (element.__events != null && element.__events.indexOf("change") != -1) {
       const bindProvider = this.#attrProviders[".bind"];
       const onewayProvider = this.#attrProviders[".one-way"];
-
       if (typeof bindProvider === "object") {
         bindProvider.update(uuid);
       }
-
       if (typeof onewayProvider === "object") {
         onewayProvider.update(uuid);
       }
