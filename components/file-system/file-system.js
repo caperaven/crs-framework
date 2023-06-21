@@ -58,7 +58,8 @@ export default class FileSystem extends crs.classes.BindableElement {
         await this.#prefixPaths(data, path);
 
         const fragment = await this.#generateFragment(data, level + 1)
-        element.parentElement.insertBefore(fragment, element.nextElementSibling);
+        const parentElement = element.parentElement || element.getRootNode();
+        parentElement.insertBefore(fragment, element.nextElementSibling);
         this.#data.splice(index + 1, 0, ...data);
 
         element.dataset.count = data.length;
@@ -70,8 +71,9 @@ export default class FileSystem extends crs.classes.BindableElement {
         const count = Number(element.dataset.count);
         element.dataset.count = 0;
 
+        const parentElement = element.parentElement || element.getRootNode();
         for (let i = 0; i < count; i++) {
-            element.parentElement.removeChild(element.nextElementSibling);
+            parentElement.removeChild(element.nextElementSibling);
         }
 
         const index = this.#data.findIndex(item => item.path == element.dataset.path);
@@ -149,7 +151,8 @@ export default class FileSystem extends crs.classes.BindableElement {
 
         if (element.nodeName == "UL") return;
 
-        const selected = element.parentElement.querySelector("[aria-selected]");
+        const parentElement = element.parentElement || element.getRootNode();
+        const selected = parentElement.querySelector("[aria-selected]");
         selected?.removeAttribute("aria-selected");
 
         element.setAttribute("aria-selected", "true");
@@ -164,7 +167,8 @@ export default class FileSystem extends crs.classes.BindableElement {
     async click(event) {
         const element = event.composedPath()[0];
 
-        const selected = element.parentElement.querySelector("[aria-selected]");
+        const parentElement = element.parentElement || element.getRootNode();
+        const selected = parentElement.querySelector("[aria-selected]");
         selected?.removeAttribute("aria-selected");
         element.setAttribute("aria-selected", "true");
 

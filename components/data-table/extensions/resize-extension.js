@@ -61,7 +61,8 @@ export default class ResizeExtension {
         const widths = getComputedStyle(this.#table).getPropertyValue("--columns").split(" ");
 
         const width = element.offsetWidth;
-        const index = Array.from(element.parentElement.children).indexOf(element);
+        const parentElement = element.parentElement || element.getRootNode();
+        const index = Array.from(parentElement.children).indexOf(element);
         widths[index] = `${width}px`;
 
         this.#table.style.setProperty("--columns", widths.join(" "));

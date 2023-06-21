@@ -14,7 +14,7 @@ async function schemaTemplate(element, context, options) {
     const instance = tpl.content.cloneNode(true);
     await crs.binding.parsers.parseElements(instance.children, context, options);
 
-    const parent = element.parentElement;
+    const parent = element.parentElement || element.getRootNode();
     parent.insertBefore(instance, element);
     parent.removeChild(element);
 }
