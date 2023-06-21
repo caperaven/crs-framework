@@ -1,3 +1,5 @@
+import {loadHTML} from "./../../src/load-resources.js";
+
 /**
  * Toast notification element
  * This is a container for toast notifications.
@@ -24,7 +26,7 @@ class ToastNotification extends HTMLElement {
      * Standard connected callback lifecycle method
      */
     async connectedCallback() {
-        this.shadowRoot.innerHTML = await fetch(import.meta.url.replace(".js", ".html")).then(response => response.text());
+        this.shadowRoot.innerHTML = await loadHTML(import.meta.url);
         requestAnimationFrame(() => this.load());
     }
 
