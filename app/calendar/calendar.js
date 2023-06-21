@@ -1,7 +1,15 @@
 import "../../components/calendar/calendar.js";
 
-export default class Calendar extends crs.classes.ViewBase {
+export default class Calendar extends crs.classes.BindableElement {
     #dateSelectedHandler = this.#setStartDate.bind(this);
+
+    get html() {
+        return import.meta.url.replace(".js", ".html");
+    }
+
+    get shadowDom() {
+        return true;
+    }
 
     async preLoad() {
         this.setProperty("start", new Date());

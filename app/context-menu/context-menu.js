@@ -1,7 +1,15 @@
 import "./../../components/context-menu/context-menu-actions.js";
 
-export default class ContextMenu extends crs.classes.ViewBase {
+export default class ContextMenu extends crs.classes.BindableElement {
     #handler = this.#showContext.bind(this);
+
+    get html() {
+        return import.meta.url.replace(".js", ".html");
+    }
+
+    get shadowDom() {
+        return true;
+    }
 
     async connectedCallback() {
         await super.connectedCallback();

@@ -1,4 +1,12 @@
-export default class CheckList extends crs.classes.ViewBase {
+export default class CheckList extends crs.classes.BindableElement {
+    get html() {
+        return import.meta.url.replace(".js", ".html");
+    }
+
+    get shadowDom() {
+        return true;
+    }
+
     async preLoad() {
         const translations = {
             item1: "Item 1",

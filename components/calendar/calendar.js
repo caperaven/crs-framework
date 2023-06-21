@@ -1,5 +1,6 @@
 import {CalendarUtils} from "./calendar-utils.js";
 import {CalendarKeyboardInputManager} from "./managers/calendar-keyboard-input-manager.js";
+import {loadHTML} from "./../../src/load-resources.js";
 
 export default class Calendar extends crs.classes.BindableElement {
     #month;

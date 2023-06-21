@@ -1,6 +1,14 @@
 import "./../../components/available-selected/available-selected-actions.js";
 
-export default class AvailableSelected extends crs.classes.ViewBase {
+export default class AvailableSelected extends crs.classes.BindableElement {
+    get html() {
+        return import.meta.url.replace(".js", ".html");
+    }
+
+    get shadowDom() {
+        return true;
+    }
+
     async preLoad() {}
 
     async connectedCallback() {

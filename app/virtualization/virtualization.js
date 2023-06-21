@@ -4,7 +4,15 @@ import "../../src/managers/data-manager/data-manager-actions.js";
 import "../../components/checkbox/checkbox.js";
 import "../../src/actions/collection-selection-actions.js";
 
-export default class Virtualization extends crs.classes.ViewBase {
+export default class Virtualization extends crs.classes.BindableElement {
+    get html() {
+        return import.meta.url.replace(".js", ".html");
+    }
+
+    get shadowDom() {
+        return true;
+    }
+
     async connectedCallback() {
         await super.connectedCallback();
 

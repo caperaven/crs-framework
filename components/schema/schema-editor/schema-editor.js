@@ -1,5 +1,6 @@
 import "./../../text-editor/text-editor.js";
 import "./../../schema/schema-viewer/schema-viewer.js";
+import {loadHTML} from "./../../src/load-resources.js";
 
 const startTemplate = `{
   "variables": {
@@ -35,7 +36,7 @@ export class SchemaEditor extends HTMLElement {
     }
 
     async connectedCallback() {
-        this.innerHTML = await fetch(import.meta.url.replace(".js", ".html")).then(result => result.text());
+        this.innerHTML = await loadHTML(import.meta.url);
 
         requestAnimationFrame(async () => {
             this.editor.value = startTemplate;

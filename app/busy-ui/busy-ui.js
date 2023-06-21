@@ -1,7 +1,16 @@
 import "./../../components/busy-ui/busy-ui-actions.js";
 
-export default class BusyUIViewModel extends crs.classes.ViewBase {
+export default class BusyUIViewModel extends crs.classes.BindableElement {
     #hasBusy = "";
+
+    get html() {
+        return import.meta.url.replace(".js", ".html");
+    }
+
+    get shadowDom() {
+        return true;
+    }
+
     async connectedCallback() {
         await super.connectedCallback();
     }

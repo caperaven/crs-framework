@@ -1,3 +1,4 @@
+import {loadHTML} from "./../../src/load-resources.js";
 import {CHANGE_TYPES} from "../../src/managers/data-manager/data-manager-types.js";
 import {ColumnsManager} from "./managers/columns-manager.js";
 import {columnsFromChildren} from "./utils/columnsFromChildren.js";
@@ -151,7 +152,7 @@ export class DataTable extends HTMLElement {
         await formattingFromChildren(this);
 
         this.innerHTML = "";
-        this.shadowRoot.innerHTML = await fetch(import.meta.url.replace(".js", ".html")).then(response => response.text());
+        this.shadowRoot.innerHTML = await loadHTML(import.meta.url);
         await this.load();
         await crs.call("component", "notify_ready", { element: this });
     }

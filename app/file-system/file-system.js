@@ -1,9 +1,13 @@
 import "./../../components/file-system/file-system.js";
 import "./../../components/text-editor/text-editor.js";
 
-export default class FileSystemViewModel extends crs.classes.ViewBase {
-    async connectedCallback() {
-        await super.connectedCallback();
+export default class FileSystemViewModel extends crs.classes.BindableElement {
+    get html() {
+        return import.meta.url.replace(".js", ".html");
+    }
+
+    get shadowDom() {
+        return true;
     }
 
     async open() {

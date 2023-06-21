@@ -7,4 +7,8 @@ export default class Welcome extends crs.classes.BindableElement {
     get shadowDom() {
         return true;
     }
+
+    get hasStyle() {
+        return false;
+    }
 }

@@ -1,9 +1,13 @@
 import "./../../components/dialog/dialog-actions.js";
 import "./../../components/calendar/calendar.js";
 
-export default class Dialog extends crs.classes.ViewBase {
-    async connectedCallback() {
-        await super.connectedCallback();
+export default class Dialog extends crs.classes.BindableElement {
+    get html() {
+        return import.meta.url.replace(".js", ".html");
+    }
+
+    get shadowDom() {
+        return true;
     }
 
     async show() {

@@ -1,3 +1,5 @@
+import {loadHTML} from "./../../src/load-resources.js";
+
 /**
  * @class Dialog - show a dialog relative to an element.
  * If no element is specified, the dialog is shown relative to the viewport (center).
@@ -46,7 +48,7 @@ export class Dialog extends HTMLElement {
      * @returns {Promise<void>}
      */
     async connectedCallback() {
-        this.shadowRoot.innerHTML = await fetch(import.meta.url.replace(".js", ".html")).then(response => response.text());
+        this.shadowRoot.innerHTML = await loadHTML(import.meta.url);
         await this.load();
         await crs.call("component", "notify_ready", {element: this});
     }

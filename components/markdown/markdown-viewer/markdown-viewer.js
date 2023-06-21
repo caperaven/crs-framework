@@ -1,3 +1,4 @@
+import {loadHTML} from "./../../src/load-resources.js";
 class MarkdownViewer extends HTMLElement {
     constructor() {
         super();
@@ -5,7 +6,8 @@ class MarkdownViewer extends HTMLElement {
     }
 
     async connectedCallback() {
-        this.shadowRoot.innerHTML = await fetch(import.meta.url.replace(".js", ".html")).then(result => result.text());
+        this.shadowRoot.innerHTML = await loadHTML(import.meta.url);
+
         requestAnimationFrame(async () => {
             await crs.call("component", "notify_ready", {
                element: this

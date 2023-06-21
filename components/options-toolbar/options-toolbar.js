@@ -1,3 +1,5 @@
+import {loadHTML} from "./../../src/load-resources.js";
+
 /**
  * @class OptionsToolbar - It's a toolbar that allows you to select one of the buttons in it and acts like a Toggle Switch
  *
@@ -31,7 +33,7 @@ class OptionsToolbar extends HTMLElement {
     }
 
     async connectedCallback() {
-        this.shadowRoot.innerHTML = await fetch(import.meta.url.replace(".js", ".html")).then(result => result.text());
+        this.shadowRoot.innerHTML = await loadHTML(import.meta.url);
         await this.load();
     }
 

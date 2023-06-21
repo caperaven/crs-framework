@@ -1,8 +1,12 @@
-import "/components/label-counter/label-counter.js"
+import "/components/label-counter.css/label-counter.css.js"
 
-export default class Welcome extends crs.classes.ViewBase {
-    async connectedCallback() {
-        await super.connectedCallback();
+export default class Welcome extends crs.classes.BindableElement {
+    get html() {
+        return import.meta.url.replace(".js", ".html");
+    }
+
+    get shadowDom() {
+        return true;
     }
 
     async changed(event) {

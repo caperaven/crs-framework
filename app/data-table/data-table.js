@@ -5,7 +5,15 @@ import "./../../test/test-data.js";
 import "./../../components/dialog/dialog-actions.js";
 import "./../../packages/crs-process-api/action-systems/html-actions.js";
 
-export default class DataTableViewModel extends crs.classes.ViewBase {
+export default class DataTableViewModel extends crs.classes.BindableElement {
+    get html() {
+        return import.meta.url.replace(".js", ".html");
+    }
+
+    get shadowDom() {
+        return true;
+    }
+
     async preLoad() {
         const data = await crs.call("test_data", "get", {
             fields: {

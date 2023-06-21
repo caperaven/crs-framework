@@ -1,3 +1,5 @@
+import {loadHTML} from "./../../src/load-resources.js";
+
 /**
  * @class ComboBox - combobox component with custom features.
  *
@@ -29,7 +31,7 @@ class ComboBox extends HTMLElement {
     }
 
     async connectedCallback() {
-        this.shadowRoot.innerHTML = await fetch(import.meta.url.replace(".js", ".html")).then(response => response.text());
+        this.shadowRoot.innerHTML = await loadHTML(import.meta.url);
         await this.load();
     }
 

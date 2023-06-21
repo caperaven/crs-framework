@@ -1,6 +1,13 @@
 {
     "default": "welcome",
     "root": "app",
+    
+    "definition": {
+        "parameters": {
+            "0": "view"
+        }
+    },
+    
     "routes": [
         {
             "title": "Welcome",

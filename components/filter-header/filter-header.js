@@ -17,10 +17,14 @@ class FilterHeader extends crs.classes.BindableElement {
         return import.meta.url.replace(".js", ".html");
     }
 
-    async connectedCallback() {
-        super.connectedCallback();
-        const query = this.getAttribute("for");
-        this.#container = this.parentElement.querySelector(query);
+    async load() {
+        return new Promise(resolve => {
+            requestAnimationFrame(() => {
+                const query = this.getAttribute("for");
+                this.#container = (this.parentElement || this.getRootNode()).querySelector(query);
+                resolve();
+            })
+        })
     }
 
     async disconnectedCallback() {

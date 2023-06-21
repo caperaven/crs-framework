@@ -1,0 +1,9 @@
+.icon {
+    font-family: crsfrw;
+    font-size: var(--icon-size);
+}
+
+data-table:focus {
+    outline: transparent;
+    border: none;
+}

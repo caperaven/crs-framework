@@ -1,3 +1,4 @@
+import {loadHTML} from "./../../src/load-resources.js";
 import "../markdown-viewer/markdown-viewer.js";
 import "../../text-editor/text-editor.js";
 
@@ -15,7 +16,7 @@ class MarkdownEditor extends HTMLElement {
     }
 
     async connectedCallback() {
-        this.shadowRoot.innerHTML = await fetch(import.meta.url.replace(".js", ".html")).then(result => result.text());
+        this.shadowRoot.innerHTML = await loadHTML(import.meta.url);
 
         requestAnimationFrame(async () => {
             this.#textEditor = this.shadowRoot.querySelector("text-editor");

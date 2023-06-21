@@ -1,4 +1,5 @@
 import {CHANGE_TYPES} from "../../src/managers/data-manager/data-manager-types.js";
+import {loadHTML} from "./../../src/load-resources.js";
 
 /**
  * @class PageToolbar - a custom element that displays a data table
@@ -93,7 +94,7 @@ export class PageToolbar extends HTMLElement {
      * @returns {Promise<void>}
      */
     async connectedCallback() {
-        this.shadowRoot.innerHTML = await fetch(import.meta.url.replace(".js", ".html")).then(response => response.text());
+        this.shadowRoot.innerHTML = await loadHTML(import.meta.url);
         await this.load();
         await crs.call("component", "notify_ready", { element: this });
     }

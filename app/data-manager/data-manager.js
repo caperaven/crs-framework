@@ -1,7 +1,15 @@
 import "./../../packages/crs-process-api/action-systems/random-actions.js";
 import "./../../src/managers/data-manager/data-manager-actions.js";
 
-export default class DataManagerViewModel extends crsbinding.classes.ViewBase {
+export default class DataManagerViewModel extends crs.classes.BindableElement {
+    get html() {
+        return import.meta.url.replace(".js", ".html");
+    }
+
+    get shadowDom() {
+        return true;
+    }
+
     #records;
     #manager = "test_data";
 

@@ -1,8 +1,12 @@
 import "../../components/markdown/markdown-viewer/markdown-viewer-actions.js"
 
-export default class MarkdownViewer extends crs.classes.ViewBase {
-    async connectedCallback() {
-        await super.connectedCallback();
+export default class MarkdownViewer extends crs.classes.BindableElement {
+    get html() {
+        return import.meta.url.replace(".js", ".html");
+    }
+
+    get shadowDom() {
+        return true;
     }
 
     preLoad() {

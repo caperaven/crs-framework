@@ -1,3 +1,5 @@
+import {loadHTML} from "./../../src/load-resources.js";
+
 /**
  * @class BusyUi - a custom element that displays a data table
  *
@@ -33,7 +35,7 @@ export class BusyUi extends HTMLElement {
          */
 
 
-        this.shadowRoot.innerHTML = await fetch(import.meta.url.replace(".js", ".html")).then(response => response.text());
+        this.shadowRoot.innerHTML = await loadHTML(import.meta.url);
         await this.load();
         await crs.call("component", "notify_ready", { element: this });
     }

@@ -1,0 +1,6 @@
+#calendar-container {
+    width: 24rem;
+    height: 24rem;
+    border: var(--border);
+    margin-bottom: 1rem;
+}

@@ -25,11 +25,16 @@ await initialize("/packages/crs-process-api");
 
 export class IndexViewModel {
     #bid;
+
+    get bid() {
+        return this.#bid;
+    }
+
     constructor() {
         this.#bid = crs.binding.data.addObject(this.constructor.name);
         crs.binding.data.addContext(this.#bid, this);
         crs.binding.dom.enableEvents(this);
-        crs.binding.parsers.parseElements(document.body.children, this.#bid);
+        crs.binding.parsers.parseElements(document.body.children, this);
 
         crs.call("schema", "register", {
             id: "html",

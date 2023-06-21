@@ -1,0 +1,41 @@
+#icon-list {
+    list-style: none;
+    display: flex;
+    flex-flow: row wrap;
+    height: fit-content;
+}
+
+#icon-list li {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    height: 100px;
+    width: 100px;
+    margin: 0.25rem;
+}
+
+#icon-list li:hover {
+    cursor: pointer;
+    background: var(--cl-li-hover);
+}
+
+#icon-list i {
+    font-family: crsfrw;
+    font-size: 48px;
+}
+
+#icon-list li * {
+    pointer-events: none;
+}
+
+#icon-list [aria-hidden="true"] {
+    display: none;
+}
+
+#copy-text {
+    padding: var(--padding);
+    background: var(--green-s1);
+    border: var(--border);
+    border-color: var(--green);
+}

@@ -1,3 +1,5 @@
+import {loadHTML} from "./../../src/load-resources.js";
+
 /**
  * @class Checklist - A simple checklist container component
  * clicking on a list item will toggle the aria-selected attribute on that list item
@@ -33,7 +35,7 @@ export class Checklist extends HTMLElement {
      * @returns {Promise<void>}
      */
     async connectedCallback() {
-        this.shadowRoot.innerHTML = await fetch(this.html).then(result => result.text());
+        this.shadowRoot.innerHTML = await loadHTML(import.meta.url);
         await this.load();
     }
 

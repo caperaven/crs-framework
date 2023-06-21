@@ -1,6 +1,14 @@
 import "./../../components/filter-header/filter-header.js"
 
-export default class Icons extends crs.classes.ViewBase {
+export default class Icons extends crs.classes.BindableElement {
+    get html() {
+        return import.meta.url.replace(".js", ".html");
+    }
+
+    get shadowDom() {
+        return true;
+    }
+
     async preLoad() {
         const definition = await fetch("/resources/fonts/icons/crs-framework.json").then((response) => response.json());
         const icons = definition.selection.map(_ => _.name).sort();

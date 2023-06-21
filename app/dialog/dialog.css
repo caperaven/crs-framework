@@ -1,0 +1,6 @@
+[role="toolbar"] {
+    display: flex;
+    flex-direction: row;
+    padding: var(--padding);
+    border-bottom: var(--border);
+}

@@ -3,7 +3,15 @@ import "/src/data-manager/data-manager-memory-provider.js";
 import {records} from "./data.js";
 import {schema} from "./schema.js";
 
-export default class KanBan extends crs.classes.ViewBase {
+export default class KanBan extends crs.classes.BindableElement {
+    get html() {
+        return import.meta.url.replace(".js", ".html");
+    }
+
+    get shadowDom() {
+        return true;
+    }
+
     async connectedCallback() {
         await super.connectedCallback();
 

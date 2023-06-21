@@ -1,3 +1,5 @@
+import {loadHTML} from "./../../src/load-resources.js";
+
 /**
  * @class TabList - A tab list component that will display a list of tabs and allow the user to select one of them.
  */
@@ -23,7 +25,7 @@ export class TabList extends HTMLElement {
     }
 
     async connectedCallback() {
-        this.shadowRoot.innerHTML = await fetch(this.html).then(result => result.text());
+        this.shadowRoot.innerHTML = await loadHTML(import.meta.url);
         await this.load();
     }
 

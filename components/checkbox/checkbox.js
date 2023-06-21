@@ -1,3 +1,5 @@
+import {loadHTML} from "./../../src/load-resources.js";
+
 /**
  * @class Checkbox - A custom tristate checkbox element.
  *
@@ -70,7 +72,7 @@ export class Checkbox extends HTMLElement {
 
         this.#checked = (ariaCheckedAttribute === "true") || (this.dataset.nullable === "true" ? "null" : false);
 
-        this.shadowRoot.innerHTML = await fetch(this.html).then(result => result.text());
+        this.shadowRoot.innerHTML = await loadHTML(import.meta.url);
         await this.load();
     }
 

@@ -1,3 +1,5 @@
+import {loadHTML} from "./../../src/load-resources.js";
+
 export class LabelCounter extends HTMLElement {
     #counter = 1;
     #clickHandler = this.#clicked.bind(this);
@@ -21,7 +23,7 @@ export class LabelCounter extends HTMLElement {
     }
 
     async connectedCallback() {
-        this.shadowRoot.innerHTML = await fetch(this.html).then(result => result.text());
+        this.shadowRoot.innerHTML = await loadHTML(import.meta.url);
         await this.load();
     }
 
