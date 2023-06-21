@@ -17,7 +17,7 @@ class EventStore {
         let provider = Array.isArray(intent) ? intent[0].provider : intent.provider;
         provider = provider.replaceAll("\\", "");
         const providerInstance = crs.binding.providers.attrProviders[provider];
-        await providerInstance.onEvent(event, bid, intent, target);
+        await providerInstance.onEvent?.(event, bid, intent, target);
       }
     }
   }

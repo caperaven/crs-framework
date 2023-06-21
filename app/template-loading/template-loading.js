@@ -6,4 +6,8 @@ export default class TemplateLoading extends crs.classes.BindableElement {
     get shadowDom() {
         return true;
     }
+
+    get hasStyle() {
+        return false;
+    }
 }

@@ -7,6 +7,10 @@ export default class CheckList extends crs.classes.BindableElement {
         return true;
     }
 
+    get hasStyle() {
+        return false;
+    }
+
     async preLoad() {
         const translations = {
             item1: "Item 1",

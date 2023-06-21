@@ -11,6 +11,10 @@ export default class ContextMenu extends crs.classes.BindableElement {
         return true;
     }
 
+    get hasStyle() {
+        return false;
+    }
+
     async connectedCallback() {
         await super.connectedCallback();
         this.element.addEventListener('contextmenu', this.#handler);

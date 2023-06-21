@@ -9,6 +9,10 @@ export default class TabList extends crs.classes.BindableElement {
         return true;
     }
 
+    get hasStyle() {
+        return false;
+    }
+
     async preLoad() {
         const translations = {
             view1: "View 1",

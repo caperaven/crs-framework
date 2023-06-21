@@ -10,6 +10,10 @@ export default class DataManagerViewModel extends crs.classes.BindableElement {
         return true;
     }
 
+    get hasStyle() {
+        return false;
+    }
+
     #records;
     #manager = "test_data";
 

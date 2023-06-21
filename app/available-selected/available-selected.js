@@ -9,6 +9,10 @@ export default class AvailableSelected extends crs.classes.BindableElement {
         return true;
     }
 
+    get hasStyle() {
+        return false;
+    }
+
     async preLoad() {}
 
     async connectedCallback() {

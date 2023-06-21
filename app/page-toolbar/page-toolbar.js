@@ -11,6 +11,10 @@ export default class PageToolbarViewModel extends crs.classes.BindableElement {
         return true;
     }
 
+    get hasStyle() {
+        return false;
+    }
+
     async preLoad() {
         await crs.binding.translations.add({
             rowsPerPage: "rows per page"

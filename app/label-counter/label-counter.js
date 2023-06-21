@@ -9,6 +9,10 @@ export default class Welcome extends crs.classes.BindableElement {
         return true;
     }
 
+    get hasStyle() {
+        return false;
+    }
+
     async changed(event) {
         this.setProperty("value", event.detail.value);
     }

@@ -14,6 +14,10 @@ export default class DataTableViewModel extends crs.classes.BindableElement {
         return true;
     }
 
+    get hasStyle() {
+        return false;
+    }
+
     async preLoad() {
         const data = await crs.call("test_data", "get", {
             fields: {

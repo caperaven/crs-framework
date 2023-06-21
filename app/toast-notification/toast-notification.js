@@ -9,6 +9,10 @@ export default class ToastNotification extends crs.classes.BindableElement {
         return true;
     }
 
+    get hasStyle() {
+        return false;
+    }
+
     async connectedCallback() {
         await super.connectedCallback();
         await crs.call("toast_notification", "enable", { position: "bottom-center", margin: 10 });

@@ -18,7 +18,7 @@ class BindProvider {
     await crs.binding.data.setProperty(bid, field, value);
   }
   async parse(attr, context) {
-    await bindingParse(attr, context);
+    await bindingParse(attr, context, ".bind");
   }
   async update(uuid, ...properties) {
     await bindingUpdate(uuid, ...properties);

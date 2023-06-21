@@ -6,7 +6,7 @@ class OneWayProvider {
     return this.#store;
   }
   async parse(attr, context) {
-    await bindingParse(attr, context, this.#store, ".one-way");
+    await bindingParse(attr, context, ".one-way");
   }
   async update(uuid, ...properties) {
     await bindingUpdate(uuid, this.#store, ...properties);
