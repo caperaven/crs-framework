@@ -1,4 +1,4 @@
-import {loadHTML} from "./../../src/load-resources.js";
+import {loadHTML} from "./../../../src/load-resources.js";
 import "../markdown-viewer/markdown-viewer.js";
 import "../../text-editor/text-editor.js";
 

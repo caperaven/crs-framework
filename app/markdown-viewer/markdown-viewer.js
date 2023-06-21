@@ -1,5 +1,4 @@
 import "../../components/markdown/markdown-viewer/markdown-viewer-actions.js"
-import AvailableSelectedViewModel from "../available-selected/available-selected.js";
 
 export default class MarkdownViewerViewModel extends crs.classes.BindableElement {
     get html() {

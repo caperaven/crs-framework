@@ -1,4 +1,5 @@
-import {loadHTML} from "./../../src/load-resources.js";
+import {loadHTML} from "./../../../src/load-resources.js";
+
 class MarkdownViewer extends HTMLElement {
     constructor() {
         super();
