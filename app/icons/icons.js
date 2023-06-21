@@ -1,6 +1,7 @@
 import "./../../components/filter-header/filter-header.js"
+import AvailableSelectedViewModel from "../available-selected/available-selected.js";
 
-export default class Icons extends crs.classes.BindableElement {
+export default class IconsViewModel extends crs.classes.BindableElement {
     get html() {
         return import.meta.url.replace(".js", ".html");
     }

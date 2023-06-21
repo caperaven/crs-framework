@@ -1,4 +1,6 @@
-export default class CheckList extends crs.classes.BindableElement {
+import AvailableSelectedViewModel from "../available-selected/available-selected.js";
+
+export default class CheckListViewModel extends crs.classes.BindableElement {
     get html() {
         return import.meta.url.replace(".js", ".html");
     }

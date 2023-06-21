@@ -1,6 +1,7 @@
 import "./../../components/context-menu/context-menu-actions.js";
+import AvailableSelectedViewModel from "../available-selected/available-selected.js";
 
-export default class ContextMenu extends crs.classes.BindableElement {
+export default class ContextMenuViewModel extends crs.classes.BindableElement {
     #handler = this.#showContext.bind(this);
 
     get html() {
@@ -17,11 +18,11 @@ export default class ContextMenu extends crs.classes.BindableElement {
 
     async connectedCallback() {
         await super.connectedCallback();
-        this.element.addEventListener('contextmenu', this.#handler);
+        this.shadowRoot.addEventListener('contextmenu', this.#handler);
     }
 
     async disconnectedCallback() {
-        this.element.removeEventListener('contextmenu', this.#handler);
+        this.shadowRoot.removeEventListener('contextmenu', this.#handler);
         this.#handler = null;
         await super.disconnectedCallback();
     }

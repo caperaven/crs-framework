@@ -1,7 +1,8 @@
 import "./../../components/dialog/dialog-actions.js";
 import "./../../components/calendar/calendar.js";
+import AvailableSelectedViewModel from "../available-selected/available-selected.js";
 
-export default class Dialog extends crs.classes.BindableElement {
+export default class DialogViewModel extends crs.classes.BindableElement {
     get html() {
         return import.meta.url.replace(".js", ".html");
     }
@@ -11,7 +12,7 @@ export default class Dialog extends crs.classes.BindableElement {
     }
 
     async show() {
-        const instance = this.element.querySelector("#dialog-content").content.cloneNode(true);
+        const instance = this.shadowRoot.querySelector("#dialog-content").content.cloneNode(true);
 
         await crs.call("dialog", "show", {
             title: "My Title",
@@ -21,7 +22,7 @@ export default class Dialog extends crs.classes.BindableElement {
     }
 
     async showRelative(event) {
-        const instance = this.element.querySelector("#dialog-content").content.cloneNode(true);
+        const instance = this.shadowRoot.querySelector("#dialog-content").content.cloneNode(true);
         const position = document.querySelector("#positionOptions").value;
 
         const anchor = {
@@ -74,7 +75,7 @@ export default class Dialog extends crs.classes.BindableElement {
             parent: "main"
         }
 
-        let position = this.element.querySelector("#position").value;
+        let position = this.shadowRoot.querySelector("#position").value;
         const anchor = {
             left: "top",
             right: "top",

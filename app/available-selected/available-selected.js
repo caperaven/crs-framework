@@ -1,6 +1,6 @@
 import "./../../components/available-selected/available-selected-actions.js";
 
-export default class AvailableSelected extends crs.classes.BindableElement {
+export default class AvailableSelectedViewModel extends crs.classes.BindableElement {
     get html() {
         return import.meta.url.replace(".js", ".html");
     }

@@ -1,6 +1,7 @@
 import "/components/label-counter.css/label-counter.css.js"
+import AvailableSelectedViewModel from "../available-selected/available-selected.js";
 
-export default class Welcome extends crs.classes.BindableElement {
+export default class WelcomeViewModel extends crs.classes.BindableElement {
     get html() {
         return import.meta.url.replace(".js", ".html");
     }

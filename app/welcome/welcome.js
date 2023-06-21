@@ -1,5 +1,4 @@
-
-export default class Welcome extends crs.classes.BindableElement {
+export default class WelcomeViewModel extends crs.classes.BindableElement {
     get html() {
         return import.meta.url.replace(".js", ".html");
     }

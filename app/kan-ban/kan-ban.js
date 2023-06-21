@@ -2,8 +2,9 @@ import "/src/actions/columns-actions.js";
 import "/src/data-manager/data-manager-memory-provider.js";
 import {records} from "./data.js";
 import {schema} from "./schema.js";
+import AvailableSelectedViewModel from "../available-selected/available-selected.js";
 
-export default class KanBan extends crs.classes.BindableElement {
+export default class KanBanViewModel extends crs.classes.BindableElement {
     get html() {
         return import.meta.url.replace(".js", ".html");
     }
@@ -36,7 +37,7 @@ export default class KanBan extends crs.classes.BindableElement {
     }
 
     load() {
-        const template = this.element.querySelector("#tplSimple");
+        const template = this.shadowRoot.querySelector("#tplSimple");
         crs.binding.inflation.manager.register("simple", template);
 
         super.load();

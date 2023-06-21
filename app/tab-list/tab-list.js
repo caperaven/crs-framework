@@ -1,6 +1,6 @@
 import "./../../components/tab-list/tab-list.js";
 
-export default class TabList extends crs.classes.BindableElement {
+export default class TabListViewModel extends crs.classes.BindableElement {
     get html() {
         return import.meta.url.replace(".js", ".html");
     }

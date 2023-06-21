@@ -3,8 +3,9 @@ import "./../../test/test-data.js";
 import "../../src/managers/data-manager/data-manager-actions.js";
 import "../../components/checkbox/checkbox.js";
 import "../../src/actions/collection-selection-actions.js";
+import TabListViewModel from "../tab-list/tab-list.js";
 
-export default class Virtualization extends crs.classes.BindableElement {
+export default class VirtualizationViewModel extends crs.classes.BindableElement {
     get html() {
         return import.meta.url.replace(".js", ".html");
     }

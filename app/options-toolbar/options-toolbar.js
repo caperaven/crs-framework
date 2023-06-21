@@ -1,4 +1,6 @@
-export default class OptionsToolbar extends crs.classes.BindableElement {
+import AvailableSelectedViewModel from "../available-selected/available-selected.js";
+
+export default class OptionsToolbarViewModel extends crs.classes.BindableElement {
     get html() {
         return import.meta.url.replace(".js", ".html");
     }

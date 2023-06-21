@@ -1,6 +1,7 @@
 import "./../../components/busy-ui/busy-ui-actions.js";
+import AvailableSelectedViewModel from "../available-selected/available-selected.js";
 
-export default class BusyUIViewModel extends crs.classes.BindableElement {
+export default class BusyUIViewModelViewModel extends crs.classes.BindableElement {
     #hasBusy = "";
 
     get html() {

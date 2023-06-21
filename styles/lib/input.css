@@ -7,6 +7,7 @@ input {
     position: relative;
     border-width: 1px;
     border-style: solid;
+    box-sizing: border-box;
 }
 
 input:required:placeholder-shown {

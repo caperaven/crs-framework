@@ -1,6 +1,7 @@
 import "../../components/toast-notification/toast-notification-actions.js";
+import TabListViewModel from "../tab-list/tab-list.js";
 
-export default class ToastNotification extends crs.classes.BindableElement {
+export default class ToastNotificationViewModel extends crs.classes.BindableElement {
     get html() {
         return import.meta.url.replace(".js", ".html");
     }

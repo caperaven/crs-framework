@@ -1,6 +1,7 @@
 import "../../components/calendar/calendar.js";
+import AvailableSelectedViewModel from "../available-selected/available-selected.js";
 
-export default class Calendar extends crs.classes.BindableElement {
+export default class CalendarViewModel extends crs.classes.BindableElement {
     #dateSelectedHandler = this.#setStartDate.bind(this);
 
     get html() {

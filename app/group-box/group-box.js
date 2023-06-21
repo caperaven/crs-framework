@@ -1,6 +1,7 @@
 import "/components/group-box/group-box.js";
+import AvailableSelectedViewModel from "../available-selected/available-selected.js";
 
-export default class GroupBox extends crs.classes.BindableElement {
+export default class GroupBoxViewModel extends crs.classes.BindableElement {
     get html() {
         return import.meta.url.replace(".js", ".html");
     }

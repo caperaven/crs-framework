@@ -1,6 +1,7 @@
 import "../../components/masked-input/masked-input.js"
+import AvailableSelectedViewModel from "../available-selected/available-selected.js";
 
-export default class Form extends crs.classes.BindableElement {
+export default class FormViewModel extends crs.classes.BindableElement {
     get html() {
         return import.meta.url.replace(".js", ".html");
     }
