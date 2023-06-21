@@ -154,7 +154,7 @@ export class PageToolbar extends HTMLElement {
      * @method #hoodDataManager - get the data manager and set the event listeners to be notified of change
      */
     async #hookDataManager() {
-        const element = document.querySelector(this.getAttribute("for"));
+        const element = this.getRootNode().querySelector(this.getAttribute("for"));
         element.dataset.paged = true;
         this.#dataManager = element.dataset.manager;
 
@@ -300,7 +300,7 @@ export class PageToolbar extends HTMLElement {
     async #updatePage() {
         this.shadowRoot.querySelector("#edtPageNumber").value = this.pageNumber;
 
-        const target = document.querySelector(this.getAttribute("for"));
+        const target = this.getRootNode().querySelector(this.getAttribute("for"));
 
         const data = await crs.call("data_manager", "get_page", {
             manager: this.#dataManager,
