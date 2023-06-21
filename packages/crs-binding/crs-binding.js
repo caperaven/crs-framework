@@ -218,7 +218,16 @@ var Providers = class {
   async update(uuid, ...properties) {
     const element = crs.binding.elements[uuid];
     if (element.__events != null && element.__events.indexOf("change") != -1) {
-      this.#attrProviders[".bind"].update(uuid);
+      const bindProvider = this.#attrProviders[".bind"];
+      const onewayProvider = this.#attrProviders[".one-way"];
+
+      if (typeof bindProvider === "object") {
+        bindProvider.update(uuid);
+      }
+
+      if (typeof onewayProvider === "object") {
+        onewayProvider.update(uuid);
+      }
     }
     for (const textProvider of this.#textProviders) {
       if (textProvider.store[uuid] != null) {
@@ -1255,7 +1264,7 @@ var EventStore = class {
         let provider = Array.isArray(intent) ? intent[0].provider : intent.provider;
         provider = provider.replaceAll("\\", "");
         const providerInstance = crs.binding.providers.attrProviders[provider];
-        await providerInstance.onEvent(event, bid, intent, target);
+        await providerInstance.onEvent?.(event, bid, intent, target);
       }
     }
   }
