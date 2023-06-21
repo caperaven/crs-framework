@@ -93,7 +93,7 @@ export class DataManagerPerspectiveProvider extends BaseDataManager {
      * @param from {number} - the start index
      * @param to {number} - the end index
      */
-    getPage(from, to) {
+    async getPage(from, to) {
         if (this.#records == null || this.#records.length === 0) {
             return [];
         }
@@ -103,7 +103,7 @@ export class DataManagerPerspectiveProvider extends BaseDataManager {
         const result = [];
 
         for (const record of records) {
-            result.push(manager.getByIndex(record));
+            result.push(await manager.getByIndex(record));
         }
 
         return result;

@@ -859,7 +859,7 @@ class DataManagerActions {
         const from = page * size - size;
         const to = from + size;
 
-        return globalThis.dataManagers[manager].getPage(from, to);
+        return await globalThis.dataManagers[manager].getPage(from, to);
     }
 
     /**
