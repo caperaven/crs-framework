@@ -1,1 +1,70 @@
-class h{#t={};get(t,i){return new Promise(async l=>{if(this.#t[t]||={count:0,queue:[],loading:!1,template:null},this.#t[t].count+=1,this.#t[t].template==null&&this.#t[t].loading===!1){this.#t[t].loading=!0;const s=await fetch(i).then(e=>e.text()),o=document.createElement("template");o.innerHTML=s,this.#t[t].template={template:o,html:s};for(const e of this.#t[t].queue)e();delete this.#t[t].loading,delete this.#t[t].queue,l(s)}this.#t[t].template==null?this.#t[t].queue.push(()=>{l(this.#t[t].template.html)}):l(this.#t[t].template.html)})}async createStoreFromElement(t,i){const l=this.#t[t]||={count:0,template:{}},s=i.querySelectorAll("template");let o=null;for(const e of s){const u=e.id||e.dataset.id;l.template[u]=e,e.dataset.default==="true"&&(o=u)}return o}async getStoreTemplate(t,i){return this.#t[t]?.template[i]?.content.cloneNode(!0)}async remove(t){this.#t[t]!=null&&(this.#t[t].count-=1,this.#t[t].count===0&&(this.#t[t].count=null,this.#t[t].template.template=null,this.#t[t].template.html=null,this.#t[t].template=null,delete this.#t[t]))}}export{h as TemplatesManager};
+class TemplatesManager {
+  #store = {};
+  get(name, path) {
+    return new Promise(async (resolve) => {
+      this.#store[name] ||= {
+        count: 0,
+        queue: [],
+        loading: false,
+        template: null
+      };
+      this.#store[name].count += 1;
+      if (this.#store[name].template == null && this.#store[name].loading === false) {
+        this.#store[name].loading = true;
+        const html = await fetch(path).then((result) => result.text());
+        const template = document.createElement("template");
+        template.innerHTML = html;
+        this.#store[name].template = { template, html };
+        for (const callback of this.#store[name].queue) {
+          callback();
+        }
+        delete this.#store[name].loading;
+        delete this.#store[name].queue;
+        resolve(html);
+      }
+      if (this.#store[name].template == null) {
+        this.#store[name].queue.push(() => {
+          resolve(this.#store[name].template.html);
+        });
+      } else {
+        resolve(this.#store[name].template.html);
+      }
+    });
+  }
+  async createStoreFromElement(store, element) {
+    const targetStore = this.#store[store] ||= {
+      count: 0,
+      template: {}
+    };
+    const templates = element.querySelectorAll("template");
+    let defaultView = null;
+    for (const template of templates) {
+      const id = template.id || template.dataset.id;
+      targetStore.template[id] = template;
+      if (template.dataset.default === "true") {
+        defaultView = id;
+      }
+    }
+    return defaultView;
+  }
+  async getStoreTemplate(store, name) {
+    const targetStore = this.#store[store];
+    const template = targetStore?.template[name];
+    return template?.content.cloneNode(true);
+  }
+  async remove(name) {
+    if (this.#store[name] == null)
+      return;
+    this.#store[name].count -= 1;
+    if (this.#store[name].count === 0) {
+      this.#store[name].count = null;
+      this.#store[name].template.template = null;
+      this.#store[name].template.html = null;
+      this.#store[name].template = null;
+      delete this.#store[name];
+    }
+  }
+}
+export {
+  TemplatesManager
+};

@@ -1,1 +1,26 @@
-class i{async parse(t,e){crs.binding.utils.unmarkElement(t);const n=await p(t,e),c=await fetch(n).then(s=>s.text()),a=document.createElement("template");a.innerHTML=c;const o=a.content.cloneNode(!0);await crs.binding.translations.parseElement(o),t.replaceWith(o)}}async function p(r,t){const e=r.getAttribute("src");if(e.indexOf("$context")===-1)return e;const n=e.split("/"),c=n[0].replace("$context.",""),a=await crs.binding.data.getProperty(t,c);return n[0]=a,n.join("/")}export{i as default};
+class TemplateSrcProvider {
+  async parse(element, context) {
+    crs.binding.utils.unmarkElement(element);
+    const path = await getPath(element, context);
+    const content = await fetch(path).then((result) => result.text());
+    const template = document.createElement("template");
+    template.innerHTML = content;
+    const newContent = template.content.cloneNode(true);
+    await crs.binding.translations.parseElement(newContent);
+    element.replaceWith(newContent);
+  }
+}
+async function getPath(element, context) {
+  const path = element.getAttribute("src");
+  if (path.indexOf("$context") === -1) {
+    return path;
+  }
+  const parts = path.split("/");
+  const property = parts[0].replace("$context.", "");
+  const value = await crs.binding.data.getProperty(context, property);
+  parts[0] = value;
+  return parts.join("/");
+}
+export {
+  TemplateSrcProvider as default
+};

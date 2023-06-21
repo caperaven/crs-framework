@@ -1,37 +1,59 @@
-export default class IndexViewModel extends crs.classes.ViewBase {
-    async connectedCallback() {
-        await super.connectedCallback();
-        await crs.binding.data.updateUI(this, "routes");
-    }
+import "./packages/crs-schema/crs-schema.js";
+import "./packages/crs-binding/crs-binding.js";
+import "./packages/crs-binding/events/event-emitter.js";
+import "./packages/crs-binding/classes/view-base.js";
+import "./packages/crs-binding/classes/bindable-element.js";
+import "./packages/crs-binding/expressions/code-factories/if.js";
+import "./packages/crs-binding/expressions/code-factories/case.js";
+import "./packages/crs-binding/managers/inflation-manager.js";
+import "./packages/crs-binding/classes/perspective-element.js";
+import "./packages/crs-binding/managers/static-inflation-manager.js";
+import "./packages/crs-modules/crs-modules.js";
+import "./packages/crs-router/crs-router.js";
+import {initialize} from "./packages/crs-process-api/crs-process-api.js";
+import "./src/index.js";
+import {HTMLParser} from "./packages/crs-schema/html/crs-html-parser.js";
+import "/src/binding-extensions/markdown-template.js";
+import "/src/binding-extensions/schema-template.js";
+import ("./packages/crs-process-api/action-systems/data-processing-actions.js");
+import ("./packages/crs-process-api/action-systems/schema-actions.js")
+import ("./components/busy-ui/busy-ui-actions.js");
+import ("./components/options-toolbar/options-toolbar.js");
+import "/packages/crs-process-api/components/view-loader/view-loader.js";
 
-    async preLoad() {
-        await this._getRoutes();
-    }
+await initialize("/packages/crs-process-api");
 
-    async _getRoutes() {
-        return new Promise(resolve => {
-            const router = document.querySelector("crs-router");
-            const result = [];
-            const fn = () => {
-                router.removeEventListener("ready", fn);
+export class IndexViewModel {
+    #bid;
+    constructor() {
+        this.#bid = crs.binding.data.addObject(this.constructor.name);
+        crs.binding.data.addContext(this.#bid, this);
+        crs.binding.dom.enableEvents(this);
+        crs.binding.parsers.parseElements(document.body.children, this.#bid);
 
-                const routes = router.routesDef;
-                for (let route of routes.routes) {
-                    if (route.hash != "#404") {
-                        result.push({title: route.title, hash: route.hash});
-                    }
-                }
-
-                crs.binding.data.setProperty(this, "routes", result);
-                resolve();
-            };
-
-            if (router.routesDef != null) {
-                fn();
-            }
-            else {
-                router.addEventListener("ready", fn);}
+        crs.call("schema", "register", {
+            id: "html",
+            parser: HTMLParser,
+            providers: []
         })
+
+        crs.call("translations", "add", {
+            "context": "pageToolbar",
+            "translations": {
+                "rowsPerPage": "Rows per page"
+            }
+        })
+
+        crs.call("translations", "add", {
+            "context": "system",
+            "translations": {
+                "loadingMessage": "Loading..."
+            }
+        })
+    }
+
+    dispose() {
+        this.#bid = null;
     }
 
     async debugStateChanged(event) {
@@ -42,3 +64,5 @@ export default class IndexViewModel extends crs.classes.ViewBase {
         return await crs.call("debug", "stop_monitor_events", {});
     }
 }
+
+globalThis.indexViewModel = new IndexViewModel();

@@ -1,113 +1,89 @@
 {
     "default": "welcome",
     "root": "app",
-    "auto-nav": true,
-    "auto-hide": true,
     "routes": [
         {
             "title": "Welcome",
-            "hash": "#welcome",
-            "view": "welcome",
-            "hasStyle": true
+            "view": "welcome"
         },
         {
             "title": "Icons",
-            "hash": "#icons",
             "view": "icons"
         },
         {
             "title": "Form",
-            "hash": "#form",
             "view": "form"
         },
         {
             "title": "Kan Ban",
-            "hash": "#kan-ban",
             "view": "kan-ban"
         },
         {
             "title": "Options Toolbar",
-            "hash": "#options-toolbar",
             "view": "options-toolbar"
         },
         {
             "title": "Calendar",
-            "hash": "#calendar",
             "view": "calendar"
         },
         {
             "title": "Context Menu",
-            "hash": "#context-menu",
             "view": "context-menu"
         },
         {
             "title": "Buttons",
-            "hash": "#buttons",
             "view": "buttons"
         },
         {
             "title": "Markdown viewer",
-            "hash": "#markdown-viewer",
             "view": "markdown-viewer"
         },
         {
             "title": "Text Editor",
-            "hash": "#text-editor",
             "view": "text-editor"
         },
         {
             "title": "Schema Editor",
-            "hash": "#schema-editor",
             "view": "schema-editor"
         },
         {
             "title": "Label-Counter",
-            "hash": "#label-counter",
             "view": "label-counter"
         },
         {
             "title": "Layout Component",
-            "hash": "#layout",
             "view": "layout"
         },
         {
             "title": "Template Loading",
-            "hash": "#template-loading",
             "view": "template-loading"
         },
         {
             "title": "Tab List",
-            "hash": "#tab-list",
             "view": "tab-list"
         },
         {
             "title": "Check List",
-            "hash": "#check-list",
             "view": "check-list"
         },
         {
             "title": "Available Selected",
-            "hash": "#available-selected",
             "view": "available-selected"
         },
         {
             "title": "File System",
-            "hash": "#file-system",
             "view": "file-system"
         },
         {
             "title": "Toast Notifications",
-            "hash": "#toast-notification",
             "view": "toast-notification"
         },
         {
             "title": "Checkbox",
-            "hash": "#checkbox",
             "view": "checkbox"
         },
         {
             "title": "Dialog",
-            "hash": "#dialog",
             "view": "dialog"
         },
         {
@@ -117,46 +93,34 @@
         },
         {
             "title": "About",
-            "hash": "#about",
-            "view": "about",
-            "html-only": true,
-            "hasStyle": true
+            "view": "about"
         },
         {
             "title": "404",
-            "hash": "#404",
-            "view": "404",
-            "html-only": true,
-            "hasStyle": true
+            "view": "404"
         },
         {
             "title": "data-table",
-            "hash": "#data-table",
             "view": "data-table"
         },
         {
             "title": "page-toolbar",
-            "hash": "#page-toolbar",
             "view": "page-toolbar"
         },
         {
             "title": "virtualization",
-            "hash": "#virtualization",
             "view": "virtualization"
         },
         {
             "title": "Combo Box",
-            "hash": "#combobox",
             "view": "combobox"
         },
         {
             "title": "busy-ui",
-            "hash": "#busy-ui",
             "view": "busy-ui"
         },
         {
             "title": "data-manager",
-            "hash": "#data-manager",
             "view": "data-manager"
         }
     ]
