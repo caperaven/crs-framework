@@ -8,7 +8,6 @@ import {loadHTML} from "./../../src/load-resources.js";
  * - click - Handles the click event functionality
  */
 class OptionsToolbar extends HTMLElement {
-    #marker;
     #clickHandler = this.#click.bind(this);
     #previouslySelected;
     #parent;
@@ -21,7 +20,7 @@ class OptionsToolbar extends HTMLElement {
         if(value == null) return;
         const element = this.querySelector(`[data-value='${value}']`);
         if(element != null && this.dataset.ready === "true") {
-            this.#setSelected(element);
+            this.#setSelected(element).catch(error => console.error(error));
         } else {
             this.dataset.value = value;
         }
@@ -48,17 +47,13 @@ class OptionsToolbar extends HTMLElement {
                 this.setAttribute("role", "toggle-switch");
                 this.setAttribute("aria-label", "toggle-switch");
 
-                this.#marker = this.shadowRoot.querySelector(".marker");
                 this.#parent = this.shadowRoot.querySelector(".parent");
 
                 const selectedItem = this.querySelector(`[data-value='${this.dataset.value}']`) ?? this.querySelector(`[aria-selected='true']`) ?? this.firstElementChild;
-                await this.#setSelected(selectedItem, false);
                 this.shadowRoot.addEventListener("click", this.#clickHandler);
 
-                let timeout = setTimeout(() => {
-                    if (this.#marker != null) {
-                        this.#marker.style.transition = "translate 0.3s ease-out";
-                    }
+                let timeout = setTimeout(async () => {
+                    await this.#setSelected(selectedItem, false);
                     clearTimeout(timeout);
                 }, 0.5)
 
@@ -74,7 +69,6 @@ class OptionsToolbar extends HTMLElement {
     async disconnectedCallback() {
         this.shadowRoot.removeEventListener("click", this.#clickHandler);
         this.#clickHandler = null;
-        this.#marker = null;
         this.#previouslySelected = null;
     }
 
@@ -84,13 +78,6 @@ class OptionsToolbar extends HTMLElement {
      * @param [dispatchEvent=true] - Whether to dispatch a change event or not.
      */
     async #setSelected(element, dispatchEvent = true) {
-        const parentBounds = this.getBoundingClientRect();
-        const bounds = element.getBoundingClientRect();
-
-        this.style.setProperty("--width", `${bounds.width}px`);
-        this.style.setProperty("--height", `${bounds.height}px`);
-        this.#marker.style.translate = `${(bounds.left -1) - (parentBounds.left )}px 4px`;
-
         await crs.call("dom_collection", "toggle_selection", {
             target: element
         });

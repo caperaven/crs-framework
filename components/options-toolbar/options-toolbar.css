@@ -37,6 +37,8 @@
     padding-bottom: 0 !important;
     font-weight: normal !important;
     margin-right: 3px;
+    cursor: pointer;
+    box-sizing: border-box;
 }
 
 ::slotted(button:active) {
@@ -44,20 +46,13 @@
 }
 
 ::slotted([aria-selected="true"]) {
+    background: var(--cl-selected-bg) !important;
     color: var(--cl-selected-fg) !important;
     font-weight: bold !important;
 }
 
-.marker {
-    position: absolute;
-    top: 0;
-    left: 0;
-    display: block;
-    border-radius: var(--radius);
-    background: var(--cl-selected-bg);
-    height: var(--height);
-    width: var(--width);
-    box-shadow: var(--drop-shadow);
+::slotted(*) {
+    box-sizing: border-box;
 }
 
 .parent {
