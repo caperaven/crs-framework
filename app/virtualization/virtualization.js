@@ -17,7 +17,7 @@ export default class VirtualizationViewModel extends crs.classes.BindableElement
     async connectedCallback() {
         await super.connectedCallback();
 
-        const itemTemplate = document.querySelector("#item-template");
+        const itemTemplate = this.shadowRoot.querySelector("#item-template");
 
         const data = await crs.call("test_data", "get", {
             fields: {
