@@ -27,7 +27,9 @@ export async function init() {
     await import(`${crs_binding_root}/events/event-emitter.js`);
     await import(`${crs_binding_root}/expressions/code-factories/if.js`);
     await import(`${crs_binding_root}/expressions/code-factories/case.js`);
+    await import(`${crs_binding_root}/classes/bindable-element.js`);
     await import(`${crs_binding_root}/classes/perspective-element.js`);
+    await import(`${crs_binding_root}/managers/value-converters-manager.js`);
     await import(crs_modules);
 
     const processModule = await import(crs_process);

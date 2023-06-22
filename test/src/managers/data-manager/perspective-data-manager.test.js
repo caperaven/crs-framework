@@ -114,7 +114,6 @@ describe("data manager tests", () => {
             page: 1,
             size: 10
         });
-debugger;
         // filter was applied and the records set
         // assert the array length, the first item and last item
         assertEquals(records.length, 10);

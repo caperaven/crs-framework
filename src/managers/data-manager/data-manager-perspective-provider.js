@@ -76,12 +76,12 @@ export class DataManagerPerspectiveProvider extends BaseDataManager {
      * In this case we need to look at what records are in the perspective and then get those records from the source
      * If there is a grouping defined, get all will return the expanded group records including the group item it self.
      */
-    getAll() {
+    async getAll() {
         const manager = globalThis.dataManagers[this.#manager];
         const result = [];
 
         for (const record of this.#records) {
-            result.push(manager.getByIndex(record));
+            result.push(await manager.getByIndex(record));
         }
 
         return result;

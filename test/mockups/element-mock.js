@@ -64,6 +64,8 @@ export function mockElement(instance, tag, id) {
     instance.getBoundingClientRect = getBoundingClientRect.bind(instance);
     instance.remove = remove.bind(instance);
     instance.focus = focus.bind(instance);
+    instance.getRootNode = getRootNode.bind(instance);
+    instance.matches = matches.bind(instance);
 
     Object.defineProperty(instance, "firstElementChild", {
         get() {
@@ -346,4 +348,12 @@ function remove() {
 
 function focus() {
     globalThis.activeElement = this;
+}
+
+function getRootNode() {
+    return this.parentElement;
+}
+
+function matches(query) {
+    return false;
 }

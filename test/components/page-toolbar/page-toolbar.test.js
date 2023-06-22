@@ -49,6 +49,13 @@ describe ("page-toolbar tests", async () => {
 
         instance = document.createElement("page-toolbar");
         instance.setAttribute("for", "#vis");
+        instance.getRootNode = () => {
+            return {
+                querySelector: (selector) => {
+                    return visualization;
+                }
+            }
+        }
         await instance.connectedCallback();
     })
 

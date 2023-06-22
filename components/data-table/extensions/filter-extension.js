@@ -113,8 +113,8 @@ export default class FilterExtension {
         const footerUrl = import.meta.url.replace(".js", "/footer.html");
         const itemTemplateUrl = import.meta.url.replace(".js", "/item-template.html");
 
-        const headerTemplate = await crs.call("html", "template_from_file", { url: headerUrl });
-        const bodyTemplate = await crs.call("html", "template_from_file", { url: bodyUrl });
+        const headerTemplate = await crs.call("html", "template_from_file", { url: headerUrl, has_css: true });
+        const bodyTemplate = await crs.call("html", "template_from_file", { url: bodyUrl, has_css: true });
         const footerTemplate = await crs.call("html", "template_from_file", { url: footerUrl });
         this.#itemTemplate = await crs.call("html", "template_from_file", { url: itemTemplateUrl });
 
