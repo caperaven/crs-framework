@@ -20,7 +20,6 @@ export default class CalendarViewModel extends crs.classes.BindableElement {
         requestAnimationFrame(async () => {
             await this.#initMonthTranslations();
             this.calendar.addEventListener("date-selected", this.#dateSelectedHandler);
-            await super.load();
         })
     }
 
