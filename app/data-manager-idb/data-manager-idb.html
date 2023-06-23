@@ -1,7 +1,42 @@
+<link rel="stylesheet" href="/app/data-manager-idb/data-manager-idb.css">
 <h2>${title}</h2>
 
 <div>
     <span>Generate Data</span>
     <button click.call="generateData">Generate</button>
     <span id="spanDataState"> Records: ${recordCount}</span>
+</div>
+
+<div>
+    <button id="btnPreviousRecord" click.call="previousRecord">Previous</button>
+    <input id="edtRecordIndex" type="number" value.bind="recordIndex" />
+    <button id="btnNextRecord" click.call="nextRecord">Next</button>
+    <button id="btnRefreshRecord" click.call="refreshRecord">Refresh</button>
+    <button id="btnSaveRecord" click.call="saveRecord">Save</button>
+    <button id="btnDeleteRecord" click.call="deleteRecord">Delete</button>
+
+    <label>
+        <div>Code</div>
+        <input type="text" value.bind="model.code" />
+    </label>
+
+    <label>
+        <div>Description</div>
+        <input type="text" value.bind="model.description" />
+    </label>
+
+    <label>
+        <div>Is Valid</div>
+        <input type="text" value.bind="model.isValid" />
+    </label>
+
+    <label>
+        <div>Price</div>
+        <input type="text" value.bind="model.price" />
+    </label>
+
+    <label>
+        <div>Quantity</div>
+        <input type="text" value.bind="model.quantity" />
+    </label>
 </div>
