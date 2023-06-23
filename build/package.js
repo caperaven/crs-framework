@@ -4,7 +4,7 @@
  */
 
 import { copy, emptyDir, ensureDir } from "https://deno.land/std@0.149.0/fs/mod.ts";
-import * as esbuild from 'https://deno.land/x/esbuild@v0.14.50/mod.js'
+import * as esbuild from 'https://deno.land/x/esbuild@v0.18.6/mod.js'
 import init, {minify} from "https://wilsonl.in/minify-html/deno/0.9.2/index.js";
 
 const encoder = new TextEncoder();
@@ -147,7 +147,8 @@ export async function bundleCss(sourceFile, output, minified) {
         bundle: true,
         loader: {".css": "css"},
         outfile: output,
-        minify: minified
+        minify: minified,
+
     })
 
     console.log(sourceFile);

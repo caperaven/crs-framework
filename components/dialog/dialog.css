@@ -1,6 +1,6 @@
-@import "/styles/lib/buttons.css";
-@import "/styles/lib/variables.css";
-@import "/styles/lib/states.css";
+@import "./../../styles/lib/buttons.css";
+@import "./../../styles/lib/variables.css";
+@import "./../../styles/lib/states.css";
 
 :host {
     --header-height: 3rem;
