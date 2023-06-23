@@ -144,7 +144,7 @@ export async function packageHTML(sourceFile, targetFile, minified) {
 export async function bundleCss(sourceFile, output, minified) {
     await esbuild.build({
         entryPoints: [sourceFile],
-        bundle: true,
+        bundle: false,
         loader: {".css": "css"},
         outfile: output,
         minify: minified,
