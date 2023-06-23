@@ -129,6 +129,11 @@
         {
             "title": "data-manager",
             "view": "data-manager"
+        },
+        {
+            "title": "data-manager-idb",
+            "hash": "#data-manager-idb",
+            "view": "data-manager-idb"
         }
     ]
 }

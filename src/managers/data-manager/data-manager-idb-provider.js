@@ -9,6 +9,7 @@ const DB_NAME = "data-manager";
  */
 export class DataManagerIDBProvider extends BaseDataManager {
     #storeName;
+    #sessionKey;
 
     get storeName() {
         return this.#storeName;
@@ -37,6 +38,7 @@ export class DataManagerIDBProvider extends BaseDataManager {
         });
 
         this.#storeName = result.data;
+        this.#sessionKey = `${DB_NAME}_${this.#storeName}`;
     }
 
     async append(...record) {
@@ -126,4 +128,42 @@ export class DataManagerIDBProvider extends BaseDataManager {
             changes
         })
     }
-}
+
+    async setSelectedIndexes(indexes, selected) {
+        const result = indexes.map(index => {
+            return {
+                type: "index",
+                values: { index, selected }
+            };
+        });
+
+        sessionStorage.setItem(this.#sessionKey, JSON.stringify(result));
+    }
+
+    async setSelectedIds(ids, selected) {
+        const indexes = await crs.call("idb", "get_by_id", {
+            "name": DB_NAME,
+            "store": this.#storeName,
+            "ids": ids
+        })
+
+        return await this.setSelectedIndexes(indexes, selected);
+    }
+
+    async getSelected(isSelected = true) {
+        const indexes = sessionStorage.getItem(this.#sessionKey);
+
+    }
+
+    async toggleSelectedIndexes(indexes) {
+    }
+
+    async toggleSelectedIds(ids) {
+    }
+
+    async setSelectedAll(selected) {
+        sessionStorage.setItem(this.#sessionKey, JSON.stringify({
+            type: "all"
+        }));
+    }
+}1
