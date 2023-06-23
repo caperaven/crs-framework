@@ -330,19 +330,18 @@ class DataManagerActions {
         const ids = await crs.process.getValue(step.args.ids, context, process, item);
 
         const dataManager = globalThis.dataManagers[manager];
-        let result;
 
         if (indexes != null) {
-            result = await dataManager.removeIndexes(indexes);
+            await dataManager.removeIndexes(indexes);
         }
         else {
-            result = await dataManager.removeIds(ids);
+            await dataManager.removeIds(ids);
         }
 
         await dataManager.notifyChanges({
             action: CHANGE_TYPES.delete,
-            indexes: result.indexes,
-            ids: result.ids
+            indexes: indexes,
+            ids: ids
         })
     }
 

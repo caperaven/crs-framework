@@ -5,15 +5,20 @@
     <span>Generate Data</span>
     <button click.call="generateData">Generate</button>
     <span id="spanDataState"> Records: ${recordCount}</span>
+    <span id="writeTime">Write Time: ${writeTime}</span>
 </div>
 
-<div>
+<hr />
+
+<div hidden.if="hasRecords == false">
     <button id="btnPreviousRecord" click.call="previousRecord">Previous</button>
-    <input id="edtRecordIndex" type="number" value.bind="recordIndex" />
+    <input id="edtRecordIndex" type="number" value.bind="recordIndex" min="0" />
     <button id="btnNextRecord" click.call="nextRecord">Next</button>
     <button id="btnRefreshRecord" click.call="refreshRecord">Refresh</button>
     <button id="btnSaveRecord" click.call="saveRecord">Save</button>
     <button id="btnDeleteRecord" click.call="deleteRecord">Delete</button>
+
+    <hr />
 
     <label>
         <div>Code</div>

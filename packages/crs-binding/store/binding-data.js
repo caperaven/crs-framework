@@ -171,6 +171,11 @@ class BindingData {
       await crs.binding.dataDef.automateValidations(id, property);
     }
   }
+  async updateProperty(id, property, callback) {
+    let value = this.getProperty(id, property);
+    value = await callback(value);
+    await this.setProperty(id, property, value);
+  }
   setName(id, name) {
     id = this.#getContextId(id);
     const data = crs.binding.data.getData(id);

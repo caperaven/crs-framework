@@ -1,3 +1,10 @@
+@import "/styles/lib/buttons.css";
+@import "/styles/lib/input.css";
+
 #edtRecordIndex {
     width: 2rem;
+}
+
+.hidden {
+    display: none;
 }

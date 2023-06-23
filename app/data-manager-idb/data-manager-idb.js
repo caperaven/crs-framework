@@ -3,9 +3,23 @@ import "./../../src/managers/data-manager/data-manager-actions.js";
 
 const DB_MANAGER = "data_manager_idb";
 
-export default class DataManagerIdb extends crsbinding.classes.ViewBase {
+export default class DataManagerIdb extends crs.classes.BindableElement {
+    #store;
+
+    get html() {
+        return import.meta.url.replace(".js", ".html");
+    }
+
+    get shadowDom() {
+        return true;
+    }
+
+    get hasStyle() {
+        return false;
+    }
 
     async preLoad() {
+        this.setProperty("hasRecords", false);
         this.setProperty("recordIndex", 0);
     }
 
@@ -18,40 +32,56 @@ export default class DataManagerIdb extends crsbinding.classes.ViewBase {
                 quantity: "int:1:100",
                 isValid: "bool"
             },
-            count: 10000
+            count: 100000
         });
 
-        await crs.call("data_manager", "register", {
+        const start = performance.now();
+
+        this.#store = await crs.call("data_manager", "register", {
             manager: DB_MANAGER,
             id_field: "id",
             type: "idb",
             records: data
         })
 
+        const end = performance.now();
+        const total = `${end - start} ms`;
+
         this.setProperty("recordCount", data.length);
+        this.setProperty("hasRecords", true);
+        this.setProperty("writeTime", total);
+
+        await this.refreshRecord();
     }
 
     async previousRecord() {
-        const value = this.getProperty("recordIndex");
-        this.setProperty("recordIndex", value - 1);
-
-        this.updateProperty("record", (value) => value - 1);
+        await this.updateProperty("recordIndex", (value) => value == 0 ? 0 : value - 1);
+        await this.refreshRecord();
     }
 
     async nextRecord() {
-
+        await this.updateProperty("recordIndex", (value) => value + 1);
+        await this.refreshRecord();
     }
 
     async refreshRecord() {
+        const result = await crs.call("data_manager", "get", {
+            manager: DB_MANAGER,
+            index: this.getProperty("recordIndex")
+        })
 
+        this.setProperty("model", result.data[0]);
     }
 
     async saveRecord() {
-
+        console.log("saveRecord");
     }
 
     async deleteRecord() {
-
+        await crs.call("data_manager", "remove", {
+            manager: DB_MANAGER,
+            indexes: [this.getProperty("recordIndex")]
+        });
     }
 
 }

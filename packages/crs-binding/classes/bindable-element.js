@@ -45,8 +45,11 @@ class BindableElement extends HTMLElement {
   getProperty(property) {
     return crs.binding.data.getProperty(this, property);
   }
-  setProperty(property, value) {
-    crs.binding.data.setProperty(this, property, value);
+  async setProperty(property, value) {
+    await crs.binding.data.setProperty(this, property, value);
+  }
+  async updateProperty(property, callback) {
+    await crs.binding.data.updateProperty(this, property, callback);
   }
 }
 function getHtmlPath(obj) {

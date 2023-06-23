@@ -3,7 +3,7 @@
 	admin off
 }
 
-localhost:1100 {
+localhost {
 	header {
 		Cache-Control "no-cache, no-store, must-revalidate"
 		Content-Security-Policy "default-src 'none'; script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval'; script-src-elem 'self'; script-src-attr 'none'; style-src 'self'; style-src-elem 'self'; style-src-attr 'self'; img-src 'self'; font-src 'self'; connect-src *; frame-src 'self'; worker-src 'self'; block-all-mixed-content; manifest-src 'self'"
