@@ -1,4 +1,4 @@
-import {loadHTML} from "./../../src/load-resources.js";
+const LOADING = "loading";
 
 /**
  * @class ComboBox - combobox component with custom features.
@@ -20,6 +20,7 @@ import {loadHTML} from "./../../src/load-resources.js";
 class ComboBox extends crs.classes.BindableElement {
     #template;
     #items;
+    #busy;
 
     get html() {
         return import.meta.url.replace(".js", ".html");
@@ -38,6 +39,22 @@ class ComboBox extends crs.classes.BindableElement {
         this.#buildOptionsFromItems().catch(error => console.error(error));
     }
 
+    get value() {
+        return this.getProperty("value");
+    }
+
+    set value(newValue) {
+        this.setProperty("value", newValue);
+
+        if (this.#busy != true  ) {
+            this.#setTextFromValue(newValue);
+        }
+    }
+
+    get text() {
+        return this.getProperty("searchText");
+    }
+
     /**
      * @method connectedCallback - called when the component is added to the dom.
      * There are two basic parts that must always be in place for this to work.\
@@ -51,6 +68,7 @@ class ComboBox extends crs.classes.BindableElement {
      * @returns {Promise<void>}
      */
     async connectedCallback() {
+        this.#busy = LOADING;
         // 1. load template from light dom of it exists
         this.#template = this.querySelector("template");
         // 2. load items from light dom if they exist
@@ -67,9 +85,30 @@ class ComboBox extends crs.classes.BindableElement {
                 this.#template ||= this.shadowRoot.querySelector("#tplDefaultItem");
                 // 2. build the options from the items if they exist
                 await this.#buildOptionsFromItems();
+
+                this.#busy = false;
+                const value = this.getProperty("value");
+                this.#setTextFromValue(value);
+
+                await crs.call("component", "notify_ready", { element: this });
                 resolve();
             })
         })
+    }
+
+    #setTextFromValue(value) {
+        if (this.#busy === LOADING) return;
+
+        if (value.trim().length == 0) {
+            return this.setProperty("searchText", "");
+        }
+
+        const options = Array.from(this.shadowRoot.querySelectorAll("option"));
+        const selected = options.find(option => option.value == value);
+
+        if (selected != null) {
+            this.setProperty("searchText", selected.textContent);
+        }
     }
 
     /**
@@ -112,8 +151,22 @@ class ComboBox extends crs.classes.BindableElement {
     }
 
     async select(event) {
-        console.log(event.composedPath()[0]);
-        return true;
+        this.#busy = true;
+        try {
+            const selected = event.composedPath()[0];
+
+            if (selected.nodeName !== "OPTION") return;
+
+            this.value = selected.value;
+            await this.setProperty("searchText", selected.textContent);
+
+            this.dispatchEvent(new CustomEvent("change", {
+                value: selected.value
+            }));
+        }
+        finally {
+            this.#busy = false;
+        }
     }
 }
 
