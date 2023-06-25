@@ -99,7 +99,7 @@ class ComboBox extends crs.classes.BindableElement {
     #setTextFromValue(value) {
         if (this.#busy === LOADING) return;
 
-        if (value.trim().length == 0) {
+        if ((value ?? "").trim().length == 0) {
             return this.setProperty("searchText", "");
         }
 
@@ -160,9 +160,7 @@ class ComboBox extends crs.classes.BindableElement {
             this.value = selected.value;
             await this.setProperty("searchText", selected.textContent);
 
-            this.dispatchEvent(new CustomEvent("change", {
-                value: selected.value
-            }));
+            this.shadowRoot.dispatchEvent(new CustomEvent("change", {detail: { value: this.value }, composed: true}));
         }
         finally {
             this.#busy = false;

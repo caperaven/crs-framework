@@ -117,7 +117,7 @@ class Providers {
       } else {
         provider = this.#attrProviders[providerKey] || this.#elementProviders[providerKey];
       }
-      provider.update(uuid);
+      provider.update?.(uuid);
     }
   }
   async clear(uuid) {

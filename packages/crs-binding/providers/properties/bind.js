@@ -18,7 +18,8 @@ class BindProvider {
     await crs.binding.data.setProperty(bid, field, value);
   }
   async parse(attr, context) {
-    await bindingParse(attr, context, ".bind");
+    const provider = attr.name.indexOf("two-way") != -1 ? ".two-way" : ".bind";
+    await bindingParse(attr, context, provider);
   }
   async update(uuid, ...properties) {
     await bindingUpdate(uuid, ...properties);
