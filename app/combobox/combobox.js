@@ -1,5 +1,4 @@
-import "/components/combobox/combobox.js";
-import AvailableSelectedViewModel from "../available-selected/available-selected.js";
+import "./../../components/combo-box/combo-box.js";
 
 export default class ComboboxViewModel extends crs.classes.BindableElement {
     get html() {

@@ -13,6 +13,9 @@ class TextProvider {
       const expo = await crs.binding.expression.compile(value);
       this.#store[element["__uuid"]] = expo.key;
       crs.binding.data.setCallback(element["__uuid"], context.bid, expo.parameters.properties, ".textContent");
+      if (value.indexOf("&{") != -1) {
+        await this.update(element["__uuid"]);
+      }
     }
   }
   async update(uuid) {

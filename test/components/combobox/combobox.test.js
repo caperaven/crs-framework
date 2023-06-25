@@ -7,7 +7,7 @@ import {EventMock} from "../../mockups/event-mock.js";
 await init();
 
 beforeAll(async () => {
-    await import("../../../components/combobox/combobox.js");
+    await import("../../../components/combo-box/combo-box.js");
 })
 
 describe ("combobox tests", async () => {

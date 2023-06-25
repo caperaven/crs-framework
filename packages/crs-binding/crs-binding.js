@@ -1427,6 +1427,7 @@ globalThis.crs.binding = {
       "^(keydown|keyup)..+..*$": "$root/providers/events/keyboard-event.js",
       "classlist.if": "$root/providers/attributes/classlist-if.js",
       "classlist.case": "$root/providers/attributes/classlist-case.js",
+      "classlist.toggle": "$root/providers/attributes/classlist-toggle.js",
       ".bind": "$root/providers/properties/bind.js",
       ".two-way": "$root/providers/properties/bind.js",
       ".one-way": "$root/providers/properties/one-way.js",

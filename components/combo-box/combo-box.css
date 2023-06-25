@@ -1,0 +1,54 @@
+:host {
+    position: relative;
+    display: block;
+    box-sizing: border-box;
+    width: max-content;
+}
+
+:host * {
+    box-sizing: border-box;
+}
+
+input, button {
+    height: 2rem;
+}
+
+button {
+    font-family: crsfrw;
+    cursor: pointer;
+}
+
+.hide {
+    display: none;
+}
+
+ul {
+    background: var(--window);
+    border: var(--border);
+    position: absolute;
+    z-index: 1;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    box-shadow: var(--drop-shadow);
+}
+
+ul:before {
+    content: "";
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: transparent;
+    z-index: -1;
+}
+
+option {
+    padding: var(--padding);
+    cursor:  pointer;
+}
+
+option:hover {
+    background: var(--blue-s2);
+}

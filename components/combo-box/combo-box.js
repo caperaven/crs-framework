@@ -1,0 +1,120 @@
+import {loadHTML} from "./../../src/load-resources.js";
+
+/**
+ * @class ComboBox - combobox component with custom features.
+ *
+ * @example <caption>html usage</caption>
+ * <combo-box>
+ *     <option value="1">Option 1</option>
+ *     <option value="2">Option 2</option>
+ *     <option value="3">Option 3</option>
+ * </combo-box>
+ *
+ * @example <caption>html usage with items property</caption>
+ * <combo-box items.bind="model.options>
+ *     <template>
+ *         <option value.attr="item.value">${item.text}</option>
+ *     </template>
+ * </combo-box>
+ */
+class ComboBox extends crs.classes.BindableElement {
+    #template;
+    #items;
+
+    get html() {
+        return import.meta.url.replace(".js", ".html");
+    }
+
+    get shadowDom() {
+        return true;
+    }
+
+    get items() {
+        return this.#items;
+    }
+
+    set items(value) {
+        this.#items = value;
+        this.#buildOptionsFromItems().catch(error => console.error(error));
+    }
+
+    /**
+     * @method connectedCallback - called when the component is added to the dom.
+     * There are two basic parts that must always be in place for this to work.\
+     * 1. Items data that determines the list items.
+     * 2. Template that determines how the items are rendered.
+     *
+     * Thought there are two different ways as seen above on how to define the items,
+     * they both apply as items data and template.
+     * If the light dom does not have a template the default will be used.
+     * If the light dom defines options they will be used as items data.
+     * @returns {Promise<void>}
+     */
+    async connectedCallback() {
+        // 1. load template from light dom of it exists
+        this.#template = this.querySelector("template");
+        // 2. load items from light dom if they exist
+        await this.#loadItemsFromDom();
+        // 3. continue with default processing
+        await super.connectedCallback();
+    }
+
+    load() {
+        return new Promise(resolve => {
+            requestAnimationFrame(async () => {
+                // 1. if no template was loaded you are working with
+                // data that will flow in from the outside so use the default template in the component
+                this.#template ||= this.shadowRoot.querySelector("#tplDefaultItem");
+                // 2. build the options from the items if they exist
+                await this.#buildOptionsFromItems();
+                resolve();
+            })
+        })
+    }
+
+    /**
+     * @method #loadItemsFromDom - loads the items from the light dom if they exist.
+     * This will search for option elements and build an array of items from them.
+     * @returns {Promise<void>}
+     */
+    async #loadItemsFromDom() {
+        const options = this.querySelectorAll("option");
+
+        if (options.length > 0) {
+            this.#items = Array.from(options).map(option => {
+                return {
+                    value: option.value,
+                    text: option.innerText
+                }
+            })
+        }
+
+        this.innerHTML = "";
+    }
+
+    /**
+     * @method #buildOptionsFromItems - builds the options from the items.
+     * @returns {Promise<void>}
+     */
+    async #buildOptionsFromItems() {
+        if (this.#items == null) return;
+
+        const fragment = document.createDocumentFragment();
+
+        for (const item of this.#items) {
+            const option = document.createElement("option");
+            option.value = item.value;
+            option.innerText = item.text;
+            fragment.appendChild(option);
+        }
+
+        this.shadowRoot.querySelector("ul").appendChild(fragment);
+    }
+
+    async select(event) {
+        console.log(event.composedPath()[0]);
+        return true;
+    }
+}
+
+customElements.define('combo-box', ComboBox)
