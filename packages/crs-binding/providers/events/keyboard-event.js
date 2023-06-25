@@ -16,14 +16,11 @@ class KeyboardEventProvider {
       keys.push("shift");
     keys.push(event.key.toLowerCase());
     const key = keys.join("_");
-    intent = intent.filter((i) => i.keys == key || i.keys == "");
-    if (intent.length == 0)
+    if (intent.keys != key || intent.keys != "")
       return;
-    for (const i of intent) {
-      const executeIntent = i.value;
-      const module = await crs.binding.providers.getAttrModule(executeIntent.provider);
-      await module.onEvent(event, bid, executeIntent);
-    }
+    const executeIntent = intent.value;
+    const module = await crs.binding.providers.getAttrModule(executeIntent.provider);
+    await module.onEvent(event, bid, executeIntent);
   }
   async parse(attr) {
     const name = attr.name;

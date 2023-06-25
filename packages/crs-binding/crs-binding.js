@@ -1074,27 +1074,27 @@ function enableEvents(element) {
 function disableEvents(element) {
   if (element._domEvents == null)
     return;
-  for (let event of element._domEvents) {
-    element.removeEventListener(event.event, event.callback);
-    delete event.element;
-    delete event.callback;
-    delete event.event;
+  for (let event2 of element._domEvents) {
+    element.removeEventListener(event2.event, event2.callback);
+    delete event2.element;
+    delete event2.callback;
+    delete event2.event;
   }
   element._domEvents.length = 0;
   delete element._domEvents;
   delete element.registerEvent;
   delete element.unregisterEvent;
 }
-function registerEvent(element, event, callback, eventOptions = null) {
-  element.addEventListener(event, callback, eventOptions);
+function registerEvent(element, event2, callback, eventOptions = null) {
+  element.addEventListener(event2, callback, eventOptions);
   this._domEvents.push({
     element,
-    event,
+    event: event2,
     callback
   });
 }
-function unregisterEvent(element, event, callback) {
-  const item = this._domEvents.find((item2) => item2.element == element && item2.event == event && item2.callback == callback);
+function unregisterEvent(element, event2, callback) {
+  const item = this._domEvents.find((item2) => item2.element == element && item2.event == event2 && item2.callback == callback);
   if (item == null)
     return;
   element.removeEventListener(item.event, item.callback);
@@ -1254,53 +1254,62 @@ var EventStore = class {
   get store() {
     return this.#store;
   }
-  async #onEvent(event) {
-    const targets = getTargets(event);
+  async #onEvent(event2) {
+    const targets = getTargets(event2);
     if (targets.length === 0)
       return;
     for (const target of targets) {
       const uuid = target["__uuid"];
-      const data = this.#store[event.type];
+      const data = this.#store[event2.type];
       const intent = data[uuid];
       if (intent != null) {
         const bid = target["__bid"];
-        let provider = Array.isArray(intent) ? intent[0].provider : intent.provider;
-        provider = provider.replaceAll("\\", "");
-        const providerInstance = crs.binding.providers.attrProviders[provider];
-        await providerInstance.onEvent?.(event, bid, intent, target);
+        if (Array.isArray(intent)) {
+          for (const i of intent) {
+            await this.#onEventExecute(i, bid, target);
+          }
+          continue;
+        }
+        await this.#onEventExecute(intent, bid, target);
       }
     }
   }
-  getIntent(event, uuid) {
-    return this.#store[event]?.[uuid];
+  async #onEventExecute(intent, bid, target) {
+    let provider = intent.provider;
+    provider = provider.replaceAll("\\", "");
+    const providerInstance = crs.binding.providers.attrProviders[provider];
+    await providerInstance.onEvent?.(event, bid, intent, target);
   }
-  register(event, uuid, intent, isCollection = false) {
-    if (this.#store[event] == null) {
-      document.addEventListener(event, this.#eventHandler, {
+  getIntent(event2, uuid) {
+    return this.#store[event2]?.[uuid];
+  }
+  register(event2, uuid, intent, isCollection = true) {
+    if (this.#store[event2] == null) {
+      document.addEventListener(event2, this.#eventHandler, {
         capture: true,
         passive: true
       });
-      this.#store[event] = {};
+      this.#store[event2] = {};
     }
     if (isCollection) {
-      this.#store[event][uuid] ||= [];
-      this.#store[event][uuid].push(intent);
+      this.#store[event2][uuid] ||= [];
+      this.#store[event2][uuid].push(intent);
       return;
     }
-    this.#store[event][uuid] = intent;
+    this.#store[event2][uuid] = intent;
   }
   clear(uuid) {
     const element = crs.binding.elements[uuid];
     if (element?.__events == null)
       return;
     const events = element.__events;
-    for (const event of events) {
-      delete this.#store[event][uuid];
+    for (const event2 of events) {
+      delete this.#store[event2][uuid];
     }
   }
 };
-function getTargets(event) {
-  return event.composedPath().filter((element) => element["__uuid"] != null);
+function getTargets(event2) {
+  return event2.composedPath().filter((element) => element["__uuid"] != null);
 }
 
 // src/utils/converter-parts.js
