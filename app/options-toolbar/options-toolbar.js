@@ -5,10 +5,6 @@ export default class OptionsToolbarViewModel extends crs.classes.BindableElement
         return import.meta.url.replace(".js", ".html");
     }
 
-    get shadowDom() {
-        return true;
-    }
-
     preLoad() {
         this.setProperty("state", "off");
         this.setProperty("selected", "off");

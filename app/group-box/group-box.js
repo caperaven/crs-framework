@@ -6,10 +6,6 @@ export default class GroupBoxViewModel extends crs.classes.BindableElement {
         return import.meta.url.replace(".js", ".html");
     }
 
-    get shadowDom() {
-        return true;
-    }
-
     async connectedCallback() {
         await super.connectedCallback();
     }

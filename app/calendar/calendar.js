@@ -8,10 +8,6 @@ export default class CalendarViewModel extends crs.classes.BindableElement {
         return import.meta.url.replace(".js", ".html");
     }
 
-    get shadowDom() {
-        return true;
-    }
-
     async preLoad() {
         this.setProperty("start", new Date());
     }

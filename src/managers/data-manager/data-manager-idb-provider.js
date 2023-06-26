@@ -129,6 +129,14 @@ export class DataManagerIDBProvider extends BaseDataManager {
         })
     }
 
+    async update(record) {
+        await crs.call("idb", "update_by_id", {
+            "name": DB_NAME,
+            "store": this.#storeName,
+            "models": record
+        })
+    }
+
     async setSelectedIndexes(indexes, selected) {
         const result = indexes.map(index => {
             return {

@@ -6,10 +6,6 @@ export default class FileSystemViewModel extends crs.classes.BindableElement {
         return import.meta.url.replace(".js", ".html");
     }
 
-    get shadowDom() {
-        return true;
-    }
-
     async open() {
         await document.querySelector("file-system").selectFolder();
     }

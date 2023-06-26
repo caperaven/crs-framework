@@ -404,20 +404,19 @@ class DataManagerActions {
 
         const dataManager = globalThis.dataManagers[manager];
 
-        let result;
         if (index != null) {
-            result = await dataManager.updateIndex(index, changes);
+            await dataManager.updateIndex(index, changes);
+            await dataManager.notifyChanges({ action: CHANGE_TYPES.update, index, changes })
+        }
+        else if (id != null) {
+            await dataManager.updateId(id, changes);
+            await dataManager.notifyChanges({ action: CHANGE_TYPES.update, id, changes })
         }
         else {
-            result = await dataManager.updateId(id, changes);
+            const models = await crs.process.getValue(step.args.models, context, process, item);
+            await dataManager.update(models)
+            await dataManager.notifyChanges({ action: CHANGE_TYPES.update, models })
         }
-
-        await dataManager.notifyChanges({
-            action: CHANGE_TYPES.update,
-            id: result.id,
-            index: result.index,
-            changes: result.changes
-        })
     }
 
     /**

@@ -6,10 +6,6 @@ export default class CheckboxViewModel extends crs.classes.BindableElement {
         return import.meta.url.replace(".js", ".html");
     }
 
-    get shadowDom() {
-        return true;
-    }
-
     async preLoad() {
         this.setProperty("isActive", true);
         this.setProperty("isTrue", null);

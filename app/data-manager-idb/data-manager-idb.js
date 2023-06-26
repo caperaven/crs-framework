@@ -10,10 +10,6 @@ export default class DataManagerIdb extends crs.classes.BindableElement {
         return import.meta.url.replace(".js", ".html");
     }
 
-    get shadowDom() {
-        return true;
-    }
-
     get hasStyle() {
         return false;
     }
@@ -32,7 +28,7 @@ export default class DataManagerIdb extends crs.classes.BindableElement {
                 quantity: "int:1:100",
                 isValid: "bool"
             },
-            count: 100000
+            count: 1000
         });
 
         const start = performance.now();
@@ -74,7 +70,11 @@ export default class DataManagerIdb extends crs.classes.BindableElement {
     }
 
     async saveRecord() {
-        console.log("saveRecord");
+        const model = this.getProperty("model");
+        await crs.call("data_manager", "update", {
+            manager: DB_MANAGER,
+            models: [model]
+        });
     }
 
     async deleteRecord() {

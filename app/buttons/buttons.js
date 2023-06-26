@@ -5,7 +5,4 @@ export default class ButtonsViewModel extends crs.classes.BindableElement {
         return import.meta.url.replace(".js", ".html");
     }
 
-    get shadowDom() {
-        return true;
-    }
 }

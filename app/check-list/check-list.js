@@ -5,10 +5,6 @@ export default class CheckListViewModel extends crs.classes.BindableElement {
         return import.meta.url.replace(".js", ".html");
     }
 
-    get shadowDom() {
-        return true;
-    }
-
     get hasStyle() {
         return false;
     }

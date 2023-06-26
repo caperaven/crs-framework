@@ -311,10 +311,12 @@ async function parseElements(collection, context, options) {
 async function parseAttribute(attr, context, ctxName, parentId) {
   if (attr.ownerElement == null)
     return;
+
+  const element = attr.ownerElement;
+
   const provider = await crs.binding.providers.getAttrProvider(attr.name);
   if (provider == null)
     return;
-  const element = attr.ownerElement;
   crs.binding.utils.markElement(element, context);
   await provider.parse(attr, context, ctxName, parentId);
 }
@@ -1287,7 +1289,8 @@ var EventStore = class {
     if (this.#store[event2] == null) {
       document.addEventListener(event2, this.#eventHandler, {
         capture: true,
-        passive: true
+        passive: true,
+        composed: true
       });
       this.#store[event2] = {};
     }
