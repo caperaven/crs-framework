@@ -3,7 +3,13 @@
 </template>
 
 <header>
-    <input id="search" type="search" value.bind="searchText"/>
+    <input
+        id="search"
+        type="search"
+        value.bind="searchText"
+        change.call="search"
+    />
+
     <button
         id="btnDropdown"
         aria-haspopup="true"

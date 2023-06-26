@@ -11,7 +11,7 @@ const LOADING = "loading";
  * </combo-box>
  *
  * @example <caption>html usage with items property</caption>
- * <combo-box items.bind="model.options>
+ * <combo-box items.bind="model.options">
  *     <template>
  *         <option value.attr="item.value">${item.text}</option>
  *     </template>
@@ -165,6 +165,11 @@ class ComboBox extends crs.classes.BindableElement {
         finally {
             this.#busy = false;
         }
+    }
+
+    async search(event) {
+        const input = event.composedPath()[0];
+        const value = input.value;
     }
 }
 

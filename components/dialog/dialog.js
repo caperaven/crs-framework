@@ -331,10 +331,14 @@ export class Dialog extends HTMLElement {
      * @param options - the options for the dialog (target, position, anchor, size)
      * @returns {Promise<void>}
      */
-    async show(header, main, footer, options) {
+    async show(header, main, footer, options, context) {
         const struct = {header, main, footer, options};
         this.#stack.push(struct);
         await this.#showStruct(struct);
+
+        if (context != null) {
+            await crs.binding.parsers.parseElements(this.children, context);
+        }
 
         if (options?.callback != null && options.callback !== false) {
             struct.action = "loaded";
@@ -349,6 +353,10 @@ export class Dialog extends HTMLElement {
      * @returns {Promise<void>}
      */
     async close() {
+        for (const child of this.children) {
+            await crs.binding.utils.unmarkElement(child);
+        }
+
         return await this.#popStack();
     }
 }

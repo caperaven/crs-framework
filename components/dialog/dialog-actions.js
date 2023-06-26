@@ -154,7 +154,7 @@ export class DialogActions {
         };
 
         const dialog = await ensureDialog(close, parent);
-        dialog.show(headerElement, mainElement, footerElement, options);
+        dialog.show(headerElement, mainElement, footerElement, options, context);
         return dialog;
     }
 
