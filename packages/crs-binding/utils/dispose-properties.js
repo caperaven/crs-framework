@@ -15,6 +15,8 @@ function disposeProperties(obj) {
   const properties = Object.getOwnPropertyNames(obj).filter((name) => ignoreDispose.indexOf(name) == -1);
   for (let property of properties) {
     let pObj = obj[property];
+    if (pObj == null)
+      continue;
     if (typeof pObj == "object") {
       if (Array.isArray(pObj)) {
         disposeArray(pObj);

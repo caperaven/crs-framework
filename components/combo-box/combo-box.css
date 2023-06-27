@@ -52,3 +52,7 @@ option {
 option:hover {
     background: var(--blue-s2);
 }
+
+option.hidden {
+    display: none;
+}

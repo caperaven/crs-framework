@@ -192,9 +192,14 @@ class ComboBox extends crs.classes.BindableElement {
         for (const option of this.#options) {
             option.classList.add("hidden");
 
-            if (option.textContent.toLowerCase().contains(value.toLowerCase())) {
+            if (option.textContent.toLowerCase().indexOf(value.toLowerCase()) != -1) {
                 option.classList.remove("hidden");
             }
+        }
+
+        const ul = this.shadowRoot.querySelector("ul");
+        if (ul.classList.contains("hide")) {
+            ul.classList.remove("hide");
         }
     }
 }
