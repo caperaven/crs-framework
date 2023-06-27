@@ -81,6 +81,7 @@ class ComboBox extends crs.classes.BindableElement {
     load() {
         return new Promise(resolve => {
             requestAnimationFrame(async () => {
+                this.setAttribute("aria-expanded", "false");
                 // 1. if no template was loaded you are working with
                 // data that will flow in from the outside so use the default template in the component
                 this.#template ||= this.shadowRoot.querySelector("#tplDefaultItem");

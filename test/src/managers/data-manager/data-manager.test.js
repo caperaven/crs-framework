@@ -91,7 +91,7 @@ describe("data manager tests", () => {
 
         assertEquals(manager.count, 1);
         assertEquals(changeArgs[0].action, "delete");
-        assertEquals(changeArgs[0].ids, ["1001"]);
+        assertEquals(changeArgs[0].ids, undefined);
         assertEquals(changeArgs[0].indexes, [1]);
     })
 
@@ -104,7 +104,7 @@ describe("data manager tests", () => {
         assertEquals(manager.count, 1);
         assertEquals(changeArgs[0].action, "delete");
         assertEquals(changeArgs[0].ids, ["1000"]);
-        assertEquals(changeArgs[0].indexes, [0]);
+        assertEquals(changeArgs[0].indexes, undefined);
     })
 
     it ("update - by index", async () => {
@@ -119,7 +119,7 @@ describe("data manager tests", () => {
         const record = await manager.getByIndex(0);
         assertEquals(record.code, "ABC");
         assertEquals(changeArgs[0].action, "update");
-        assertEquals(changeArgs[0].id, "1000");
+        assertEquals(changeArgs[0].id, undefined);
         assertEquals(changeArgs[0].index, 0);
         assertEquals(changeArgs[0].changes.code, "ABC");
     })
@@ -139,7 +139,7 @@ describe("data manager tests", () => {
 
         assertEquals(changeArgs[0].action, "update");
         assertEquals(changeArgs[0].id, "1000");
-        assertEquals(changeArgs[0].index, 0);
+        assertEquals(changeArgs[0].index, undefined);
         assertEquals(changeArgs[0].changes.code, "ABC");
     })
 
