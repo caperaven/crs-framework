@@ -10,6 +10,10 @@ export default class DataManagerIdb extends crs.classes.BindableElement {
         return import.meta.url.replace(".js", ".html");
     }
 
+    get shadowDom() {
+        return true;
+    }
+
     get hasStyle() {
         return false;
     }
@@ -28,7 +32,7 @@ export default class DataManagerIdb extends crs.classes.BindableElement {
                 quantity: "int:1:100",
                 isValid: "bool"
             },
-            count: 1000
+            count: 10
         });
 
         const start = performance.now();
@@ -82,6 +86,53 @@ export default class DataManagerIdb extends crs.classes.BindableElement {
             manager: DB_MANAGER,
             indexes: [this.getProperty("recordIndex")]
         });
+    }
+
+    async setSelected() {
+        await crs.call("data_manager", "set_selected", {
+            manager: DB_MANAGER,
+            indexes: [0, 2, 4, 6],
+            selected: true
+        });
+
+        await this.getSelected();
+    }
+
+    async toggleSelected() {
+        await crs.call("data_manager", "toggle_selection", {
+            manager: DB_MANAGER
+        })
+    }
+
+    async selectAll() {
+        await crs.call("data_manager", "set_select_all", {
+            manager: DB_MANAGER
+        })
+
+        await this.getSelected();
+    }
+
+    async selectNone() {
+        await crs.call("data_manager", "set_select_all", {
+            manager: DB_MANAGER,
+            selected: false
+        })
+
+        await this.getSelected();
+    }
+
+    async getSelected() {
+        let result = await crs.call("data_manager", "get_selected", {
+            manager: DB_MANAGER
+        })
+
+        console.log(result);
+
+        result = await crs.call("data_manager", "get_unselected", {
+            manager: DB_MANAGER
+        })
+
+        console.log(result);
     }
 
 }

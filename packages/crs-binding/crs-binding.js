@@ -311,12 +311,10 @@ async function parseElements(collection, context, options) {
 async function parseAttribute(attr, context, ctxName, parentId) {
   if (attr.ownerElement == null)
     return;
-
-  const element = attr.ownerElement;
-
   const provider = await crs.binding.providers.getAttrProvider(attr.name);
   if (provider == null)
     return;
+  const element = attr.ownerElement;
   crs.binding.utils.markElement(element, context);
   await provider.parse(attr, context, ctxName, parentId);
 }
@@ -1088,9 +1086,13 @@ function disableEvents(element) {
   delete element.unregisterEvent;
 }
 function registerEvent(element, event2, callback, eventOptions = null) {
-  element.addEventListener(event2, callback, eventOptions);
+  const itemInStore = this._domEvents.find((item) => item.element == element && item.event == event2 && item.callback == callback);
+  if (itemInStore != null)
+    return;
+  const target = element.shadowRoot || element;
+  target.addEventListener(event2, callback, eventOptions);
   this._domEvents.push({
-    element,
+    element: target,
     event: event2,
     callback
   });
@@ -1099,7 +1101,8 @@ function unregisterEvent(element, event2, callback) {
   const item = this._domEvents.find((item2) => item2.element == element && item2.event == event2 && item2.callback == callback);
   if (item == null)
     return;
-  element.removeEventListener(item.event, item.callback);
+  const target = element.shadowRoot || element;
+  target.removeEventListener(item.event, item.callback);
   this._domEvents.splice(this._domEvents.indexOf(item), 1);
   delete item.element;
   delete item.callback;
@@ -1253,10 +1256,12 @@ var IdleTaskManager = class {
 var EventStore = class {
   #store = {};
   #eventHandler = this.#onEvent.bind(this);
+  #callEventHandler = this.callEvent.bind(this);
   get store() {
     return this.#store;
   }
   async #onEvent(event2) {
+    event2.stopPropagation();
     const targets = getTargets(event2);
     if (targets.length === 0)
       return;
@@ -1282,15 +1287,35 @@ var EventStore = class {
     const providerInstance = crs.binding.providers.attrProviders[provider];
     await providerInstance.onEvent?.(event, bid, intent, target);
   }
+  async callEvent(event2) {
+    const target = event2.composedPath()[0];
+    if (target instanceof HTMLInputElement == false)
+      return;
+    const uuid = target["__uuid"];
+    const data = this.#store[event2.type];
+    const element = crs.binding.elements[uuid];
+    let intent = data[uuid];
+    if (intent == null)
+      return;
+    if (!Array.isArray(intent))
+      intent = [intent];
+    for (const i of intent) {
+      await this.#onEventExecute(i, element.__bid, element);
+    }
+  }
   getIntent(event2, uuid) {
     return this.#store[event2]?.[uuid];
   }
   register(event2, uuid, intent, isCollection = true) {
+    const element = crs.binding.elements[uuid];
+    const root = element.getRootNode();
+    if (event2 === "change" && element instanceof HTMLInputElement && root instanceof ShadowRoot && root.host.registerEvent != null) {
+      root.host.registerEvent(root, event2, this.#callEventHandler);
+    }
     if (this.#store[event2] == null) {
       document.addEventListener(event2, this.#eventHandler, {
         capture: true,
-        passive: true,
-        composed: true
+        passive: true
       });
       this.#store[event2] = {};
     }

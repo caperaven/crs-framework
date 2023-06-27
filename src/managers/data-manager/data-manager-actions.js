@@ -450,7 +450,7 @@ class DataManagerActions {
      * @returns {Promise<void>}
      *
      * @example <caption>javascript example using index</caption>
-     * await crs.call("data_manager", "select" {
+     * await crs.call("data_manager", "set_selected" {
      *    manager: "my_data_manager",
      *    index: [0],
      *    selected: true
@@ -459,7 +459,7 @@ class DataManagerActions {
      * @example <caption>json example using index</caption>
      * {
      *   "type": "data_manager",
-     *   "action": "select",
+     *   "action": "set_selected",
      *   "args": {
      *      "manager": "my_data_manager",
      *      "index": [0],
@@ -531,8 +531,11 @@ class DataManagerActions {
         if (indexes != null) {
             await dataManager.toggleSelectedIndexes(indexes);
         }
-        else {
+        else if (ids != null) {
             await dataManager.toggleSelectedIds(ids);
+        }
+        else {
+            await dataManager.toggleSelectedIndexes();
         }
 
         await dataManager.notifyChanges({

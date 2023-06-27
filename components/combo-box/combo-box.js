@@ -21,6 +21,7 @@ class ComboBox extends crs.classes.BindableElement {
     #template;
     #items;
     #busy;
+    #options;
 
     get html() {
         return import.meta.url.replace(".js", ".html");
@@ -96,6 +97,15 @@ class ComboBox extends crs.classes.BindableElement {
         })
     }
 
+    async disconnectedCallback() {
+        this.#template = null;
+        this.#items = null;
+        this.#options = null;
+        this.#busy = null;
+
+        super.disconnectedCallback();
+    }
+
     #setTextFromValue(value) {
         if (this.#busy === LOADING) return;
 
@@ -137,6 +147,7 @@ class ComboBox extends crs.classes.BindableElement {
      */
     async #buildOptionsFromItems() {
         if (this.#items == null) return;
+        this.#options = null;
 
         const fragment = document.createDocumentFragment();
 
@@ -161,6 +172,10 @@ class ComboBox extends crs.classes.BindableElement {
             await this.setProperty("searchText", selected.textContent);
 
             this.shadowRoot.dispatchEvent(new CustomEvent("change", {detail: { value: this.value }, composed: true}));
+
+            for (const option of this.#options) {
+                option.classList.remove("hidden");
+            }
         }
         finally {
             this.#busy = false;
@@ -168,8 +183,18 @@ class ComboBox extends crs.classes.BindableElement {
     }
 
     async search(event) {
+        this.#options ||= Array.from(this.shadowRoot.querySelectorAll("option"));
+
         const input = event.composedPath()[0];
         const value = input.value;
+
+        for (const option of this.#options) {
+            option.classList.add("hidden");
+
+            if (option.textContent.toLowerCase().contains(value.toLowerCase())) {
+                option.classList.remove("hidden");
+            }
+        }
     }
 }
 

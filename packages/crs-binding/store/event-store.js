@@ -1,10 +1,12 @@
 class EventStore {
   #store = {};
   #eventHandler = this.#onEvent.bind(this);
+  #callEventHandler = this.callEvent.bind(this);
   get store() {
     return this.#store;
   }
   async #onEvent(event2) {
+    event2.stopPropagation();
     const targets = getTargets(event2);
     if (targets.length === 0)
       return;
@@ -30,10 +32,31 @@ class EventStore {
     const providerInstance = crs.binding.providers.attrProviders[provider];
     await providerInstance.onEvent?.(event, bid, intent, target);
   }
+  async callEvent(event2) {
+    const target = event2.composedPath()[0];
+    if (target instanceof HTMLInputElement == false)
+      return;
+    const uuid = target["__uuid"];
+    const data = this.#store[event2.type];
+    const element = crs.binding.elements[uuid];
+    let intent = data[uuid];
+    if (intent == null)
+      return;
+    if (!Array.isArray(intent))
+      intent = [intent];
+    for (const i of intent) {
+      await this.#onEventExecute(i, element.__bid, element);
+    }
+  }
   getIntent(event2, uuid) {
     return this.#store[event2]?.[uuid];
   }
   register(event2, uuid, intent, isCollection = true) {
+    const element = crs.binding.elements[uuid];
+    const root = element.getRootNode();
+    if (event2 === "change" && element instanceof HTMLInputElement && root instanceof ShadowRoot && root.host.registerEvent != null) {
+      root.host.registerEvent(root, event2, this.#callEventHandler);
+    }
     if (this.#store[event2] == null) {
       document.addEventListener(event2, this.#eventHandler, {
         capture: true,

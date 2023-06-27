@@ -70,7 +70,7 @@ export class DataManagerIDBProvider extends BaseDataManager {
         return await crs.call("idb", "get", {
             "name": DB_NAME,
             "store": this.#storeName,
-            "indexes": [index]
+            "indexes": Array.isArray(index) ? index : [index]
         })
     }
 
@@ -159,19 +159,53 @@ export class DataManagerIDBProvider extends BaseDataManager {
     }
 
     async getSelected(isSelected = true) {
-        const indexes = sessionStorage.getItem(this.#sessionKey);
+        const indexesString = sessionStorage.getItem(this.#sessionKey);
+        if (indexesString == null) return [];
+        const indexArray = JSON.parse(indexesString);
 
+        const indexes = getSelectedIndexes(indexArray, isSelected, this.count);
     }
 
-    async toggleSelectedIndexes(indexes) {
+    async toggleSelectedIndexes() {
+        const indexesString = sessionStorage.getItem(this.#sessionKey);
+        if (indexesString == null) return;
+        const indexArray = JSON.parse(indexesString);
+
+        if (indexArray.type === "all") {
+            indexArray.type = "none";
+        }
+        else if (indexArray.type === "none") {
+            indexArray.type = "all";
+        }
+        else {
+            for (const index of indexArray) {
+                index.values.selected = !index.values.selected;
+            }
+        }
+
+        sessionStorage.setItem(this.#sessionKey, JSON.stringify(indexArray));
     }
 
-    async toggleSelectedIds(ids) {
+    async toggleSelectedIds() {
+        await this.toggleSelectedIndexes();
     }
 
     async setSelectedAll(selected) {
         sessionStorage.setItem(this.#sessionKey, JSON.stringify({
-            type: "all"
+            type: selected == true ? "all" : "none"
         }));
     }
-}1
+}
+
+function getSelectedIndexes(indexArray, isSelected, count) {
+    if (indexArray.type === "none") return [];
+
+    if (indexArray.type === "all") {
+        return Array.from({ length: count }, (_, i) => i);
+    }
+
+    const inverseSelection = isSelected === false || indexArray[0].values.selected === false;
+    const flattened = indexArray.map(index => index.values.index);
+
+    console.log(inverseSelection, flattened);
+}

@@ -21,6 +21,7 @@ class ClassListToggleProvider {
     crs.binding.eventStore.register(event, uuid, intent);
     element.__events ||= [];
     element.__events.push(event);
+    element.removeAttribute(attr.name);
   }
   async clear(uuid) {
     crs.binding.eventStore.clear(uuid);
