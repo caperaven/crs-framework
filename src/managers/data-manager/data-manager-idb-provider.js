@@ -164,6 +164,11 @@ export class DataManagerIDBProvider extends BaseDataManager {
         const indexArray = JSON.parse(indexesString);
 
         const indexes = getSelectedIndexes(indexArray, isSelected, this.count);
+        return await crs.call("idb", "get", {
+            "name": DB_NAME,
+            "store": this.#storeName,
+            "indexes": indexes
+        })
     }
 
     async toggleSelectedIndexes() {
@@ -198,7 +203,12 @@ export class DataManagerIDBProvider extends BaseDataManager {
 }
 
 function getSelectedIndexes(indexArray, isSelected, count) {
-    if (indexArray.type === "none") return [];
+    if (indexArray.type === "none" && isSelected === true) return [];
+    if (indexArray.type === "all" && isSelected === false) return [];
+
+    if (indexArray.type === "none" && isSelected === false) {
+        indexArray.type = "all";
+    }
 
     if (indexArray.type === "all") {
         return Array.from({ length: count }, (_, i) => i);
@@ -207,5 +217,17 @@ function getSelectedIndexes(indexArray, isSelected, count) {
     const inverseSelection = isSelected === false || indexArray[0].values.selected === false;
     const flattened = indexArray.map(index => index.values.index);
 
-    console.log(inverseSelection, flattened);
+    if (inverseSelection == false) {
+        return flattened;
+    }
+    else {
+        const result = [];
+        for (let i = 0; i < count; i++) {
+            if (flattened.includes(i) == false) {
+                result.push(i);
+            }
+        }
+
+        return result;
+    }
 }
