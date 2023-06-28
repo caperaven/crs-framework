@@ -3,7 +3,7 @@
 
 <div>
     <span>Generate Data</span>
-    <button click.call="generateData">Generate</button>
+    <button id="btnGenerate" click.call="generateData">Generate</button>
     <span id="spanDataState"> Records: ${recordCount}</span>
     <span id="writeTime">Write Time: ${writeTime}</span>
 </div>
@@ -26,27 +26,27 @@
 
     <label>
         <div>Code</div>
-        <input type="text" value.bind="model.code" />
+        <input type="text" value.bind="model.code" data-test="code"/>
     </label>
 
     <label>
         <div>Description</div>
-        <input type="text" value.bind="model.description" />
+        <input type="text" value.bind="model.description" data-test="description" />
     </label>
 
     <label>
         <div>Is Valid</div>
-        <input type="text" value.bind="model.isValid" />
+        <input type="text" value.bind="model.isValid" data-test="isValid"/>
     </label>
 
     <label>
         <div>Price</div>
-        <input type="text" value.bind="model.price" />
+        <input type="text" value.bind="model.price" data-test="price"/>
     </label>
 
     <label>
         <div>Quantity</div>
-        <input type="text" value.bind="model.quantity" />
+        <input type="text" value.bind="model.quantity" data-test="quantity"/>
     </label>
 
     <hr />
