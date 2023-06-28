@@ -9,6 +9,10 @@
     box-sizing: border-box;
 }
 
+header {
+    display: flex;
+}
+
 input, button {
     height: 2rem;
 }
@@ -16,6 +20,15 @@ input, button {
 button {
     font-family: crsfrw;
     cursor: pointer;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    border-left: 0;
+    outline: none;
+}
+
+input {
+    border-radius: var(--radius) 0 0 var(--radius);
+    border-right: var(--border);
+    outline: none;
 }
 
 .hide {
@@ -31,6 +44,8 @@ ul {
     padding: 0;
     width: 100%;
     box-shadow: var(--drop-shadow);
+    border-radius: var(--radius);
+    padding: var(--padding);
 }
 
 ul:before {
@@ -47,10 +62,12 @@ ul:before {
 option {
     padding: var(--padding);
     cursor:  pointer;
+    border-radius: var(--radius);
 }
 
 option:hover {
-    background: var(--blue-s2);
+    background: var(--grey-s3);
+    border: var(--border);
 }
 
 option.hidden {

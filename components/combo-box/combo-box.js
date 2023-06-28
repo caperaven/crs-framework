@@ -174,8 +174,10 @@ class ComboBox extends crs.classes.BindableElement {
 
             this.shadowRoot.dispatchEvent(new CustomEvent("change", {detail: { value: this.value }, composed: true}));
 
-            for (const option of this.#options) {
-                option.classList.remove("hidden");
+            if (this.#options != null) {
+                for (const option of this.#options) {
+                    option.classList.remove("hidden");
+                }
             }
         }
         finally {
