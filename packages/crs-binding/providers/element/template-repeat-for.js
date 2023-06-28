@@ -5,6 +5,7 @@ class TemplateRepeatForProvider {
     const forExpParts = forExp.split(" ");
     const uuid = crs.binding.utils.markElement(element.parentElement, context);
     element.parentElement["__path"] = forExpParts[2];
+    element.parentElement["__repeat_container"] = true;
     element.parentElement.removeChild(element);
     const fn = await crs.binding.expression.inflationFactory(element, forExpParts[0]);
     crs.binding.inflation.store.add(uuid, element, fn);
@@ -24,6 +25,7 @@ class TemplateRepeatForProvider {
       storeItem.fn(instance, item);
       fragment.appendChild(instance);
     }
+    element.innerHTML = "";
     element.appendChild(fragment);
   }
 }

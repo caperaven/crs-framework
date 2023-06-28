@@ -48,4 +48,32 @@
         <div>Quantity</div>
         <input type="text" value.bind="model.quantity" />
     </label>
+
+    <hr />
+    <label>
+        <div>Selected</div>
+        <ul id="ulSelected">
+            <template for="item of selected">
+                <li>
+                    <span>${item._index}</span>
+                    <span> - </span>
+                    <span>${item.code}</span>
+                </li>
+            </template>
+        </ul>
+    </label>
+
+    <hr />
+    <label>
+        <div>Selected</div>
+        <ul id="ulUnselected">
+            <template for="item of unselected">
+                <li>
+                    <span>${item._index}</span>
+                    <span> - </span>
+                    <span>${item.code}</span>
+                </li>
+            </template>
+        </ul>
+    </label>
 </div>

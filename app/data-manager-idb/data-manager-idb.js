@@ -102,6 +102,8 @@ export default class DataManagerIdb extends crs.classes.BindableElement {
         await crs.call("data_manager", "toggle_selection", {
             manager: DB_MANAGER
         })
+
+        await this.getSelected();
     }
 
     async selectAll() {
@@ -126,13 +128,16 @@ export default class DataManagerIdb extends crs.classes.BindableElement {
             manager: DB_MANAGER
         })
 
-        console.log(result);
+        this.setProperty("selected", result.data);
 
         result = await crs.call("data_manager", "get_unselected", {
             manager: DB_MANAGER
         })
 
-        console.log(result);
+        this.setProperty("unselected", result.data);
+
+        // await crs.binding.data.updateUI(this, "selected");
+        // await crs.binding.data.updateUI(this, "unselected");
     }
 
 }

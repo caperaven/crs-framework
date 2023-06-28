@@ -214,10 +214,16 @@ function getSelectedIndexes(indexArray, isSelected, count) {
         return Array.from({ length: count }, (_, i) => i);
     }
 
-    const inverseSelection = isSelected === false || indexArray[0].values.selected === false;
+    let inverseSelection = isSelected === false || indexArray[0].values.selected === false;
+
+    if (indexArray[0].values.selected === false && isSelected === false) {
+        inverseSelection = false;
+    }
+
     const flattened = indexArray.map(index => index.values.index);
 
-    if (inverseSelection == false) {
+
+    if ( inverseSelection == false ) {
         return flattened;
     }
     else {
