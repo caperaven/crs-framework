@@ -19,7 +19,7 @@ export class BusyUi extends HTMLElement {
      * @return {[string]}
      */
     static get observedAttributes() {
-        return ['data-progress'];
+        return ['data-message','data-progress'];
     }
 
     /**
