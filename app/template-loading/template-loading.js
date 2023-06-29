@@ -5,6 +5,10 @@ export default class TemplateLoadingViewModel extends crs.classes.BindableElemen
         return import.meta.url.replace(".js", ".html");
     }
 
+    get shadowDom() {
+        return true;
+    }
+
     get hasStyle() {
         return false;
     }

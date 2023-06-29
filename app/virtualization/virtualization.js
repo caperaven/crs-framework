@@ -10,6 +10,10 @@ export default class VirtualizationViewModel extends crs.classes.BindableElement
         return import.meta.url.replace(".js", ".html");
     }
 
+    get shadowDom() {
+        return true;
+    }
+
     async connectedCallback() {
         await super.connectedCallback();
 
@@ -39,7 +43,7 @@ export default class VirtualizationViewModel extends crs.classes.BindableElement
         });
 
         await crs.call("collection_selection", "enable", {
-            element: this.element,
+            element: this,
             master_query: "#master-checkbox",
             selection_query: '[role="checkbox"]',
             virtualized_element: this.ul,

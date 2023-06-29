@@ -7,6 +7,10 @@ export default class BusyUIViewModelViewModel extends crs.classes.BindableElemen
         return import.meta.url.replace(".js", ".html");
     }
 
+    get shadowDom() {
+        return true;
+    }
+
     async connectedCallback() {
         await super.connectedCallback();
     }

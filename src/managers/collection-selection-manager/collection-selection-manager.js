@@ -112,7 +112,8 @@ export class CollectionSelectionManager {
             manager: this.#manager
         });
 
-        const masterElement = this.#containerElement.querySelector(this.#masterQuery);
+        const parentElement = this.#containerElement.shadowRoot ?? this.#containerElement;
+        const masterElement = parentElement.querySelector(this.#masterQuery);
         masterElement.checked = isAllSelected;
     }
 }

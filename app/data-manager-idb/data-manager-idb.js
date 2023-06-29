@@ -14,6 +14,10 @@ export default class DataManagerIdb extends crs.classes.BindableElement {
         return true;
     }
 
+    get shadowDom() {
+        return true;
+    }
+
     get hasStyle() {
         return false;
     }

@@ -6,6 +6,10 @@ export default class FormViewModel extends crs.classes.BindableElement {
         return import.meta.url.replace(".js", ".html");
     }
 
+    get shadowDom() {
+        return true;
+    }
+
     preLoad() {
         crs.binding.translations.add({
             firstName: "First Name",

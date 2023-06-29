@@ -5,6 +5,10 @@ export default class AvailableSelectedViewModel extends crs.classes.BindableElem
         return import.meta.url.replace(".js", ".html");
     }
 
+    get shadowDom() {
+        return true;
+    }
+
     get hasStyle() {
         return false;
     }

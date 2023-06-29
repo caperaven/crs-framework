@@ -6,6 +6,10 @@ export default class IconsViewModel extends crs.classes.BindableElement {
         return import.meta.url.replace(".js", ".html");
     }
 
+    get shadowDom() {
+        return true;
+    }
+
     async preLoad() {
         const definition = await fetch("/resources/fonts/icons/crs-framework.json").then((response) => response.json());
         const icons = definition.selection.map(_ => _.name).sort();

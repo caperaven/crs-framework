@@ -9,6 +9,9 @@ export default class CheckListViewModel extends crs.classes.BindableElement {
         return false;
     }
 
+    get shadowDom() {
+        return true;
+    }
     async preLoad() {
         const translations = {
             item1: "Item 1",

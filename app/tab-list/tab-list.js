@@ -8,6 +8,9 @@ export default class TabListViewModel extends crs.classes.BindableElement {
         return false;
     }
 
+    get shadowDom() {
+        return true;
+    }
     async preLoad() {
         const translations = {
             view1: "View 1",
