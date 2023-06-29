@@ -59,16 +59,22 @@ export class BusyUi extends HTMLElement {
      * @method attributeChangedCallback - called when an attribute changes
      * @return {Promise<void>}
      */
-    async attributeChangedCallback(name, newVal, oldVal) {
-        const lblMessage = this.shadowRoot.querySelector("#lblMessage");
-        const lblProgress = this.shadowRoot.querySelector("#lblProgress");
-        if (lblMessage != null) {
-            lblMessage.innerText = this.dataset.message;
+    async attributeChangedCallback(name, oldVal, newVal) {
+        if (name === 'data-message' && newVal !== oldVal) {
+            const lblMessage = this.shadowRoot.querySelector("#lblMessage");
+            if (lblMessage != null) {
+                lblMessage.innerText = newVal;
+            }
         }
-        if (lblProgress != null) {
-            lblProgress.innerText = this.dataset.progress;
+
+        if (name === 'data-progress' && newVal !== oldVal) {
+            const lblProgress = this.shadowRoot.querySelector("#lblProgress");
+            if (lblProgress != null) {
+                lblProgress.innerText = newVal;
+            }
         }
     }
+
 
 }
 
