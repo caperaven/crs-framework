@@ -4,7 +4,7 @@
     }
 
     :host {
-        --size: 2rem;
+        --size: 2.5rem;
         --text-size: 1rem;
         --margin-size: 0.59rem;
         --chevron-padding: 0.3rem;
@@ -17,48 +17,53 @@
         grid-template-rows: auto 1fr;
         user-select: none;
         height: 100%;
+        grid-row-gap: 0.75rem;
     }
 
     :focus {
-        outline-color: var(--blue);
+        outline: 0;
+        box-shadow: inset 0 0 0 0.125rem var(--blue);
     }
 
     #calendar-toolbar {
         display: flex;
-        justify-content: space-between;
-        align-items: center;
         height: var(--size);
-        margin-bottom: 0.5rem;
         border: none;
         color: var(--grey);
     }
 
     #calendar-toolbar #month, #year, #previous-month, #next-month {
         display: inherit;
-        justify-content: center;
-        align-items: center;
         background: transparent;
-    }
-
-    #calendar-toolbar #previous-month, #next-month {
-        cursor: pointer;
-        border: none;
-    }
-
-    #calendar-toolbar #month, #year {
-        text-align: center;
-        font-size: var(--text-size);
-        font-weight: bold;
+        height: var(--size);
         cursor: pointer;
         border-radius: var(--radius);
         border: none;
     }
 
-    #calendar-toolbar #previous-month:hover, #next-month:hover {
-        background: var(--grey-s3);
+    #calendar-toolbar, #month, #year, #previous-month, #next-month {
+        justify-content: center;
+        align-items: center;
     }
 
-    #calendar-toolbar #month:hover, #year:hover {
+    #calendar-toolbar #previous-month, #next-month {
+        width: var(--size);
+        font-family: var(--icon-font-family);
+        font-size: 1.5rem;
+    }
+
+    #calendar-toolbar #previous-month, #year {
+        margin-right: 1.2rem;
+    }
+
+    #calendar-toolbar #month, #year {
+        font-family: 'SourceSansPro', sans-serif;
+        text-align: center;
+        font-size: var(--text-size);
+        font-weight: bold;
+    }
+
+    #calendar-toolbar #previous-month:hover, #next-month:hover, #month:hover, #year:hover {
         background: var(--grey-s3);
     }
 
@@ -67,7 +72,7 @@
     }
 
     #calendar-toolbar #month {
-        width: 8rem;
+        width: 7.5rem;
     }
 
     #calendar-toolbar #year:after, #month:after {
@@ -91,25 +96,21 @@
         rotate: 90deg;
     }
 
+    #perspectiveElement {
+        height: 19.125rem;
+    }
+
+    @media screen and (max-width: 480px) {
+        #calendar-toolbar #previous-month, #year {
+            margin-right: 2.2rem;
+        }
+    }
+
 </style>
 
-<svg style="display: none" viewBox="0 0 24 24">
-    <symbol id="chevron-up" width="24" height="24">
-        <path d="M7.14541 15.6446L12.0063 10.9309L16.8671 15.6446C17.3557 16.1185 18.145 16.1185 18.6336 15.6446C19.1221 15.1708 19.1221 14.4055 18.6336 13.9317L12.8832 8.35535C12.3946 7.88155 11.6054 7.88155 11.1168 8.35535L5.36644 13.9317C4.87785 14.4055 4.87785 15.1708 5.36644 15.6446C5.85503 16.1063 6.65682 16.1185 7.14541 15.6446Z"
-              fill="#272C37"/>
-    </symbol>
-
-    <symbol id="chevron-down" width="24" height="24">
-        <path d="M7.14541 8.35535L12.0063 13.0691L16.8671 8.35535C17.3557 7.88155 18.145 7.88155 18.6336 8.35535C19.1221 8.82916 19.1221 9.59453 18.6336 10.0683L12.8832 15.6446C12.3946 16.1185 11.6054 16.1185 11.1168 15.6446L5.36644 10.0683C4.87785 9.59453 4.87785 8.82916 5.36644 8.35535C5.85503 7.8937 6.65682 7.88155 7.14541 8.35535Z"
-              fill="#272C37"/>
-    </symbol>
-</svg>
-
 <template id="tplCell">
-    <div role="cell"
-         tabindex="${new Date().toLocaleDateString() === date.toLocaleDateString() ? '0': tabindex == null ? '-1': tabindex}"
-         aria-selected="${selected}" data-day="${date.getDate()}" data-month="${date.getMonth()}"
-         data-year="${date.getFullYear()}"
+    <div role="cell" tabindex="-1" aria-selected="${selected}" data-day="${date.getDate()}"
+         data-month="${date.getMonth()}" data-year="${date.getFullYear()}"
          classlist.case="current == false: 'non-current-day', new Date().toLocaleDateString() === date.toLocaleDateString(): 'today'">
         ${number}
     </div>
@@ -119,306 +120,26 @@
 </template>
 
 <div id="calendar-toolbar" role="toolbar" ref="tools">
-    <button id="previous-month" aria-label="Previous month" tooltip="Previous" click.call="goToPrevious">
-        <svg id="chevron-left">
-            <use href="#chevron-down"></use>
-        </svg>
+    <button id="previous-month" aria-label="Previous month" tooltip="Previous" data-action="goToPrevious">chevron-left
     </button>
-    <button id="month" aria-label="Month selector" value="months" tooltip="Months"
-            click.setValue="selectedView = selectedView === 'months' ? 'default' : 'months'"
+    <button id="month" aria-label="Month selector" value="months" tooltip="Months" data-action="selectView"
             classlist.if="selectedView == 'months' ? 'current-view'">${selectedMonthText}
     </button>
-    <button id="year" aria-label="Year selector" value="years" tooltip="Years"
-            click.setValue="selectedView = selectedView === 'years' ? 'default' : 'years'"
+    <button id="year" aria-label="Year selector" value="years" tooltip="Years" data-action="selectView"
             classlist.if="selectedView == 'years' ? 'current-view'">${selectedYearText}
     </button>
-    <button id="next-month" aria-label="Next month" tooltip="Next" click.call="goToNext">
-        <svg id="chevron-right">
-            <use href="#chevron-up"></use>
-        </svg>
-    </button>
+    <button id="next-month" aria-label="Next month" tooltip="Next" data-action="goToNext">chevron-right</button>
 </div>
 
-<perspective-element view.bind="selectedView" ctx.once="contextId" data-folder="components/calendar/"
-                     view-loaded.call="viewLoaded" ref="perspectiveContainer">
+<perspective-element id="perspectiveElement" view.bind="selectedView" ctx.once="contextId"
+                     data-folder="./components/calendar/" ref="perspectiveElement">
     <template data-id="default" data-default="true">
-        <style>
-            #calendar {
-                display: grid;
-                grid-template: repeat(7, 1fr)/repeat(7, 1fr);
-                justify-items: center;
-                align-items: center;
-                grid-gap: 0.5rem;
-            }
-
-            [role = 'columnheader'], [role = 'cell'] {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                width: var(--size);
-                height: var(--size);
-                padding: 0.3rem;
-            }
-
-            #calendar [role = 'columnheader'] {
-                font-size: 1.15rem;
-                color: var(--grey-s1);
-                opacity: 0.8;
-            }
-
-            #calendar [role = 'cell'] {
-                font-size: var(--text-size);
-                color: var(--grey);
-                border-radius: var(--radius);
-            }
-
-            #calendar [role = 'cell']:hover:not([aria-selected = "true"]) {
-                background: var(--grey-s3);
-                color: var(--grey) !important;
-                opacity: 1;
-                cursor: pointer;
-            }
-
-            .non-current-day {
-                opacity: 0.2;
-            }
-
-            .today {
-                color: var(--cl-primary-alt) !important;
-                background: var(--grey);
-            }
-
-            #calendar > [aria-selected = "true"] {
-                color: var(--cl-primary-alt);
-                background: var(--blue);
-                opacity: 1;
-            }
-
-        </style>
-
-        <div id="calendar" ref="calendars" role="grid" click.call="selectedDate">
-            <div role="columnheader">SU</div>
-            <div role="columnheader">MO</div>
-            <div role="columnheader">TU</div>
-            <div role="columnheader">WE</div>
-            <div role="columnheader">TH</div>
-            <div role="columnheader">FR</div>
-            <div role="columnheader">SA</div>
-
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-            <div role="cell"></div>
-        </div>
+        <template src="./templates/days.html"></template>
     </template>
     <template data-id="months">
-        <style>
-            #months {
-                display: grid;
-                grid-template: repeat(3, 1fr)/repeat(3, 1fr);
-                justify-items: center;
-                align-items: center;
-                grid-gap: 1rem;
-                margin-top: 1rem;
-            }
-
-            #months > [data-type = "month-cell"] {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                color: var(--grey);
-                width: 6.1rem;
-                height: 3rem;
-                font-size: var(--text-size);
-                border-radius: var(--radius);
-            }
-
-            #months > div:hover:not([aria-selected = "true"]) {
-                background: var(--grey-s3);
-                cursor: pointer;
-            }
-
-            #months > [aria-selected = "true"] {
-                color: var(--blue);
-                background: var(--blue-s2);
-                font-weight: bold;
-            }
-
-            #months > [aria-selected = "true"]:after {
-                content: var(--checked-icon);
-                font-family: var(--icon-font-family);
-                padding-left: var(--chevron-padding);
-                font-weight: bold;
-            }
-        </style>
-
-        <div id="months" click.setValue="selectedMonth = $event.target.dataset.value">
-            <div data-type="month-cell" tabindex="-1" data-value="0">January</div>
-            <div data-type="month-cell" tabindex="-1" data-value="1">February</div>
-            <div data-type="month-cell" tabindex="-1" data-value="2">March</div>
-            <div data-type="month-cell" tabindex="-1" data-value="3">April</div>
-            <div data-type="month-cell" tabindex="-1" data-value="4">May</div>
-            <div data-type="month-cell" tabindex="-1" data-value="5">June</div>
-            <div data-type="month-cell" tabindex="-1" data-value="6">July</div>
-            <div data-type="month-cell" tabindex="-1" data-value="7">August</div>
-            <div data-type="month-cell" tabindex="-1" data-value="8">September</div>
-            <div data-type="month-cell" tabindex="-1" data-value="9">October</div>
-            <div data-type="month-cell" tabindex="-1" data-value="10">November</div>
-            <div data-type="month-cell" tabindex="-1" data-value="11">December</div>
-        </div>
+        <template src="./templates/months.html"></template>
     </template>
     <template data-id="years">
-        <style>
-
-            ::-webkit-scrollbar {
-                width: 0.375rem;
-            }
-
-            ::-webkit-scrollbar-thumb {
-                background: rgba(96, 96, 96, 0.1);
-                border-radius: var(--radius);
-            }
-
-            #years {
-                display: grid;
-                grid-template: repeat(4, 1fr)/repeat(4, 1fr);
-                justify-items: center;
-                align-items: center;
-                height: 17.8rem;
-                grid-gap: 0.5rem;
-                overflow-y: auto;
-                scroll-behavior: smooth;
-                margin-top: 1rem;
-            }
-
-            [data-type = "year-cell"] {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                width: 4rem;
-                height: var(--size);
-                font-size: var(--text-size);
-                border-radius: var(--radius);
-            }
-
-            #years > div:hover:not([aria-selected = "true"]) {
-                background: var(--grey-s3);
-                cursor: pointer;
-            }
-
-            #years > [aria-selected = "true"] {
-                color: var(--blue);
-                font-weight: bold;
-                background: var(--blue-s2);
-            }
-
-            #years > [aria-selected = "true"]:after {
-                content: var(--checked-icon);
-                font-family: var(--icon-font-family);
-                padding-left: var(--chevron-padding);
-            }
-
-        </style>
-        <div id="years" ref="years" click.setValue="selectedYear = $event.target.dataset.value">
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-            <div data-type="year-cell"></div>
-        </div>
+        <template src="./templates/years.html"></template>
     </template>
 </perspective-element>

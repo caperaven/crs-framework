@@ -135,8 +135,8 @@ export default class Dialog extends crsbinding.classes.ViewBase {
             anchor: "left",
             target: event.target,
             auto_close: true,
-            min_width: "20rem",
-            min_height: "21rem"
+            min_width: "22rem",
+            min_height: "25rem"
         });
     }
 }

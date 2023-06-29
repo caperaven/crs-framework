@@ -1,6 +1,14 @@
 class FilterHeader extends crsbinding.classes.BindableElement {
     #container;
 
+    get container() {
+        return this.#container;
+    }
+
+    set container(newValue) {
+        this.#container = newValue;
+    }
+
     get shadowDom() {
         return true;
     }
@@ -29,6 +37,10 @@ class FilterHeader extends crsbinding.classes.BindableElement {
             filter: event.target.value.toLowerCase(),
             element: this.#container
         })
+    }
+
+    async clear() {
+        this.shadowRoot.querySelector("input").value = "";
     }
 
     async close() {
