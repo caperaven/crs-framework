@@ -6,7 +6,6 @@ class EventStore {
     return this.#store;
   }
   async #onEvent(event2) {
-    event2.stopPropagation();
     const targets = getTargets(event2);
     if (targets.length === 0)
       return;

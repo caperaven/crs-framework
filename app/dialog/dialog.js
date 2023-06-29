@@ -7,6 +7,10 @@ export default class DialogViewModel extends crs.classes.BindableElement {
         return import.meta.url.replace(".js", ".html");
     }
 
+    get shadowDom() {
+        return true;
+    }
+
     async show() {
         const instance = this.shadowRoot.querySelector("#dialog-content").content.cloneNode(true);
 

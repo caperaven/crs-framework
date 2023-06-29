@@ -1,8 +1,12 @@
+import { getQueries } from "./utils/get-queries.js";
 class ClassListToggleProvider {
   async onEvent(event, bid, intent, target) {
-    const element = intent.query == "this" ? target : target.getRootNode().querySelector(intent.query);
-    const className = intent.className.replaceAll("'", "");
-    element.classList.toggle(className);
+    for (const query of intent.queries) {
+      const element = query == "this" ? target : target.getRootNode().querySelector(query);
+      for (const className of intent.classNames) {
+        element.classList.toggle(className);
+      }
+    }
   }
   async parse(attr, context) {
     const element = attr.ownerElement;
@@ -11,13 +15,12 @@ class ClassListToggleProvider {
     crs.binding.utils.markElement(element, context);
     const uuid = element["__uuid"];
     const valueParts = attr.value.replace(")", "").split("(");
-    const query = valueParts[0];
-    const className = valueParts[1];
+    const classNames = valueParts[1].split(",").map((item) => item.trim().replaceAll("'", ""));
     const intent = {
       provider: "classlist.toggle",
-      query,
-      className
+      classNames
     };
+    getQueries(valueParts[0], intent);
     crs.binding.eventStore.register(event, uuid, intent);
     element.__events ||= [];
     element.__events.push(event);
