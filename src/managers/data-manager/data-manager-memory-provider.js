@@ -15,16 +15,16 @@ export class DataManagerMemoryProvider extends BaseDataManager {
      * @method setRecords - This method is called to set the records in the data manager.
      * @param records
      */
-    setRecords(records) {
+    async setRecords(records) {
         this.#records = records;
-        super.setRecords(records);
+        await super.setRecords(records);
     }
 
     /**
      * @method append - This method is called to append records to the data manager.
      * @param record
      */
-    append(...record) {
+    async append(...record) {
         this.#records.push(...record);
         super.append(this.#records.length);
     }
@@ -33,7 +33,7 @@ export class DataManagerMemoryProvider extends BaseDataManager {
      * @method getAll - This method is called to get all of the records in the data manager.
      * @returns {*}
      */
-    getAll() {
+    async getAll() {
         return this.#records;
     }
 
@@ -43,7 +43,7 @@ export class DataManagerMemoryProvider extends BaseDataManager {
      * @param to {number} - The index of the last record to get
      * @returns {*}
      */
-    getPage(from, to) {
+    async getPage(from, to) {
         return this.#records.slice(from, to);
     }
 
@@ -52,7 +52,7 @@ export class DataManagerMemoryProvider extends BaseDataManager {
      * @param index {number} - The index of the record to get
      * @returns {*}
      */
-    getByIndex(index) {
+    async getByIndex(index) {
         return this.#records[index];
     }
 
@@ -61,7 +61,7 @@ export class DataManagerMemoryProvider extends BaseDataManager {
      * @param id {number} - The id of the record to get
      * @returns {*}
      */
-    getById(id) {
+    async getById(id) {
         return this.#records.find(item => item[this.idField] == id);
     }
 
@@ -70,7 +70,7 @@ export class DataManagerMemoryProvider extends BaseDataManager {
      * @param indexes {number[]} - The indexes of the records to get
      * @returns {*[]}
      */
-    getIds(indexes) {
+    async getIds(indexes) {
         const ids = [];
         for (const index of indexes) {
             ids.push(this.#records[index][this.idField]);
@@ -83,7 +83,7 @@ export class DataManagerMemoryProvider extends BaseDataManager {
      * @param indexes {number[]} - The indexes of the records to remove
      * @returns {{indexes, ids: *[]}}
      */
-    removeIndexes(indexes) {
+    async removeIndexes(indexes) {
         indexes.sort((a, b) => a > b ? -1 : 1);
         const ids = [];
 
@@ -101,7 +101,7 @@ export class DataManagerMemoryProvider extends BaseDataManager {
      * @param ids {number[]} - The ids of the records to remove
      * @returns {{indexes: *[], ids}}
      */
-    removeIds(ids) {
+    async removeIds(ids) {
         const indexes = [];
         for (const id of ids) {
             const index = this.#records.findIndex(item => item[this.idField] == id);
@@ -120,7 +120,7 @@ export class DataManagerMemoryProvider extends BaseDataManager {
      * @param changes {object} - The changes to make to the record
      * @returns {{changes, index, id: *}}
      */
-    updateIndex(index, changes) {
+    async updateIndex(index, changes) {
         const record = this.#records[index];
         const id = record[this.idField];
 
@@ -138,7 +138,7 @@ export class DataManagerMemoryProvider extends BaseDataManager {
      * @param changes {object} - The changes to make to the record
      * @returns {{changes, index: *, id}}
      */
-    updateId(id, changes) {
+    async updateId(id, changes) {
         const index = this.#records.findIndex(item => item[this.idField] == id);
         const record = this.#records[index];
 
@@ -150,7 +150,7 @@ export class DataManagerMemoryProvider extends BaseDataManager {
         return {id, index, changes};
     }
 
-    setSelectedIndexes(indexes, selected) {
+    async setSelectedIndexes(indexes, selected) {
         for (const index of indexes) {
             this.#records[index]._selected = selected;
         }
@@ -158,7 +158,7 @@ export class DataManagerMemoryProvider extends BaseDataManager {
         this.selectedCount += selected ? indexes.length : -indexes.length;
     }
 
-    setSelectedIds(ids, selected) {
+    async setSelectedIds(ids, selected) {
         for (const id of ids) {
             const index = this.#records.findIndex(item => item[this.idField] == id);
             this.#records[index]._selected = selected;
@@ -167,11 +167,11 @@ export class DataManagerMemoryProvider extends BaseDataManager {
         this.selectedCount += selected ? ids.length : -ids.length;
     }
 
-    getSelected(isSelected = true) {
+    async getSelected(isSelected = true) {
         return this.#records.filter(item => item._selected === isSelected);
     }
 
-    toggleSelectedIndexes(indexes) {
+    async toggleSelectedIndexes(indexes) {
         for (const index of indexes) {
             const isSelected = !this.#records[index]._selected;
             this.#records[index]._selected = isSelected;
@@ -179,7 +179,7 @@ export class DataManagerMemoryProvider extends BaseDataManager {
         }
     }
 
-    toggleSelectedIds(ids) {
+    async toggleSelectedIds(ids) {
         for (const id of ids) {
             const index = this.#records.findIndex(item => item[this.idField] == id);
             const isSelected = !this.#records[index]._selected;
@@ -188,7 +188,7 @@ export class DataManagerMemoryProvider extends BaseDataManager {
         }
     }
 
-    setSelectedAll(selected) {
+    async setSelectedAll(selected) {
         for (const record of this.#records) {
             record._selected = selected;
         }

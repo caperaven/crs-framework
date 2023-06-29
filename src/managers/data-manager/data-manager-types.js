@@ -4,7 +4,7 @@ import {DataManagerPerspectiveProvider} from "./data-manager-perspective-provide
 
 export const MANAGER_TYPES = Object.freeze({
     memory: DataManagerMemoryProvider,
-    indexdb: DataManagerIDBProvider,
+    idb: DataManagerIDBProvider,
     perspective: DataManagerPerspectiveProvider
 });
 
