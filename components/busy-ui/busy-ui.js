@@ -15,6 +15,14 @@
  */
 export class BusyUi extends HTMLElement {
     /**
+     * @method observedAttributes - the attributes to watch for changes
+     * @return {[string]}
+     */
+    static get observedAttributes() {
+        return ['data-message','data-progress'];
+    }
+
+    /**
      * @constructor
      */
     constructor() {
@@ -27,12 +35,6 @@ export class BusyUi extends HTMLElement {
      * @returns {Promise<void>}
      */
     async connectedCallback() {
-
-        /**
-         * TODO: Andre. add the attribute update code and add the ... animation stuff.
-         */
-
-
         this.shadowRoot.innerHTML = await fetch(import.meta.url.replace(".js", ".html")).then(response => response.text());
         await this.load();
         await crs.call("component", "notify_ready", { element: this });
@@ -47,10 +49,33 @@ export class BusyUi extends HTMLElement {
             requestAnimationFrame(async () => {
                 // load resources
                 this.shadowRoot.querySelector("#lblMessage").innerText = this.dataset.message;
+                this.shadowRoot.querySelector("#lblProgress").innerText = this.dataset.progress;
                 resolve();
             });
         })
     }
+
+    /**
+     * @method attributeChangedCallback - called when an attribute changes
+     * @return {Promise<void>}
+     */
+    async attributeChangedCallback(name, oldVal, newVal) {
+        if (name === 'data-message' && newVal !== oldVal) {
+            const lblMessage = this.shadowRoot.querySelector("#lblMessage");
+            if (lblMessage != null) {
+                lblMessage.innerText = newVal;
+            }
+        }
+
+        if (name === 'data-progress' && newVal !== oldVal) {
+            const lblProgress = this.shadowRoot.querySelector("#lblProgress");
+            if (lblProgress != null) {
+                lblProgress.innerText = newVal;
+            }
+        }
+    }
+
+
 }
 
 customElements.define("busy-ui", BusyUi);
