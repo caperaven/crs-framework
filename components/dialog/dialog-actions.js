@@ -147,6 +147,7 @@ export class DialogActions {
         const autoClose = await crs.process.getValue(step.args.auto_close, context, process, item) ?? false;
         const callback = await crs.process.getValue(step.args.callback, context, process, item) ?? null;
         const parent = await crs.call("dom", "get_element", {element: step.args.parent}, context, process, item) ?? document.body;
+        const modal = await crs.process.getValue(step.args.modal, context, process, item) ?? false;
 
         const options = {
             target, position, anchor, size, margin, title, severity, allowResize,
@@ -155,6 +156,11 @@ export class DialogActions {
 
         const dialog = await ensureDialog(close, parent);
         dialog.show(headerElement, mainElement, footerElement, options, context);
+
+        if (modal === true) {
+            dialog.classList.add("modal");
+        }
+
         return dialog;
     }
 

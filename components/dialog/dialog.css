@@ -6,11 +6,20 @@
     --header-height: 3rem;
     --footer-height: 3.5rem;
     --body-height: 3.5rem;
-    position: absolute;
+}
+
+:host:before {
+    content: "";
+    position: fixed;
     top: 0;
     bottom: 0;
     right: 0;
     left: 0;
+    background: transparent;
+}
+
+:host(.modal):before {
+    pointer-events: none;
 }
 
 :host([data-allow-resize="true"]) .popup {
@@ -27,7 +36,6 @@
     translate: unset !important;
     height: unset !important;
     width: unset !important;
-    position: absolute !important;
 }
 
 :host([data-allow-resize="false"]) #btnResize {

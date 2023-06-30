@@ -17,7 +17,8 @@ export default class DialogViewModel extends crs.classes.BindableElement {
         await crs.call("dialog", "show", {
             title: "My Title",
             main: instance,
-            parent: "main"
+            parent: "main",
+            modal: true
         });
     }
 
