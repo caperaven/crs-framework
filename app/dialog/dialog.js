@@ -18,7 +18,7 @@ export default class DialogViewModel extends crs.classes.BindableElement {
             title: "My Title",
             main: instance,
             parent: "main",
-            modal: true
+            modal: false
         });
     }
 

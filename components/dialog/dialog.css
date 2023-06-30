@@ -18,7 +18,7 @@
     background: transparent;
 }
 
-:host(.modal):before {
+:host(.not-modal):before {
     pointer-events: none;
 }
 
