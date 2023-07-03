@@ -20,6 +20,16 @@
     <button click.call="showRelative">Show Dialog Relative</button>
 </div>
 
+<h2>Show Nested ${title}</h2>
+<div role="toolbar">
+    <select id="positionOption">
+        <option>bottom</option>
+        <option>left</option>
+        <option>right</option>
+    </select>
+    <button click.call="showNestedDialogs">Show Parent Dialog</button>
+</div>
+
 <h2>Message ${title}</h2>
 <div role="toolbar" click.call="handleMessage">
     <select id="position">
@@ -52,4 +62,8 @@
         <div>Age</div>
         <input type="number">
     </label>
+</template>
+
+<template id="nested-dialog">
+    <button data-id="test">Show</button>
 </template>

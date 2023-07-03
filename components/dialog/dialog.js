@@ -146,6 +146,7 @@ export class Dialog extends HTMLElement {
      */
     async #showStruct(struct) {
         return new Promise(async resolve => {
+            this.setAttribute("hidden", "true");
             const {header, main, footer, options} = struct;
 
             await crs.call("component", "on_ready", {
@@ -160,6 +161,7 @@ export class Dialog extends HTMLElement {
                     // Set position is called after the content is rendered in the dialog.
                     requestAnimationFrame(async () => {
                         await this.#setPosition(options);
+                        this.removeAttribute("hidden");
                         resolve();
                     });
                 }

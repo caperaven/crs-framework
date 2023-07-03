@@ -37,6 +37,27 @@ export default class Dialog extends crsbinding.classes.ViewBase {
         });
     }
 
+    async showNestedDialogs(event) {
+        const instance = this._element.querySelector("#nested-dialog").content.cloneNode(true);
+        const position = document.querySelector("#positionOption").value;
+
+        const anchor = {
+            left: "top",
+            right: "top",
+            bottom: "left",
+        }
+
+        await crs.call("dialog", "show", {
+            title: "My Title",
+            main: instance,
+            target: event.target,
+            position: position,
+            anchor: anchor[position],
+            margin: 10,
+            parent: "main"
+        });
+    }
+
     async handleMessage(event) {
         const target = event.target;
         const action = target.dataset.action;
