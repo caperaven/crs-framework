@@ -7,9 +7,73 @@
         translate: -50% -50%;
         user-select: none;
         pointer-events: none;
+        text-align: center;
     }
+
+    .loading span {
+        width: 1rem;
+        height: 1rem;
+        background: var(--blue-s1);
+        border-radius: 100%;
+        display: inline-block;
+        -moz-animation: dots 1.5s infinite ease-in-out both;
+        animation: dots 1.5s infinite ease-in-out both;
+    }
+
+    .loading span:nth-child(1) {
+        -moz-animation-delay: -0.32s;
+        animation-delay: -0.32s;
+    }
+
+    .loading span:nth-child(2) {
+        -moz-animation-delay: -0.16s;
+        animation-delay: -0.16s;
+    }
+
+    @-moz-keyframes dots {
+        0%, 80%, 100% {
+            -moz-transform: scale(0.3);
+            background-color: var(--blue-s1);
+        }
+        40% {
+            -moz-transform: scale(0.8);
+            background-color: var(--blue);
+        }
+    }
+
+    @keyframes dots {
+        0%, 80%, 100% {
+            transform: scale(0.3);
+            background-color: var(--blue-s1);
+        }
+        40% {
+            transform: scale(0.8);
+            background-color: var(--blue);
+        }
+    }
+
+    #lblMessage {
+        text-align: center;
+        margin-top: 0.5rem;
+        margin-bottom: 0.5rem;
+        font-size: 1rem;
+        font-weight: bold;
+    }
+
+    #lblProgress {
+        text-align: center;
+        margin-bottom: 0.5rem;
+        font-weight: normal;
+        color: var(--grey-s1);
+        font-style: italic;
+    }
+
 </style>
 
+<div class="loading">
+    <span></span>
+    <span></span>
+    <span></span>
+</div>
 <div id="lblMessage"></div>
 <div id="lblProgress"></div>
-

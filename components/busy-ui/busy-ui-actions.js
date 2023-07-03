@@ -18,6 +18,7 @@ export class BusyUIActions {
      *
      * @param step.args.element {HTMLElement} - the element to show the busy indicator for.
      * @param step.args.message {string} - the message to show in the busy indicator.
+     * @param step.args.progress {string} - the progress to show in the busy indicator.
      *
      * @example <caption>javascript example</caption>
      * await crs.call("busy_ui", "show", {
