@@ -158,6 +158,16 @@
             "title": "busy-ui",
             "hash": "#busy-ui",
             "view": "busy-ui"
+        },
+        {
+            "title": "data-manager",
+            "hash": "#data-manager",
+            "view": "data-manager"
+        },
+        {
+            "title": "data-manager-idb",
+            "hash": "#data-manager-idb",
+            "view": "data-manager-idb"
         }
     ]
 }

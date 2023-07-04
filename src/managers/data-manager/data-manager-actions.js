@@ -81,9 +81,21 @@ class DataManagerActions {
     static async register(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
         const dataField = await crs.process.getValue(step.args.id_field || "id", context, process, item);
-        const type = await crs.process.getValue(step.args.type || "indexdb", context, process, item);
+        const type = await crs.process.getValue(step.args.type || "idb", context, process, item);
         const records = await crs.process.getValue(step.args.records || [], context, process, item);
         const selectedCount = await crs.process.getValue(step.args.selected_count || 0, context, process, item);
+
+        if (type === "idb" && globalThis.hasDataManagerDB != true) {
+            await import ("./../../../packages/crs-process-api/action-systems/managers/indexdb-manager.js");
+            await crs.call("idb", "connect", {
+                "name": "data-manager",
+                "version": 1,
+                "count": 50,
+                "storeNames": []
+            });
+
+            globalThis.hasDataManagerDB = true;
+        }
 
         globalThis.dataManagers ||= {};
 
@@ -99,7 +111,7 @@ class DataManagerActions {
         }
 
         if (type !== "perspective") {
-            instance.setRecords(records);
+            await instance.setRecords(records);
             instance.selectedCount = selectedCount;
         }
 
@@ -233,7 +245,7 @@ class DataManagerActions {
         const records = await crs.process.getValue(step.args.records || [], context, process, item);
 
         const dataManager = globalThis.dataManagers[manager];
-        dataManager.setRecords(records);
+        await dataManager.setRecords(records);
         await dataManager.notifyChanges({
             action: CHANGE_TYPES.refresh,
             count: dataManager.count
@@ -274,7 +286,7 @@ class DataManagerActions {
 
         const dataManager = globalThis.dataManagers[manager];
         const index = dataManager.count;
-        dataManager.append(...records);
+        await dataManager.append(...records);
 
         await dataManager.notifyChanges({
             action: CHANGE_TYPES.add,
@@ -321,10 +333,10 @@ class DataManagerActions {
         let result;
 
         if (indexes != null) {
-            result = dataManager.removeIndexes(indexes);
+            result = await dataManager.removeIndexes(indexes);
         }
         else {
-            result = dataManager.removeIds(ids);
+            result = await dataManager.removeIds(ids);
         }
 
         await dataManager.notifyChanges({
@@ -395,10 +407,10 @@ class DataManagerActions {
 
         let result;
         if (index != null) {
-            result = dataManager.updateIndex(index, changes);
+            result = await dataManager.updateIndex(index, changes);
         }
         else {
-            result = dataManager.updateId(id, changes);
+            result = await dataManager.updateId(id, changes);
         }
 
         await dataManager.notifyChanges({
@@ -467,10 +479,10 @@ class DataManagerActions {
         const dataManager = globalThis.dataManagers[manager];
 
         if (indexes != null) {
-            dataManager.setSelectedIndexes(indexes, selected);
+            await dataManager.setSelectedIndexes(indexes, selected);
         }
         else {
-            dataManager.setSelectedIds(ids, selected);
+            await dataManager.setSelectedIds(ids, selected);
         }
 
         await dataManager.notifyChanges({
@@ -519,10 +531,10 @@ class DataManagerActions {
         const dataManager = globalThis.dataManagers[manager];
 
         if (indexes != null) {
-            dataManager.toggleSelectedIndexes(indexes);
+            await dataManager.toggleSelectedIndexes(indexes);
         }
         else {
-            dataManager.toggleSelectedIds(ids);
+            await dataManager.toggleSelectedIds(ids);
         }
 
         await dataManager.notifyChanges({
@@ -567,7 +579,7 @@ class DataManagerActions {
         const selected = await crs.process.getValue(step.args.selected ?? true, context, process, item);
         const dataManager = globalThis.dataManagers[manager];
 
-        dataManager.setSelectedAll(selected);
+        await dataManager.setSelectedAll(selected);
 
         await dataManager.notifyChanges({
             action: CHANGE_TYPES.selected,
@@ -636,7 +648,7 @@ class DataManagerActions {
         if (manager == null) return;
 
         const dataManager = globalThis.dataManagers[manager];
-        return dataManager.getSelected();
+        return await dataManager.getSelected();
     }
 
     static async get_unselected(step, context, process, item) {
@@ -644,7 +656,7 @@ class DataManagerActions {
         if (manager == null) return;
 
         const dataManager = globalThis.dataManagers[manager];
-        return dataManager.getSelected(false);
+        return await dataManager.getSelected(false);
     }
 
     /**
@@ -692,24 +704,24 @@ class DataManagerActions {
         const batch = await crs.process.getValue(step.args.batch, context, process, item);
         const dataManager = globalThis.dataManagers[manager];
 
-        dataManager.beginTransaction();
+        await dataManager.beginTransaction();
         for (let item of batch) {
             let result;
             if (item.index != null) {
-                result = dataManager.updateIndex(item.index, item.changes);
+                result = await dataManager.updateIndex(item.index, item.changes);
             }
             else {
-                result = dataManager.updateId(item.id, item.changes);
+                result = await dataManager.updateId(item.id, item.changes);
             }
 
             await dataManager.notifyChanges({
                 action: CHANGE_TYPES.update,
                 index: result.index,
                 id: result.id,
-                model: dataManager.getByIndex(result.index)
+                model: await dataManager.getByIndex(result.index)
             })
         }
-        dataManager.commit();
+        await dataManager.commit();
     }
 
     /**
@@ -847,7 +859,7 @@ class DataManagerActions {
         const from = page * size - size;
         const to = from + size;
 
-        return globalThis.dataManagers[manager].getPage(from, to);
+        return await globalThis.dataManagers[manager].getPage(from, to);
     }
 
     /**
