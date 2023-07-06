@@ -15,13 +15,13 @@ import "./../../src/actions/selection-actions.js";
  * @example <caption>html use example - tri-state implementation</caption>
  * <check-list ref="checklist">
  *     <div slot="header">
- *         <check-box data-master="true" aria-label="&{translations.master}"></check-box>
+ *         <check-box data-master="true" aria-label="&{translations.master}" aria-checked="mixed"></check-box>
  *         <other-content>...</other-content>
  *     </div>
- *     <check-box data-value="item1" aria-label="&{translations.item1}"></check-box>
- *     <check-box data-value="item2" aria-label="&{translations.item2}"></check-box>
- *     <check-box data-value="item3" aria-label="&{translations.item3}"></check-box>
- *     <check-box data-value="item4" aria-label="&{translations.item4}"></check-box>
+ *     <li role="option" data-value="item1" aria-selected="true">&{checklist.item1}</li>
+ *     <li role="option" data-value="item2">&{checklist.item2}</li>
+ *     <li role="option" data-value="item3">&{checklist.item3}</li>
+ *     <li role="option" data-value="item4" aria-selected="true">&{checklist.item4}</li>
  * </check-list>
  *
  * @todo - JHR:
@@ -65,7 +65,9 @@ export class Checklist extends HTMLElement {
                 await crs.call("selection", "enable", {
                     element: this,
                     master_query: "check-box[data-master]",
-                    selection_query: "check-box:not(check-box[data-master])",
+                    master_attribute: "aria-checked",
+                    item_query: "li",
+                    item_attribute: "aria-selected",
                 });
             } else {
                 this.shadowRoot.addEventListener("click", this.#clickHandler);

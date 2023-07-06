@@ -20,9 +20,13 @@ export class SelectionActions {
     static async enable(step, context, process, item) {
         const element = await crs.dom.get_element(step, context, process, item);
         const masterQuery = await crs.process.getValue(step.args.master_query, context, process, item);
-        const selectionQuery = await crs.process.getValue(step.args.selection_query, context, process, item);
+        const masterSelectionQuery = await crs.process.getValue(step.args.master_selection_query, context, process, item);
+        const masterAttribute = await crs.process.getValue(step.args.master_attribute, context, process, item);
+        const itemQuery = await crs.process.getValue(step.args.item_query, context, process, item);
+        const itemSelectionQuery = await crs.process.getValue(step.args.item_selection_query, context, process, item);
+        const itemAttribute = await crs.process.getValue(step.args.item_attribute, context, process, item);
 
-        element.__selectionManager = new SelectionManager(element, masterQuery, selectionQuery);
+        element.__selectionManager = new SelectionManager(element, masterQuery, masterSelectionQuery, masterAttribute, itemQuery, itemSelectionQuery, itemAttribute);
     }
 
     /**

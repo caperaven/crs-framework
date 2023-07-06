@@ -6,11 +6,22 @@
     }
 
     check-box {
-        padding: 0.5rem 0rem;
+        padding: var(--padding) 0rem;
     }
 
     check-box:not(check-box[data-master="true"]) {
         margin-left: 2.25rem;
+    }
+
+    .tiered li {
+        margin-left: 2.25rem;
+        height: 1rem;
+    }
+
+    .tiered li::before {
+        font-size: 1.5rem;
+        height: 1.5rem;
+        width: 1.5rem;
     }
 </style>
 
@@ -29,14 +40,14 @@
     </span>
 
     <span class="example">
-        <check-list ref="checklist">
+        <check-list ref="checklist" class="tiered">
             <div slot="header">
                 <check-box data-master="true" aria-label="Parent"></check-box>
             </div>
-            <check-box data-value="item1" aria-label="&{checklist.item1}"></check-box>
-            <check-box data-value="item2" aria-label="&{checklist.item2}"></check-box>
-            <check-box data-value="item3" aria-label="&{checklist.item3}"></check-box>
-            <check-box data-value="item4" aria-label="&{checklist.item4}"></check-box>
+            <li role="option" data-value="item1">&{checklist.item1}</li>
+            <li role="option" data-value="item2">&{checklist.item2}</li>
+            <li role="option" data-value="item3">&{checklist.item3}</li>
+            <li role="option" data-value="item4">&{checklist.item4}</li>
         </check-list>
     </span>
 </div>
