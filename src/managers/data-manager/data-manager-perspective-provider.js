@@ -78,13 +78,7 @@ export class DataManagerPerspectiveProvider extends BaseDataManager {
      */
     async getAll() {
         const manager = globalThis.dataManagers[this.#manager];
-        const result = [];
-
-        for (const record of this.#records) {
-            result.push(await manager.getByIndex(record));
-        }
-
-        return result;
+        return manager.getByIndex(this.#records);
     }
 
     /**
@@ -100,13 +94,7 @@ export class DataManagerPerspectiveProvider extends BaseDataManager {
 
         const manager = globalThis.dataManagers[this.#manager];
         const records = this.#records.slice(from, to);
-        const result = [];
-
-        for (const record of records) {
-            result.push(await manager.getByIndex(record));
-        }
-
-        return result;
+        return manager.getByIndex(records);
     }
 
     getByIndex(index) {
