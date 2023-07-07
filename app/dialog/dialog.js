@@ -2,10 +2,14 @@ import "./../../components/dialog/dialog-actions.js";
 import "./../../components/calendar/calendar.js";
 
 export default class Dialog extends crsbinding.classes.ViewBase {
+
     async connectedCallback() {
         await super.connectedCallback();
     }
 
+    async disconnectedCallback() {
+        await super.disconnectedCallback();
+    }
     async show() {
         const instance = this._element.querySelector("#dialog-content").content.cloneNode(true);
 
@@ -37,7 +41,7 @@ export default class Dialog extends crsbinding.classes.ViewBase {
         });
     }
 
-    async showNestedDialogs(event) {
+    async showNestedDialog(event) {
         const instance = this._element.querySelector("#nested-dialog").content.cloneNode(true);
         const position = document.querySelector("#positionOption").value;
 
@@ -54,7 +58,13 @@ export default class Dialog extends crsbinding.classes.ViewBase {
             position: position,
             anchor: anchor[position],
             margin: 10,
-            parent: "main"
+            parent: "main",
+            close: true,
+            callback: async (args) => {
+                if (args.action === "openDialog") {
+                    await this.show();
+                }
+            }
         });
     }
 
