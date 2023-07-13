@@ -46,6 +46,8 @@ ul {
     box-shadow: var(--drop-shadow);
     border-radius: var(--radius);
     padding: var(--padding);
+    max-height: 300px;
+    overflow: auto;
 }
 
 ul:before {

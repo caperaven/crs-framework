@@ -3,6 +3,8 @@ import {ensureDir} from "https://deno.land/std@0.149.0/fs/ensure_dir.ts";
 import {emptyDir} from "https://deno.land/std@0.149.0/fs/empty_dir.ts";
 import * as path from "https://deno.land/std/path/mod.ts";
 
+const minified = false;
+
 async function createFolderStructure() {
     await ensureDir("./dist");
     await emptyDir("./dist");
@@ -24,8 +26,8 @@ await copyDirectory("./packages/crs-schema", "./dist/packages/crs-schema");
 await copyDirectory("./styles", "./dist/styles");
 await copyDirectory("./resources", "./dist/resources");
 await copyDirectory("./documents", "./dist/documents");
-await packageFolder("./components", "./dist/components", true);
-await packageFolder("./src", "./dist/src", true);
+await packageFolder("./components", "./dist/components", minified);
+await packageFolder("./src", "./dist/src", minified);
 
 Deno.copyFile("./build/package.js", "./dist/build/package.js");
 Deno.copyFile("./crs-framework.js", "./dist/crs-framework.js");
