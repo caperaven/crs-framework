@@ -29,6 +29,7 @@ input {
     border-radius: var(--radius) 0 0 var(--radius);
     border-right: var(--border);
     outline: none;
+    padding: 0 var(--padding);
 }
 
 .hide {
