@@ -24,7 +24,7 @@ export class InflationManager {
         const data = await crs.call("data_manager", "get", {manager: this.#manager, index: index});
 
         if (data != null) {
-            await this.#inflationFn(element, data);
+            await this.#inflationFn(element, data[0]);
         }
     }
 }

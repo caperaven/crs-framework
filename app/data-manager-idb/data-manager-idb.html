@@ -3,7 +3,8 @@
 
 <div>
     <span>Generate Data</span>
-    <button id="btnGenerate" click.call="generateData">Generate</button>
+    <button id="btnGenerate" click.call="generateData('idb')">Generate Idb</button>
+    <button id="btnGenerateMemory" click.call="generateData('memory')">Generate Memory</button>
     <span id="spanDataState"> Records: ${recordCount}</span>
     <span id="writeTime">Write Time: ${writeTime}</span>
 </div>
@@ -65,7 +66,7 @@
 
     <hr />
     <label>
-        <div>Selected</div>
+        <div>Not Selected</div>
         <ul id="ulUnselected">
             <template for="item of unselected">
                 <li>

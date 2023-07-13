@@ -51,27 +51,35 @@ export class DataManagerIDBProvider extends BaseDataManager {
     }
 
     async getAll() {
-        return await crs.call("idb", "get_all", {
+        const idbResponse = await crs.call("idb", "get_all", {
             "name": DB_NAME,
             "store": this.#storeName
         })
+        return super.markRecordsWithSelection(idbResponse.data)
     }
 
     async getPage(from, to) {
-        return await crs.call("idb", "get_batch", {
+        const idbResponse = await crs.call("idb", "get_batch", {
             "name": DB_NAME,
             "store": this.#storeName,
             "startIndex": from,
             "endIndex": to
         })
+        return super.markRecordsWithSelection(idbResponse.data, from, to);
     }
 
-    async getByIndex(index) {
-        return await crs.call("idb", "get", {
+    async getByIndex(indexes) {
+        const idbResponse = await crs.call("idb", "get", {
             "name": DB_NAME,
             "store": this.#storeName,
-            "indexes": Array.isArray(index) ? index : [index]
-        })
+            "indexes": Array.isArray(indexes) ? indexes : [indexes]
+        });
+
+        for (const record of idbResponse.data) {
+            record._selected = this.isSelected(record._index);
+        }
+
+        return idbResponse.data;
     }
 
     async getById(id) {
@@ -93,6 +101,7 @@ export class DataManagerIDBProvider extends BaseDataManager {
         for (const record of records) {
             ids.push(record[this.idField]);
         }
+        return ids;
     }
 
     async removeIndexes(indexes) {
@@ -137,17 +146,6 @@ export class DataManagerIDBProvider extends BaseDataManager {
         })
     }
 
-    async setSelectedIndexes(indexes, selected) {
-        const result = indexes.map(index => {
-            return {
-                type: "index",
-                values: { index, selected }
-            };
-        });
-
-        sessionStorage.setItem(this.#sessionKey, JSON.stringify(result));
-    }
-
     async setSelectedIds(ids, selected) {
         const indexes = await crs.call("idb", "get_by_id", {
             "name": DB_NAME,
@@ -158,82 +156,34 @@ export class DataManagerIDBProvider extends BaseDataManager {
         return await this.setSelectedIndexes(indexes, selected);
     }
 
-    async getSelected(isSelected = true) {
-        const indexesString = sessionStorage.getItem(this.#sessionKey);
-        if (indexesString == null) return [];
-        const indexArray = JSON.parse(indexesString);
+    async toggleSelectedIds(ids) {
+        const indexes = await crs.call("idb", "get_by_id", {
+            "name": DB_NAME,
+            "store": this.#storeName,
+            "ids": ids
+        })
 
-        const indexes = getSelectedIndexes(indexArray, isSelected, this.count);
-        return await crs.call("idb", "get", {
+        return await super.toggleSelectedIndexes(indexes);
+    }
+
+    async getSelected(isSelected = true) {
+        let indexes;
+        if (isSelected === true) {
+            indexes = await super.getSelectedIndexes();
+        } else {
+            indexes = [];
+            for (let i = 0; i < this.count; i++) {
+                if (this.isSelected(i) === false) {
+                    indexes.push(i);
+                }
+            }
+        }
+        const idbResponse = await crs.call("idb", "get", {
             "name": DB_NAME,
             "store": this.#storeName,
             "indexes": indexes
         })
-    }
-
-    async toggleSelectedIndexes() {
-        const indexesString = sessionStorage.getItem(this.#sessionKey);
-        if (indexesString == null) return;
-        const indexArray = JSON.parse(indexesString);
-
-        if (indexArray.type === "all") {
-            indexArray.type = "none";
-        }
-        else if (indexArray.type === "none") {
-            indexArray.type = "all";
-        }
-        else {
-            for (const index of indexArray) {
-                index.values.selected = !index.values.selected;
-            }
-        }
-
-        sessionStorage.setItem(this.#sessionKey, JSON.stringify(indexArray));
-    }
-
-    async toggleSelectedIds() {
-        await this.toggleSelectedIndexes();
-    }
-
-    async setSelectedAll(selected) {
-        sessionStorage.setItem(this.#sessionKey, JSON.stringify({
-            type: selected == true ? "all" : "none"
-        }));
+        return super.markRecordsWithSelection(idbResponse.data);
     }
 }
 
-function getSelectedIndexes(indexArray, isSelected, count) {
-    if (indexArray.type === "none" && isSelected === true) return [];
-    if (indexArray.type === "all" && isSelected === false) return [];
-
-    if (indexArray.type === "none" && isSelected === false) {
-        indexArray.type = "all";
-    }
-
-    if (indexArray.type === "all") {
-        return Array.from({ length: count }, (_, i) => i);
-    }
-
-    let inverseSelection = isSelected === false || indexArray[0].values.selected === false;
-
-    if (indexArray[0].values.selected === false && isSelected === false) {
-        inverseSelection = false;
-    }
-
-    const flattened = indexArray.map(index => index.values.index);
-
-
-    if ( inverseSelection == false ) {
-        return flattened;
-    }
-    else {
-        const result = [];
-        for (let i = 0; i < count; i++) {
-            if (flattened.includes(i) == false) {
-                result.push(i);
-            }
-        }
-
-        return result;
-    }
-}

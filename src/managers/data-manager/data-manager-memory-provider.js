@@ -34,7 +34,7 @@ export class DataManagerMemoryProvider extends BaseDataManager {
      * @returns {*}
      */
     async getAll() {
-        return this.#records;
+        return super.markRecordsWithSelection(this.#records)
     }
 
     /**
@@ -44,7 +44,7 @@ export class DataManagerMemoryProvider extends BaseDataManager {
      * @returns {*}
      */
     async getPage(from, to) {
-        return this.#records.slice(from, to);
+        return super.markRecordsWithSelection(this.#records.slice(from, to), from, to);
     }
 
     /**
@@ -52,8 +52,15 @@ export class DataManagerMemoryProvider extends BaseDataManager {
      * @param index {number} - The index of the record to get
      * @returns {*}
      */
-    async getByIndex(index) {
-        return this.#records[index];
+    async getByIndex(indexes) {
+        indexes = Array.isArray(indexes) ? indexes : [indexes]
+        const result = [];
+        for (const index of indexes) {
+            const record = this.#records[index];
+            record._selected = super.isSelected(index);
+            result.push(record);
+        }
+        return result;
     }
 
     /**
@@ -151,49 +158,38 @@ export class DataManagerMemoryProvider extends BaseDataManager {
     }
 
     async setSelectedIndexes(indexes, selected) {
-        for (const index of indexes) {
-            this.#records[index]._selected = selected;
-        }
+        await super.setSelectedIndexes(indexes, selected);
+    }
 
-        this.selectedCount += selected ? indexes.length : -indexes.length;
+    async update(record) {
+        const id = record[this.idField];
+        this.updateId(id, record);
     }
 
     async setSelectedIds(ids, selected) {
+        const indexes = [];
         for (const id of ids) {
             const index = this.#records.findIndex(item => item[this.idField] == id);
-            this.#records[index]._selected = selected;
+            indexes.push(index);
         }
 
-        this.selectedCount += selected ? ids.length : -ids.length;
-    }
-
-    async getSelected(isSelected = true) {
-        return this.#records.filter(item => item._selected === isSelected);
-    }
-
-    async toggleSelectedIndexes(indexes) {
-        for (const index of indexes) {
-            const isSelected = !this.#records[index]._selected;
-            this.#records[index]._selected = isSelected;
-            this.selectedCount += isSelected ? 1 : -1;
-        }
+        await this.setSelectedIndexes(indexes, selected);
     }
 
     async toggleSelectedIds(ids) {
+        const indexes = [];
         for (const id of ids) {
-            const index = this.#records.findIndex(item => item[this.idField] == id);
-            const isSelected = !this.#records[index]._selected;
-            this.#records[index]._selected = isSelected;
-            this.selectedCount += isSelected ? 1 : -1;
+            const index = this.#records.findIndex(item => item[this.idField] === id);
+            if (index != -1) {
+                indexes.push(index);
+            }
         }
+        await super.toggleSelectedIndexes(indexes);
     }
 
-    async setSelectedAll(selected) {
-        for (const record of this.#records) {
-            record._selected = selected;
-        }
-
-        this.selectedCount = selected == true ? this.#records.length : 0;
+    async getSelected(isSelected = true) {
+        const result = this.#records.filter((item, index) => this.isSelected(index) === isSelected);
+        return super.markRecordsWithSelection(result);
     }
 }
 

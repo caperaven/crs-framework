@@ -27,7 +27,7 @@ export default class DataManagerIdb extends crs.classes.BindableElement {
         this.setProperty("recordIndex", 0);
     }
 
-    async generateData() {
+    async generateData(type) {
         const data = await crs.call("test_data", "get", {
             fields: {
                 code: "string:auto",
@@ -36,7 +36,7 @@ export default class DataManagerIdb extends crs.classes.BindableElement {
                 quantity: "int:1:100",
                 isValid: "bool"
             },
-            count: 10
+            count: 100
         });
 
         const start = performance.now();
@@ -44,7 +44,7 @@ export default class DataManagerIdb extends crs.classes.BindableElement {
         this.#store = await crs.call("data_manager", "register", {
             manager: DB_MANAGER,
             id_field: "id",
-            type: "idb",
+            type: type,
             records: data
         })
 
@@ -74,7 +74,7 @@ export default class DataManagerIdb extends crs.classes.BindableElement {
             index: this.getProperty("recordIndex")
         })
 
-        this.setProperty("model", result.data[0]);
+        this.setProperty("model", result[0]);
     }
 
     async saveRecord() {
@@ -132,13 +132,13 @@ export default class DataManagerIdb extends crs.classes.BindableElement {
             manager: DB_MANAGER
         })
 
-        this.setProperty("selected", result.data);
+        this.setProperty("selected", result);
 
         result = await crs.call("data_manager", "get_unselected", {
             manager: DB_MANAGER
         })
 
-        this.setProperty("unselected", result.data);
+        this.setProperty("unselected", result);
 
         // await crs.binding.data.updateUI(this, "selected");
         // await crs.binding.data.updateUI(this, "unselected");

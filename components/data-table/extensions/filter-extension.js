@@ -113,10 +113,10 @@ export default class FilterExtension {
         const footerUrl = import.meta.url.replace(".js", "/footer.html");
         const itemTemplateUrl = import.meta.url.replace(".js", "/item-template.html");
 
-        const headerTemplate = await crs.call("html", "template_from_file", { url: headerUrl, has_css: true });
-        const bodyTemplate = await crs.call("html", "template_from_file", { url: bodyUrl, has_css: true });
-        const footerTemplate = await crs.call("html", "template_from_file", { url: footerUrl });
-        this.#itemTemplate = await crs.call("html", "template_from_file", { url: itemTemplateUrl });
+        const headerTemplate = await crs.call("html", "template_from_file", {url: headerUrl, has_css: true});
+        const bodyTemplate = await crs.call("html", "template_from_file", {url: bodyUrl, has_css: true});
+        const footerTemplate = await crs.call("html", "template_from_file", {url: footerUrl});
+        this.#itemTemplate = await crs.call("html", "template_from_file", {url: itemTemplateUrl});
 
         this.#dialog = await crs.call("dialog", "show", {
             target: relativeElement,
@@ -186,14 +186,20 @@ export default class FilterExtension {
     }
 
     async #createDataManager(data) {
-        const selectedCount = data.filter(item => item._selected === true).length;
+        const selectedIndexes = [];
+
+        data.forEach((model, index) => {
+            if (model._selected === true) {
+                selectedIndexes.push(index);
+            }
+        });
 
         return await crs.call("data_manager", "register", {
             manager: FILTER_EXTENSION_DATA_MANAGER,
             id_field: "id",
             type: "memory",
             records: data,
-            selected_count: selectedCount
+            selected_indexes: selectedIndexes
         })
     }
 
@@ -226,7 +232,7 @@ export default class FilterExtension {
     }
 
     async #loadFilterOptions() {
-        const message = await crs.call("translations", "get", { key: "system.loadingMessage" });
+        const message = await crs.call("translations", "get", {key: "system.loadingMessage"});
         const container = await this.#dialog.querySelector("#filter-list");
 
         // Show the busy UI message while processing the data
@@ -241,8 +247,11 @@ export default class FilterExtension {
         let displayData = this.#lookupTable[this.#currentField];
         if (displayData == null) {
             const dataManager = this.#table.dataManager;
-            const data = await crs.call("data_manager", "get_all", { manager: dataManager });
-            const uniqueValues = await crs.call("data_processing", "unique_values", { source: data, fields: [this.#currentField] });
+            const data = await crs.call("data_manager", "get_all", {manager: dataManager});
+            const uniqueValues = await crs.call("data_processing", "unique_values", {
+                source: data,
+                fields: [this.#currentField]
+            });
 
             // the unique values is an object, but we want to transform it into an array for the virtualization
             this.#lookupTable[this.#currentField] = UniqueObjectToFilterArray(uniqueValues[this.#currentField]);

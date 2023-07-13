@@ -73,9 +73,9 @@ describe("data manager tests", () => {
             records: [{ id: "2000", "code":  "2000" }]
         })
 
-        const record = await manager.getByIndex(2);
+        const records = await manager.getByIndex(2);
         assertEquals(manager.count, 5);
-        assertEquals(record.id, "2000");
+        assertEquals(records[0].id, "2000");
 
         assertEquals(changeArgs[0].action, "add");
         assertEquals(changeArgs[0].models.length, 1);
@@ -116,8 +116,8 @@ describe("data manager tests", () => {
             }
         })
 
-        const record = await manager.getByIndex(0);
-        assertEquals(record.code, "ABC");
+        const records = await manager.getByIndex(0);
+        assertEquals(records[0].code, "ABC");
         assertEquals(changeArgs[0].action, "update");
         assertEquals(changeArgs[0].id, undefined);
         assertEquals(changeArgs[0].index, 0);
@@ -133,9 +133,9 @@ describe("data manager tests", () => {
             }
         })
 
-        const record = await manager.getByIndex(0);
-        assertEquals(record.code, "ABC");
-        assertEquals(record.code, "ABC");
+        const records = await manager.getByIndex(0);
+        assertEquals(records[0].code, "ABC");
+        assertEquals(records[0].code, "ABC");
 
         assertEquals(changeArgs[0].action, "update");
         assertEquals(changeArgs[0].id, "1000");
@@ -164,8 +164,8 @@ describe("data manager tests", () => {
             ]
         })
 
-        assertEquals((await manager.getByIndex(0)).code, "C1");
-        assertEquals((await manager.getByIndex(1)).code, "C2");
+        assertEquals((await manager.getByIndex(0))[0].code, "C1");
+        assertEquals((await manager.getByIndex(1))[0].code, "C2");
 
         assertEquals(changeArgs[0].action, "update");
         assertEquals(changeArgs[1].action, "update");

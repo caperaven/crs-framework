@@ -31,6 +31,8 @@ export class BaseDataManager {
     #idField;
     #count = 0;
     #selectedCount = 0;
+    #selectedIndexes = new Set();
+    #selectionState = SelectionState.None;
     #events = [];
 
     /**
@@ -50,26 +52,15 @@ export class BaseDataManager {
         this.#count = newValue;
     }
 
-    /**
-     * @property selectedCount {number} - The number of records that are currently selected
-     * @returns {number}
-     */
-    get selectedCount() {
-        return this.#selectedCount;
-    }
-
-    set selectedCount(newValue) {
-        this.#selectedCount = newValue;
-    }
 
     /**
      * @property isAllSelected {boolean} - Indicates if all of the records in the data manager are selected
-     * @returns {boolean}
+     * @returns {boolean | string}
      */
     get isAllSelected() {
-        if (this.selectedCount === 0) return false;
-        if (this.selectedCount === this.count) return true;
-        return "mixed";
+        if (this.#selectionState === SelectionState.All) return true;
+        if (this.#selectionState === SelectionState.None) return false;
+        return this.#selectionState;
     }
 
     /**
@@ -117,7 +108,7 @@ export class BaseDataManager {
     async setRecords(records) {
         this.#count = records?.length || 0;
 
-        for(let i = 0; i < records.length; i++) {
+        for (let i = 0; i < records.length; i++) {
             records[i]._index = i;
         }
     }
@@ -203,4 +194,95 @@ export class BaseDataManager {
     async rollback() {
         return null;
     }
+
+    async setSelectedIndexes(indexes, selected) {
+        const fn = selected ? "add" : "delete";
+
+        for (const index of indexes) {
+            this.#selectedIndexes[fn](index);
+        }
+
+        await this.#calculateState();
+    }
+
+    async toggleSelectedIndexes(indexes) {
+        if (indexes == null) {
+            for (let i = 0; i < this.count; i++) {
+                this.#toggleSelectedIndex(i);
+            }
+        } else {
+            for (const index of indexes) {
+                this.#toggleSelectedIndex(index);
+            }
+        }
+
+        await this.#calculateState();
+    }
+
+    async #calculateState() {
+        if (this.#selectedIndexes.size === 0) {
+            this.#selectionState = SelectionState.None;
+        } else if (this.#selectedIndexes.size === this.count) {
+            this.#selectionState = SelectionState.All;
+        } else {
+            this.#selectionState = SelectionState.Mixed;
+        }
+    }
+
+    #toggleSelectedIndex(index) {
+        this.#selectedIndexes.has(index) ? this.#selectedIndexes.delete(index) : this.#selectedIndexes.add(index);
+    }
+
+    async setSelectedAll(selected) {
+        this.#selectedIndexes.clear();
+        this.#selectionState = selected ? SelectionState.All : SelectionState.None;
+    }
+
+    isSelected(index) {
+        if (this.#selectionState === SelectionState.All) return true;
+        if (this.#selectionState === SelectionState.None) return false;
+        return this.#selectedIndexes.has(index);
+    }
+
+    async getSelectedIndexes() {
+        // TODO move to idb
+        if (this.#selectionState === SelectionState.All) {
+            return Array.from({length: this.count}, (_, i) => i);
+        } else {
+            return Array.from(this.#selectedIndexes.values());
+        }
+    }
+
+    /**
+     * This function will mark the records with the selection state. It takes a startIndex and endIndex to determine which index to use to determine selection
+     * @param records - The records to mark
+     * @param startIndex - The start index to use to determine selection
+     * @param endIndex - The end index to use to determine selection
+     * @returns {Promise<*>}
+     */
+    async markRecordsWithSelection(records, startIndex = 0, endIndex = records.length) {
+        if (this.#selectionState === SelectionState.All) {
+            // Mark all selected
+            for (let i = 0; i < records.length; i++) {
+                records[i]._selected = true;
+            }
+        } else if (this.#selectionState === SelectionState.None) {
+            // Mark all false
+            for (let i = 0; i < records.length; i++) {
+                records[i]._selected = false;
+            }
+        } else {
+            // If selectionState is mixed we need to check each record
+            for (let i = startIndex; i < endIndex; i++) {
+                records[i]._selected = this.#selectedIndexes.has(i);
+            }
+        }
+        return records;
+    }
 }
+
+const SelectionState = Object.freeze({
+    None: "none",
+    Mixed: "mixed",
+    All: "all"
+});

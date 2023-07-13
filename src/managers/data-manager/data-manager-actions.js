@@ -83,7 +83,7 @@ class DataManagerActions {
         const dataField = await crs.process.getValue(step.args.id_field || "id", context, process, item);
         const type = await crs.process.getValue(step.args.type || "idb", context, process, item);
         const records = await crs.process.getValue(step.args.records || [], context, process, item);
-        const selectedCount = await crs.process.getValue(step.args.selected_count || 0, context, process, item);
+        const selectedIndexes = await crs.process.getValue(step.args.selected_indexes || [], context, process, item);
 
         if (type === "idb" && globalThis.hasDataManagerDB != true) {
             await import ("./../../../packages/crs-process-api/action-systems/managers/indexdb-manager.js");
@@ -112,7 +112,7 @@ class DataManagerActions {
 
         if (type !== "perspective") {
             await instance.setRecords(records);
-            instance.selectedCount = selectedCount;
+            await instance.setSelectedIndexes(selectedIndexes, true);
         }
 
         return globalThis.dataManagers[manager];
@@ -202,7 +202,7 @@ class DataManagerActions {
         if (manager == null) return 0;
 
         const dataManager = globalThis.dataManagers[manager];
-        return { total: dataManager.count, selected: dataManager.selectedCount };
+        return {total: dataManager.count, selected: dataManager.selectedCount};
     }
 
     /**
@@ -333,8 +333,7 @@ class DataManagerActions {
 
         if (indexes != null) {
             await dataManager.removeIndexes(indexes);
-        }
-        else {
+        } else {
             await dataManager.removeIds(ids);
         }
 
@@ -406,16 +405,14 @@ class DataManagerActions {
 
         if (index != null) {
             await dataManager.updateIndex(index, changes);
-            await dataManager.notifyChanges({ action: CHANGE_TYPES.update, index, changes })
-        }
-        else if (id != null) {
+            await dataManager.notifyChanges({action: CHANGE_TYPES.update, index, changes})
+        } else if (id != null) {
             await dataManager.updateId(id, changes);
-            await dataManager.notifyChanges({ action: CHANGE_TYPES.update, id, changes })
-        }
-        else {
+            await dataManager.notifyChanges({action: CHANGE_TYPES.update, id, changes})
+        } else {
             const models = await crs.process.getValue(step.args.models, context, process, item);
             await dataManager.update(models)
-            await dataManager.notifyChanges({ action: CHANGE_TYPES.update, models })
+            await dataManager.notifyChanges({action: CHANGE_TYPES.update, models})
         }
     }
 
@@ -478,8 +475,7 @@ class DataManagerActions {
 
         if (indexes != null) {
             await dataManager.setSelectedIndexes(indexes, selected);
-        }
-        else {
+        } else {
             await dataManager.setSelectedIds(ids, selected);
         }
 
@@ -530,11 +526,9 @@ class DataManagerActions {
 
         if (indexes != null) {
             await dataManager.toggleSelectedIndexes(indexes);
-        }
-        else if (ids != null) {
+        } else if (ids != null) {
             await dataManager.toggleSelectedIds(ids);
-        }
-        else {
+        } else {
             await dataManager.toggleSelectedIndexes();
         }
 
@@ -710,16 +704,17 @@ class DataManagerActions {
             let result;
             if (item.index != null) {
                 result = await dataManager.updateIndex(item.index, item.changes);
-            }
-            else {
+            } else {
                 result = await dataManager.updateId(item.id, item.changes);
             }
+
+            const model = await dataManager.getByIndex(result.index);
 
             await dataManager.notifyChanges({
                 action: CHANGE_TYPES.update,
                 index: result.index,
                 id: result.id,
-                model: await dataManager.getByIndex(result.index)
+                model: model[0]
             })
         }
         await dataManager.commit();
@@ -737,7 +732,7 @@ class DataManagerActions {
      * @param step.args.manager {string} - The name of the data manager. You will use this when performing operations on the data manager.
      * @param [step.args.index] {number} - The index of the record to get
      * @param [step.args.id] {number} - The id of the record to get
-     * @returns {Promise<*|null>}
+     * @returns {Promise<[]|null>}
      *
      * @example <caption>javascript example using index</caption>
      * const record = await crs.call("data_manager", "get" {
@@ -778,12 +773,13 @@ class DataManagerActions {
         const index = await crs.process.getValue(step.args.index, context, process, item);
         const id = await crs.process.getValue(step.args.id, context, process, item);
 
-        if (index != null) {
-            return globalThis.dataManagers[manager].getByIndex(index);
-        }
-
         if (globalThis.dataManagers[manager] == null) {
             return null;
+        }
+
+        if (index != null) {
+            if (index < 0 || index > (globalThis.dataManagers[manager].count - 1)) return null;
+            return globalThis.dataManagers[manager].getByIndex(index);
         }
 
         return globalThis.dataManagers[manager].getById(id);
