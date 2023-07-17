@@ -43,24 +43,34 @@ export default class Dialog extends crsbinding.classes.ViewBase {
         });
     }
 
-    async showNestedDialog(event) {
+    async showParentDialog(event) {
         const instance = this._element.querySelector("#nested-dialog").content.cloneNode(true);
         const position = document.querySelector("#positionOption").value;
 
         await crs.call("dialog", "show", {
-            title: "My Title",
+            title: "My Parent Dialog",
             main: instance,
             target: event.target,
             position: position,
             anchor: this.#anchor[position],
             margin: 10,
             parent: "main",
-            close: true,
             callback: async (args) => {
                 if (args.action === "openDialog") {
-                    await this.show();
+                    await this.#showChildDialog();
                 }
             }
+        });
+    }
+
+    async #showChildDialog() {
+        const instance = this._element.querySelector("#child-dialog").content.cloneNode(true);
+
+        await crs.call("dialog", "show", {
+            title: "My Child Dialog",
+            main: instance,
+            parent: "main",
+            close: false
         });
     }
 

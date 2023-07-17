@@ -259,14 +259,18 @@ export class Dialog extends HTMLElement {
             bodyElement.setAttribute("slot", "body");
             this.appendChild(bodyElement);
         }
-
+        else {
+           bodyElement.textContent = "";
+        }
 
         if (typeof body == "string") {
             bodyElement.textContent = body;
             return;
         }
 
-        bodyElement.appendChild(body);
+
+        const clone = body.cloneNode(true);
+        bodyElement.appendChild(clone);
     }
 
     /**
@@ -314,8 +318,8 @@ export class Dialog extends HTMLElement {
         removedStruct.action = "close";
         removedStruct.options.callback && removedStruct.options.callback(removedStruct);
 
-        if (this.#stack.length == 0) {
-            return await crs.call("dialog", 'force_close', {});
+        if (this.#stack.length === 0) {
+            return await crs.call("dialog", "force_close", {});
         }
 
         const struct = this.#stack[this.#stack.length - 1];

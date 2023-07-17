@@ -177,7 +177,7 @@ export class DialogActions {
 }
 
 async function ensureDialog(close, parent) {
-    if (close == true) {
+    if (close === true) {
         await crs.call("dialog", "force_close", {});
     }
 
