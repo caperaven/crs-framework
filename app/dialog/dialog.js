@@ -2,12 +2,20 @@ import "./../../components/dialog/dialog-actions.js";
 import "./../../components/calendar/calendar.js";
 
 export default class Dialog extends crsbinding.classes.ViewBase {
-
+    #anchor = {
+        left: "top",
+        right: "top",
+        bottom: "left",
+    }
     async connectedCallback() {
         await super.connectedCallback();
     }
 
     async disconnectedCallback() {
+        for (const key of Object.keys(this.#anchor)) {
+            this.#anchor[key] = null;
+        }
+        this.#anchor = null;
         await super.disconnectedCallback();
     }
     async show() {
@@ -24,18 +32,12 @@ export default class Dialog extends crsbinding.classes.ViewBase {
         const instance = this._element.querySelector("#dialog-content").content.cloneNode(true);
         const position = document.querySelector("#positionOptions").value;
 
-        const anchor = {
-            left: "top",
-            right: "top",
-            bottom: "left",
-        }
-
         await crs.call("dialog", "show", {
             title: "My Title",
             main: instance,
             target: event.target,
             position: position,
-            anchor: anchor[position],
+            anchor: this.#anchor[position],
             margin: 10,
             parent: "main"
         });
@@ -45,18 +47,12 @@ export default class Dialog extends crsbinding.classes.ViewBase {
         const instance = this._element.querySelector("#nested-dialog").content.cloneNode(true);
         const position = document.querySelector("#positionOption").value;
 
-        const anchor = {
-            left: "top",
-            right: "top",
-            bottom: "left",
-        }
-
         await crs.call("dialog", "show", {
             title: "My Title",
             main: instance,
             target: event.target,
             position: position,
-            anchor: anchor[position],
+            anchor: this.#anchor[position],
             margin: 10,
             parent: "main",
             close: true,
@@ -102,17 +98,12 @@ export default class Dialog extends crsbinding.classes.ViewBase {
         }
 
         let position = this.element.querySelector("#position").value;
-        const anchor = {
-            left: "top",
-            right: "top",
-            bottom: "left",
-        }
 
         if (position != "none") {
             Object.assign(args, {
                 target: target,
                 position: position,
-                anchor: anchor[position],
+                anchor: this.#anchor[position],
                 margin: 10
             })
         }
