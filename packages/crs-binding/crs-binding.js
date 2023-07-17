@@ -2803,7 +2803,7 @@ var BindingData = class {
     }
     return value;
   }
-  setProperty(id, property, value, convert = true) {
+  setProperty(id, property, value, convert = true, dataType = null) {
     id = this._getContextId(id);
     let oldValue = this.getProperty(id, property, false);
     if (Array.isArray(oldValue)) {
@@ -2819,7 +2819,7 @@ var BindingData = class {
     if (value && value.__uid != null) {
       oldValue && this._unlinkArrayItem(oldValue);
     }
-    this._setContextProperty(id, property, value, { oldValue, convert });
+    this._setContextProperty(id, property, value, { oldValue, convert, dataType });
     if (value && value.__uid) {
       this.linkToArrayItem(id, property, value.__uid);
     }
