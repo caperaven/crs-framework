@@ -99,32 +99,23 @@ export class Dialog extends HTMLElement {
         // 2. this is a predefined action like close or resize
         // do that and then get out
         if (this.#actions[action] != null) {
-            this.className = "hidden";
-            const timeout = setTimeout(async () => {
-                return this.#actions[action](event);
-            }, 350);
+            return this.#actions[action](event);
         }
 
         const struct = this.#stack[this.#stack.length - 1];
 
-        if (struct.options.callback != null) {
-            this.className = "hidden";
-            const timeout = setTimeout(async () => {
-                // 3. this is a custom action so call the callback if it exists
-                struct.action = action;
-                struct.event = event;
+        // 3. this is a custom action so call the callback if it exists
+        struct.action = action;
+        struct.event = event;
 
-                try {
-                    await struct.options.callback?.(struct);
-                }
-                finally {
-                    delete struct.action;
-                    delete struct.event;
-                }
-            }, 350);
+        try {
+            await struct.options.callback?.(struct);
         }
 
-
+        finally {
+            delete struct.action;
+            delete struct.event;
+        }
     }
 
     /**
@@ -147,7 +138,11 @@ export class Dialog extends HTMLElement {
     }
 
     async #closeClicked() {
-        await this.#popStack();
+        this.className = "hidden";
+        this.style.opacity = 0;
+        const timeout =  setTimeout(async () => {
+            await this.#popStack();
+        }, 350);
     }
 
     /**
@@ -170,7 +165,8 @@ export class Dialog extends HTMLElement {
                     // Set position is called after the content is rendered in the dialog.
                     requestAnimationFrame(async () => {
                         await this.#setPosition(options);
-                        this.className = "visible";
+                        this.className = "visible"
+                        this.style.opacity = 1;
                         resolve();
                     });
                 }
@@ -337,6 +333,7 @@ export class Dialog extends HTMLElement {
 
         const struct = this.#stack[this.#stack.length - 1];
         await this.#showStruct(struct);
+
         return true;
     }
 
@@ -351,7 +348,10 @@ export class Dialog extends HTMLElement {
     async show(header, main, footer, options) {
         const struct = {header, main, footer, options};
         this.#stack.push(struct);
-        await this.#showStruct(struct);
+        this.style.opacity = 0;
+        const timeout = setTimeout(async () => {
+            await this.#showStruct(struct);
+        }, 350);
 
         if (options?.callback != null && options.callback !== false) {
             struct.action = "loaded";
