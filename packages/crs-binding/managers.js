@@ -1,4 +1,1 @@
-import { TranslationsManager } from "./managers/translations-manager.js";
-export {
-  TranslationsManager
-};
+import{TranslationsManager as n}from"./managers/translations-manager.js";export{n as TranslationsManager};

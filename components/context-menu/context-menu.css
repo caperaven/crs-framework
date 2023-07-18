@@ -11,6 +11,17 @@
     background: transparent;
     z-index: 999999;
     user-select: none;
+    opacity: 0;
+}
+
+:host(.visible) {
+    transition: opacity 0.2s ease-in-out;
+    opacity: 1;
+}
+
+:host(.hidden) {
+    transition: opacity 0.2s ease-in-out;
+    opacity: 0;
 }
 
 .back {

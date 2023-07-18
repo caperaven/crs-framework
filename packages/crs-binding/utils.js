@@ -1,10 +1,1 @@
-import { disposeProperties } from "./utils/dispose-properties.js";
-import { getValueOnPath } from "./utils/get-value-on-path.js";
-import { getPathOfFile } from "./utils/get-path-of-file.js";
-import { setValueOnPath } from "./utils/set-value-on-path.js";
-export {
-  disposeProperties,
-  getPathOfFile,
-  getValueOnPath,
-  setValueOnPath
-};
+import{disposeProperties as o}from"./utils/dispose-properties.js";import{getValueOnPath as p}from"./utils/get-value-on-path.js";import{getPathOfFile as f}from"./utils/get-path-of-file.js";import{setValueOnPath as s}from"./utils/set-value-on-path.js";export{o as disposeProperties,f as getPathOfFile,p as getValueOnPath,s as setValueOnPath};

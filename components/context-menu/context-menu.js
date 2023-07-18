@@ -34,6 +34,10 @@ class ContextMenu extends crs.classes.BindableElement {
     async connectedCallback() {
         await super.connectedCallback();
         await this.load();
+
+        requestAnimationFrame(() => {
+            this.classList.add("visible");
+        })
     }
 
     async load() {
@@ -115,7 +119,12 @@ class ContextMenu extends crs.classes.BindableElement {
     }
 
     async #filterClose(event) {
-        await crs.call("context_menu", "close");
+        this.classList.add("hidden");
+
+        const timeout = setTimeout(async () => {
+            clearTimeout(timeout);
+            await crs.call("context_menu", "close");
+        }, 250);
     }
 
     /**
