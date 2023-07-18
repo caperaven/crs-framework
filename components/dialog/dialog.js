@@ -231,7 +231,9 @@ export class Dialog extends HTMLElement {
         }
 
         if (header != null) {
-            headerElement.replaceChildren(header);
+            const clonedFragment = header.cloneNode(true);
+            headerElement.replaceChildren(clonedFragment);
+            await crsbinding.translations.parseElement(headerElement);
             return;
         }
 
@@ -240,6 +242,7 @@ export class Dialog extends HTMLElement {
             "close": options?.closeText ?? "Close",
             "resize": options?.resizeText ?? "Resize"
         }
+
         await crsbinding.translations.add(translations, "dialog");
         await crsbinding.translations.parseElement(headerElement);
     }
@@ -267,7 +270,6 @@ export class Dialog extends HTMLElement {
             bodyElement.textContent = body;
             return;
         }
-
 
         const clone = body.cloneNode(true);
         bodyElement.appendChild(clone);

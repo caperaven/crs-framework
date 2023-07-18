@@ -7,6 +7,7 @@ export default class Dialog extends crsbinding.classes.ViewBase {
         right: "top",
         bottom: "left",
     }
+
     async connectedCallback() {
         await super.connectedCallback();
     }
@@ -18,6 +19,7 @@ export default class Dialog extends crsbinding.classes.ViewBase {
         this.#anchor = null;
         await super.disconnectedCallback();
     }
+
     async show() {
         const instance = this._element.querySelector("#dialog-content").content.cloneNode(true);
 
@@ -47,14 +49,53 @@ export default class Dialog extends crsbinding.classes.ViewBase {
         const instance = this._element.querySelector("#nested-dialog").content.cloneNode(true);
         const position = document.querySelector("#positionOption").value;
 
+        const options = {
+            title: "My Parent Dialog"
+        }
+
+        await crsbinding.translations.add({
+            "parentTitle": options?.title ?? "",
+            "close": options?.closeText ?? "Close",
+            "resize": options?.resizeText ?? "Resize"
+        }, "en");
+
+        const header = await crs.call("dom", "create_element", {
+            tag_name: "template",
+            children: [
+                {
+                    tag_name: "h2",
+                    text_content: "&{en.parentTitle}"
+                },
+                {
+                    tag_name: "button",
+                    text_content: "open-fullscreen",
+                    classes: ["icon", "transparent"],
+                    attributes: {
+                        id: "btnResize",
+                        "data-action": "resize",
+                        "aria-label": "&{en.resize}"
+                    }
+                },
+                {
+                    tag_name: "button",
+                    text_content: "close",
+                    classes: ["icon", "transparent"],
+                    attributes: {
+                        id: "btnClose",
+                        "data-action": "close",
+                        "aria-label": "&{en.close}"
+                    }
+                }
+            ]
+        });
         await crs.call("dialog", "show", {
-            title: "My Parent Dialog",
             main: instance,
             target: event.target,
             position: position,
             anchor: this.#anchor[position],
             margin: 10,
             parent: "main",
+            header: header.content,
             callback: async (args) => {
                 if (args.action === "openDialog") {
                     await this.#showChildDialog();
@@ -66,10 +107,50 @@ export default class Dialog extends crsbinding.classes.ViewBase {
     async #showChildDialog() {
         const instance = this._element.querySelector("#child-dialog").content.cloneNode(true);
 
+        const options = {
+            title: "My Child Dialog"
+        }
+
+        await crsbinding.translations.add({
+            "childTitle": options?.title ?? "",
+            "close": options?.closeText ?? "Close",
+            "resize": options?.resizeText ?? "Resize"
+        }, "en");
+
+        const header = await crs.call("dom", "create_element", {
+            tag_name: "template",
+            children: [
+                {
+                    tag_name: "h2",
+                    text_content: "&{en.childTitle}"
+                },
+                {
+                    tag_name: "button",
+                    text_content: " open-fullscreen",
+                    classes: ["icon", "transparent"],
+                    attributes: {
+                        id: "btnResize",
+                        "data-action": "resize",
+                        "aria-label": "&{en.resize}"
+                    }
+                },
+                {
+                    tag_name: "button",
+                    text_content: "close",
+                    classes: ["icon", "transparent"],
+                    attributes: {
+                        id: "btnClose",
+                        "data-action": "close",
+                        "aria-label": "&{en.close}"
+                    }
+                }
+            ]
+        });
+
         await crs.call("dialog", "show", {
-            title: "My Child Dialog",
             main: instance,
             parent: "main",
+            header: header.content,
             close: false
         });
     }
