@@ -99,22 +99,32 @@ export class Dialog extends HTMLElement {
         // 2. this is a predefined action like close or resize
         // do that and then get out
         if (this.#actions[action] != null) {
-            return this.#actions[action](event);
+            this.className = "hidden";
+            const timeout = setTimeout(async () => {
+                return this.#actions[action](event);
+            }, 350);
         }
 
-        // 3. this is a custom action so call the callback if it exists
         const struct = this.#stack[this.#stack.length - 1];
 
-        struct.action = action;
-        struct.event = event;
+        if (struct.options.callback != null) {
+            this.className = "hidden";
+            const timeout = setTimeout(async () => {
+                // 3. this is a custom action so call the callback if it exists
+                struct.action = action;
+                struct.event = event;
 
-        try {
-            await struct.options.callback?.(struct);
+                try {
+                    await struct.options.callback?.(struct);
+                }
+                finally {
+                    delete struct.action;
+                    delete struct.event;
+                }
+            }, 350);
         }
-        finally {
-            delete struct.action;
-            delete struct.event;
-        }
+
+
     }
 
     /**
@@ -146,7 +156,6 @@ export class Dialog extends HTMLElement {
      */
     async #showStruct(struct) {
         return new Promise(async resolve => {
-            this.setAttribute("hidden", "true");
             const {header, main, footer, options} = struct;
 
             await crs.call("component", "on_ready", {
@@ -161,7 +170,7 @@ export class Dialog extends HTMLElement {
                     // Set position is called after the content is rendered in the dialog.
                     requestAnimationFrame(async () => {
                         await this.#setPosition(options);
-                        this.removeAttribute("hidden");
+                        this.className = "visible";
                         resolve();
                     });
                 }
@@ -255,13 +264,12 @@ export class Dialog extends HTMLElement {
 
         let bodyElement = this.querySelector("[slot=body]");
 
-        if(bodyElement == null) {
+        if (bodyElement == null) {
             bodyElement = document.createElement("div");
             bodyElement.setAttribute("slot", "body");
             this.appendChild(bodyElement);
-        }
-        else {
-           bodyElement.textContent = "";
+        } else {
+            bodyElement.textContent = "";
         }
 
         if (typeof body == "string") {
@@ -296,7 +304,12 @@ export class Dialog extends HTMLElement {
         const popup = this.shadowRoot.querySelector(".popup");
 
         if (options?.target == null) {
-            return await crs.call("fixed_position", "set", {element: popup, container: options?.parent, position: "center-screen", margin: 10});
+            return await crs.call("fixed_position", "set", {
+                element: popup,
+                container: options?.parent,
+                position: "center-screen",
+                margin: 10
+            });
         }
 
         await crs.call("fixed_layout", "set", {
