@@ -233,8 +233,6 @@ export class Dialog extends HTMLElement {
         if (header != null) {
             const clonedFragment = header.cloneNode(true);
             headerElement.replaceChildren(clonedFragment);
-            await crsbinding.translations.parseElement(headerElement);
-            return;
         }
 
         const translations = {

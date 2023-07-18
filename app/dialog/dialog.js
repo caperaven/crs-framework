@@ -49,22 +49,12 @@ export default class Dialog extends crsbinding.classes.ViewBase {
         const instance = this._element.querySelector("#nested-dialog").content.cloneNode(true);
         const position = document.querySelector("#positionOption").value;
 
-        const options = {
-            title: "My Parent Dialog"
-        }
-
-        await crsbinding.translations.add({
-            "parentTitle": options?.title ?? "",
-            "close": options?.closeText ?? "Close",
-            "resize": options?.resizeText ?? "Resize"
-        }, "en");
-
         const header = await crs.call("dom", "create_element", {
             tag_name: "template",
             children: [
                 {
                     tag_name: "h2",
-                    text_content: "&{en.parentTitle}"
+                    text_content: "&{dialog.title}"
                 },
                 {
                     tag_name: "button",
@@ -90,6 +80,7 @@ export default class Dialog extends crsbinding.classes.ViewBase {
         });
         await crs.call("dialog", "show", {
             main: instance,
+            title: "My Parent Dialog",
             target: event.target,
             position: position,
             anchor: this.#anchor[position],
@@ -107,22 +98,12 @@ export default class Dialog extends crsbinding.classes.ViewBase {
     async #showChildDialog() {
         const instance = this._element.querySelector("#child-dialog").content.cloneNode(true);
 
-        const options = {
-            title: "My Child Dialog"
-        }
-
-        await crsbinding.translations.add({
-            "childTitle": options?.title ?? "",
-            "close": options?.closeText ?? "Close",
-            "resize": options?.resizeText ?? "Resize"
-        }, "en");
-
         const header = await crs.call("dom", "create_element", {
             tag_name: "template",
             children: [
                 {
                     tag_name: "h2",
-                    text_content: "&{en.childTitle}"
+                    text_content: "&{dialog.title}"
                 },
                 {
                     tag_name: "button",
@@ -150,6 +131,7 @@ export default class Dialog extends crsbinding.classes.ViewBase {
         await crs.call("dialog", "show", {
             main: instance,
             parent: "main",
+            title: "My Child Dialog",
             header: header.content,
             close: false
         });
