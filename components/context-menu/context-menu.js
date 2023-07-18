@@ -32,11 +32,13 @@ class ContextMenu extends crs.classes.BindableElement {
     }
 
     async connectedCallback() {
+        this.style.opacity = 0;
         await super.connectedCallback();
         await this.load();
 
         requestAnimationFrame(() => {
             this.classList.add("visible");
+            this.style.opacity = 1;
         })
     }
 
