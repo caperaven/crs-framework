@@ -110,9 +110,7 @@ export class Dialog extends HTMLElement {
 
         try {
             await struct.options.callback?.(struct);
-        }
-
-        finally {
+        } finally {
             delete struct.action;
             delete struct.event;
         }
@@ -140,7 +138,7 @@ export class Dialog extends HTMLElement {
     async #closeClicked() {
         this.className = "hidden";
         this.style.opacity = 0;
-        const timeout =  setTimeout(async () => {
+        const timeout = setTimeout(async () => {
             await this.#popStack();
         }, 350);
     }
@@ -349,9 +347,14 @@ export class Dialog extends HTMLElement {
         const struct = {header, main, footer, options};
         this.#stack.push(struct);
         this.style.opacity = 0;
-        const timeout = setTimeout(async () => {
+
+        if (this.#stack.length > 1) {
+            const timeout = setTimeout(async () => {
+                await this.#showStruct(struct);
+            }, 350);
+        } else {
             await this.#showStruct(struct);
-        }, 350);
+        }
 
         if (options?.callback != null && options.callback !== false) {
             struct.action = "loaded";
