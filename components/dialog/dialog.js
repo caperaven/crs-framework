@@ -104,16 +104,15 @@ export class Dialog extends HTMLElement {
             return this.#actions[action](event);
         }
 
-        // 3. this is a custom action so call the callback if it exists
         const struct = this.#stack[this.#stack.length - 1];
 
+        // 3. this is a custom action so call the callback if it exists
         struct.action = action;
         struct.event = event;
 
         try {
             await struct.options.callback?.(struct);
-        }
-        finally {
+        } finally {
             delete struct.action;
             delete struct.event;
         }
@@ -139,7 +138,11 @@ export class Dialog extends HTMLElement {
     }
 
     async #closeClicked() {
-        await this.#popStack();
+        this.className = "hidden";
+        this.style.opacity = 0;
+        setTimeout(async () => {
+            await this.#popStack();
+        }, 350);
     }
 
     /**
@@ -162,6 +165,8 @@ export class Dialog extends HTMLElement {
                     // Set position is called after the content is rendered in the dialog.
                     requestAnimationFrame(async () => {
                         await this.#setPosition(options);
+                        this.className = "visible"
+                        this.style.opacity = 1;
                         resolve();
                     });
                 }
@@ -231,8 +236,8 @@ export class Dialog extends HTMLElement {
         }
 
         if (header != null) {
-            headerElement.replaceChildren(header);
-            return;
+            const clonedFragment = header.cloneNode(true);
+            headerElement.replaceChildren(clonedFragment);
         }
 
         const translations = {
@@ -254,19 +259,22 @@ export class Dialog extends HTMLElement {
 
         let bodyElement = this.querySelector("[slot=body]");
 
-        if(bodyElement == null) {
+        if (bodyElement == null) {
             bodyElement = document.createElement("div");
             bodyElement.setAttribute("slot", "body");
             this.appendChild(bodyElement);
+        } else {
+            //NOTE: doing this to stop new content appending onto child dialog
+            bodyElement.replaceChildren();
         }
-
 
         if (typeof body == "string") {
             bodyElement.textContent = body;
             return;
         }
 
-        bodyElement.appendChild(body);
+        const clone = body.cloneNode(true);
+        bodyElement.appendChild(clone);
     }
 
     /**
@@ -314,12 +322,13 @@ export class Dialog extends HTMLElement {
         removedStruct.action = "close";
         removedStruct.options.callback && removedStruct.options.callback(removedStruct);
 
-        if (this.#stack.length == 0) {
-            return await crs.call("dialog", 'force_close', {});
+        if (this.#stack.length === 0) {
+            return await crs.call("dialog", "force_close", {});
         }
 
         const struct = this.#stack[this.#stack.length - 1];
         await this.#showStruct(struct);
+
         return true;
     }
 
@@ -334,7 +343,10 @@ export class Dialog extends HTMLElement {
     async show(header, main, footer, options, context) {
         const struct = {header, main, footer, options};
         this.#stack.push(struct);
-        await this.#showStruct(struct);
+        this.style.opacity = 0;
+        setTimeout(async () => {
+            await this.#showStruct(struct);
+        }, 350);
 
         if (context != null) {
             await crs.binding.parsers.parseElements(this.children, context);

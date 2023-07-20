@@ -6,6 +6,7 @@
     --header-height: 3rem;
     --footer-height: 3.5rem;
     --body-height: 3.5rem;
+    transition: opacity 0.3s ease-in-out;
 }
 
 :host:before {
@@ -44,6 +45,14 @@
 
 :host([data-allow-move="false"]) header:active {
     cursor: unset;
+}
+
+:host(.visible) {
+    opacity: 1;
+}
+
+:host(.hidden) {
+    opacity: 0;
 }
 
 .popup {

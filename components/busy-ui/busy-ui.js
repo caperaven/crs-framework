@@ -17,6 +17,14 @@ import {loadHTML} from "./../../src/load-resources.js";
  */
 export class BusyUi extends HTMLElement {
     /**
+     * @method observedAttributes - the attributes to watch for changes
+     * @return {[string]}
+     */
+    static get observedAttributes() {
+        return ['data-message','data-progress'];
+    }
+
+    /**
      * @constructor
      */
     constructor() {
@@ -49,10 +57,33 @@ export class BusyUi extends HTMLElement {
             requestAnimationFrame(async () => {
                 // load resources
                 this.shadowRoot.querySelector("#lblMessage").innerText = this.dataset.message;
+                this.shadowRoot.querySelector("#lblProgress").innerText = this.dataset.progress;
                 resolve();
             });
         })
     }
+
+    /**
+     * @method attributeChangedCallback - called when an attribute changes
+     * @return {Promise<void>}
+     */
+    async attributeChangedCallback(name, oldVal, newVal) {
+        if (name === 'data-message' && newVal !== oldVal) {
+            const lblMessage = this.shadowRoot.querySelector("#lblMessage");
+            if (lblMessage != null) {
+                lblMessage.innerText = newVal;
+            }
+        }
+
+        if (name === 'data-progress' && newVal !== oldVal) {
+            const lblProgress = this.shadowRoot.querySelector("#lblProgress");
+            if (lblProgress != null) {
+                lblProgress.innerText = newVal;
+            }
+        }
+    }
+
+
 }
 
 customElements.define("busy-ui", BusyUi);
