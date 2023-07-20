@@ -138,7 +138,7 @@ export class Dialog extends HTMLElement {
     async #closeClicked() {
         this.className = "hidden";
         this.style.opacity = 0;
-        const timeout = setTimeout(async () => {
+        setTimeout(async () => {
             await this.#popStack();
         }, 350);
     }
@@ -263,7 +263,8 @@ export class Dialog extends HTMLElement {
             bodyElement.setAttribute("slot", "body");
             this.appendChild(bodyElement);
         } else {
-            bodyElement.textContent = "";
+            //NOTE: doing this to stop new content appending onto child dialog
+            bodyElement.replaceChildren();
         }
 
         if (typeof body == "string") {
@@ -298,12 +299,7 @@ export class Dialog extends HTMLElement {
         const popup = this.shadowRoot.querySelector(".popup");
 
         if (options?.target == null) {
-            return await crs.call("fixed_position", "set", {
-                element: popup,
-                container: options?.parent,
-                position: "center-screen",
-                margin: 10
-            });
+            return await crs.call("fixed_position", "set", {element: popup, container: options?.parent, position: "center-screen", margin: 10});
         }
 
         await crs.call("fixed_layout", "set", {
@@ -347,14 +343,9 @@ export class Dialog extends HTMLElement {
         const struct = {header, main, footer, options};
         this.#stack.push(struct);
         this.style.opacity = 0;
-
-        if (this.#stack.length > 1) {
-            const timeout = setTimeout(async () => {
-                await this.#showStruct(struct);
-            }, 350);
-        } else {
+        setTimeout(async () => {
             await this.#showStruct(struct);
-        }
+        }, 350);
 
         if (options?.callback != null && options.callback !== false) {
             struct.action = "loaded";

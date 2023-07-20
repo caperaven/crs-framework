@@ -48,36 +48,8 @@ export default class Dialog extends crsbinding.classes.ViewBase {
     async showParentDialog(event) {
         const instance = this._element.querySelector("#nested-dialog").content.cloneNode(true);
         const position = document.querySelector("#positionOption").value;
+        const header = this._element.querySelector("#custom-header").content.cloneNode(true);
 
-        const header = await crs.call("dom", "create_element", {
-            tag_name: "template",
-            children: [
-                {
-                    tag_name: "h2",
-                    text_content: "&{dialog.title}"
-                },
-                {
-                    tag_name: "button",
-                    text_content: "open-fullscreen",
-                    classes: ["icon", "transparent"],
-                    attributes: {
-                        id: "btnResize",
-                        "data-action": "resize",
-                        "aria-label": "&{en.resize}"
-                    }
-                },
-                {
-                    tag_name: "button",
-                    text_content: "close",
-                    classes: ["icon", "transparent"],
-                    attributes: {
-                        id: "btnClose",
-                        "data-action": "close",
-                        "aria-label": "&{en.close}"
-                    }
-                }
-            ]
-        });
         await crs.call("dialog", "show", {
             main: instance,
             title: "My Parent Dialog",
@@ -97,36 +69,7 @@ export default class Dialog extends crsbinding.classes.ViewBase {
 
     async #showChildDialog() {
         const instance = this._element.querySelector("#child-dialog").content.cloneNode(true);
-
-        const header = await crs.call("dom", "create_element", {
-            tag_name: "template",
-            children: [
-                {
-                    tag_name: "h2",
-                    text_content: "&{dialog.title}"
-                },
-                {
-                    tag_name: "button",
-                    text_content: " open-fullscreen",
-                    classes: ["icon", "transparent"],
-                    attributes: {
-                        id: "btnResize",
-                        "data-action": "resize",
-                        "aria-label": "&{en.resize}"
-                    }
-                },
-                {
-                    tag_name: "button",
-                    text_content: "close",
-                    classes: ["icon", "transparent"],
-                    attributes: {
-                        id: "btnClose",
-                        "data-action": "close",
-                        "aria-label": "&{en.close}"
-                    }
-                }
-            ]
-        });
+        const header = this._element.querySelector("#custom-header").content.cloneNode(true);
 
         await crs.call("dialog", "show", {
             main: instance,
