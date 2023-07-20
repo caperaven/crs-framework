@@ -1,0 +1,11 @@
+:host {
+    --width: "30rem";
+    --height: "40rem";
+
+    width: var(--width);
+    height: var(--height);
+
+    position: fixed;
+    display: grid;
+    grid-template-rows: minmax(0, max-content) 1fr minmax(0, max-content);
+}

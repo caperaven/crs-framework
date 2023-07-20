@@ -1,0 +1,92 @@
+{
+    "title": "test edit",
+    "selectorAttribute": "id",
+    "steps": [
+        {
+            "type": "setViewport",
+            "width": 1084,
+            "height": 1321,
+            "deviceScaleFactor": 1,
+            "isMobile": false,
+            "hasTouch": false,
+            "isLandscape": false
+        },
+        {
+            "type": "navigate",
+            "url": "https://localhost/data-manager-idb",
+            "assertedEvents": [
+                {
+                    "type": "navigation",
+                    "url": "https://localhost/data-manager-idb",
+                    "title": "My Application"
+                }
+            ]
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                "[id='btnGenerate']"
+            ],
+            "offsetX": 56.15625,
+            "offsetY": 11.1875
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                "[data-test='code']"
+            ],
+            "offsetX": 121,
+            "offsetY": 16.1875
+        },
+        {
+            "type": "change",
+            "value": "code0 Test",
+            "selectors": [
+                [
+                    "data-manager-idb-view",
+                    "[data-test='code']"
+                ]
+            ],
+            "target": "main"
+        },
+        {
+            "type": "keyDown",
+            "target": "main",
+            "key": "Tab"
+        },
+        {
+            "type": "keyUp",
+            "key": "Tab",
+            "target": "main"
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                "[id='btnSaveRecord']"
+            ],
+            "offsetX": 26.328125,
+            "offsetY": 20.1875
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                "[id='btnNextRecord']"
+            ],
+            "offsetX": 29.28125,
+            "offsetY": 22.1875
+        },
+        {
+            "type": "click",
+            "target": "main",
+            "selectors": [
+                "[id='btnPreviousRecord']"
+            ],
+            "offsetX": 21,
+            "offsetY": 19.1875
+        }
+    ]
+}
