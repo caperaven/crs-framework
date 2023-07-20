@@ -3,6 +3,7 @@ import "./packages/crs-binding/crs-binding.js";
 import "./packages/crs-binding/events/event-emitter.js";
 import "./packages/crs-binding/classes/view-base.js";
 import "./packages/crs-binding/classes/bindable-element.js";
+import "./packages/crs-binding/classes/observable.js";
 import "./packages/crs-binding/expressions/code-factories/if.js";
 import "./packages/crs-binding/expressions/code-factories/case.js";
 import "./packages/crs-binding/managers/inflation-manager.js";
