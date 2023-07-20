@@ -24,7 +24,7 @@ export default class DialogViewModel extends crs.classes.BindableElement {
 
     async showRelative(event) {
         const instance = this.shadowRoot.querySelector("#dialog-content").content.cloneNode(true);
-        const position = document.querySelector("#positionOptions").value;
+        const position = this.shadowRoot.querySelector("#positionOptions").value;
 
         const anchor = {
             left: "top",
