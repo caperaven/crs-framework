@@ -1,1 +1,37 @@
-class s{#t=[];#e=new EventTarget;#s=!0;get allowNotifications(){return this.#s}set allowNotifications(t){this.#s=t}get events(){return Object.freeze(this.#t)}dispose(){for(const{event:t,listener:e}of this.#t)this.#e.removeEventListener(t,e);this.#t.length=0}addEventListener(t,e){this.#e.addEventListener(t,e),this.#t.push({event:t,listener:e})}removeEventListener(t,e){this.#e.removeEventListener(t,e),this.#t.splice(this.#t.indexOf({event:t,listener:e}),1)}notify(t,e){this.allowNotifications===!0&&this.#e.dispatchEvent(new CustomEvent(t,{detail:e}))}}crs.classes.Observable=s;export{s as Observable};
+class Observable {
+  #events = [];
+  #eventEmitter = new EventTarget();
+  #allowNotifications = true;
+  get allowNotifications() {
+    return this.#allowNotifications;
+  }
+  set allowNotifications(newValue) {
+    this.#allowNotifications = newValue;
+  }
+  get events() {
+    return Object.freeze(this.#events);
+  }
+  dispose() {
+    for (const { event, listener } of this.#events) {
+      this.#eventEmitter.removeEventListener(event, listener);
+    }
+    this.#events.length = 0;
+  }
+  addEventListener(event, listener) {
+    this.#eventEmitter.addEventListener(event, listener);
+    this.#events.push({ event, listener });
+  }
+  removeEventListener(event, listener) {
+    this.#eventEmitter.removeEventListener(event, listener);
+    this.#events.splice(this.#events.indexOf({ event, listener }), 1);
+  }
+  notify(event, detail) {
+    if (this.allowNotifications === true) {
+      this.#eventEmitter.dispatchEvent(new CustomEvent(event, { detail }));
+    }
+  }
+}
+crs.classes.Observable = Observable;
+export {
+  Observable
+};

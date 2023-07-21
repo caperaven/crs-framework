@@ -1,1 +1,95 @@
-class i extends HTMLElement{#t;get hasStyle(){return!0}get shadowDom(){return!1}get hasOwnContext(){return!0}get bid(){return this.#t}constructor(){super(),this.shadowDom==!0&&this.attachShadow({mode:"open"}),this.hasOwnContext==!0&&(this.#t=crs.binding.data.addObject(this.constructor.name),crs.binding.data.addContext(this.#t,this)),crs.binding.dom.enableEvents(this)}dispose(){crs.binding.dom.disableEvents(this),crs.binding.utils.disposeProperties(this)}async connectedCallback(){await this.preLoad?.(),await d(this),await n(this),await r(this),this.dataset.ready="true",this.dispatchEvent(new CustomEvent("ready",{bubbles:!0,composed:!0}))}async disconnectedCallback(){this.dispose(),crs.binding.utils.unmarkElement(this),crs.binding.utils.disposeProperties(this),await crs.binding.templates.remove(this.constructor.name),await crs.binding.data.remove(this.#t)}getProperty(e){return crs.binding.data.getProperty(this,e)}async setProperty(e,s){await crs.binding.data.setProperty(this,e,s)}async updateProperty(e,s){await crs.binding.data.updateProperty(this,e,s)}}function a(t){const e=t.mobi;return e!=null&&/Mobi/.test(navigator.userAgent)?e:t.html}async function r(t){requestAnimationFrame(()=>{const e=t.getAttribute("id");e!=null&&crs.binding.data.setName(t.bid,e)})}async function n(t){t.load!=null&&await t.load.call(t)}async function d(t){if(t.html==null)return;let e="";t.hasStyle==!0&&(e=`<link rel="stylesheet" href="${t.html.replace(".html",".css")}">`);let s=await crs.binding.templates.get(t.constructor.name,a(t));s=`${e}${s}`,t.shadowRoot!=null?t.shadowRoot.innerHTML=s:t.innerHTML=s,await crs.binding.parsers.parseElements(t.shadowRoot?t.shadowRoot.children:t.children,t),await crs.binding.data.updateContext(t.bid)}crs.classes.BindableElement=i;export{i as BindableElement};
+class BindableElement extends HTMLElement {
+  #bid;
+  get hasStyle() {
+    return true;
+  }
+  get shadowDom() {
+    return false;
+  }
+  get hasOwnContext() {
+    return true;
+  }
+  get bid() {
+    return this.#bid;
+  }
+  constructor() {
+    super();
+    if (this.shadowDom == true) {
+      this.attachShadow({ mode: "open" });
+    }
+    if (this.hasOwnContext == true) {
+      this.#bid = crs.binding.data.addObject(this.constructor.name);
+      crs.binding.data.addContext(this.#bid, this);
+    }
+    crs.binding.dom.enableEvents(this);
+  }
+  dispose() {
+    crs.binding.dom.disableEvents(this);
+    crs.binding.utils.disposeProperties(this);
+  }
+  async connectedCallback() {
+    await this["preLoad"]?.();
+    await loadHtml(this);
+    await load(this);
+    await setName(this);
+    this.dataset.ready = "true";
+    this.dispatchEvent(new CustomEvent("ready", { bubbles: true, composed: true }));
+  }
+  async disconnectedCallback() {
+    this.dispose();
+    crs.binding.utils.unmarkElement(this);
+    crs.binding.utils.disposeProperties(this);
+    await crs.binding.templates.remove(this.constructor.name);
+    await crs.binding.data.remove(this.#bid);
+  }
+  getProperty(property) {
+    return crs.binding.data.getProperty(this, property);
+  }
+  async setProperty(property, value) {
+    await crs.binding.data.setProperty(this, property, value);
+  }
+  async updateProperty(property, callback) {
+    await crs.binding.data.updateProperty(this, property, callback);
+  }
+}
+function getHtmlPath(obj) {
+  const mobiPath = obj.mobi;
+  if (mobiPath != null && /Mobi/.test(navigator.userAgent)) {
+    return mobiPath;
+  }
+  return obj.html;
+}
+async function setName(component) {
+  requestAnimationFrame(() => {
+    const name = component.getAttribute("id");
+    if (name != null) {
+      crs.binding.data.setName(component.bid, name);
+    }
+  });
+}
+async function load(component) {
+  if (component.load != null) {
+    await component.load.call(component);
+  }
+}
+async function loadHtml(component) {
+  if (component.html == null)
+    return;
+  let styleLink = "";
+  if (component.hasStyle == true) {
+    styleLink = `<link rel="stylesheet" href="${component.html.replace(".html", ".css")}">`;
+  }
+  let html = await crs.binding.templates.get(component.constructor.name, getHtmlPath(component));
+  html = `${styleLink}${html}`;
+  if (component.shadowRoot != null) {
+    component.shadowRoot.innerHTML = html;
+  } else {
+    component.innerHTML = html;
+  }
+  await crs.binding.parsers.parseElements(component.shadowRoot ? component.shadowRoot.children : component.children, component);
+  await crs.binding.data.updateContext(component.bid);
+}
+crs.classes.BindableElement = BindableElement;
+export {
+  BindableElement
+};

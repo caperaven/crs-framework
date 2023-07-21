@@ -1,6 +1,6 @@
 :host {
-    --width: "30rem";
-    --height: "40rem";
+    --width: 30rem;
+    --height: 40rem;
 
     width: var(--width);
     height: var(--height);
@@ -8,4 +8,35 @@
     position: fixed;
     display: grid;
     grid-template-rows: minmax(0, max-content) 1fr minmax(0, max-content);
+
+    box-shadow: var(--box-shadow);
+    border-radius: var(--radius);
+    border: var(--border);
+}
+
+footer {
+    border-top: var(--border);
+    background: var(--grey-s3);
+}
+
+header {
+    border-bottom: var(--border);
+}
+
+::slotted([slot="header"]) {
+    display: flex;
+    align-items: center;
+    padding: var(--padding);
+}
+
+::slotted([slot="body"]) {
+    padding: var(--padding);
+    overflow: auto;
+}
+
+::slotted([slot="footer"][role="toolbar"]) {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: var(--padding);
 }

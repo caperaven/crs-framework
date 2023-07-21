@@ -1,1 +1,27 @@
-async function d(n,s,a){const u=n.name.split("."),e=n.ownerElement,r=u[0];let i=n.value;crs.binding.utils.markElement(e,s),e.removeAttribute(n.name),e.setAttribute("data-field",i);const l=e.__uuid;let t=crs.binding.eventStore.getIntent("change",l);t==null&&(t={provider:a,value:{},dataDef:null}),t.value[i]=r;const c="change";crs.binding.eventStore.register(c,l,t),crs.binding.data.setCallback(e.__uuid,s.bid,[i],a),e.__events||=[],e.__events.push("change")}export{d as bindingParse};
+async function bindingParse(attr, context, provider) {
+  const parts = attr.name.split(".");
+  const element = attr.ownerElement;
+  const property = parts[0];
+  let path = attr.value;
+  crs.binding.utils.markElement(element, context);
+  element.removeAttribute(attr.name);
+  element.setAttribute("data-field", path);
+  const uuid = element["__uuid"];
+  let intent = crs.binding.eventStore.getIntent("change", uuid);
+  if (intent == null) {
+    intent = {
+      provider,
+      value: {},
+      dataDef: null
+    };
+  }
+  intent.value[path] = property;
+  const event = "change";
+  crs.binding.eventStore.register(event, uuid, intent);
+  crs.binding.data.setCallback(element["__uuid"], context.bid, [path], provider);
+  element.__events ||= [];
+  element.__events.push("change");
+}
+export {
+  bindingParse
+};

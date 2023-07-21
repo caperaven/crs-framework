@@ -57,7 +57,7 @@ html, body {
 
 body {
     display: grid;
-    grid-template-rows: 3rem auto 2rem;
+    grid-template-rows: 3rem 1fr 2rem;
 }
 
 header, footer {

@@ -1,1 +1,35 @@
-import{getQueries as m}from"./utils/get-queries.js";class u{async onEvent(s,l,e,o){for(const t of e.queries){const r=t=="this"?o:o.getRootNode().querySelector(t);for(const n of e.classNames)r.classList.toggle(n)}}async parse(s,l){const e=s.ownerElement,t=s.name.split(".")[0];crs.binding.utils.markElement(e,l);const r=e.__uuid,n=s.value.replace(")","").split("("),a=n[1].split(",").map(i=>i.trim().replaceAll("'","")),c={provider:"classlist.toggle",classNames:a};m(n[0],c),crs.binding.eventStore.register(t,r,c),e.__events||=[],e.__events.push(t),e.removeAttribute(s.name)}async clear(s){crs.binding.eventStore.clear(s)}}export{u as default};
+import { getQueries } from "./utils/get-queries.js";
+class ClassListToggleProvider {
+  async onEvent(event, bid, intent, target) {
+    for (const query of intent.queries) {
+      const element = query == "this" ? target : target.getRootNode().querySelector(query);
+      for (const className of intent.classNames) {
+        element.classList.toggle(className);
+      }
+    }
+  }
+  async parse(attr, context) {
+    const element = attr.ownerElement;
+    const nameParts = attr.name.split(".");
+    const event = nameParts[0];
+    crs.binding.utils.markElement(element, context);
+    const uuid = element["__uuid"];
+    const valueParts = attr.value.replace(")", "").split("(");
+    const classNames = valueParts[1].split(",").map((item) => item.trim().replaceAll("'", ""));
+    const intent = {
+      provider: "classlist.toggle",
+      classNames
+    };
+    getQueries(valueParts[0], intent);
+    crs.binding.eventStore.register(event, uuid, intent);
+    element.__events ||= [];
+    element.__events.push(event);
+    element.removeAttribute(attr.name);
+  }
+  async clear(uuid) {
+    crs.binding.eventStore.clear(uuid);
+  }
+}
+export {
+  ClassListToggleProvider as default
+};

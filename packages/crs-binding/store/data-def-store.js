@@ -1,7 +1,206 @@
-import"./../validation/validation-ui.js";class p{#t={};#e={};#s={};#n={};#o={};get store(){return this.#t}#a(t,e,o,s,n){let a=t[e];n=n.replace("$context.","context."),a[n]||=new Set,a[n].add(`${o}.${s}`)}async#i(t,e){const o=e.name;for(const s of Object.keys(e.fields)){const n=e.fields[s];await this.#l(n,t,o,s),await this.#r(n,t,o,s)}}async#l(t,e,o,s){if(t.conditionalDefaults!=null)for(const n of t.conditionalDefaults){const a=await crs.binding.expression.sanitize(n.conditionExpr);for(let r of a.properties)this.#a(this.#n,e,o,s,r);const i=`
+import "./../validation/validation-ui.js";
+class DataDefStore {
+  #store = {};
+  #valueAutomation = {};
+  #validationAutomation = {};
+  #defaultAutomationMap = {};
+  #validationAutomationMap = {};
+  get store() {
+    return this.#store;
+  }
+  #addAutomationMap(map, bid, path, field, property) {
+    let obj = map[bid];
+    property = property.replace("$context.", "context.");
+    obj[property] ||= /* @__PURE__ */ new Set();
+    obj[property].add(`${path}.${field}`);
+  }
+  async #parseDefinition(bid, def) {
+    const path = def.name;
+    for (const field of Object.keys(def.fields)) {
+      const fieldDef = def.fields[field];
+      await this.#parseConditionalDefaults(fieldDef, bid, path, field);
+      await this.#parseConditionalValidations(fieldDef, bid, path, field);
+    }
+  }
+  async #parseConditionalDefaults(fieldDef, bid, path, field) {
+    if (fieldDef.conditionalDefaults != null) {
+      for (const conditionalDefault of fieldDef.conditionalDefaults) {
+        const expo = await crs.binding.expression.sanitize(conditionalDefault.conditionExpr);
+        for (let property of expo.properties) {
+          this.#addAutomationMap(this.#defaultAutomationMap, bid, path, field, property);
+        }
+        const code = `
                     const context = crs.binding.data.getData(bid).data;
-                    return ${a.expression}
-                    `,l=new crs.classes.AsyncFunction("bid",i);this.addDefaultsAutomation(e,o,s,l,n.value,n.true_value,n.false_value)}delete t.conditionalDefaults}async#c(t,e,o,s){if(t.defaultValidations!=null)for(const n of Object.keys(t.defaultValidations)){const a=n,i=t.defaultValidations[n],l=`${o}.${s}`.replace("context.","");crs.binding.ui.apply(e,l,a,i)}delete t.defaultValidations}async#r(t,e,o,s){if(t.conditionalValidations!=null)for(const n of t.conditionalValidations){const a=await crs.binding.expression.sanitize(n.conditionExpr);for(let c of a.properties)this.#a(this.#o,e,o,s,c);const i=`
+                    return ${expo.expression}
+                    `;
+        const fn = new crs.classes.AsyncFunction("bid", code);
+        this.addDefaultsAutomation(bid, path, field, fn, conditionalDefault.value, conditionalDefault.true_value, conditionalDefault.false_value);
+      }
+    }
+    delete fieldDef.conditionalDefaults;
+  }
+  async #parseDefaultValidations(fieldDef, bid, path, field) {
+    if (fieldDef.defaultValidations != null) {
+      for (const key of Object.keys(fieldDef.defaultValidations)) {
+        const rule = key;
+        const def = fieldDef.defaultValidations[key];
+        const fieldPath = `${path}.${field}`.replace("context.", "");
+        crs.binding.ui.apply(bid, fieldPath, rule, def);
+      }
+    }
+    delete fieldDef.defaultValidations;
+  }
+  async #parseConditionalValidations(fieldDef, bid, path, field) {
+    if (fieldDef.conditionalValidations != null) {
+      for (const conditionalValidation of fieldDef.conditionalValidations) {
+        const expo = await crs.binding.expression.sanitize(conditionalValidation.conditionExpr);
+        for (let property of expo.properties) {
+          this.#addAutomationMap(this.#validationAutomationMap, bid, path, field, property);
+        }
+        const code = `
                     const context = crs.binding.data.getData(bid).data;
-                    return ${a.expression}
-                    `,l=new crs.classes.AsyncFunction("bid",i),r=[];for(const c of Object.keys(n.rules)){const u=n.rules[c],d=u.value,f=u.required||!0;r.push({rule:c,value:d,required:f})}this.addValidationAutomation(e,o,s,l,r)}delete t.conditionalValidations}async register(t,e){e=JSON.parse(JSON.stringify(e));const o=e.name.split(".");let s=this.#t[t]||={},n=this.#e[t]||={};this.#n[t]||={},this.#o[t]||={},this.#s[t]||={};for(let i=0;i<o.length;i++)i<o.length-1&&(s=s[o[i]]||={}),n=n[o[i]]||={};const a=o[o.length-1];s[a]=e,await this.#i(t,e)}async unRegister(t){delete this.#t[t],delete this.#e[t],delete this.#n[t],delete this.#o[t],delete this.#s[t]}addDefaultsAutomation(t,e,o,s,n,a,i){let l=this.#e[t];for(const u of e.split("."))l=l[u];const r=l[o]||=[],c={condition:s};n!=null&&(c.value=n),a!=null&&(c.trueValue=a),i!=null&&(c.falseValue=i),r.push(c)}addValidationAutomation(t,e,o,s,n){const a=`${e}.${o}`.replace("context.","");let i=this.#s[t];(i[a]||=[]).push({condition:s,def:n})}removeAutomation(t,e){delete this.#e[t][e]}remove(t){delete this.#t[t],delete this.#e[t],delete this.#n[t]}async automateValues(t,e){if(this.#n[t]==null)return;e.indexOf(".")==-1&&(e=`context.${e}`);const o=this.#n[t][e];if(o!=null)for(const s of o){let n=this.#e[t];const a=s.split(".");for(const i of a)n=n[i];for(const i of n){const l=await i.condition(t),r=i.value||i.trueValue;l==!0?await crs.binding.data.setProperty(t,s,r):i.falseValue!=null&&await crs.binding.data.setProperty(t,s,i.falseValue)}}}async automateValidations(t,e){if(this.#o[t]==null)return;const o=this.#o[t][e];if(o!=null)for(const s of o){const n=this.#s[t][s];for(const a of n){const i=await a.condition(t);for(const l of a.def)l.required=i,await crs.binding.ui.apply(t,s,l.rule,l)}}}async create(t,e){let o=this.#t[t];const s=e.split(".");for(const a of s)o=o[a];const n={};for(const a of Object.keys(o.fields))n[a]=o.fields[a].default||null;await crs.binding.data.setProperty(t,e,n)}validate(t,e,o){}async applyValidations(t){const e=this.#t[t];for(const o of Object.keys(e)){const s=e[o],n=s.name;for(const a of Object.keys(s.fields)){const i=s.fields[a];await this.#c(i,t,n,a)}}}}crs.binding.dataDef=new p;export{p as DataDefStore};
+                    return ${expo.expression}
+                    `;
+        const fn = new crs.classes.AsyncFunction("bid", code);
+        const def = [];
+        for (const rule of Object.keys(conditionalValidation.rules)) {
+          const validationRule = conditionalValidation.rules[rule];
+          const value = validationRule.value;
+          const required = validationRule.required || true;
+          def.push({ rule, value, required });
+        }
+        this.addValidationAutomation(bid, path, field, fn, def);
+      }
+    }
+    delete fieldDef.conditionalValidations;
+  }
+  async register(bid, def) {
+    def = JSON.parse(JSON.stringify(def));
+    const nameParts = def.name.split(".");
+    let store = this.#store[bid] ||= {};
+    let valueAutomation = this.#valueAutomation[bid] ||= {};
+    this.#defaultAutomationMap[bid] ||= {};
+    this.#validationAutomationMap[bid] ||= {};
+    this.#validationAutomation[bid] ||= {};
+    for (let i = 0; i < nameParts.length; i++) {
+      if (i < nameParts.length - 1) {
+        store = store[nameParts[i]] ||= {};
+      }
+      valueAutomation = valueAutomation[nameParts[i]] ||= {};
+    }
+    const name = nameParts[nameParts.length - 1];
+    store[name] = def;
+    await this.#parseDefinition(bid, def);
+  }
+  async unRegister(bid) {
+    delete this.#store[bid];
+    delete this.#valueAutomation[bid];
+    delete this.#defaultAutomationMap[bid];
+    delete this.#validationAutomationMap[bid];
+    delete this.#validationAutomation[bid];
+  }
+  addDefaultsAutomation(bid, path, field, fn, value, trueValue, falseValue) {
+    let obj = this.#valueAutomation[bid];
+    for (const prop of path.split(".")) {
+      obj = obj[prop];
+    }
+    const collection = obj[field] ||= [];
+    const newItem = { condition: fn };
+    if (value != null) {
+      newItem.value = value;
+    }
+    if (trueValue != null) {
+      newItem.trueValue = trueValue;
+    }
+    if (falseValue != null) {
+      newItem.falseValue = falseValue;
+    }
+    collection.push(newItem);
+  }
+  addValidationAutomation(bid, path, field, fn, def) {
+    const propertyPath = `${path}.${field}`.replace("context.", "");
+    let obj = this.#validationAutomation[bid];
+    let collection = obj[propertyPath] ||= [];
+    collection.push({ condition: fn, def });
+  }
+  removeAutomation(name, field) {
+    delete this.#valueAutomation[name][field];
+  }
+  remove(bid) {
+    delete this.#store[bid];
+    delete this.#valueAutomation[bid];
+    delete this.#defaultAutomationMap[bid];
+  }
+  async automateValues(bid, fieldPath) {
+    if (this.#defaultAutomationMap[bid] == null)
+      return;
+    if (fieldPath.indexOf(".") == -1) {
+      fieldPath = `context.${fieldPath}`;
+    }
+    const contextMap = this.#defaultAutomationMap[bid][fieldPath];
+    if (contextMap == null)
+      return;
+    for (const path of contextMap) {
+      let definition = this.#valueAutomation[bid];
+      const pathParts = path.split(".");
+      for (const pathPart of pathParts) {
+        definition = definition[pathPart];
+      }
+      for (const item of definition) {
+        const result = await item.condition(bid);
+        const trueValue = item.value || item.trueValue;
+        if (result == true) {
+          await crs.binding.data.setProperty(bid, path, trueValue);
+        } else if (item.falseValue != null) {
+          await crs.binding.data.setProperty(bid, path, item.falseValue);
+        }
+      }
+    }
+  }
+  async automateValidations(bid, fieldPath) {
+    if (this.#validationAutomationMap[bid] == null)
+      return;
+    const automationFields = this.#validationAutomationMap[bid][fieldPath];
+    if (automationFields == null)
+      return;
+    for (const field of automationFields) {
+      const definitions = this.#validationAutomation[bid][field];
+      for (const def of definitions) {
+        const addRules = await def.condition(bid);
+        for (const ruleDef of def.def) {
+          ruleDef.required = addRules;
+          await crs.binding.ui.apply(bid, field, ruleDef.rule, ruleDef);
+        }
+      }
+    }
+  }
+  async create(bid, property) {
+    let def = this.#store[bid];
+    const pathParts = property.split(".");
+    for (const pathPart of pathParts) {
+      def = def[pathPart];
+    }
+    const model = {};
+    for (const fieldName of Object.keys(def.fields)) {
+      model[fieldName] = def.fields[fieldName].default || null;
+    }
+    await crs.binding.data.setProperty(bid, property, model);
+  }
+  validate(bid, property, name) {
+  }
+  async applyValidations(bid) {
+    const definitions = this.#store[bid];
+    for (const defKey of Object.keys(definitions)) {
+      const def = definitions[defKey];
+      const path = def.name;
+      for (const field of Object.keys(def.fields)) {
+        const fieldDef = def.fields[field];
+        await this.#parseDefaultValidations(fieldDef, bid, path, field);
+      }
+    }
+  }
+}
+crs.binding.dataDef = new DataDefStore();
+export {
+  DataDefStore
+};

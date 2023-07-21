@@ -1,1 +1,33 @@
-import"../../expressions/code-factories/if.js";import{bindingUpdate as r}from"./utils/binding-update.js";import{bindingParse as t}from"./utils/binding-parse.js";class c{async onEvent(e,n,d,i){const o=i.dataset.field;if(n==null||o==null)return;let a=i.value;i.nodeName==="INPUT"&&(i.type==="checkbox"&&(a=i.checked),i.type==="number"&&(a=Number(a))),await crs.binding.data.setProperty(n,o,a)}async parse(e,n){const d=e.name.indexOf("two-way")!=-1?".two-way":".bind";await t(e,n,d)}async update(e,...n){await r(e,...n)}async clear(e){crs.binding.eventStore.clear(e)}}export{c as default};
+import "../../expressions/code-factories/if.js";
+import { bindingUpdate } from "./utils/binding-update.js";
+import { bindingParse } from "./utils/binding-parse.js";
+class BindProvider {
+  async onEvent(event, bid, intent, target) {
+    const field = target.dataset.field;
+    if (bid == null || field == null)
+      return;
+    let value = target.value;
+    if (target.nodeName === "INPUT") {
+      if (target.type === "checkbox") {
+        value = target.checked;
+      }
+      if (target.type === "number") {
+        value = Number(value);
+      }
+    }
+    await crs.binding.data.setProperty(bid, field, value);
+  }
+  async parse(attr, context) {
+    const provider = attr.name.indexOf("two-way") != -1 ? ".two-way" : ".bind";
+    await bindingParse(attr, context, provider);
+  }
+  async update(uuid, ...properties) {
+    await bindingUpdate(uuid, ...properties);
+  }
+  async clear(uuid) {
+    crs.binding.eventStore.clear(uuid);
+  }
+}
+export {
+  BindProvider as default
+};

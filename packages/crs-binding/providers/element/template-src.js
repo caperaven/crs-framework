@@ -1,2 +1,31 @@
-class o{async parse(t,n){crs.binding.utils.unmarkElement(t);const e=await l(t,n);let a=await fetch(e).then(i=>i.text());t.dataset.css==="true"&&(a=`${`<link rel="stylesheet" href="${e.replace(".html",".css")}">`}
-${a}`);const s=document.createElement("template");s.innerHTML=a;const c=s.content.cloneNode(!0);await crs.binding.translations.parseElement(c),t.replaceWith(c)}}async function l(r,t){const n=r.getAttribute("src");if(n.indexOf("$context")===-1)return n;const e=n.split("/"),a=e[0].replace("$context.",""),s=await crs.binding.data.getProperty(t,a);return e[0]=s,e.join("/")}export{o as default};
+class TemplateSrcProvider {
+  async parse(element, context) {
+    crs.binding.utils.unmarkElement(element);
+    const path = await getPath(element, context);
+    let content = await fetch(path).then((result) => result.text());
+    if (element.dataset.css === "true") {
+      const cssMarkup = `<link rel="stylesheet" href="${path.replace(".html", ".css")}">`;
+      content = `${cssMarkup}
+${content}`;
+    }
+    const template = document.createElement("template");
+    template.innerHTML = content;
+    const newContent = template.content.cloneNode(true);
+    await crs.binding.translations.parseElement(newContent);
+    element.replaceWith(newContent);
+  }
+}
+async function getPath(element, context) {
+  const path = element.getAttribute("src");
+  if (path.indexOf("$context") === -1) {
+    return path;
+  }
+  const parts = path.split("/");
+  const property = parts[0].replace("$context.", "");
+  const value = await crs.binding.data.getProperty(context, property);
+  parts[0] = value;
+  return parts.join("/");
+}
+export {
+  TemplateSrcProvider as default
+};

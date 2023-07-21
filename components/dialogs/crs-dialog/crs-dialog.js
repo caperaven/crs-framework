@@ -25,6 +25,7 @@ class CRSDialog extends crs.classes.BindableElement {
     }
 
     async disconnectedCallback() {
+        crs.binding.utils.unmarkElement(this, true);
         this.#canCloseCallback = null;
         super.disconnectedCallback();
     }
@@ -54,10 +55,16 @@ class CRSDialog extends crs.classes.BindableElement {
                 this.appendChild(content.footer);
             }
 
-            requestAnimationFrame(() => {
+            requestAnimationFrame(async () => {
+                if (context != null) {
+                    await crs.binding.parsers.parseElements(this.children, context);
+                }
+
+                await crs.binding.data.updateUI(context.bid, null);
+
                 this.style.top = "50%";
                 this.style.left = "50%";
-                this.style.transform = "translate(-50%, -50%)";
+                this.style.translate = "-50% -50%";
                 this.style.opacity = "1";
                 resolve();
             })

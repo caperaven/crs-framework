@@ -1,1 +1,13 @@
-function u(e,a){if(e.indexOf("[")!=-1){const t=e.lastIndexOf("]"),l=e.substring(1,t);a.queries=l.split(","),a.value!=null&&(a.value=e.replace(`[${l}].`,""))}}export{u as getQueries};
+function getQueries(string, result) {
+  if (string.indexOf("[") != -1) {
+    const lastBracket = string.lastIndexOf("]");
+    const subStr = string.substring(1, lastBracket);
+    result.queries = subStr.split(",");
+    if (result.value != null) {
+      result.value = string.replace(`[${subStr}].`, "");
+    }
+  }
+}
+export {
+  getQueries
+};

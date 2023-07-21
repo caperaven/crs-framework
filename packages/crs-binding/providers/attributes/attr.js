@@ -1,1 +1,61 @@
-class u{#t={};get store(){return this.#t}async parse(e,n){const r=e.name.split(".")[0],s=e.ownerElement;s.removeAttribute(e.name),crs.binding.utils.markElement(s,n);const t=await crs.binding.expression.compile(e.value);if(t.parameters.properties.length==0){const i=await t.function();s.setAttribute(r,i);return}const o=this.#t[s.__uuid]||={};for(const i of t.parameters.properties)o[i]={[r]:t.key};crs.binding.data.setCallback(s.__uuid,n.bid,t.parameters.properties,".attr")}async update(e,...n){if(this.#t[e]==null)return;const r=crs.binding.elements[e],s=crs.binding.data.getDataForElement(r),t=this.#t[e];n.length==0&&(n=Object.keys(t));for(const o of n){if(t[o]==null)continue;const i=Object.keys(t[o]);for(const c of i){const a=t[o][c],l=await crs.binding.functions.get(a).function(s);r.setAttribute(c,l)}}}async clear(e){const n=this.#t[e];if(n!=null){for(const r of Object.values(n))for(const s of Object.values(r)){const t=crs.binding.functions.get(s);crs.binding.expression.release(t)}delete this.#t[e]}}}export{u as default};
+class AttrProvider {
+  #store = {};
+  get store() {
+    return this.#store;
+  }
+  async parse(attr, context) {
+    const attrName = attr.name.split(".")[0];
+    const element = attr.ownerElement;
+    element.removeAttribute(attr.name);
+    crs.binding.utils.markElement(element, context);
+    const expo = await crs.binding.expression.compile(attr.value);
+    if (expo.parameters.properties.length == 0) {
+      const value = await expo.function();
+      element.setAttribute(attrName, value);
+      return;
+    }
+    const obj = this.#store[element["__uuid"]] ||= {};
+    for (const property of expo.parameters.properties) {
+      obj[property] = {
+        [attrName]: expo.key
+      };
+    }
+    crs.binding.data.setCallback(element["__uuid"], context.bid, expo.parameters.properties, ".attr");
+  }
+  async update(uuid, ...properties) {
+    if (this.#store[uuid] == null)
+      return;
+    const element = crs.binding.elements[uuid];
+    const data = crs.binding.data.getDataForElement(element);
+    const storeItem = this.#store[uuid];
+    if (properties.length == 0) {
+      properties = Object.keys(storeItem);
+    }
+    for (const property of properties) {
+      if (storeItem[property] == null)
+        continue;
+      const attributes = Object.keys(storeItem[property]);
+      for (const attribute of attributes) {
+        const fnKey = storeItem[property][attribute];
+        const expo = crs.binding.functions.get(fnKey);
+        const result = await expo.function(data);
+        element.setAttribute(attribute, result);
+      }
+    }
+  }
+  async clear(uuid) {
+    const obj = this.#store[uuid];
+    if (obj == null)
+      return;
+    for (const attr of Object.values(obj)) {
+      for (const fnKey of Object.values(attr)) {
+        const exp = crs.binding.functions.get(fnKey);
+        crs.binding.expression.release(exp);
+      }
+    }
+    delete this.#store[uuid];
+  }
+}
+export {
+  AttrProvider as default
+};

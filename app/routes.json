@@ -94,6 +94,10 @@
             "view": "dialog"
         },
         {
+            "title": "Dialogs",
+            "view": "dialogs"
+        },
+        {
             "title": "Group Box",
             "hash": "#group-box",
             "view": "group-box"

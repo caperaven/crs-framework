@@ -95,5 +95,5 @@ class DialogsActions {
 }
 
 crs.dialogs = document.createElement("crs-dialogs");
-document.appendChild(crs.dialogs);
+document.body.appendChild(crs.dialogs);
 crs.intent.dialogs = DialogsActions;

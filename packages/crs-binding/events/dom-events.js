@@ -1,1 +1,46 @@
-function l(e){e._domEvents=[],e.registerEvent=d,e.unregisterEvent=i}function E(e){if(e._domEvents!=null){for(let t of e._domEvents)e.removeEventListener(t.event,t.callback),delete t.element,delete t.callback,delete t.event;e._domEvents.length=0,delete e._domEvents,delete e.registerEvent,delete e.unregisterEvent}}function d(e,t,o,n=null){if(this._domEvents.find(r=>r.element==e&&r.event==t&&r.callback==o)!=null)return;const s=e.shadowRoot||e;s.addEventListener(t,o,n),this._domEvents.push({element:s,event:t,callback:o})}function i(e,t,o){const n=this._domEvents.find(s=>s.element==e&&s.event==t&&s.callback==o);if(n==null)return;(e.shadowRoot||e).removeEventListener(n.event,n.callback),this._domEvents.splice(this._domEvents.indexOf(n),1),delete n.element,delete n.callback,delete n.event}export{E as disableEvents,l as enableEvents};
+function enableEvents(element) {
+  element._domEvents = [];
+  element.registerEvent = registerEvent;
+  element.unregisterEvent = unregisterEvent;
+}
+function disableEvents(element) {
+  if (element._domEvents == null)
+    return;
+  for (let event of element._domEvents) {
+    element.removeEventListener(event.event, event.callback);
+    delete event.element;
+    delete event.callback;
+    delete event.event;
+  }
+  element._domEvents.length = 0;
+  delete element._domEvents;
+  delete element.registerEvent;
+  delete element.unregisterEvent;
+}
+function registerEvent(element, event, callback, eventOptions = null) {
+  const itemInStore = this._domEvents.find((item) => item.element == element && item.event == event && item.callback == callback);
+  if (itemInStore != null)
+    return;
+  const target = element.shadowRoot || element;
+  target.addEventListener(event, callback, eventOptions);
+  this._domEvents.push({
+    element: target,
+    event,
+    callback
+  });
+}
+function unregisterEvent(element, event, callback) {
+  const item = this._domEvents.find((item2) => item2.element == element && item2.event == event && item2.callback == callback);
+  if (item == null)
+    return;
+  const target = element.shadowRoot || element;
+  target.removeEventListener(item.event, item.callback);
+  this._domEvents.splice(this._domEvents.indexOf(item), 1);
+  delete item.element;
+  delete item.callback;
+  delete item.event;
+}
+export {
+  disableEvents,
+  enableEvents
+};

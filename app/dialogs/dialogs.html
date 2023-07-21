@@ -1,0 +1,34 @@
+<h2>${title}</h2>
+
+<template id="tplHeader">
+    <h2>Hello World</h2>
+</template>
+
+<template id="tplBody">
+    <div>
+        <label>
+            <div>First Name</div>
+            <input value.bind="person.firstName">
+        </label>
+        <label>
+            <div>Last Name</div>
+            <input value.bind="person.lastName">
+        </label>
+        <label>
+            <div>Age</div>
+            <input value.bind="person.age">
+        </label>
+    </div>
+</template>
+
+<template id="tplFooter">
+    <div role="toolbar" class="toolbar">
+        <button click.call="cancel">Cancel</button>
+        <button click.call="save">Save</button>
+    </div>
+</template>
+
+<div role="toolbar">
+    <button click.call="dialog('dialog1')">Dialog 1</button>
+    <button click.call="dialog('dialog2')">Dialog 2</button>
+</div>

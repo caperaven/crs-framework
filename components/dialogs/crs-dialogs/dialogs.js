@@ -20,18 +20,18 @@ class Dialogs extends crs.classes.BindableElement {
      */
     async showDialog(id, content, options, context) {
         const dialog = this.#dialogs[id];
-        if (dialog == null) return;
 
         // 1. check if you already have this dialog.
         // 2. if yes, close that dialog.
-        if (await dialog.canClose()) {
+        if (await dialog?.canClose()) {
             dialog.remove();
         }
 
         // 3. create a new dialog with that id
         const newDialog = this.#dialogs[id] = document.createElement("crs-dialog");
-        newDialog.style.translate = "-10000px -10000px";
         newDialog.style.opacity = "0";
+        newDialog.style.transition = "opacity 0.3s ease-in-out";
+        newDialog.id = id;
 
         this.appendChild(newDialog);
         await newDialog.initialize(content, options, context);

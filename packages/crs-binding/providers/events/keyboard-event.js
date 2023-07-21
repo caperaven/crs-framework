@@ -1,1 +1,48 @@
-const u={call:".call",emit:".emit",post:".post",process:".process",setvalue:".setvalue"};class d{async onEvent(e,n,s){const t=[];e.ctrlKey&&t.push("ctrl"),e.altKey&&t.push("alt"),e.shiftKey&&t.push("shift"),t.push(e.key.toLowerCase());const r=t.join("_");if(s.keys==""||s.keys==r){const o=s.value;await(await crs.binding.providers.getAttrModule(o.provider)).onEvent(e,n,o)}}async parse(e){const n=e.name,s=e.value,t=n.split("."),r=t[0],o=t.length==3?t[1]:"",i=t.length==3?t[2]:t[1],a=await(await crs.binding.providers.getAttrModule(u[i])).getIntent(s),c={provider:"^(keydown|keyup)\\..+\\..*$",keys:o,value:a},l=e.ownerElement.__uuid;crs.binding.eventStore.register(r,l,c,!0),e.ownerElement.removeAttribute(e.name)}async clear(e){}}export{d as default};
+const providersMap = {
+  "call": ".call",
+  "emit": ".emit",
+  "post": ".post",
+  "process": ".process",
+  "setvalue": ".setvalue"
+};
+class KeyboardEventProvider {
+  async onEvent(event, bid, intent) {
+    const keys = [];
+    if (event.ctrlKey)
+      keys.push("ctrl");
+    if (event.altKey)
+      keys.push("alt");
+    if (event.shiftKey)
+      keys.push("shift");
+    keys.push(event.key.toLowerCase());
+    const key = keys.join("_");
+    if (intent.keys == "" || intent.keys == key) {
+      const executeIntent = intent.value;
+      const module = await crs.binding.providers.getAttrModule(executeIntent.provider);
+      await module.onEvent(event, bid, executeIntent);
+    }
+  }
+  async parse(attr) {
+    const name = attr.name;
+    const value = attr.value;
+    const nameParts = name.split(".");
+    const event = nameParts[0];
+    const keys = nameParts.length == 3 ? nameParts[1] : "";
+    const provider = nameParts.length == 3 ? nameParts[2] : nameParts[1];
+    const module = await crs.binding.providers.getAttrModule(providersMap[provider]);
+    const intentValue = await module.getIntent(value);
+    const intentObj = {
+      provider: "^(keydown|keyup)\\..+\\..*$",
+      keys,
+      value: intentValue
+    };
+    const uuid = attr.ownerElement["__uuid"];
+    crs.binding.eventStore.register(event, uuid, intentObj, true);
+    attr.ownerElement.removeAttribute(attr.name);
+  }
+  async clear(uuid) {
+  }
+}
+export {
+  KeyboardEventProvider as default
+};
