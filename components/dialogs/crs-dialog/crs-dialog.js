@@ -3,6 +3,7 @@ class CRSDialog extends crs.classes.BindableElement {
 
     #pinned;
     #canPin = true;
+    #translateBackup = null;
 
     get pinned() {
         return this.#pinned;
@@ -27,9 +28,21 @@ class CRSDialog extends crs.classes.BindableElement {
     async disconnectedCallback() {
         crs.binding.utils.unmarkElement(this, true);
         this.#canCloseCallback = null;
+        this.#translateBackup = null;
+        this.#canPin = null;
+        this.#pinned = null;
+        this.#canMove = null;
         super.disconnectedCallback();
     }
 
+    async #canMove(canMove) {
+        const method = canMove ? "enable_move" : "disable_move";
+
+        await crs.call("dom_interactive", method, {
+            element: this,
+            move_query: '[slot="header"]'
+        });
+    }
 
     /**
      * @method initialize
@@ -56,6 +69,8 @@ class CRSDialog extends crs.classes.BindableElement {
             }
 
             requestAnimationFrame(async () => {
+                await this.#canMove(true);
+
                 if (context != null) {
                     await crs.binding.parsers.parseElements(this.children, context);
                     await crs.binding.data.updateUI(context.bid, null);
@@ -88,13 +103,23 @@ class CRSDialog extends crs.classes.BindableElement {
         const icon = this.classList.contains("fullscreen") ? "close-fullscreen" : "open-fullscreen";
         btnResize.textContent = icon;
 
-        // const method = this.classList.contains("fullscreen") ? "disable_move" : "enable_move";
-        // const popup = this.shadowRoot.querySelector(".popup");
-        // await crs.call("dom_interactive", method, {
-        //     element: popup,
-        //     move_query: "header"
-        // });
+        const canMove = this.classList.contains("fullscreen") ? false : true;
+        await this.#canMove(canMove);
 
+        if (canMove == false) {
+            this.#translateBackup = this.style.translate;
+            this.style.translate = null;
+        }
+        else {
+            if (this.#translateBackup == "-50% -50%") {
+                this.style.left = "50%";
+                this.style.top = "50%";
+            }
+
+            this.style.translate = this.#translateBackup;
+            this.#translateBackup = null;
+
+        }
     }
 }
 

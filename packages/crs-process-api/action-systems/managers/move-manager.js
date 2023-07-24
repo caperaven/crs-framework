@@ -1,1 +1,134 @@
-import{getMouseInputMap as l,clientX as h,clientY as o}from"./input-mapping.js";class r extends crs.classes.Observable{#t;#m;#l;#a;#u;#e;#i;#n;#r=this.#c.bind(this);#h;#o;#s;constructor(t,i,s){super(),this.#t=t,this.#e=i,this.#m=s,this.#l=this.#p.bind(this),this.#a=this.#v.bind(this),this.#u=this.#f.bind(this),this.#t.style.position="fixed",this.#t.style.left=0,this.#t.style.top=0,this.#s=l(),this.#t.addEventListener(this.#s.mousedown,this.#l,{passive:!1}),t.__moveManager=this,s!=null&&this.addEventListener("moved",s)}dispose(){this.removeEventListener("moved",this.#m),this.#t.removeEventListener(this.#s.mousedown,this.#l),this.#l=null,this.#a=null,this.#u=null,this.#e=null,this.#i=null,this.#n=null,this.#s=null,this.#r=null,this.#h=null,this.#o=null,delete this.#t.__moveManager,this.#t=null,super.dispose()}#d(t){const i=t.composedPath(),s=i[0];return this.#e==null?s===this.#t:s.matches(this.#e)?!0:i.find(n=>n.matches&&n.matches(this.#e))!=null}async#p(t){this.#d(t)!==!1&&(this.#i={x:h(t),y:o(t)},this.#n=this.#t.getBoundingClientRect(),this.#t.style.willChange="translate",document.addEventListener(this.#s.mousemove,this.#a,{passive:!1}),document.addEventListener(this.#s.mouseup,this.#u,{passive:!1}),this.#r(),t.preventDefault(),t.stopPropagation())}async#c(){this.#i!=null&&(this.#t.style.translate=`${this.#n.x+this.#h}px ${this.#n.y+this.#o}px`,requestAnimationFrame(this.#r))}async#v(t){this.#h=h(t)-this.#i.x,this.#o=o(t)-this.#i.y,t.preventDefault(),t.stopPropagation()}async#f(t){const i=this.#h,s=this.#o,e=this.#t;document.removeEventListener(this.#s.mousemove,this.#a),document.removeEventListener(this.#s.mouseup,this.#u),this.#i=null,this.#n=null,this.#h=null,this.#o=null,t.preventDefault(),t.stopPropagation(),this.notify("moved",{element:e,x:i,y:s})}}export{r as MoveManager};
+import {getMouseInputMap, clientX, clientY} from "./input-mapping.js";
+
+export class MoveManager extends crs.classes.Observable {
+    #element;
+    #callback;
+    #mouseDownHandler;
+    #mouseMoveHandler;
+    #mouseUpHandler;
+    #moveQuery;
+    #startPos;
+    #bounds;
+    #animateMovingHandler = this.#animateMoving.bind(this);
+    #offsetX;
+    #offsetY;
+    #inputMap;
+
+    constructor(element, moveQuery, callback) {
+        super();
+        this.#element = element;
+        this.#moveQuery = moveQuery;
+        this.#callback = callback;
+        this.#mouseDownHandler = this.#mouseDown.bind(this);
+        this.#mouseMoveHandler = this.#mouseMove.bind(this);
+        this.#mouseUpHandler = this.#mouseUp.bind(this);
+
+        this.#element.style.position = "fixed";
+        this.#element.style.left = 0;
+        this.#element.style.top = 0;
+
+        this.#inputMap = getMouseInputMap();
+        this.#element.addEventListener(this.#inputMap["mousedown"], this.#mouseDownHandler, { passive: false });
+
+        element.__moveManager = this;
+
+        if (callback != null) {
+            this.addEventListener("moved", callback);
+        }
+    }
+
+    dispose() {
+        this.removeEventListener("moved", this.#callback);
+        this.#element.removeEventListener(this.#inputMap["mousedown"], this.#mouseDownHandler);
+        this.#mouseDownHandler = null;
+        this.#mouseMoveHandler = null;
+        this.#mouseUpHandler = null;
+        this.#moveQuery = null;
+        this.#startPos = null;
+        this.#bounds = null;
+        this.#inputMap = null;
+        this.#animateMovingHandler = null;
+        this.#offsetX = null;
+        this.#offsetY = null;
+
+        delete this.#element.__moveManager;
+        this.#element = null;
+        super.dispose();
+    }
+
+    /**
+     * Checks whether an event matches a specific element or its shadow root.
+     * @param {Event} event - The event to check.
+     * @returns {boolean} - Returns true if the event matches the element or its shadow root, and false otherwise.
+     */
+    #matches(event) {
+        const path = event.composedPath();
+        const target = path[0];
+        // If no query is specified, return true if the event target is the element
+        if (this.#moveQuery == null) {
+            return target === this.#element;
+        }
+
+        // If the event target matches the query, return true
+        if (target.matches(this.#moveQuery)) {
+            return true;
+        }
+
+        // If the matching element is further down the event path, return true
+        const match = path.find(element => element.matches && element.matches(this.#moveQuery));
+        return match != null;
+    }
+
+
+    async #mouseDown(event) {
+        if (this.#matches(event) === false)
+            return;
+
+        this.#startPos = {x: clientX(event), y: clientY(event)};
+
+        this.#bounds = this.#element.getBoundingClientRect();
+        this.#element.style.willChange = "translate";
+
+        document.addEventListener(this.#inputMap["mousemove"], this.#mouseMoveHandler, { passive: false });
+        document.addEventListener(this.#inputMap["mouseup"], this.#mouseUpHandler, { passive: false });
+
+        this.#animateMovingHandler();
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    async #animateMoving() {
+        if (this.#startPos == null) return;
+
+        this.#offsetX ||= 0;
+        this.#offsetY ||= 0;
+        this.#element.style.left = 0;
+        this.#element.style.top = 0;
+        this.#element.style.translate = `${this.#bounds.x + this.#offsetX}px ${this.#bounds.y + this.#offsetY}px`;
+        requestAnimationFrame(this.#animateMovingHandler);
+    }
+
+    async #mouseMove(event) {
+        this.#offsetX = clientX(event) - this.#startPos.x;
+        this.#offsetY = clientY(event) - this.#startPos.y;
+        event.preventDefault();
+        event.stopPropagation();
+    }
+
+    async #mouseUp(event) {
+        const x = this.#offsetX;
+        const y = this.#offsetY;
+        const element = this.#element;
+
+        document.removeEventListener(this.#inputMap["mousemove"], this.#mouseMoveHandler);
+        document.removeEventListener(this.#inputMap["mouseup"], this.#mouseUpHandler);
+        this.#startPos = null;
+        this.#bounds = null;
+        this.#offsetX = null;
+        this.#offsetY = null;
+        event.preventDefault();
+        event.stopPropagation();
+
+        this.notify("moved", { element, x, y })
+    }
+}
