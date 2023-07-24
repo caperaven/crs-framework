@@ -103,18 +103,30 @@ class Dialogs extends crs.classes.BindableElement {
         // 1. check if the dialog can be closed.
         // 2. if yes, close the dialog.
         if (await dialog.canClose()) {
-            const previousSibling = dialog.previousElementSibling;
-            if (previousSibling?.hasAttribute("aria-hidden")) {
-                await this.#changeOpacity(previousSibling, 1, () => {
-                    previousSibling.removeAttribute("aria-hidden");
-                })
+            delete this.#dialogs[id];
+
+            if (dialog.previousElementSibling != null) {
+                return await this.#swapBackDialogs(dialog);
             }
 
-            delete this.#dialogs[id];
             await this.#changeOpacity(dialog, 0, () => {
                 dialog.remove();
             })
         }
+    }
+
+    async #swapBackDialogs(dialog) {
+        const previousDialog = dialog.previousElementSibling;
+        const transition = previousDialog.style.transition;
+        previousDialog.style.transition = "";
+        previousDialog.removeAttribute("aria-hidden");
+        previousDialog.style.transition = transition;
+
+        requestAnimationFrame(async () => {
+            await this.#changeOpacity(dialog, 0, () => {
+                dialog.remove();
+            })
+        })
     }
 
     async #changeOpacity(element, opacity, callback) {
