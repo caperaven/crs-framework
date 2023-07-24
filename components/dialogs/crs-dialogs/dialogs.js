@@ -32,6 +32,31 @@ class Dialogs extends crs.classes.BindableElement {
         }
     }
 
+    async #swapBackDialogs(dialog) {
+        const previousDialog = dialog.previousElementSibling;
+        const transition = previousDialog.style.transition;
+        previousDialog.style.transition = "";
+        previousDialog.removeAttribute("aria-hidden");
+        previousDialog.style.transition = transition;
+
+        requestAnimationFrame(async () => {
+            await this.#changeOpacity(dialog, 0, () => {
+                dialog.remove();
+            })
+        })
+    }
+
+    async #changeOpacity(element, opacity, callback) {
+        element.style.opacity = opacity;
+
+        requestAnimationFrame(() => {
+            const timeout = setTimeout(() => {
+                clearTimeout(timeout);
+                callback();
+            }, 300);
+        })
+    }
+
     /**
      * @method showDialog - show a dialog
      * @param id {string} - The id of the dialog
@@ -49,9 +74,9 @@ class Dialogs extends crs.classes.BindableElement {
             await this.closeDialog(dialog.dataset.id);
         }
 
+        // find the parent to append too based on the modal state
         let parent = this;
         const modal = options?.modal;
-
 
         if (modal !== false) {
             parent = this.querySelector("crs-modals");
@@ -68,7 +93,6 @@ class Dialogs extends crs.classes.BindableElement {
             newDialog.dataset.remember = "true";
 
             const transform = this.#transforms[id];
-
             if (transform != null) {
                 options.transform = transform;
             }
@@ -113,31 +137,6 @@ class Dialogs extends crs.classes.BindableElement {
                 dialog.remove();
             })
         }
-    }
-
-    async #swapBackDialogs(dialog) {
-        const previousDialog = dialog.previousElementSibling;
-        const transition = previousDialog.style.transition;
-        previousDialog.style.transition = "";
-        previousDialog.removeAttribute("aria-hidden");
-        previousDialog.style.transition = transition;
-
-        requestAnimationFrame(async () => {
-            await this.#changeOpacity(dialog, 0, () => {
-                dialog.remove();
-            })
-        })
-    }
-
-    async #changeOpacity(element, opacity, callback) {
-        element.style.opacity = opacity;
-
-        requestAnimationFrame(() => {
-            const timeout = setTimeout(() => {
-                clearTimeout(timeout);
-                callback();
-            }, 300);
-        })
     }
 
     /**

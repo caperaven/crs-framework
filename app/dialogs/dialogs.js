@@ -69,4 +69,29 @@ export default class DialogsViewModel extends crs.classes.BindableElement {
         console.log(element);
         await crs.call("dialogs", "close", { element });
     }
+
+    async relativeTo(event) {
+        const element = event.composedPath()[0];
+        const header = this.shadowRoot.querySelector("#tplHeader").content.cloneNode(true).firstElementChild;
+        const body = this.shadowRoot.querySelector("#tplBody").content.cloneNode(true).firstElementChild;
+        const footer = this.shadowRoot.querySelector("#tplFooter").content.cloneNode(true).firstElementChild;
+
+        await crs.call("dialogs", "show", {
+            id: "relative-dialog",
+            content: {
+                header, body, footer
+            },
+            options: {
+                remember: true,
+                headless: true,
+                auto_close: true,
+                modal: false,
+
+                relative_to: element,
+                position: "bottom",
+                anchor: "left",
+                margin: 10
+            }
+        }, this)
+    }
 }

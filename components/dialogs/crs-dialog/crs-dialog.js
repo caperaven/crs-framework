@@ -106,6 +106,15 @@ class CRSDialog extends crs.classes.BindableElement {
                     this.style.width = `${width}px`;
                     this.style.height = `${height}px`;
                 }
+                else if (options?.relative_to != null) {
+                    await crs.call("fixed_layout", "set", {
+                        target: options.relative_to,
+                        element: this,
+                        at: options.position.toLowerCase(),
+                        anchor: options.anchor.toLowerCase(),
+                        margin: options.margin
+                    });
+                }
 
                 this.style.opacity = "1";
 

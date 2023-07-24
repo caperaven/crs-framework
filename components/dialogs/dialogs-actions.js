@@ -33,6 +33,13 @@ class DialogsActions {
         const content = await crs.process.getValue(step.args.content, context, process, item);
         const options = await crs.process.getValue(step.args.options, context, process, item);
 
+        if (options?.relative_to != null) {
+            options.relative_to = await crs.dom.get_element(options.relative_to, context, process, item);
+            options.position = await crs.process.getValue(options.position ?? "left", context, process, item);
+            options.anchor = await crs.process.getValue(options.anchor ?? "top", context, process, item);
+            options.margin = await crs.process.getValue(options.margin ?? 0, context, process, item);
+        }
+
         await crs.dialogs.showDialog(id, content, options, context);
     }
 
