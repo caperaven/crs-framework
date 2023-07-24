@@ -58,9 +58,8 @@ class CRSDialog extends crs.classes.BindableElement {
             requestAnimationFrame(async () => {
                 if (context != null) {
                     await crs.binding.parsers.parseElements(this.children, context);
+                    await crs.binding.data.updateUI(context.bid, null);
                 }
-
-                await crs.binding.data.updateUI(context.bid, null);
 
                 this.style.top = "50%";
                 this.style.left = "50%";
@@ -80,6 +79,22 @@ class CRSDialog extends crs.classes.BindableElement {
         // fill this out so that you can add this via a callback
 
         return true;
+    }
+
+    async toggleFullscreen(event) {
+        const btnResize = event.composedPath()[0];
+        this.classList.toggle("fullscreen");
+
+        const icon = this.classList.contains("fullscreen") ? "close-fullscreen" : "open-fullscreen";
+        btnResize.textContent = icon;
+
+        // const method = this.classList.contains("fullscreen") ? "disable_move" : "enable_move";
+        // const popup = this.shadowRoot.querySelector(".popup");
+        // await crs.call("dom_interactive", method, {
+        //     element: popup,
+        //     move_query: "header"
+        // });
+
     }
 }
 

@@ -12,6 +12,7 @@
     box-shadow: var(--box-shadow);
     border-radius: var(--radius);
     border: var(--border);
+    background: var(--window);
 }
 
 footer {
@@ -21,12 +22,16 @@ footer {
 
 header {
     border-bottom: var(--border);
+    display: flex;
+    align-items: center;
 }
 
 ::slotted([slot="header"]) {
+    flex: 1;
     display: flex;
     align-items: center;
     padding: var(--padding);
+    margin: 0;
 }
 
 ::slotted([slot="body"]) {
@@ -39,4 +44,12 @@ header {
     justify-content: flex-end;
     align-items: center;
     padding: var(--padding);
+}
+
+:host(.fullscreen) {
+    --width: 100vw;
+    --height: 100vh;
+    --radius: 0;
+    --border: none;
+    --box-shadow: none;
 }
