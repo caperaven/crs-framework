@@ -13,6 +13,9 @@
     border-radius: var(--radius);
     border: var(--border);
     background: var(--window);
+
+    resize: both;
+    overflow: auto;
 }
 
 footer {

@@ -27,13 +27,16 @@ class Dialogs extends crs.classes.BindableElement {
             dialog.remove();
         }
 
+        const modals = this.querySelector("crs-modals");
+
+
         // 3. create a new dialog with that id
         const newDialog = this.#dialogs[id] = document.createElement("crs-dialog");
         newDialog.style.opacity = "0";
         newDialog.style.transition = "opacity 0.3s ease-in-out";
         newDialog.id = id;
+        modals.appendChild(newDialog);
 
-        this.appendChild(newDialog);
         await newDialog.initialize(content, options, context);
     }
 

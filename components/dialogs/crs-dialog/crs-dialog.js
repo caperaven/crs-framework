@@ -31,7 +31,12 @@ class CRSDialog extends crs.classes.BindableElement {
         this.#translateBackup = null;
         this.#canPin = null;
         this.#pinned = null;
-        this.#canMove = null;
+
+        if (this.__modal != null) {
+            this.__modal.remove();
+            this.__modal = null;
+        }
+
         super.disconnectedCallback();
     }
 
@@ -53,6 +58,10 @@ class CRSDialog extends crs.classes.BindableElement {
      */
     initialize(content, options, context) {
         return new Promise(resolve => {
+            if (options?.modal !== false) {
+                this.classList.add("modal");
+            }
+
             if (content.header != null) {
                 content.header.setAttribute("slot", "header");
                 this.appendChild(content.header);
@@ -80,6 +89,7 @@ class CRSDialog extends crs.classes.BindableElement {
                 this.style.left = "50%";
                 this.style.translate = "-50% -50%";
                 this.style.opacity = "1";
+
                 resolve();
             })
         });
