@@ -18,6 +18,18 @@
     overflow: auto;
 }
 
+:host([aria-hidden]) {
+    visibility: hidden;
+}
+
+:host(.headless) {
+    grid-template-rows: 0 1fr minmax(0, max-content);
+}
+
+:host(.headless) header {
+    visibility: hidden;
+}
+
 footer {
     border-top: var(--border);
     background: var(--grey-s3);
@@ -27,6 +39,7 @@ header {
     border-bottom: var(--border);
     display: flex;
     align-items: center;
+    justify-content: flex-end;
 }
 
 ::slotted([slot="header"]) {

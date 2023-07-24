@@ -24,12 +24,14 @@ class Dialogs extends crs.classes.BindableElement {
         // 1. check if you already have this dialog.
         // 2. if yes, close that dialog.
         if (await dialog?.canClose()) {
-            dialog.remove();
+            await this.closeDialog(dialog.dataset.id);
         }
 
         let parent = this;
+        const modal = options?.modal;
 
-        if (options?.modal !== false) {
+
+        if (modal !== false) {
             parent = this.querySelector("crs-modals");
         }
 
@@ -37,7 +39,7 @@ class Dialogs extends crs.classes.BindableElement {
         const newDialog = this.#dialogs[id] = document.createElement("crs-dialog");
         newDialog.style.opacity = "0";
         newDialog.style.transition = "opacity 0.3s ease-in-out";
-        newDialog.id = id;
+        newDialog.dataset.id = id;
         parent.appendChild(newDialog);
 
         if (options?.remember === true) {
@@ -49,6 +51,10 @@ class Dialogs extends crs.classes.BindableElement {
                 options.transform = transform;
             }
         }
+
+        await this.#changeOpacity(newDialog, 0, () => {
+            newDialog.previousElementSibling?.setAttribute("aria-hidden", "true");
+        })
 
         await newDialog.initialize(content, options, context);
     }
@@ -75,8 +81,29 @@ class Dialogs extends crs.classes.BindableElement {
         // 1. check if the dialog can be closed.
         // 2. if yes, close the dialog.
         if (await dialog.canClose()) {
-            dialog.remove();
+            const previousSibling = dialog.previousElementSibling;
+            if (previousSibling?.hasAttribute("aria-hidden")) {
+                await this.#changeOpacity(previousSibling, 1, () => {
+                    previousSibling.removeAttribute("aria-hidden");
+                })
+            }
+
+            delete this.#dialogs[id];
+            await this.#changeOpacity(dialog, 0, () => {
+                dialog.remove();
+            })
         }
+    }
+
+    async #changeOpacity(element, opacity, callback) {
+        element.style.opacity = opacity;
+
+        requestAnimationFrame(() => {
+            const timeout = setTimeout(() => {
+                clearTimeout(timeout);
+                callback();
+            }, 300);
+        })
     }
 
     /**

@@ -29,16 +29,44 @@ export default class DialogsViewModel extends crs.classes.BindableElement {
             },
             options: {
                 modal: id == "dialog1",
-                remember: true
+                remember: true,
+                headless: true,
+                auto_close: true
             }
         }, this)
     }
 
-    async cancel() {
-        console.log("cancel");
+    async showSubDialog() {
+        const body = this.shadowRoot.querySelector("#tplSubBody").content.cloneNode(true).firstElementChild;
+
+        await crs.call("dialogs", "show", {
+            id: "sub-dialog",
+            content: {
+                body
+            },
+            options: {
+                headless: true
+            }
+        }, this)
     }
 
-    async save() {
+    async cancel(event) {
+        console.log("cancel");
+        const element = event.composedPath()[0];
+        console.log(element);
+        await crs.call("dialogs", "close", { element });
+    }
+
+    async save(event) {
         console.log("save");
+        const element = event.composedPath()[0];
+        console.log(element);
+        await crs.call("dialogs", "close", { element });
+    }
+
+    async closeSubDialog(event) {
+        const element = event.composedPath()[0];
+        console.log(element);
+        await crs.call("dialogs", "close", { element });
     }
 }

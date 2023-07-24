@@ -55,7 +55,15 @@ class DialogsActions {
      */
     static async close(step, context, process, item) {
         const id = await crs.process.getValue(step.args.id, context, process, item);
-        await crs.dialogs.closeDialog(id);
+        if (id != null) {
+            await crs.dialogs.closeDialog(id);
+        }
+
+        const element = await crs.dom.get_element(step.args.element, context, process, item);
+        const closeId = getDialogId(element);
+        if (closeId != null) {
+            await crs.dialogs.closeDialog(closeId);
+        }
     }
 
     /**
@@ -93,6 +101,16 @@ class DialogsActions {
         const id = await crs.process.getValue(step.args.id, context, process, item);
         await crs.dialogs.unpin(id);
     }
+}
+
+function getDialogId(element) {
+    if (element == null) return null;
+
+    if (element.tagName == "CRS-DIALOG") {
+        return element.dataset.id;
+    }
+
+    return getDialogId(element.parentElement);
 }
 
 crs.dialogs = document.createElement("crs-dialogs");

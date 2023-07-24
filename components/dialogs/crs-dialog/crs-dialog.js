@@ -76,6 +76,10 @@ class CRSDialog extends crs.classes.BindableElement {
                 this.appendChild(content.footer);
             }
 
+            if (options?.headless === true) {
+                this.classList.add("headless");
+            }
+
             requestAnimationFrame(async () => {
                 await this.#canMove(true);
 
@@ -120,7 +124,7 @@ class CRSDialog extends crs.classes.BindableElement {
     }
 
     async close() {
-        await crs.call("dialogs", "close", { id: this.id })
+        await crs.call("dialogs", "close", { id: this.dataset.id })
     }
 
     async toggleFullscreen(event) {

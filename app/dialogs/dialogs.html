@@ -18,6 +18,17 @@
             <div>Age</div>
             <input value.bind="person.age">
         </label>
+
+        <div class="toolbar">
+            <button click.call="showSubDialog">Show Sub Dialog</button>
+        </div>
+    </div>
+</template>
+
+<template id="tplSubBody">
+    <div>
+        <div>Sub Body</div>
+        <button click.call="closeSubDialog">Close Sub Dialog</button>
     </div>
 </template>
 
