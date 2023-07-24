@@ -30,8 +30,7 @@ export default class DialogsViewModel extends crs.classes.BindableElement {
             options: {
                 modal: id == "dialog1",
                 remember: true,
-                headless: true,
-                auto_close: true
+                headless: true
             }
         }, this)
     }
@@ -45,7 +44,8 @@ export default class DialogsViewModel extends crs.classes.BindableElement {
                 body
             },
             options: {
-                headless: true
+                headless: true,
+                auto_close: true
             }
         }, this)
     }

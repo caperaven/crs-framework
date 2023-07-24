@@ -1,6 +1,7 @@
 class Dialogs extends crs.classes.BindableElement {
     #dialogs = {};
     #transforms = {};
+    #clickHandler = this.#click.bind(this);
 
     get html() {
         return import.meta.url.replace(".js", ".html");
@@ -8,6 +9,27 @@ class Dialogs extends crs.classes.BindableElement {
 
     get shadowDom() {
         return false;
+    }
+
+    async load() {
+        this.registerEvent(this, "click", this.#clickHandler);
+    }
+
+    async disconnectedCallback() {
+        this.unregisterEvent(this, "click", this.#clickHandler);
+        super.disconnectedCallback();
+    }
+
+    async #click(event) {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const target = event.composedPath()[0];
+        if (target.tagName === "CRS-MODALS") {
+            if (target.lastElementChild?.dataset.autoclose === "true") {
+                await this.closeDialog(target.lastElementChild.dataset.id);
+            }
+        }
     }
 
     /**

@@ -57,6 +57,8 @@ class CRSDialog extends crs.classes.BindableElement {
      */
     initialize(content, options, context) {
         return new Promise(resolve => {
+            this.dataset.autoclose = options?.auto_close ?? "false";
+
             if (options?.modal !== false) {
                 this.classList.add("modal");
             }
