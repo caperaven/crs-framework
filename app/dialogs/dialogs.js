@@ -26,6 +26,10 @@ export default class DialogsViewModel extends crs.classes.BindableElement {
             id,
             content: {
                 header, body, footer
+            },
+            options: {
+                modal: id == "dialog1",
+                remember: true
             }
         }, this)
     }

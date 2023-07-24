@@ -1,6 +1,5 @@
 class CRSDialog extends crs.classes.BindableElement {
     #canCloseCallback;
-
     #pinned;
     #canPin = true;
     #translateBackup = null;
@@ -88,6 +87,20 @@ class CRSDialog extends crs.classes.BindableElement {
                 this.style.top = "50%";
                 this.style.left = "50%";
                 this.style.translate = "-50% -50%";
+
+                if (options?.transform != null) {
+                    const x = options.transform.x;
+                    const y = options.transform.y;
+                    const width = options.transform.width;
+                    const height = options.transform.height;
+
+                    this.style.top = 0;
+                    this.style.left = 0;
+                    this.style.translate = `${x}px ${y}px`;
+                    this.style.width = `${width}px`;
+                    this.style.height = `${height}px`;
+                }
+
                 this.style.opacity = "1";
 
                 resolve();
@@ -104,6 +117,10 @@ class CRSDialog extends crs.classes.BindableElement {
         // fill this out so that you can add this via a callback
 
         return true;
+    }
+
+    async close() {
+        await crs.call("dialogs", "close", { id: this.id })
     }
 
     async toggleFullscreen(event) {

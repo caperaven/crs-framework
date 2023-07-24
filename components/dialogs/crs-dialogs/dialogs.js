@@ -27,15 +27,28 @@ class Dialogs extends crs.classes.BindableElement {
             dialog.remove();
         }
 
-        const modals = this.querySelector("crs-modals");
+        let parent = this;
 
+        if (options?.modal !== false) {
+            parent = this.querySelector("crs-modals");
+        }
 
         // 3. create a new dialog with that id
         const newDialog = this.#dialogs[id] = document.createElement("crs-dialog");
         newDialog.style.opacity = "0";
         newDialog.style.transition = "opacity 0.3s ease-in-out";
         newDialog.id = id;
-        modals.appendChild(newDialog);
+        parent.appendChild(newDialog);
+
+        if (options?.remember === true) {
+            newDialog.dataset.remember = "true";
+
+            const transform = this.#transforms[id];
+
+            if (transform != null) {
+                options.transform = transform;
+            }
+        }
 
         await newDialog.initialize(content, options, context);
     }
@@ -48,6 +61,16 @@ class Dialogs extends crs.classes.BindableElement {
     async closeDialog(id) {
         const dialog = this.#dialogs[id];
         if (dialog == null) return;
+
+        if (dialog.dataset.remember === "true") {
+            const transform = this.#transforms[id] ||= {};
+            const aabb = dialog.getBoundingClientRect();
+
+            transform.x = Math.round(aabb.x);
+            transform.y = Math.round(aabb.y);
+            transform.width = Math.round(aabb.width);
+            transform.height = Math.round(aabb.height);
+        }
 
         // 1. check if the dialog can be closed.
         // 2. if yes, close the dialog.
