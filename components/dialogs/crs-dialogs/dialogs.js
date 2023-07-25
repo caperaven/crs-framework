@@ -98,7 +98,7 @@ class Dialogs extends crs.classes.BindableElement {
             }
         }
 
-        if (modal === true) {
+        if (modal !== false) {
             await this.#changeOpacity(newDialog, 0, () => {
                 newDialog.previousElementSibling?.setAttribute("aria-hidden", "true");
             })

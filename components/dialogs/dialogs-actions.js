@@ -23,7 +23,7 @@ class DialogsActions {
      *     options: {
      *         modal: false, // I have access to what is behind me. (designer)
      *         auto_hide: false, // default true, to hide when a new dialog is shown.
-     *         remember_position: true // default false, to remember the position of the dialog.
+     *         remember: true // default false, to remember the position of the dialog.
      *        ... options settings
      *     }
      * })
