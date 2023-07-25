@@ -242,7 +242,7 @@ describe("selection manager state tests - w/li child elements", () => {
             element: container,
             master_query: "[data-value='master']",
             master_attribute: "aria-checked",
-            item_query: "check-box:not([data-value='master'])",
+            item_query: "li",
             item_attribute: "aria-selected",
         }
 

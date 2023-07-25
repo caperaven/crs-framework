@@ -7,10 +7,8 @@
 export class SelectionManager {
     #containerElement;
     #masterQuery;
-    #masterSelectionQuery;
     #masterAttribute;
     #itemQuery;
-    #itemSelectionQuery;
     #itemAttribute;
     #clickHandler = this.#click.bind(this);
 
@@ -20,16 +18,14 @@ export class SelectionManager {
      * @param masterQuery - the query that will be used to determine if an element is a master element (select all or none)
      * @param selectionQuery - the query that will be used to determine if an element is a selection element (select one)
      */
-    constructor(element, masterQuery, masterSelectionQuery, masterAttribute, itemQuery, itemSelectionQuery, itemAttribute) {
+    constructor(element, masterQuery, masterAttribute, itemQuery, itemAttribute) {
         this.#containerElement = element;
         this.#masterQuery = masterQuery;
-        //Chuck masterSelectionQuery and itemSelectionQuery
-        this.#masterSelectionQuery = masterSelectionQuery;
         this.#masterAttribute = masterAttribute;
         this.#itemQuery = itemQuery;
-        this.#itemSelectionQuery = itemSelectionQuery;
         this.#itemAttribute = itemAttribute;
         this.#containerElement.addEventListener("click", this.#clickHandler);
+        this.#checkDependentsState();
     }
 
     dispose() {
@@ -37,10 +33,8 @@ export class SelectionManager {
         this.#clickHandler = null;
         this.#containerElement = null;
         this.#masterQuery = null;
-        this.#masterSelectionQuery = null;
         this.#masterAttribute = null;
         this.#itemQuery = null;
-        this.#itemSelectionQuery = null;
         this.#itemAttribute = null;
     }
 
