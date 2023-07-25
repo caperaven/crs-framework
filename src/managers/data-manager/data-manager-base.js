@@ -114,7 +114,7 @@ export class BaseDataManager {
      * It should be used to initialize the data manager.
      * @param records {Array} - The records to set in the data manager
      */
-    setRecords(records) {
+    async setRecords(records) {
         this.#count = records?.length || 0;
 
         for(let i = 0; i < records.length; i++) {
@@ -126,7 +126,7 @@ export class BaseDataManager {
      * @method append - This method is called to append records to the data manager.
      * @param record
      */
-    append(count) {
+    async append(count) {
         this.#count += count;
     }
 
@@ -134,7 +134,7 @@ export class BaseDataManager {
      * @method removeIndexes - This method is called to remove records from the data manager by index.
      * @param count
      */
-    removeIndexes(count) {
+    async removeIndexes(count) {
         this.#count -= count;
     }
 
@@ -142,7 +142,7 @@ export class BaseDataManager {
      * @method removeIds - This method is called to remove records from the data manager by id (based on the idField as the id).
      * @param count
      */
-    removeIds(count) {
+    async removeIds(count) {
         this.#count -= count;
     }
 
@@ -150,7 +150,7 @@ export class BaseDataManager {
      * @method addChangeCallback - This method is called to register a callback that will be called when the data manager changes.
      * @param callback {function} - The callback to register
      */
-    addChangeCallback(callback) {
+    async addChangeCallback(callback) {
         const index = this.#events.indexOf(callback);
         if (index == -1) {
             this.#events.push(callback);
@@ -161,7 +161,7 @@ export class BaseDataManager {
      * @method removeChangeCallback - This method is called to remove a callback that was previously registered.
      * @param callback {function} - The callback to remove
      */
-    removeChangeCallback(callback) {
+    async removeChangeCallback(callback) {
         const index = this.#events.indexOf(callback);
 
         if (index != -1) {
@@ -185,7 +185,7 @@ export class BaseDataManager {
      * @method beginTransaction - start a transaction if the data manager supports it
      * @returns {null}
      */
-    beginTransaction() {
+    async beginTransaction() {
         return null;
     }
 
@@ -193,14 +193,14 @@ export class BaseDataManager {
      * @method commit - commit a transaction if the data manager supports it
      * @returns {null}
      */
-    commit() {
+    async commit() {
         return null;
     }
 
     /**
      * @method rollback - rollback a transaction if the data manager supports it
      */
-    rollback() {
+    async rollback() {
         return null;
     }
 }

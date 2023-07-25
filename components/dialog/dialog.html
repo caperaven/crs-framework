@@ -8,10 +8,12 @@
         --footer-height: 3.5rem;
         --body-height: 3.5rem;
         position: absolute;
+        transition: opacity 0.3s ease-in-out;
         top: 0;
         bottom: 0;
         right: 0;
         left: 0;
+        opacity: 0;
     }
 
     :host([data-allow-resize="true"]) .popup {
@@ -37,6 +39,14 @@
 
     :host([data-allow-move="false"]) header:active {
         cursor: unset;
+    }
+
+    :host(.visible) {
+        opacity: 1;
+    }
+
+    :host(.hidden) {
+        opacity: 0;
     }
 
     .popup {

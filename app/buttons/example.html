@@ -1,51 +1,54 @@
 <section>
     <h3>Primary Buttons</h3>
 
-    <div role="toolbar">
+    <div role="toolbar" class="button-container">
         <button class="primary">Primary</button>
         <button class="primary success">Primary</button>
         <button class="primary error">Primary</button>
         <button class="primary" disabled="disabled">Primary</button>
         <button class="primary left">Primary</button>
-        <button class="primary right">*</button>
+        <button class="primary right icon">chevron-down</button>
+        <button class="primary" data-icon-left="add" data-icon-right="loader">Create Busy</button>
     </div>
 </section>
 
 <section>
     <h3>Secondary Buttons</h3>
 
-    <div role="toolbar">
+    <div role="toolbar" class="button-container">
         <button class="secondary">Secondary</button>
         <button class="secondary success">Secondary</button>
         <button class="secondary error">Secondary</button>
         <button class="secondary" disabled="disabled">Secondary</button>
         <button class="secondary left">Secondary</button>
-        <button class="secondary right">*</button>
+        <button class="secondary right icon">chevron-down</button>
+        <button class="secondary success" data-icon-left="add" data-icon-right="check">Create Complete</button>
     </div>
 </section>
 
 <section>
     <h3>Alternative Button</h3>
 
-    <div role="toolbar">
-        <button class="alt" >Alternative</button>
+    <div role="toolbar" class="button-container">
+        <button class="secondary" >Alternative</button>
         <button class="alt success">Alternative</button>
         <button class="alt error">Alternative</button>
         <button class="alt" disabled="disabled">Alternative</button>
-        <button class="alt left">Alternative</button>
-        <button class="alt right">*</button>
+        <button class="alt left" data-icon-right="chevron-down">Alternative</button>
+        <button class="alt" data-icon-left="add" data-icon-right="">Create Static</button>
     </div>
 </section>
 
 <section>
     <h3>Icon Button</h3>
 
-    <div role="toolbar">
-        <button class="icon">lookup</button>
-        <button class="icon success">lookup</button>
+    <div role="toolbar" class="button-container">
+        <button class="secondary icon">lookup</button>
+        <button class="icon success" click.bind>lookup</button>
         <button class="icon error">lookup</button>
         <button class="icon" disabled="disabled">lookup</button>
         <button class="icon left">lookup</button>
-        <button class="icon right">*</button>
+        <button class="icon right">lookup</button>
+        <button class="icon" data-icon-right="chevron-down">default-status-outline</button>
     </div>
 </section>

@@ -30,7 +30,9 @@ describe("data manager tests", () => {
 
         await crs.call("data_manager", "on_change", {
             manager: "store",
-            callback: async (args) => changeArgs.push(args)
+            callback: async (args) => {
+                changeArgs.push(args)
+            }
         });
     })
 
@@ -39,7 +41,7 @@ describe("data manager tests", () => {
     })
 
     it ("initialized", async () => {
-        const manager_records = manager.getAll();
+        const manager_records = await manager.getAll();
 
         assert(globalThis.dataManagers != null);
         assert(globalThis.dataManagers["store"] != null);
@@ -71,7 +73,7 @@ describe("data manager tests", () => {
             records: [{ id: "2000", "code":  "2000" }]
         })
 
-        const record = manager.getByIndex(2);
+        const record = await manager.getByIndex(2);
         assertEquals(manager.count, 5);
         assertEquals(record.id, "2000");
 
@@ -114,7 +116,7 @@ describe("data manager tests", () => {
             }
         })
 
-        const record = manager.getByIndex(0);
+        const record = await manager.getByIndex(0);
         assertEquals(record.code, "ABC");
         assertEquals(changeArgs[0].action, "update");
         assertEquals(changeArgs[0].id, "1000");
@@ -131,7 +133,7 @@ describe("data manager tests", () => {
             }
         })
 
-        const record = manager.getByIndex(0);
+        const record = await manager.getByIndex(0);
         assertEquals(record.code, "ABC");
         assertEquals(record.code, "ABC");
 
@@ -142,6 +144,8 @@ describe("data manager tests", () => {
     })
 
     it ("update_batch - indexes", async () => {
+        debugger;
+
         await crs.call("data_manager", "update_batch", {
             manager: "store",
             batch: [
@@ -160,8 +164,8 @@ describe("data manager tests", () => {
             ]
         })
 
-        assertEquals(manager.getByIndex(0).code, "C1");
-        assertEquals(manager.getByIndex(1).code, "C2");
+        assertEquals((await manager.getByIndex(0)).code, "C1");
+        assertEquals((await manager.getByIndex(1)).code, "C2");
 
         assertEquals(changeArgs[0].action, "update");
         assertEquals(changeArgs[1].action, "update");
