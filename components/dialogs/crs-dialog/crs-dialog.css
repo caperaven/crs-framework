@@ -7,7 +7,7 @@
 
     position: fixed;
     display: grid;
-    grid-template-rows: minmax(0, max-content) 1fr minmax(0, max-content);
+    grid-template-rows: minmax(0, max-content) minmax(0, 1fr) minmax(0, max-content);
 
     box-shadow: var(--box-shadow);
     border-radius: var(--radius);
@@ -72,4 +72,6 @@ header {
     translate: initial;
     left: 0 !important;
     top: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
 }
