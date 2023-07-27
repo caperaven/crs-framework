@@ -2,22 +2,8 @@ import "./../../components/dialog/dialog-actions.js";
 import "./../../components/calendar/calendar.js";
 
 export default class Dialog extends crsbinding.classes.ViewBase {
-    #anchor = {
-        left: "top",
-        right: "top",
-        bottom: "left",
-    }
-
     async connectedCallback() {
         await super.connectedCallback();
-    }
-
-    async disconnectedCallback() {
-        for (const key of Object.keys(this.#anchor)) {
-            this.#anchor[key] = null;
-        }
-        this.#anchor = null;
-        await super.disconnectedCallback();
     }
 
     async show() {
@@ -34,49 +20,20 @@ export default class Dialog extends crsbinding.classes.ViewBase {
         const instance = this._element.querySelector("#dialog-content").content.cloneNode(true);
         const position = document.querySelector("#positionOptions").value;
 
+        const anchor = {
+            left: "top",
+            right: "top",
+            bottom: "left",
+        }
+
         await crs.call("dialog", "show", {
             title: "My Title",
             main: instance,
             target: event.target,
             position: position,
-            anchor: this.#anchor[position],
+            anchor: anchor[position],
             margin: 10,
             parent: "main"
-        });
-    }
-
-    async showParentDialog(event) {
-        const instance = this._element.querySelector("#nested-dialog").content.cloneNode(true);
-        const position = document.querySelector("#positionOption").value;
-        const header = this._element.querySelector("#custom-header").content.cloneNode(true);
-
-        await crs.call("dialog", "show", {
-            main: instance,
-            title: "My Parent Dialog",
-            target: event.target,
-            position: position,
-            anchor: this.#anchor[position],
-            margin: 10,
-            parent: "main",
-            header: header.content,
-            callback: async (args) => {
-                if (args.action === "openDialog") {
-                    await this.#showChildDialog();
-                }
-            }
-        });
-    }
-
-    async #showChildDialog() {
-        const instance = this._element.querySelector("#child-dialog").content.cloneNode(true);
-        const header = this._element.querySelector("#custom-header").content.cloneNode(true);
-
-        await crs.call("dialog", "show", {
-            main: instance,
-            parent: "main",
-            title: "My Child Dialog",
-            header: header.content,
-            close: false
         });
     }
 
@@ -114,12 +71,17 @@ export default class Dialog extends crsbinding.classes.ViewBase {
         }
 
         let position = this.element.querySelector("#position").value;
+        const anchor = {
+            left: "top",
+            right: "top",
+            bottom: "left",
+        }
 
         if (position != "none") {
             Object.assign(args, {
                 target: target,
                 position: position,
-                anchor: this.#anchor[position],
+                anchor: anchor[position],
                 margin: 10
             })
         }
