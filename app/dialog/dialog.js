@@ -58,7 +58,7 @@ export default class Dialog extends crsbinding.classes.ViewBase {
             anchor: this.#anchor[position],
             margin: 10,
             parent: "main",
-            header: header,
+            header: header.content,
             callback: async (args) => {
                 if (args.action === "openDialog") {
                     await this.#showChildDialog();
@@ -75,7 +75,7 @@ export default class Dialog extends crsbinding.classes.ViewBase {
             main: instance,
             parent: "main",
             title: "My Child Dialog",
-            header: header,
+            header: header.content,
             close: false
         });
     }
