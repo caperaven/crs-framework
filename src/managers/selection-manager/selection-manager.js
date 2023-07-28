@@ -70,7 +70,7 @@ export class SelectionManager {
 
     /**
      * Attempts to find the master checkbox or the child checkbox that was clicked.
-     * @param event
+     * @param event {Event} - The click event
      * @returns {*|null}
      */
     #getElement(event) {
