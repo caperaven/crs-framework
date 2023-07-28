@@ -106,7 +106,7 @@ export class SelectionManager {
      */
     #checkChildrenStates() {
         const dependents = this.#containerElement.querySelectorAll(this.#itemQuery);
-        if (dependents == null) return;
+        if (dependents.length === 0) return;
 
         const master = this.#containerElement.querySelector(this.#masterQuery);
 
@@ -130,7 +130,7 @@ export class SelectionManager {
      */
     #setChildrensState(checked) {
         const dependents = this.#containerElement.querySelectorAll(this.#itemQuery);
-        if (dependents == null) return;
+        if (dependents.length === 0) return;
 
         for (const dependent of dependents) {
             this.#setChildState(checked, dependent);

@@ -17,7 +17,7 @@ describe("selection manager init tests", () => {
 
         //querySelectors on container
         container.querySelector = (query) => {return null};
-        container.querySelectorAll = (query) => {return null};
+        container.querySelectorAll = (query) => {return {length: 0}};
     })
 
     it ("selection-manager adds event listener to parent on enable", async() => {
