@@ -13,8 +13,10 @@ export class SelectionActions {
      * @param item {object} - The item object.
      *
      * @param step.args.element {HTMLElement} - The parent container who needs to listen for click events
-     * @param step.args.masterQuery {string} - The query selector for the master checkbox
-     * @param step.args.selectionQuery {string} - The query selector for the dependent checkboxes
+     * @param step.args.master_query {string} - The query selector for the master checkbox
+     * @param step.args.master_attribute {string} - The attribute on the masterCheckbox that will be toggled (i.e. aria-checked)
+     * @param step.args.item_query {string} - The query selector for the dependent checkboxes
+     * @param step.args.item_attribute {string} - The attribute on the child items that will be toggled (i.e. aria-selected)
      * @returns {Promise<void>}
      */
     static async enable(step, context, process, item) {

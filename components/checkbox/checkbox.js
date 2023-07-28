@@ -20,9 +20,6 @@ export class Checkbox extends HTMLElement {
     #checked;
     #iconElement;
     #clickHandler = this.#clicked.bind(this);
-    #attributeChangedToFn = Object.freeze({
-        "aria-label": this.#setTitle.bind(this),
-    })
 
     get html() {
         return import.meta.url.replace(".js", ".html");
@@ -89,11 +86,7 @@ export class Checkbox extends HTMLElement {
 
                 this.shadowRoot.addEventListener("click", this.#clickHandler);
                 this.#iconElement = this.shadowRoot.querySelector("#btnCheck");
-
-                crsbinding.idleTaskManager.add(async () => {
-                    this.#setTitle(this.getAttribute("aria-label"));
-                })
-
+                this.#setTitle(this.getAttribute("aria-label"));
                 this.#setState(this.#checked);
                 resolve();
             })
@@ -114,9 +107,15 @@ export class Checkbox extends HTMLElement {
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
-        this.#attributeChangedToFn[name]?.(newValue);
+        if (name === "aria-label") {
+            this.#setTitle(newValue);
+        }
     }
 
+    /**
+     * @method setTitle - Sets the title of the checkbox.
+     * @param title {String} - The title to set.
+     */
     #setTitle(title) {
         const label = this.shadowRoot.querySelector("#lblText");
         if (label != null) label.innerText = title;

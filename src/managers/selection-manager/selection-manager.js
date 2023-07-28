@@ -16,16 +16,18 @@ export class SelectionManager {
      * @constructor
      * @param element - the element that contains the collection of items and that will also limit the query selection for UI
      * @param masterQuery - the query that will be used to determine if an element is a master element (select all or none)
-     * @param selectionQuery - the query that will be used to determine if an element is a selection element (select one)
+     * @param masterAttribute - The attribute on the masterCheckbox that will be toggled when the master checkbox is selected (i.e. aria-checked)
+     * @param itemQuery - the query that will be used to determine if an element is a child element to be toggled
+     * @param itemAttribute - The attribute on the child items that will be toggled when the child item is selected (i.e. aria-selected)
      */
-    constructor(element, masterQuery, masterAttribute, itemQuery, itemAttribute) {
+    constructor(element, masterQuery, masterAttribute = "aria-checked", itemQuery, itemAttribute = "aria-selected") {
         this.#containerElement = element;
         this.#masterQuery = masterQuery;
         this.#masterAttribute = masterAttribute;
         this.#itemQuery = itemQuery;
         this.#itemAttribute = itemAttribute;
         this.#containerElement.addEventListener("click", this.#clickHandler);
-        this.#checkDependentsState();
+        this.#checkChildrenStates();
     }
 
     dispose() {
@@ -49,41 +51,28 @@ export class SelectionManager {
 
         if (triggeredElement.matches(this.#masterQuery)) {
             const checked = triggeredElement.getAttribute(this.#masterAttribute) === "true";
-            //check if triggeredElement is a check-box element, if so, update dependent items
-            if (!triggeredElement.matches("check-box")) {
-                await this.#setMasterState(!checked, triggeredElement);
-                await this.#setDependentsState(!checked);
+            //NOTE KR: this check is here because if the check-box component is being used, it will set the checked state through its own event handler
+            if (triggeredElement.matches("check-box")) {
+                this.#setMasterState(checked, triggeredElement);
+                this.#setChildrensState(checked);
             } else {
-                await this.#setDependentsState(checked);
+                this.#setMasterState(!checked, triggeredElement);
+                this.#setChildrensState(!checked);
             }
         }
 
         if (triggeredElement.matches(this.#itemQuery)) {
             const checked = triggeredElement.getAttribute(this.#itemAttribute) === "true";
-            await this.#setDependentState(!checked, triggeredElement);
-            await this.#checkDependentsState();
+            this.#setChildState(!checked, triggeredElement);
+            this.#checkChildrenStates();
         }
-
-
-        // //check if we're clicking the master or a selection element
-        // const checkbox = getItem(event.composedPath()[0]);
-        // if (checkbox == null) return;
-        //
-        // //get the state of the selectable item
-        // const checked = checkbox.getAttribute("aria-checked") === "true";
-        //
-        // //if we're clicking the master element, update all the selection elements
-        // if (checkbox.matches(this.#masterQuery)) {
-        //     await this.#setMasterState(checked, checkbox);
-        // }
-        //
-        // //if we're clicking a selection element, update the master element
-        // if (checkbox.matches(this.#selectionQuery)) {
-        //     await this.#setDependentState(checked, checkbox);
-        //     await this.#checkDependentsState();
-        // }
     }
 
+    /**
+     * Attempts to find the master checkbox or the child checkbox that was clicked.
+     * @param event
+     * @returns {*|null}
+     */
     #getElement(event) {
         const element = event.composedPath()[0];
         if (element.matches(this.#masterQuery) || element.matches(this.#itemQuery)) return element;
@@ -98,11 +87,10 @@ export class SelectionManager {
 
     /**
      * Sets the state of the master checkbox, and all dependent items.
-     * @param checked {boolean} - the state to set the master checkbox to
-     * @param checkbox {HTMLElement} - the master checkbox
-     * @returns {Promise<void>}
+     * @param checked {boolean|'mixed'} - the state to set the master checkbox to
+     * @param element {HTMLElement} - the master checkbox
      */
-    async #setMasterState(checked, element) {
+    #setMasterState(checked, element) {
         if (element.matches("check-box")) {
             element.checked = checked;
         } else {
@@ -111,78 +99,50 @@ export class SelectionManager {
     }
 
     /**
-     * Goes through the dependent checkboxes checking which are checked.
+     * Goes through the children checkboxes checking which are checked.
      * If all are checked, the master checkbox will be checked.
      * If none are checked, the master checkbox will be unchecked.
-     * If some are checked, the master checkbox will be indeterminate.
-     * @returns {Promise<void>}
+     * If some are checked, the master checkbox will be mixed.
      */
-    async #checkDependentsState() {
+    #checkChildrenStates() {
         const dependents = this.#containerElement.querySelectorAll(this.#itemQuery);
         if (dependents == null) return;
-
-        let allChecked = true;
-        let allUnchecked = true;
-        for (const dependent of dependents) {
-            const checked = dependent.getAttribute(this.#itemAttribute) === "true";
-            allChecked = allChecked && checked;
-            allUnchecked = allUnchecked && !checked;
-        }
 
         const master = this.#containerElement.querySelector(this.#masterQuery);
 
-        if (allChecked) {
-            await this.#setMasterState(true, master);
+        let allChecked;
+        for (const dependent of dependents) {
+            const checked = dependent.getAttribute(this.#itemAttribute) === "true";
+            if ((allChecked === false && checked === true) || (allChecked === true && checked === false)) {
+                this.#setMasterState("mixed", master);
+                return;
+            }
 
-            // if (master.matches("check-box")) {
-            //     master.checked = true;
-            // } else {
-            //     master.setAttribute(this.#masterAttribute, true);
-            // }
+            allChecked = checked;
         }
 
-        if (allUnchecked) {
-            await this.#setMasterState(false, master);
-
-            // if (master.matches("check-box")) {
-            //     master.checked = false;
-            // } else {
-            //     master.setAttribute(this.#masterAttribute, false);
-            // }
-        }
-
-        if (!allChecked && !allUnchecked) {
-            await this.#setMasterState("mixed", master);
-
-            // if (master.matches("check-box")) {
-            //     master.checked = "mixed";
-            // } else {
-            //     master.setAttribute(this.#masterAttribute, "mixed");
-            // }
-        }
+        this.#setMasterState(allChecked, master);
     }
 
     /**
-     * Sets the state of all dependent checkboxes.
+     * Sets the state of all children checkboxes.
      * @param checked {boolean} - the state to set the dependent checkboxes to
-     * @returns {Promise<void>}
      */
-    async #setDependentsState(checked) {
+    #setChildrensState(checked) {
         const dependents = this.#containerElement.querySelectorAll(this.#itemQuery);
         if (dependents == null) return;
 
         for (const dependent of dependents) {
-            await this.#setDependentState(checked, dependent);
+            this.#setChildState(checked, dependent);
         }
     }
 
     /**
-     * Sets the state of a dependent checkbox.
+     * Sets the state of a child checkbox.
      * @param checked {boolean} - the state to set the dependent checkbox to
      * @param checkbox {HTMLElement} - the dependent checkbox
-     * @returns {Promise<void>}
      */
-    async #setDependentState(checked, element) {
+    #setChildState(checked, element) {
         element.setAttribute(this.#itemAttribute, checked);
     }
 }
