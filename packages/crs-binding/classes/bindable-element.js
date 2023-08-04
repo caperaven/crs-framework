@@ -1,5 +1,12 @@
 class BindableElement extends HTMLElement {
   #bid;
+  #allowNotifications = true;
+  get allowNotifications() {
+    return this.#allowNotifications;
+  }
+  set allowNotifications(newValue) {
+    this.#allowNotifications = newValue;
+  }
   get hasStyle() {
     return true;
   }
@@ -50,6 +57,11 @@ class BindableElement extends HTMLElement {
   }
   async updateProperty(property, callback) {
     await crs.binding.data.updateProperty(this, property, callback);
+  }
+  notify(event, detail) {
+    if (this.allowNotifications === true) {
+      this.dispatchEvent(new CustomEvent(event, { detail }));
+    }
   }
 }
 function getHtmlPath(obj) {

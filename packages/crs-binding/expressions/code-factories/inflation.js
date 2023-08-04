@@ -15,7 +15,10 @@ async function inflationFactory(element, ctxName = "context") {
   return new Function("element", ctxName, [...preCode, ...code].join("\n"));
 }
 async function textContent(path, element, code, ctxName) {
-  const exp = await crs.binding.expression.sanitize(element.textContent.trim(), ctxName);
+  const text = element.textContent.trim();
+  if (text.indexOf("${") == -1 && text.indexOf("&{") == -1)
+    return;
+  const exp = await crs.binding.expression.sanitize(text, ctxName);
   code.push([path, ".textContent = `", exp.expression, "`;"].join(""));
 }
 async function children(path, element, preCode, code, ctxName) {
@@ -24,8 +27,11 @@ async function children(path, element, preCode, code, ctxName) {
     if (child.children.length > 0) {
       await children(`${path}.children[${i}]`, child, preCode, code, ctxName);
     } else {
-      const exp = await crs.binding.expression.sanitize(child.textContent.trim(), ctxName);
-      code.push([path, ".children", `[${i}].textContent = `, "`", exp.expression, "`;"].join(""));
+      const text = child.textContent.trim();
+      if (text.indexOf("${") != -1 || text.indexOf("&{") != -1) {
+        const exp = await crs.binding.expression.sanitize(text, ctxName);
+        code.push([path, ".children", `[${i}].textContent = `, "`", exp.expression, "`;"].join(""));
+      }
     }
     await attributes(`${path}.children[${i}]`, element.children[i], preCode, code, ctxName);
   }
@@ -39,14 +45,19 @@ async function attributes(path, element, preCode, code, ctxName) {
       const exp = await crs.binding.expression.sanitize(attr.nodeValue.trim(), ctxName);
       code.push([`${path}.setAttribute("${attr.nodeName}",`, "`", exp.expression, "`", ");"].join(""));
     } else if (attr.nodeName.indexOf("style.") != -1) {
+      preCode.push(`${path}.removeAttribute("${attr.nodeName}");`);
       await styles(attr, path, preCode, code, ctxName);
     } else if (attr.nodeName.indexOf("classlist.case") != -1) {
+      preCode.push(`${path}.removeAttribute("${attr.nodeName}");`);
       await classListCase(attr, path, preCode, code, ctxName);
     } else if (attr.nodeName.indexOf("classlist.if") != -1) {
+      preCode.push(`${path}.removeAttribute("${attr.nodeName}");`);
       await classListIf(attr, path, preCode, code, ctxName);
     } else if (attr.nodeName.indexOf(".if") != -1) {
+      preCode.push(`${path}.removeAttribute("${attr.nodeName}");`);
       await ifAttribute(attr, path, preCode, code, ctxName);
     } else if (attr.nodeName.indexOf(".attr") != -1 || attr.nodeName.indexOf(".one-way") != -1) {
+      preCode.push(`${path}.removeAttribute("${attr.nodeName}");`);
       await attrAttribute(attr, path, preCode, code, ctxName);
     }
   }
@@ -72,10 +83,26 @@ async function classListCase(attr, path, preCode, code, ctxName) {
   preCode.push(`${path}.classList.remove(${classes.join(",")});`);
 }
 async function classListIf(attr, path, preCode, code, ctxName) {
-  const parts = attr.nodeValue.split("?")[1].split(":");
-  preCode.push(`${path}.classList.remove(${parts.join(",")});`);
-  const exp = await crs.binding.expression.sanitize(attr.nodeValue.trim(), ctxName);
-  code.push([`${path}.classList.add(`, exp.expression, ");"].join(""));
+  const value = attr.nodeValue.trim().replaceAll("?.", "*.");
+  const ifParts = value.split("?");
+  let expression = ifParts[0].trim();
+  const elseParts = ifParts[1].split(":");
+  const ifClasses = elseParts[0].trim().replace("[", "").replace("]", "");
+  const elseClasses = elseParts[1]?.trim();
+  code.push(`${path}.classList.remove(${ifClasses});`);
+  if (elseClasses != null) {
+    code.push(`${path}.classList.remove(${elseClasses});`);
+  }
+  expression = expression.replace("*.", "?.");
+  const exp = await crs.binding.expression.sanitize(expression, ctxName);
+  code.push(`if (${exp.expression}) {`);
+  code.push(`    ${path}.classList.add(${ifClasses});`);
+  code.push(`}`);
+  if (elseClasses != null) {
+    code.push(`else {`);
+    code.push(`    ${path}.classList.add(${elseClasses});`);
+    code.push(`}`);
+  }
 }
 async function ifAttribute(attr, path, preCode, code, ctxName) {
   preCode.push(`${path}.removeAttribute("${attr.nodeName}");`);

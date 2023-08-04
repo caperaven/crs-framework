@@ -70,6 +70,10 @@
             "view": "tab-list"
         },
         {
+            "title": "Tab Sheet",
+            "view": "tab-sheet"
+        },
+        {
             "title": "Check List",
             "view": "check-list"
         },
