@@ -18,6 +18,10 @@
             "view": "icons"
         },
         {
+            "title": "Overflow Bar",
+            "view": "overflow-bar"
+        },
+        {
             "title": "Form",
             "view": "form"
         },
