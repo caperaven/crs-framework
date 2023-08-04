@@ -53,6 +53,17 @@ tab[aria-selected]:after {
     background: var(--blue);
 }
 
+tab[data-highlight="true"]:not([aria-selected]):after {
+    content: "";
+    display: block;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 2px;
+    width: 100%;
+    background: var(--grey-s2);
+}
+
 
 tab[aria-selected][data-invalid="true"]:before {
     content: "info-outline";

@@ -25,6 +25,7 @@
  */
 export class TabSheet extends crs.classes.BindableElement {
     #headerClickHandler = this.#headerClick.bind(this);
+    #headerKeyUpHandler = this.#headerKeyUp.bind(this);
 
     get html() { return import.meta.url.replace(".js", ".html"); }
     get shadowDom() { return true; }
@@ -33,6 +34,7 @@ export class TabSheet extends crs.classes.BindableElement {
         await this.#createTabs();
         await this.#setDefaultTab();
         this.registerEvent(this.header, "click", this.#headerClickHandler);
+        this.registerEvent(this.header, "keyup", this.#headerKeyUpHandler);
     }
 
     async disconnectedCallback() {
@@ -82,9 +84,35 @@ export class TabSheet extends crs.classes.BindableElement {
      */
     async #headerClick(event) {
         const target = event.composedPath()[0];
+        if (target === this.header) return;
+
         const id = target.dataset.id;
 
         await this.makeActive(id);
+    }
+
+    /**
+     * Handle keyboard events on the header.
+     * @param event
+     * @returns {Promise<void>}
+     */
+    async #headerKeyUp(event) {
+        const highlightedTab = this.#clearHighlight();
+
+        if (event.code === "Enter" || event.code === "Space") {
+            const id = highlightedTab.dataset.id;
+            return await this.makeActive(id);
+        }
+
+        if (event.code === "ArrowRight") {
+            const nextTab = highlightedTab.nextElementSibling || this.header.lastElementChild;
+            return nextTab.dataset.highlight = true;
+        }
+
+        if (event.code === "ArrowLeft") {
+            const previousTab = highlightedTab.previousElementSibling || this.header.firstElementChild;
+            return previousTab.dataset.highlight = true;
+        }
     }
 
     /**
@@ -116,6 +144,7 @@ export class TabSheet extends crs.classes.BindableElement {
     async #setNewTabMarkers(tabId) {
         const tab = this.shadowRoot.querySelector(`tab[data-id="${tabId}"]`);
         tab.setAttribute("aria-selected", "true");
+        tab.dataset.highlight = true;
         this.querySelector(`page[data-id="${tabId}"]`).removeAttribute("aria-hidden");
         this.notify("after_enter");
     }
@@ -138,10 +167,19 @@ export class TabSheet extends crs.classes.BindableElement {
      * @returns {Promise<void>}
      */
     async makeActive(tabId) {
+        this.#clearHighlight();
         const canMoveAway = await this.#removeOldTabMarkers();
         if (canMoveAway === false) return;
 
         await this.#setNewTabMarkers(tabId);
+    }
+
+    #clearHighlight() {
+        const highlightedTab = this.header.querySelector("tab[data-highlight='true']");
+        if (highlightedTab != null) {
+            delete highlightedTab.dataset.highlight;
+        }
+        return highlightedTab;
     }
 }
 
