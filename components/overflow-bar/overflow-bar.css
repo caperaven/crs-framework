@@ -16,14 +16,16 @@
 }
 
 [data-id="overflow"] {
-    display: none;
     position: absolute;
     top: 0;
     left: 0;
     border: var(--border);
     padding: var(--padding);
+    margin: 0;
     box-shadow: var(--box-shadow);
     border-radius: var(--radius);
+    background: var(--window);
+    list-style: none;
 }
 
 [data-id="btnOverflow"] {
@@ -41,4 +43,9 @@
     flex: 1;
     display: flex;
     flex-direction: row;
+}
+
+li {
+    padding: var(--padding);
+    cursor: pointer;
 }
