@@ -1,3 +1,12 @@
+/**
+ * @method createOverflowItems - this function measures the children and if the children overflow the parent,
+ * they are made to be invisible. Additionally, they list items representing those items are created.
+ * The original items are not removed in case the UI resizes and this operation needs to be performed again.
+ * @param instance {OverflowBar} - the instance of the overflow bar
+ * @param btnOverflow - the button that opens the overflow
+ * @param overflowContainer - the container that holds the overflow items, normally a UL
+ * @returns {Promise<void>}
+ */
 export async function createOverflowItems(instance, btnOverflow, overflowContainer) {
     const width = instance.offsetWidth;
     let right = 0;
@@ -29,6 +38,12 @@ export async function createOverflowItems(instance, btnOverflow, overflowContain
     }
 }
 
+/**
+ * @method addItemToOverflow - this function creates an item in the overflow container
+ * @param item - the item to be added to the overflow container
+ * @param overflowContainer - the container that holds the overflow items, normally a UL
+ * @returns {Promise<void>}
+ */
 async function addItemToOverflow(item, overflowContainer) {
     await crs.call("dom", "create_element", {
         tag_name: "li", parent: overflowContainer,
@@ -41,6 +56,14 @@ async function addItemToOverflow(item, overflowContainer) {
     })
 }
 
+/**
+ * @method showOverflow - this function shows the overflow container as a popup
+ * If it is a mobile device this will be full screen, else it is shown relative to the overflow button
+ * @param instance {OverflowBar} - the instance of the overflow bar
+ * @param btnOverflow - the button that opens the overflow
+ * @param overflowContainer - the container that holds the overflow items, normally a UL
+ * @returns {Promise<void>}
+ */
 export async function showOverflow(instance, btnOverflow, overflowContainer) {
     const isMobile = await crs.call("system", "is_mobile", {});
 
@@ -54,6 +77,13 @@ export async function showOverflow(instance, btnOverflow, overflowContainer) {
     instance.dialogOpen = true;
 }
 
+/**
+ * @method showRelative - this function shows the overflow container relative to the overflow button
+ * @param instance
+ * @param btnOverflow
+ * @param overflowContainer
+ * @returns {Promise<void>}
+ */
 async function showRelative(instance, btnOverflow, overflowContainer) {
     instance.background = await crs.call("dom", "create_element", {
         tag_name: "div", parent: instance,
@@ -82,6 +112,11 @@ async function showRelative(instance, btnOverflow, overflowContainer) {
     })
 }
 
+/**
+ * @method showFullscreen - this function shows the overflow container as a full screen popup
+ * @param overflowContainer
+ * @returns {Promise<void>}
+ */
 async function showFullscreen(overflowContainer) {
     overflowContainer.style.position = "fixed";
     overflowContainer.style.top = 0;
@@ -91,6 +126,12 @@ async function showFullscreen(overflowContainer) {
     overflowContainer.removeAttribute("aria-hidden");
 }
 
+/**
+ * @method closeOverflow - this function closes the overflow container
+ * @param overflow
+ * @param overflowContainer
+ * @returns {Promise<void>}
+ */
 export async function closeOverflow(overflow, overflowContainer) {
     overflow.background?.remove();
     overflow.background = null;
