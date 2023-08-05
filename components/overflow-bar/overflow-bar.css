@@ -17,10 +17,10 @@
 
 [data-id="overflow"] {
     position: absolute;
+    padding: 0;
     top: 0;
     left: 0;
     border: var(--border);
-    padding: var(--padding);
     margin: 0;
     box-shadow: var(--box-shadow);
     border-radius: var(--radius);
@@ -48,4 +48,8 @@
 li {
     padding: var(--padding);
     cursor: pointer;
+}
+
+li:hover {
+    background: var(--grey-s3);
 }

@@ -22,6 +22,13 @@ export class OverflowBar extends crs.classes.BindableElement {
     async #click(event) {
         const target = event.composedPath()[0];
 
+        const action = target.dataset.action;
+        const id = target.dataset.id;
+
+        if ((id != null || action != null) && target !== this.btnOverflow) {
+            this.notify("execute", { action, id });
+        }
+
         if (this.#dialogOpen) {
             return await this.#closeOverflow();
         }
@@ -29,10 +36,6 @@ export class OverflowBar extends crs.classes.BindableElement {
         if (target === this.btnOverflow) {
             return await this.#showOverflow();
         }
-
-        const action = target.dataset.action;
-        const id = target.dataset.id;
-        this.notify("execute", { action, id });
     }
 
     async #createOverflowItems() {
