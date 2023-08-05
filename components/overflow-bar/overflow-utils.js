@@ -1,10 +1,10 @@
-export async function createOverflowItems(overflow, btnOverflow, overflowContainer) {
-    const width = overflow.offsetWidth;
+export async function createOverflowItems(instance, btnOverflow, overflowContainer) {
+    const width = instance.offsetWidth;
     let right = 0;
 
     let hasOverflow = false;
-    const children = overflow.children;
-    overflow.overflow.innerHTML = "";
+    const children = instance.children;
+    instance.overflow.innerHTML = "";
     btnOverflow.setAttribute("aria-hidden", "true");
 
     for (let i = 0; i < children.length; i++) {
@@ -41,22 +41,22 @@ async function addItemToOverflow(item, overflowContainer) {
     })
 }
 
-export async function showOverflow(overflow, btnOverflow, overflowContainer) {
+export async function showOverflow(instance, btnOverflow, overflowContainer) {
     const isMobile = await crs.call("system", "is_mobile", {});
 
     if (isMobile === true) {
         await showFullscreen(overflowContainer);
     }
     else {
-        await showRelative(overflow, btnOverflow, overflowContainer);
+        await showRelative(instance, btnOverflow, overflowContainer);
     }
 
-    overflow.dialogOpen = true;
+    instance.dialogOpen = true;
 }
 
-async function showRelative(overflow, btnOverflow, overflowContainer) {
-    overflow.background = await crs.call("dom", "create_element", {
-        tag_name: "div", parent: overflow,
+async function showRelative(instance, btnOverflow, overflowContainer) {
+    instance.background = await crs.call("dom", "create_element", {
+        tag_name: "div", parent: instance,
         styles: {
             position: "fixed",
             top: 0,
