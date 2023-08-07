@@ -8,6 +8,8 @@
  * @returns {Promise<void>}
  */
 export async function createOverflowItems(instance, btnOverflow, overflowContainer) {
+    await resetAllChildren(instance);
+
     const width = instance.offsetWidth;
     let right = 0;
 
@@ -20,7 +22,6 @@ export async function createOverflowItems(instance, btnOverflow, overflowContain
         const child = children[i];
 
         if (hasOverflow) {
-            child.setAttribute("aria-hidden", "true");
             await addItemToOverflow(child, overflowContainer);
             continue;
         }
@@ -28,7 +29,6 @@ export async function createOverflowItems(instance, btnOverflow, overflowContain
         right += child.offsetWidth;
         if (right > width) {
             await addItemToOverflow(child, overflowContainer);
-            child.setAttribute("aria-hidden", "true");
             hasOverflow = true;
         }
     }
@@ -36,11 +36,15 @@ export async function createOverflowItems(instance, btnOverflow, overflowContain
     if (hasOverflow) {
         btnOverflow.removeAttribute("aria-hidden");
     }
+
+    return hasOverflow;
 }
 
 export async function createOverflowFromCount(instance, btnOverflow, overflowContainer, count) {
+    await resetAllChildren(instance);
+
     const hasOverflow = instance.children.length > count;
-    if (hasOverflow == false) return;
+    if (hasOverflow == false) return false;
 
     for (let i = count; i < instance.children.length; i++) {
         const child = instance.children[i];
@@ -49,6 +53,13 @@ export async function createOverflowFromCount(instance, btnOverflow, overflowCon
     }
 
     btnOverflow.removeAttribute("aria-hidden");
+    return true;
+}
+
+async function resetAllChildren(instance) {
+    for (const child of instance.children) {
+        child.removeAttribute("aria-hidden");
+    }
 }
 
 /**
@@ -58,6 +69,8 @@ export async function createOverflowFromCount(instance, btnOverflow, overflowCon
  * @returns {Promise<void>}
  */
 async function addItemToOverflow(item, overflowContainer) {
+    item.setAttribute("aria-hidden", "true");
+
     await crs.call("dom", "create_element", {
         tag_name: "li", parent: overflowContainer,
         text_content: item.textContent,

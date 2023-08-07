@@ -11,12 +11,16 @@ export class OverflowBar extends crs.classes.BindableElement {
     #background = null;
     #clickHandler = this.#click.bind(this);
     #dialogOpen = false;
+    #isOverflowing = false;
 
     get background() { return this.#background; }
     set background(value) { this.#background = value; }
 
     get dialogOpen() { return this.#dialogOpen; }
     set dialogOpen(value) { this.#dialogOpen = value; }
+
+    get isOverflowing() { return this.#isOverflowing; }
+    set isOverflowing(value) { this.#isOverflowing = value; }
 
     get html() { return import.meta.url.replace(".js", ".html"); }
     get shadowDom() { return true; }
@@ -29,14 +33,7 @@ export class OverflowBar extends crs.classes.BindableElement {
     async load() {
         requestAnimationFrame(async () => {
             this.registerEvent(this, "click", this.#clickHandler);
-
-            if (this.dataset.count == null) {
-                await createOverflowItems(this, this.btnOverflow, this.overflow);
-            }
-            else {
-                await createOverflowFromCount(this, this.btnOverflow, this.overflow, Number(this.dataset.count));
-            }
-
+            this.refresh();
             this.style.visibility = "visible";
         });
     }
@@ -57,6 +54,19 @@ export class OverflowBar extends crs.classes.BindableElement {
 
         if (target === this.btnOverflow) {
             return await showOverflow(this, this.btnOverflow, this.overflow);
+        }
+    }
+
+    /**
+     * @method refresh - this function refreshes the overflow menu, redrawing everything to be visible or in overflow
+     * @returns {Promise<void>}
+     */
+    async refresh() {
+        if (this.dataset.count == null) {
+            await createOverflowItems(this, this.btnOverflow, this.overflow);
+        }
+        else {
+            await createOverflowFromCount(this, this.btnOverflow, this.overflow, Number(this.dataset.count));
         }
     }
 }
