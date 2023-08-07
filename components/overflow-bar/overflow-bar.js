@@ -1,6 +1,12 @@
-import {createOverflowItems, showOverflow, closeOverflow} from "./overflow-utils.js";
+import {createOverflowItems, showOverflow, closeOverflow, createOverflowFromCount} from "./overflow-utils.js";
 
 
+/**
+ * @class OverflowBar - used to display a list of actions in a dropdown menu that exceeds the width of the component.
+ *
+ * Parts:
+ * - background: div that is displayed screen wide so that you can auto close the overflow menu when clicking outside of it.
+ */
 export class OverflowBar extends crs.classes.BindableElement {
     #background = null;
     #clickHandler = this.#click.bind(this);
@@ -23,7 +29,14 @@ export class OverflowBar extends crs.classes.BindableElement {
     async load() {
         requestAnimationFrame(async () => {
             this.registerEvent(this, "click", this.#clickHandler);
-            await createOverflowItems(this, this.btnOverflow, this.overflow);
+
+            if (this.dataset.count == null) {
+                await createOverflowItems(this, this.btnOverflow, this.overflow);
+            }
+            else {
+                await createOverflowFromCount(this, this.btnOverflow, this.overflow, Number(this.dataset.count));
+            }
+
             this.style.visibility = "visible";
         });
     }

@@ -69,7 +69,7 @@ tab[data-highlight="true"]:not([aria-selected]):after {
 }
 
 
-tab[aria-selected][data-invalid="true"]:before {
+tab[data-invalid="true"]:before {
     content: "info-outline";
     font-family: crsfrw;
     color: var(--red);

@@ -39,7 +39,9 @@ export class TabSheet extends crs.classes.BindableElement {
 
     async disconnectedCallback() {
         this.unregisterEvent(this.header, "click", this.#headerClickHandler);
+        this.unregisterEvent(this.header, "keyup", this.#headerKeyUpHandler);
         this.#headerClickHandler = null;
+        this.#headerKeyUpHandler = null;
         super.disconnectedCallback();
     }
 
@@ -123,8 +125,6 @@ export class TabSheet extends crs.classes.BindableElement {
     async #removeOldTabMarkers() {
         const currentActiveTab = this.shadowRoot.querySelector("tab[aria-selected='true']");
         if (currentActiveTab != null) {
-            if (currentActiveTab.dataset.invalid == "true") return false;
-
             const options = { canNavigateAway: true };
             this.notify("before_leave", options);
 

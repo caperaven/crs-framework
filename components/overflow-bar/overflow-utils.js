@@ -38,6 +38,19 @@ export async function createOverflowItems(instance, btnOverflow, overflowContain
     }
 }
 
+export async function createOverflowFromCount(instance, btnOverflow, overflowContainer, count) {
+    const hasOverflow = instance.children.length > count;
+    if (hasOverflow == false) return;
+
+    for (let i = count; i < instance.children.length; i++) {
+        const child = instance.children[i];
+        child.setAttribute("aria-hidden", "true");
+        await addItemToOverflow(child, overflowContainer);
+    }
+
+    btnOverflow.removeAttribute("aria-hidden");
+}
+
 /**
  * @method addItemToOverflow - this function creates an item in the overflow container
  * @param item - the item to be added to the overflow container
