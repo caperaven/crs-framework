@@ -164,3 +164,7 @@ export async function closeOverflow(overflow, overflowContainer) {
     overflowContainer.setAttribute("aria-hidden", "true");
     overflow.dialogOpen = false;
 }
+
+export async function setPinned(instance, pinned, action, id, textContent) {
+
+}

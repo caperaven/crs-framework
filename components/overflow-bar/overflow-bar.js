@@ -1,4 +1,10 @@
-import {createOverflowItems, showOverflow, closeOverflow, createOverflowFromCount} from "./overflow-utils.js";
+import {
+    createOverflowItems,
+    showOverflow,
+    closeOverflow,
+    createOverflowFromCount,
+    setPinned
+} from "./overflow-utils.js";
 
 
 /**
@@ -46,6 +52,10 @@ export class OverflowBar extends crs.classes.BindableElement {
 
         if ((id != null || action != null) && target !== this.btnOverflow) {
             this.notify("execute", { action, id });
+        }
+
+        if (target.nodeName === "LI" && this.dataset.pinned === "true") {
+            await setPinned(this, true, action, id, target.textContent);
         }
 
         if (this.#dialogOpen) {

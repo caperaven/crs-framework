@@ -1,6 +1,10 @@
 :host {
+    --input-size: 2.5rem;
+
     display: block;
     width: 100%;
+    height: 3rem;
+    background: var(--grey-s3);
 }
 
 * {
@@ -26,18 +30,40 @@
 
 [data-id="btnOverflow"] {
     font-family: crsfrw;
+    width: var(--input-size) !important;
+    height: var(--input-size) !important;
+    border: 0;
+    cursor: pointer;
+    background: transparent;
+}
+
+.overflow-cell {
+    display: flex;
+    width: max-content;
+    height: 2.5rem;
+    align-items: center;
+    background: var(--window);
+    border: var(--border);
+    border-radius: var(--radius);
+    padding: var(--padding);
+}
+
+.pinned-content {
+    color: var(--blue);
+    font-weight: bold;
 }
 
 .container {
     display: grid;
-    grid-template-columns: 1fr 2rem;
+    grid-template-columns: 1fr max-content;
     width: 100%;
     height: 100%;
+    align-items: center;
+    padding: 0 var(--half-padding);
 }
 
 .items-cell {
     width: 100%;
-    height: 100%;
     overflow: hidden;
 }
 

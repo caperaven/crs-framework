@@ -23,6 +23,7 @@ overflow-bar {
 
 tab {
     width: max-content;
+    height: 2.5rem;
     padding: var(--padding);
     position: relative;
     border-radius: var(--radius) var(--radius) 0 0;
