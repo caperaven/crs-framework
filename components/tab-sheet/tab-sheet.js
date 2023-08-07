@@ -1,3 +1,5 @@
+import "./../overflow-bar/overflow-bar.js";
+
 /**
  * @class TabSheet - creates a tab sheet.
  * The tabsheet has preset pages. The pages are created based on the page elements.
@@ -24,24 +26,15 @@
  * </tab-sheet>
  */
 export class TabSheet extends crs.classes.BindableElement {
-    #headerClickHandler = this.#headerClick.bind(this);
-    #headerKeyUpHandler = this.#headerKeyUp.bind(this);
-
     get html() { return import.meta.url.replace(".js", ".html"); }
     get shadowDom() { return true; }
 
     async load() {
         await this.#createTabs();
         await this.#setDefaultTab();
-        this.registerEvent(this.header, "click", this.#headerClickHandler);
-        this.registerEvent(this.header, "keyup", this.#headerKeyUpHandler);
     }
 
     async disconnectedCallback() {
-        this.unregisterEvent(this.header, "click", this.#headerClickHandler);
-        this.unregisterEvent(this.header, "keyup", this.#headerKeyUpHandler);
-        this.#headerClickHandler = null;
-        this.#headerKeyUpHandler = null;
         super.disconnectedCallback();
     }
 
@@ -79,45 +72,6 @@ export class TabSheet extends crs.classes.BindableElement {
     }
 
     /**
-     * @method #headerClick - handles the click event on the header.
-     * This will make the tab active.
-     * @param event
-     * @returns {Promise<void>}
-     */
-    async #headerClick(event) {
-        const target = event.composedPath()[0];
-        if (target === this.header) return;
-
-        const id = target.dataset.id;
-
-        await this.makeActive(id);
-    }
-
-    /**
-     * Handle keyboard events on the header.
-     * @param event
-     * @returns {Promise<void>}
-     */
-    async #headerKeyUp(event) {
-        const highlightedTab = this.#clearHighlight();
-
-        if (event.code === "Enter" || event.code === "Space") {
-            const id = highlightedTab.dataset.id;
-            return await this.makeActive(id);
-        }
-
-        if (event.code === "ArrowRight") {
-            const nextTab = highlightedTab.nextElementSibling || this.header.lastElementChild;
-            return nextTab.dataset.highlight = true;
-        }
-
-        if (event.code === "ArrowLeft") {
-            const previousTab = highlightedTab.previousElementSibling || this.header.firstElementChild;
-            return previousTab.dataset.highlight = true;
-        }
-    }
-
-    /**
      * @method #removeOldTabMarkers - removes the old tab markers.
      * This will remove it from the tab and also the page
      * @returns {Promise<boolean>}
@@ -149,6 +103,14 @@ export class TabSheet extends crs.classes.BindableElement {
         this.notify("after_enter");
     }
 
+    #clearHighlight() {
+        const highlightedTab = this.header.querySelector("tab[data-highlight='true']");
+        if (highlightedTab != null) {
+            delete highlightedTab.dataset.highlight;
+        }
+        return highlightedTab;
+    }
+
     /**
      * @method setInvalid - sets the tab to invalid or invalid state.
      * If the tab has a error mark this as invalid.
@@ -174,12 +136,8 @@ export class TabSheet extends crs.classes.BindableElement {
         await this.#setNewTabMarkers(tabId);
     }
 
-    #clearHighlight() {
-        const highlightedTab = this.header.querySelector("tab[data-highlight='true']");
-        if (highlightedTab != null) {
-            delete highlightedTab.dataset.highlight;
-        }
-        return highlightedTab;
+    async execute(event) {
+        await this.makeActive(event.detail.id);
     }
 }
 

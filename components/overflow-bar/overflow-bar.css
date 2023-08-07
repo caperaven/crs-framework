@@ -29,21 +29,31 @@
 }
 
 .container {
-    display: flex;
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: 1fr 2rem;
     width: 100%;
     height: 100%;
 }
 
-.items {
+.items-cell {
+    width: 100%;
+    height: 100%;
     overflow: hidden;
+}
+
+.items {
     flex: 1;
     display: flex;
     flex-direction: row;
+    align-items: center;
+    width: max-content;
+    height: 100%;
 }
 
 :host([data-count]) .items {
     justify-content: flex-end;
+    width: initial !important;
+    margin-right: var(--padding);
 }
 
 ul {

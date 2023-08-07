@@ -1,6 +1,5 @@
 :host {
-    display: flex;
-    flex-direction: column;
+    display: block;
     width: 100%;
     height: 100%;
     box-sizing: border-box;
@@ -18,11 +17,8 @@
     padding: var(--padding);
 }
 
-header {
-    padding: var(--padding);
-    display: flex;
-    align-items: center;
-    user-select: none;
+overflow-bar {
+    width: 100%;
 }
 
 tab {
@@ -78,4 +74,8 @@ tab[data-invalid="true"]:before {
 
 tab[aria-selected][data-invalid="true"]:after {
     background: var(--red);
+}
+
+tab[aria-hidden] {
+    display: none;
 }

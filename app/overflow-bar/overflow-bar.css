@@ -1,5 +1,10 @@
 overflow-bar {
-    width: 200px;
+    width: 300px;
     height: 2rem;
+    margin: var(--padding);
+}
+
+tab-sheet {
+    width: 300px;
     margin: var(--padding);
 }

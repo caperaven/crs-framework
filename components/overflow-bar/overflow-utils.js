@@ -27,7 +27,7 @@ export async function createOverflowItems(instance, btnOverflow, overflowContain
         }
 
         right += child.offsetWidth;
-        if (right > width) {
+        if (right > (width - 32)) {
             await addItemToOverflow(child, overflowContainer);
             hasOverflow = true;
         }
