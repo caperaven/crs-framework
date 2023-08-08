@@ -97,6 +97,10 @@ async function createLiForIcons(item, parent) {
         }
     })
 
+    if (item.dataset.invalid != null) {
+        result.dataset.invalid = item.dataset.invalid;
+    }
+
     if (isSelected) {
         result.setAttribute("aria-selected", "true");
     }
@@ -115,6 +119,10 @@ async function createLiForText(item, parent) {
             action: item.dataset.action || ""
         }
     })
+
+    if (item.dataset.invalid != null) {
+        result.dataset.invalid = item.dataset.invalid;
+    }
 
     if (isSelected) {
         result.setAttribute("aria-selected", "true");
@@ -206,8 +214,10 @@ export async function closeOverflow(overflow, overflowContainer) {
     overflow.dialogOpen = false;
 }
 
-export async function setPinned(instance, pinned, action, id, textContent, icon) {
+export async function setPinned(instance, pinned, action, id, textContent, icon, invalid) {
     const overflowCell = instance.shadowRoot.querySelector(".overflow-cell");
+
+    delete instance.pinnedContent.dataset.invalid;
 
     if (pinned === false) {
         instance.pinnedContent.textContent = "";
@@ -222,6 +232,11 @@ export async function setPinned(instance, pinned, action, id, textContent, icon)
     instance.pinnedContent.textContent = textContent;
     instance.pinnedContent.dataset.id = id;
     instance.pinnedContent.dataset.action = action;
+
+    if (invalid != null) {
+        instance.pinnedContent.dataset.invalid = invalid;
+    }
+
     overflowCell.classList.add("pinned");
 
     if (icon != null) {

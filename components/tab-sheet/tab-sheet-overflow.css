@@ -1,4 +1,4 @@
-.overflow-cell.pinned[aria-selected]:after {
+.overflow-cell[aria-selected] .pinned-content:after {
     content: "";
     display: block;
     position: absolute;
@@ -8,3 +8,17 @@
     width: 100%;
     background: var(--blue);
 }
+
+.overflow-cell .pinned-content[data-invalid]:before {
+    content: "info-outline";
+    font-family: crsfrw;
+    font-size: 1.2rem;
+    font-weight: normal;
+    color: var(--red);
+    margin: 0 var(--padding) 0 0;
+}
+
+.overflow-cell[aria-selected] .pinned-content[data-invalid]:after {
+    background: var(--red);
+}
+

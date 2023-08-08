@@ -61,7 +61,7 @@ export class OverflowBar extends crs.classes.BindableElement {
         }
 
         if (target.nodeName === "LI") {
-            await setPinned(this, true, action, id, target.textContent, target.dataset.icon);
+            await setPinned(this, true, action, id, target.textContent, target.dataset.icon, target.dataset.invalid);
             await toggleSelection(target, this);
             await this.refresh();
             this.overflowCell.setAttribute("aria-selected", "true");

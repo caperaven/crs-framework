@@ -57,6 +57,10 @@ export class TabSheet extends crs.classes.BindableElement {
                 attributes: { tabindex: 0 }
             })
 
+            if (page.dataset.invalid != null) {
+                button.dataset.invalid = page.dataset.invalid;
+            }
+
             fragment.appendChild(button);
         }
         this.header.appendChild(fragment);

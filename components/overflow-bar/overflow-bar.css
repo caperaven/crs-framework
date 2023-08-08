@@ -49,17 +49,21 @@
     border-radius: var(--radius);
 }
 
-.overflow-cell.pinned {
-    padding: var(--padding);
-}
-
 .pinned-content {
+    position: relative;
     color: var(--blue);
     font-weight: bold;
     cursor: pointer;
     height: 2.5rem;
     background: transparent;
     border-width: 0;
+    border-right: var(--border);
+}
+
+.pinned .pinned-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 :host([data-display="icons"]) .pinned-content {
@@ -126,4 +130,12 @@ li[data-icon]::before {
     content: attr(data-icon);
     font-family: crsfrw;
     margin-right: var(--padding);
+}
+
+li[data-invalid="true"]:before {
+    content: "info-outline";
+    font-family: crsfrw;
+    font-size: 1.2rem;
+    color: var(--red);
+    margin: 0 var(--padding) 0 0;
 }
