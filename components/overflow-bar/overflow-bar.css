@@ -144,3 +144,7 @@ li[data-invalid="true"]:before {
     color: var(--red);
     margin: 0 var(--padding) 0 0;
 }
+
+li.highlighted {
+    background: var(--grey-s2);
+}

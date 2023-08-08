@@ -144,6 +144,8 @@ async function createLiForText(item, parent) {
  * @returns {Promise<void>}
  */
 export async function showOverflow(instance, btnOverflow, overflowContainer) {
+    await clearHighlighted(overflowContainer);
+
     const isMobile = await crs.call("system", "is_mobile", {});
 
     if (isMobile === true) {
@@ -216,6 +218,8 @@ export async function closeOverflow(overflow, overflowContainer) {
     overflow.background = null;
     overflowContainer.setAttribute("aria-hidden", "true");
     overflow.dialogOpen = false;
+
+    await clearHighlighted(overflowContainer);
 }
 
 export async function setPinned(instance, action, id, textContent, icon, invalid) {
@@ -258,4 +262,29 @@ function getOverflowControlsWidth(instance) {
             resolve(overflowCell.offsetWidth);
         })
     });
+}
+
+export async function moveHighlight(collection, direction) {
+    const highlighted = collection.querySelector('.highlighted');
+    if (highlighted == null) {
+        const first = collection.querySelector('li');
+        first?.classList.add('highlighted');
+        return;
+    }
+
+    const nextHighlighted = direction == 1 ? highlighted.nextElementSibling : highlighted.previousElementSibling;
+    if (nextHighlighted == null) return;
+
+    highlighted.classList.remove('highlighted');
+    nextHighlighted.classList.add('highlighted');
+    return nextHighlighted;
+}
+
+export async function getHighlighted(collection) {
+    return collection.querySelector('.highlighted');
+}
+
+async function clearHighlighted(collection) {
+    const highlighted = collection.querySelector('.highlighted');
+    highlighted?.classList.remove('highlighted');
 }
