@@ -39,6 +39,7 @@
 }
 
 .overflow-cell {
+    position: relative;
     display: flex;
     width: max-content;
     height: 2.5rem;

@@ -32,6 +32,7 @@ export class TabSheet extends crs.classes.BindableElement {
     async load() {
         await this.#createTabs();
         await this.#setDefaultTab();
+        await this.#addCssToHeader();
     }
 
     async disconnectedCallback() {
@@ -109,6 +110,11 @@ export class TabSheet extends crs.classes.BindableElement {
             delete highlightedTab.dataset.highlight;
         }
         return highlightedTab;
+    }
+
+    #addCssToHeader() {
+        const url = new URL("./tab-sheet-overflow.css", import.meta.url);
+        this.header.addCSS(url);
     }
 
     /**

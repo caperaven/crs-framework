@@ -45,6 +45,8 @@ export class OverflowBar extends crs.classes.BindableElement {
     }
 
     async #click(event) {
+        this.overflowCell.removeAttribute("aria-selected");
+
         const target = event.composedPath()[0];
 
         const action = target.dataset.action;
@@ -52,12 +54,17 @@ export class OverflowBar extends crs.classes.BindableElement {
 
         if ((id != null || action != null) && target !== this.btnOverflow) {
             this.notify("execute", { action, id });
+
+            if (target.matches(".pinned-content")) {
+                this.overflowCell.setAttribute("aria-selected", "true");
+            }
         }
 
         if (target.nodeName === "LI") {
             await setPinned(this, true, action, id, target.textContent, target.dataset.icon);
             await toggleSelection(target, this);
             await this.refresh();
+            this.overflowCell.setAttribute("aria-selected", "true");
             return await closeOverflow(this, this.overflow);
         }
 
@@ -83,6 +90,13 @@ export class OverflowBar extends crs.classes.BindableElement {
         else {
             await createOverflowFromCount(this, this.btnOverflow, this.overflow, Number(this.dataset.count), useIcons);
         }
+    }
+
+    async addCSS(url) {
+        const link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.href = url;
+        this.shadowRoot.appendChild(link);
     }
 }
 
