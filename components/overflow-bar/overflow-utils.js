@@ -189,21 +189,28 @@ export async function closeOverflow(overflow, overflowContainer) {
     overflow.dialogOpen = false;
 }
 
-export async function setPinned(instance, pinned, action, id, textContent) {
+export async function setPinned(instance, pinned, action, id, textContent, icon) {
     const overflowCell = instance.shadowRoot.querySelector(".overflow-cell");
 
     if (pinned === false) {
         instance.pinnedContent.textContent = "";
+        instance.pinnedContent.setAttribute("aria-hidden", "true");
         overflowCell.classList.remove("pinned");
         delete instance.dataset.id;
         delete instance.dataset.action;
         return;
     }
 
+    instance.pinnedContent.removeAttribute("aria-hidden");
     instance.pinnedContent.textContent = textContent;
     instance.pinnedContent.dataset.id = id;
     instance.pinnedContent.dataset.action = action;
     overflowCell.classList.add("pinned");
+
+    if (icon != null) {
+        instance.pinnedContent.textContent = icon;
+        instance.pinnedContent.setAttribute("title", textContent);
+    }
 }
 
 function getOverflowControlsWidth(instance) {

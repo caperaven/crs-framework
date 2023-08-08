@@ -39,7 +39,7 @@ export class OverflowBar extends crs.classes.BindableElement {
     async load() {
         requestAnimationFrame(async () => {
             this.registerEvent(this, "click", this.#clickHandler);
-            this.refresh();
+            await this.refresh();
             this.style.visibility = "visible";
         });
     }
@@ -55,7 +55,7 @@ export class OverflowBar extends crs.classes.BindableElement {
         }
 
         if (target.nodeName === "LI") {
-            await setPinned(this, true, action, id, target.textContent);
+            await setPinned(this, true, action, id, target.textContent, target.dataset.icon);
             await this.refresh();
             return await closeOverflow(this, this.overflow);
         }

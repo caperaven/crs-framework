@@ -55,6 +55,17 @@
     color: var(--blue);
     font-weight: bold;
     cursor: pointer;
+    height: 2.5rem;
+    background: transparent;
+    border-width: 0;
+}
+
+:host([data-display="icons"]) .pinned-content {
+    font-family: crsfrw;
+    font-size: 1.2rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    font-weight: normal;
 }
 
 .container {
