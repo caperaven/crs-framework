@@ -110,6 +110,7 @@ export class OverflowBar extends crs.classes.BindableElement {
      * @returns {Promise<void>}
      */
     async refresh(pinned = false) {
+        this.background = this.background?.remove();
         const useIcons = this.dataset.display === "icons";
 
         if (this.dataset.count == null) {
