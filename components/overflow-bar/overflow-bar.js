@@ -74,11 +74,13 @@ export class OverflowBar extends crs.classes.BindableElement {
      * @returns {Promise<void>}
      */
     async refresh() {
+        const useIcons = this.dataset.display === "icons";
+
         if (this.dataset.count == null) {
-            await createOverflowItems(this, this.btnOverflow, this.overflow);
+            await createOverflowItems(this, this.btnOverflow, this.overflow, useIcons);
         }
         else {
-            await createOverflowFromCount(this, this.btnOverflow, this.overflow, Number(this.dataset.count));
+            await createOverflowFromCount(this, this.btnOverflow, this.overflow, Number(this.dataset.count), useIcons);
         }
     }
 }

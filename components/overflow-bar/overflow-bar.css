@@ -93,8 +93,16 @@ ul {
 li {
     padding: var(--padding);
     cursor: pointer;
+    display: flex;
+    align-items: center;
 }
 
 li:hover {
     background: var(--grey-s3);
+}
+
+li[data-icon]::before {
+    content: attr(data-icon);
+    font-family: crsfrw;
+    margin-right: var(--padding);
 }

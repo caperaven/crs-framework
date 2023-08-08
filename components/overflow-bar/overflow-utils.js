@@ -7,11 +7,12 @@
  * @param overflowContainer - the container that holds the overflow items, normally a UL
  * @returns {Promise<void>}
  */
-export async function createOverflowItems(instance, btnOverflow, overflowContainer) {
+export async function createOverflowItems(instance, btnOverflow, overflowContainer, useIcons) {
     await resetAllChildren(instance);
 
     const overflowControlsWidth = await getOverflowControlsWidth(instance);
     const width = instance.offsetWidth;
+
     let right = 0;
 
     let hasOverflow = false;
@@ -22,13 +23,13 @@ export async function createOverflowItems(instance, btnOverflow, overflowContain
         const child = children[i];
 
         if (hasOverflow) {
-            await addItemToOverflow(child, overflowContainer);
+            await addItemToOverflow(child, overflowContainer, useIcons);
             continue;
         }
 
         right += child.offsetWidth;
         if (right > (width - overflowControlsWidth)) {
-            await addItemToOverflow(child, overflowContainer);
+            await addItemToOverflow(child, overflowContainer, useIcons);
             hasOverflow = true;
         }
     }
@@ -40,7 +41,7 @@ export async function createOverflowItems(instance, btnOverflow, overflowContain
     return hasOverflow;
 }
 
-export async function createOverflowFromCount(instance, btnOverflow, overflowContainer, count) {
+export async function createOverflowFromCount(instance, btnOverflow, overflowContainer, count, useIcons) {
     await resetAllChildren(instance);
 
     const hasOverflow = instance.children.length > count;
@@ -49,7 +50,7 @@ export async function createOverflowFromCount(instance, btnOverflow, overflowCon
     for (let i = count; i < instance.children.length; i++) {
         const child = instance.children[i];
         child.setAttribute("aria-hidden", "true");
-        await addItemToOverflow(child, overflowContainer);
+        await addItemToOverflow(child, overflowContainer, useIcons);
     }
 
     btnOverflow.removeAttribute("aria-hidden");
@@ -70,16 +71,37 @@ async function resetAllChildren(instance) {
  * @param overflowContainer - the container that holds the overflow items, normally a UL
  * @returns {Promise<void>}
  */
-async function addItemToOverflow(item, overflowContainer) {
+async function addItemToOverflow(item, overflowContainer, useIcons) {
     item.setAttribute("aria-hidden", "true");
 
+    if (useIcons === true) {
+        return await createLiForIcons(item, overflowContainer);
+    }
+
+    await createLiForText(item, overflowContainer);
+}
+
+async function createLiForIcons(item, parent) {
+    const icon = item.textContent;
+    const text_content = item.getAttribute("title");
+
     await crs.call("dom", "create_element", {
-        tag_name: "li", parent: overflowContainer,
-        text_content: item.textContent,
+        tag_name: "li", parent, text_content,
         dataset: {
             id: item.dataset.id,
             action: item.dataset.action || "",
-            icon: item.dataset.icon || ""
+            icon
+        }
+    })
+}
+
+async function createLiForText(item, parent) {
+    await crs.call("dom", "create_element", {
+        tag_name: "li", parent,
+        text_content: item.textContent,
+        dataset: {
+            id: item.dataset.id,
+            action: item.dataset.action || ""
         }
     })
 }

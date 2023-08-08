@@ -12,3 +12,8 @@ tab-sheet {
 button {
     height: 2.5rem;
 }
+
+[data-display="icons"] button {
+    font-family: crsfrw;
+    width: 2.5rem;
+}
