@@ -42,7 +42,7 @@ export class OverflowBar extends crs.classes.BindableElement {
             this.registerEvent(this, "click", this.#clickHandler);
             await this.refresh();
             this.style.visibility = "visible";
-            this.registerEvent(this, "keyup", this.#keyupHandler);
+            this.registerEvent(this, "keydown", this.#keyupHandler);
         });
     }
 
