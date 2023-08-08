@@ -168,8 +168,11 @@ export async function closeOverflow(overflow, overflowContainer) {
 }
 
 export async function setPinned(instance, pinned, action, id, textContent) {
+    const overflowCell = instance.shadowRoot.querySelector(".overflow-cell");
+
     if (pinned === false) {
         instance.pinnedContent.textContent = "";
+        overflowCell.classList.remove("pinned");
         delete instance.dataset.id;
         delete instance.dataset.action;
         return;
@@ -178,6 +181,7 @@ export async function setPinned(instance, pinned, action, id, textContent) {
     instance.pinnedContent.textContent = textContent;
     instance.pinnedContent.dataset.id = id;
     instance.pinnedContent.dataset.action = action;
+    overflowCell.classList.add("pinned");
 }
 
 function getOverflowControlsWidth(instance) {

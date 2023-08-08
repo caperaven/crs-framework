@@ -45,6 +45,9 @@
     background: var(--window);
     border: var(--border);
     border-radius: var(--radius);
+}
+
+.overflow-cell.pinned {
     padding: var(--padding);
 }
 
