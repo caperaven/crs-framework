@@ -87,13 +87,29 @@ describe("selection manager state tests - w/li child elements", () => {
             }
         }
 
+        //eventListeners on child elements
+        masterCheckbox.addEventListener("click", async () => {
+            masterCheckbox.setAttribute("aria-checked", masterCheckbox.getAttribute("aria-checked") === "true" ? "false" : "true");
+            await container.dispatchEvent("checkedChange", {detail: {target: masterCheckbox}});
+        });
+        item1.addEventListener("click", async () => {
+            item1.setAttribute("aria-selected", item1.getAttribute("aria-selected") === "true" ? "false" : "true");
+            await container.dispatchEvent("checkedChange", {detail: {target: item1}});
+        });
+        item2.addEventListener("click", async () => {
+            item2.setAttribute("aria-selected", item2.getAttribute("aria-selected") === "true" ? "false" : "true");
+            await container.dispatchEvent("checkedChange", {detail: {target: item2}});
+        });
+
         await crs.call("selection", "enable", intentOptions);
     })
 
     it ("master checkbox toggled to true, child li should be toggled true", async() => {
         //Arrange
         masterCheckbox.setAttribute("aria-checked", "false");
-        await container.dispatchEvent("click", {composedPath: () => {return [masterCheckbox, container]}});
+
+        //Act
+        await masterCheckbox.dispatchEvent("click");
 
         //Assert
         assertEquals(masterCheckbox.getAttribute("aria-checked"), "true");
@@ -109,7 +125,7 @@ describe("selection manager state tests - w/li child elements", () => {
         item2.setAttribute("aria-selected", "true");
 
         //Act
-        await container.dispatchEvent("click", {composedPath: () => {return [masterCheckbox, container]}});
+        await masterCheckbox.dispatchEvent("click");
 
         //Assert
         assertEquals(masterCheckbox.getAttribute("aria-checked"), "false");
@@ -119,8 +135,8 @@ describe("selection manager state tests - w/li child elements", () => {
 
     it ("all child li toggled to true, master checkbox should be toggled true", async() => {
         //Act
-        await container.dispatchEvent("click", {composedPath: () => {return [item1, container]}});
-        await container.dispatchEvent("click", {composedPath: () => {return [item2, container]}});
+        await item1.dispatchEvent("click");
+        await item2.dispatchEvent("click");
 
         //Assert
         assertEquals(masterCheckbox.getAttribute("aria-checked"), "true");
@@ -134,8 +150,8 @@ describe("selection manager state tests - w/li child elements", () => {
         item2.setAttribute("aria-selected", "true");
 
         //Act
-        await container.dispatchEvent("click", {composedPath: () => {return [item1, container]}});
-        await container.dispatchEvent("click", {composedPath: () => {return [item2, container]}});
+        await item1.dispatchEvent("click");
+        await item2.dispatchEvent("click");
 
         //Assert
         assertEquals(masterCheckbox.getAttribute("aria-checked"), "false");
@@ -145,7 +161,7 @@ describe("selection manager state tests - w/li child elements", () => {
 
     it ("one child li toggled to true, one toggled to false, master checkbox should be toggled mixed", async() => {
         //Act
-        await container.dispatchEvent("click", {composedPath: () => {return [item1, container]}});
+        await item1.dispatchEvent("click");
 
         //Assert
         assertEquals(masterCheckbox.getAttribute("aria-checked"), "mixed");
@@ -160,7 +176,7 @@ describe("selection manager state tests - w/li child elements", () => {
         item2.setAttribute("aria-selected", "false");
 
         //Act
-        await container.dispatchEvent("click", {composedPath: () => {return [masterCheckbox, container]}});
+        await masterCheckbox.dispatchEvent("click");
 
         //Assert
         assertEquals(masterCheckbox.getAttribute("aria-checked"), "true");
@@ -175,7 +191,7 @@ describe("selection manager state tests - w/li child elements", () => {
         item2.setAttribute("aria-selected", "false");
 
         //Act
-        await container.dispatchEvent("click", {composedPath: () => {return [item2, container]}});
+        await item2.dispatchEvent("click");
 
         //Assert
         assertEquals(masterCheckbox.getAttribute("aria-checked"), "true");
@@ -190,7 +206,7 @@ describe("selection manager state tests - w/li child elements", () => {
         item2.setAttribute("aria-selected", "false");
 
         //Act
-        await container.dispatchEvent("click", {composedPath: () => {return [item1, container]}});
+        await item1.dispatchEvent("click");
 
         //Assert
         assertEquals(masterCheckbox.getAttribute("aria-checked"), "false");

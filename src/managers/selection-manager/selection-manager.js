@@ -1,8 +1,8 @@
 /**
  * @class SelectionManager - This class manages the selection of a tri-state checkbox, and its dependent items.
- * Will listen for click events on the container element and update the respective items accordingly
- * i.e. If the master checkbox is clicked, all dependent items will be updated accordingly.
- * If a dependent item is clicked, the master checkbox will be updated accordingly.
+ * Will listen for checkedChange events on the container element and update the respective items accordingly
+ * i.e. If the master checkbox emits a checkedChange event, all dependent items will be updated accordingly.
+ * If a dependent item emits a checkedChange, the master checkbox will be updated accordingly.
  */
 export class SelectionManager {
     #containerElement;
@@ -10,7 +10,7 @@ export class SelectionManager {
     #masterAttribute;
     #itemQuery;
     #itemAttribute;
-    #clickHandler = this.#click.bind(this);
+    #checkedChangedHandler = this.#checkedChanged.bind(this);
 
     /**
      * @constructor
@@ -26,13 +26,13 @@ export class SelectionManager {
         this.#masterAttribute = masterAttribute;
         this.#itemQuery = itemQuery;
         this.#itemAttribute = itemAttribute;
-        this.#containerElement.addEventListener("click", this.#clickHandler);
+        this.#containerElement.addEventListener("checkedChange", this.#checkedChangedHandler);
         this.#checkChildrenStates();
     }
 
     dispose() {
-        this.#containerElement.removeEventListener("click", this.#clickHandler);
-        this.#clickHandler = null;
+        this.#containerElement.removeEventListener("checkedChange", this.#checkedChangedHandler);
+        this.#checkedChangedHandler = null;
         this.#containerElement = null;
         this.#masterQuery = null;
         this.#masterAttribute = null;
@@ -41,48 +41,39 @@ export class SelectionManager {
     }
 
     /**
-     * Click event handler. Will check the event to see if it is a master or selection element and update the items accordingly.
-     * @param event {MouseEvent} - the click event
+     * checkedChanged event handler. Will check the event to see if it is a master or selection element emitted a checkedChange event and update the items accordingly.
+     * @param event {MouseEvent} - the checkedChanged event
      * @returns {Promise<void>}
      */
-    async #click(event) {
+    async #checkedChanged(event) {
         const triggeredElement = this.#getElement(event);
         if (triggeredElement == null) return;
 
         if (triggeredElement.matches(this.#masterQuery)) {
             const checked = triggeredElement.getAttribute(this.#masterAttribute) === "true";
-            //NOTE KR: this check is here because if the check-box component is being used, it will set the checked state through its own event handler
-            if (triggeredElement.matches("check-box")) {
-                this.#setMasterState(checked, triggeredElement);
-                this.#setChildrensState(checked);
-            } else {
-                this.#setMasterState(!checked, triggeredElement);
-                this.#setChildrensState(!checked);
-            }
+            this.#setChildrenStates(checked);
         }
 
         if (triggeredElement.matches(this.#itemQuery)) {
-            const checked = triggeredElement.getAttribute(this.#itemAttribute) === "true";
-            this.#setChildState(!checked, triggeredElement);
             this.#checkChildrenStates();
         }
     }
 
     /**
-     * Attempts to find the master checkbox or the child checkbox that was clicked.
-     * @param event {Event} - The click event
+     * Attempts to find the master checkbox or the child checkbox that emitted the checkedChange event.
+     * @param event {Event} - The checkedChange event
+     * @param event.detail.target {Element} - The element that emitted the checkedChange event
      * @returns {*|null}
      */
     #getElement(event) {
-        const element = event.composedPath()[0];
+        const element = event?.detail?.target;
+        if (element == null) return;
+
         if (element.matches(this.#masterQuery) || element.matches(this.#itemQuery)) return element;
 
         const shadowRoot = element.getRootNode();
-        if (shadowRoot.host == null) return null;
-
+        if (shadowRoot.host == null) return;
         if (shadowRoot.host.matches(this.#masterQuery) || shadowRoot.host.matches(this.#itemQuery)) return shadowRoot.host;
-
-        return null;
     }
 
     /**
@@ -128,7 +119,7 @@ export class SelectionManager {
      * Sets the state of all children checkboxes.
      * @param checked {boolean} - the state to set the dependent checkboxes to
      */
-    #setChildrensState(checked) {
+    #setChildrenStates(checked) {
         const dependents = this.#containerElement.querySelectorAll(this.#itemQuery);
         if (dependents.length === 0) return;
 
