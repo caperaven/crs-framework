@@ -72,7 +72,7 @@
     }
 
     #calendar-toolbar #month {
-        width: 7.5rem;
+        width: 8rem;
     }
 
     #calendar-toolbar #year:after, #month:after {
@@ -98,11 +98,16 @@
 
     #perspectiveElement {
         height: 19.125rem;
+        width: 100%;
     }
 
-    @media screen and (max-width: 480px) {
-        #calendar-toolbar #previous-month, #year {
-            margin-right: 2.2rem;
+    @media screen and (max-width: 320px) {
+        :host {
+            width: 16.56rem
+        }
+
+        #calendar-toolbar {
+            width: 19rem;
         }
     }
 
