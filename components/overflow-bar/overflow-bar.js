@@ -25,9 +25,6 @@ export class OverflowBar extends crs.classes.BindableElement {
     get dialogOpen() { return this.#dialogOpen; }
     set dialogOpen(value) { this.#dialogOpen = value; }
 
-    get isOverflowing() { return this.#isOverflowing; }
-    set isOverflowing(value) { this.#isOverflowing = value; }
-
     get html() { return import.meta.url.replace(".js", ".html"); }
     get shadowDom() { return true; }
 
@@ -61,7 +58,7 @@ export class OverflowBar extends crs.classes.BindableElement {
         }
 
         if (target.nodeName === "LI") {
-            await setPinned(this, true, action, id, target.textContent, target.dataset.icon, target.dataset.invalid);
+            await setPinned(this, action, id, target.textContent, target.dataset.icon, target.dataset.invalid);
             await toggleSelection(target, this);
             await this.refresh(true);
             this.overflowCell.setAttribute("aria-selected", "true");
