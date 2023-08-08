@@ -54,8 +54,10 @@ export class OverflowBar extends crs.classes.BindableElement {
             this.notify("execute", { action, id });
         }
 
-        if (target.nodeName === "LI" && this.dataset.pinned === "true") {
+        if (target.nodeName === "LI") {
             await setPinned(this, true, action, id, target.textContent);
+            await this.refresh();
+            return await closeOverflow(this, this.overflow);
         }
 
         if (this.#dialogOpen) {

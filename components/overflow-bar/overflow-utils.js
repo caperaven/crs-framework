@@ -10,12 +10,12 @@
 export async function createOverflowItems(instance, btnOverflow, overflowContainer) {
     await resetAllChildren(instance);
 
+    const overflowControlsWidth = await getOverflowControlsWidth(instance);
     const width = instance.offsetWidth;
     let right = 0;
 
     let hasOverflow = false;
     const children = instance.children;
-    instance.overflow.innerHTML = "";
     btnOverflow.setAttribute("aria-hidden", "true");
 
     for (let i = 0; i < children.length; i++) {
@@ -27,7 +27,7 @@ export async function createOverflowItems(instance, btnOverflow, overflowContain
         }
 
         right += child.offsetWidth;
-        if (right > (width - 32)) {
+        if (right > (width - overflowControlsWidth)) {
             await addItemToOverflow(child, overflowContainer);
             hasOverflow = true;
         }
@@ -60,6 +60,8 @@ async function resetAllChildren(instance) {
     for (const child of instance.children) {
         child.removeAttribute("aria-hidden");
     }
+
+    instance.overflow.innerHTML = "";
 }
 
 /**
@@ -166,5 +168,21 @@ export async function closeOverflow(overflow, overflowContainer) {
 }
 
 export async function setPinned(instance, pinned, action, id, textContent) {
+    if (pinned === false) {
+        instance.pinnedContent.textContent = "";
+        delete instance.dataset.id;
+        delete instance.dataset.action;
+        return;
+    }
 
+    instance.pinnedContent.textContent = textContent;
+    instance.pinnedContent.dataset.id = id;
+    instance.pinnedContent.dataset.action = action;
+}
+
+function getOverflowControlsWidth(instance) {
+    return new Promise(resolve => {
+        const overflowCell = instance.shadowRoot.querySelector(".overflow-cell");
+        resolve(overflowCell.offsetWidth);
+    });
 }
