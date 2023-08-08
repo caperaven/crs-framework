@@ -86,8 +86,9 @@ async function addItemToOverflow(item, overflowContainer, useIcons) {
 async function createLiForIcons(item, parent) {
     const icon = item.textContent;
     const text_content = item.getAttribute("title");
+    const isSelected = item.getAttribute("aria-selected") != null;
 
-    await crs.call("dom", "create_element", {
+    const result = await crs.call("dom", "create_element", {
         tag_name: "li", parent, text_content,
         dataset: {
             id: item.dataset.id,
@@ -95,10 +96,18 @@ async function createLiForIcons(item, parent) {
             icon
         }
     })
+
+    if (isSelected) {
+        result.setAttribute("aria-selected", "true");
+    }
+
+    return result;
 }
 
 async function createLiForText(item, parent) {
-    await crs.call("dom", "create_element", {
+    const isSelected = item.getAttribute("aria-selected") != null;
+
+    const result = await crs.call("dom", "create_element", {
         tag_name: "li", parent,
         text_content: item.textContent,
         dataset: {
@@ -106,6 +115,12 @@ async function createLiForText(item, parent) {
             action: item.dataset.action || ""
         }
     })
+
+    if (isSelected) {
+        result.setAttribute("aria-selected", "true");
+    }
+
+    return result;
 }
 
 /**
@@ -213,6 +228,17 @@ export async function setPinned(instance, pinned, action, id, textContent, icon)
         instance.pinnedContent.textContent = icon;
         instance.pinnedContent.setAttribute("title", textContent);
     }
+}
+
+export async function toggleSelection(selected, container) {
+    if (selected == null) return;
+
+    const current = container.querySelector('[aria-selected="true"]');
+    current?.removeAttribute("aria-selected");
+
+    const id = selected.dataset.id;
+    const selectedElement = container.querySelector(`[data-id="${id}"]`);
+    selectedElement?.setAttribute("aria-selected", "true");
 }
 
 function getOverflowControlsWidth(instance) {

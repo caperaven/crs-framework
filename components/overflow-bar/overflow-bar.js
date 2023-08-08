@@ -3,9 +3,9 @@ import {
     showOverflow,
     closeOverflow,
     createOverflowFromCount,
-    setPinned
+    setPinned,
+    toggleSelection
 } from "./overflow-utils.js";
-
 
 /**
  * @class OverflowBar - used to display a list of actions in a dropdown menu that exceeds the width of the component.
@@ -31,10 +31,16 @@ export class OverflowBar extends crs.classes.BindableElement {
     get html() { return import.meta.url.replace(".js", ".html"); }
     get shadowDom() { return true; }
 
+    constructor() {
+        super();
+        this.style.visibility = "hidden";
+    }
+
     async load() {
         requestAnimationFrame(async () => {
             this.registerEvent(this, "click", this.#clickHandler);
             await this.refresh();
+            this.style.visibility = "visible";
         });
     }
 
@@ -50,6 +56,7 @@ export class OverflowBar extends crs.classes.BindableElement {
 
         if (target.nodeName === "LI") {
             await setPinned(this, true, action, id, target.textContent, target.dataset.icon);
+            await toggleSelection(target, this);
             await this.refresh();
             return await closeOverflow(this, this.overflow);
         }

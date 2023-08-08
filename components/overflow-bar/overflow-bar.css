@@ -109,6 +109,14 @@ li {
     align-items: center;
 }
 
+li[aria-selected]::after {
+    content: "check";
+    font-family: crsfrw;
+    font-size: 1.2rem;
+    margin-left: var(--padding);
+    color: var(--blue);
+}
+
 li:hover {
     background: var(--grey-s3);
 }
