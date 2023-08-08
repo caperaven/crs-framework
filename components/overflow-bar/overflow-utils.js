@@ -10,6 +10,9 @@
 export async function createOverflowItems(instance, btnOverflow, overflowContainer, useIcons) {
     await resetAllChildren(instance);
 
+    // we need the button to be visible during initial measurement to ensure the overflow is calculated correctly
+    btnOverflow.removeAttribute("aria-hidden");
+
     const overflowControlsWidth = await getOverflowControlsWidth(instance);
     const width = instance.offsetWidth;
 
@@ -17,7 +20,6 @@ export async function createOverflowItems(instance, btnOverflow, overflowContain
 
     let hasOverflow = false;
     const children = instance.children;
-    btnOverflow.setAttribute("aria-hidden", "true");
 
     for (let i = 0; i < children.length; i++) {
         const child = children[i];
@@ -34,8 +36,8 @@ export async function createOverflowItems(instance, btnOverflow, overflowContain
         }
     }
 
-    if (hasOverflow) {
-        btnOverflow.removeAttribute("aria-hidden");
+    if (hasOverflow == false) {
+        btnOverflow.setAttribute("aria-hidden", "aria-hidden");
     }
 
     return hasOverflow;
@@ -215,7 +217,9 @@ export async function setPinned(instance, pinned, action, id, textContent, icon)
 
 function getOverflowControlsWidth(instance) {
     return new Promise(resolve => {
-        const overflowCell = instance.shadowRoot.querySelector(".overflow-cell");
-        resolve(overflowCell.offsetWidth);
+        requestAnimationFrame(() => {
+            const overflowCell = instance.shadowRoot.querySelector(".overflow-cell");
+            resolve(overflowCell.offsetWidth);
+        })
     });
 }

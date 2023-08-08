@@ -5,6 +5,7 @@
     width: 100%;
     height: 3rem;
     background: var(--grey-s3);
+    user-select: none;
 }
 
 * {

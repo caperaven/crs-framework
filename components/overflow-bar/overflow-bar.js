@@ -31,16 +31,10 @@ export class OverflowBar extends crs.classes.BindableElement {
     get html() { return import.meta.url.replace(".js", ".html"); }
     get shadowDom() { return true; }
 
-    constructor() {
-        super();
-        this.style.visibility = "hidden";
-    }
-
     async load() {
         requestAnimationFrame(async () => {
             this.registerEvent(this, "click", this.#clickHandler);
             await this.refresh();
-            this.style.visibility = "visible";
         });
     }
 
