@@ -9,6 +9,11 @@
     background: var(--blue);
 }
 
+.overflow-cell .pinned-content[data-invalid] {
+    color: var(--red);
+    font-weight: normal;
+}
+
 .overflow-cell .pinned-content[data-invalid]:before {
     content: "info-outline";
     font-family: crsfrw;

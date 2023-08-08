@@ -132,6 +132,11 @@ li[data-icon]::before {
     margin-right: var(--padding);
 }
 
+li[data-invalid="true"] {
+    color: var(--red);
+    font-weight: normal;
+}
+
 li[data-invalid="true"]:before {
     content: "info-outline";
     font-family: crsfrw;

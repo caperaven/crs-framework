@@ -43,11 +43,15 @@ export async function createOverflowItems(instance, btnOverflow, overflowContain
     return hasOverflow;
 }
 
-export async function createOverflowFromCount(instance, btnOverflow, overflowContainer, count, useIcons) {
+export async function createOverflowFromCount(instance, btnOverflow, overflowContainer, count, useIcons, pinned) {
     await resetAllChildren(instance);
 
     const hasOverflow = instance.children.length > count;
     if (hasOverflow == false) return false;
+
+    if (pinned == true) {
+        count -= 1;
+    }
 
     for (let i = count; i < instance.children.length; i++) {
         const child = instance.children[i];

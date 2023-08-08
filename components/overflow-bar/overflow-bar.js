@@ -63,7 +63,7 @@ export class OverflowBar extends crs.classes.BindableElement {
         if (target.nodeName === "LI") {
             await setPinned(this, true, action, id, target.textContent, target.dataset.icon, target.dataset.invalid);
             await toggleSelection(target, this);
-            await this.refresh();
+            await this.refresh(true);
             this.overflowCell.setAttribute("aria-selected", "true");
             return await closeOverflow(this, this.overflow);
         }
@@ -81,14 +81,14 @@ export class OverflowBar extends crs.classes.BindableElement {
      * @method refresh - this function refreshes the overflow menu, redrawing everything to be visible or in overflow
      * @returns {Promise<void>}
      */
-    async refresh() {
+    async refresh(pinned = false) {
         const useIcons = this.dataset.display === "icons";
 
         if (this.dataset.count == null) {
             await createOverflowItems(this, this.btnOverflow, this.overflow, useIcons);
         }
         else {
-            await createOverflowFromCount(this, this.btnOverflow, this.overflow, Number(this.dataset.count), useIcons);
+            await createOverflowFromCount(this, this.btnOverflow, this.overflow, Number(this.dataset.count), useIcons, pinned);
         }
     }
 

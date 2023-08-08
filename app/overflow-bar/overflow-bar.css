@@ -4,7 +4,7 @@ overflow-bar {
 }
 
 tab-sheet {
-    width: 400px;
+    width: 300px;
     margin: var(--padding);
     border: var(--border);
 }
