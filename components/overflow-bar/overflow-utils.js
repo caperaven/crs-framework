@@ -17,7 +17,6 @@ export async function createOverflowItems(instance, btnOverflow, overflowContain
     const width = instance.offsetWidth;
 
     let right = 0;
-
     let hasOverflow = false;
     const children = instance.children;
 
@@ -29,16 +28,24 @@ export async function createOverflowItems(instance, btnOverflow, overflowContain
             continue;
         }
 
+        right += child.offsetWidth;
+
         if (hasOverflow) {
             await addItemToOverflow(child, overflowContainer, useIcons);
             continue;
         }
 
-        right += child.offsetWidth;
         if (right > (width - overflowControlsWidth)) {
             await addItemToOverflow(child, overflowContainer, useIcons);
             hasOverflow = true;
         }
+    }
+
+    // initially we measured things with the overflow button but, we want to do a final check
+    // if the final right is less than the width we want to make the last item visible again and mark the overflow as hidden
+    if (right < width) {
+        instance.lastElementChild.removeAttribute("aria-hidden");
+        hasOverflow = false;
     }
 
     if (hasOverflow == false) {

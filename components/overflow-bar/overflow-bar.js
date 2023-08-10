@@ -113,17 +113,15 @@ export class OverflowBar extends crs.classes.BindableElement {
         this.background = this.background?.remove();
         const useIcons = this.dataset.display === "icons";
 
+        let hasOverflow;
         if (this.dataset.count == null) {
-            await createOverflowItems(this, this.btnOverflow, this.overflow, useIcons);
+            hasOverflow = await createOverflowItems(this, this.btnOverflow, this.overflow, useIcons);
         }
         else {
-            await createOverflowFromCount(this, this.btnOverflow, this.overflow, Number(this.dataset.count), useIcons, pinned);
+            hasOverflow = await createOverflowFromCount(this, this.btnOverflow, this.overflow, Number(this.dataset.count), useIcons, pinned);
         }
 
-        this.overflowCell.style.display = "flex";
-        if (this.overflow.children.length === 0) {
-            this.overflowCell.style.display = "none";
-        }
+        this.overflowCell.style.display = hasOverflow ? "flex" : "none";
     }
 
     async addCSS(url) {
