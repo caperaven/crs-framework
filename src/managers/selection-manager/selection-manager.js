@@ -66,7 +66,7 @@ export class SelectionManager {
      * @returns {*|null}
      */
     #getElement(event) {
-        const element = event?.detail?.target;
+        const element = event?.detail?.target || event.target;
         if (element == null) return;
 
         if (element.matches(this.#masterQuery) || element.matches(this.#itemQuery)) return element;

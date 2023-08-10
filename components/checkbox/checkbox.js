@@ -151,7 +151,7 @@ export class Checkbox extends HTMLElement {
         }[value];
 
         this.#checked = value;
-        this.dispatchEvent(new CustomEvent("checkedChange", {detail: {target: this, checked: this.getAttribute("aria-checked") == "true"}}));
+        this.dispatchEvent(new CustomEvent("checkedChange", {}));
     }
 
     /**
