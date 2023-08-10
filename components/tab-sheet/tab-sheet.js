@@ -168,19 +168,32 @@ export class TabSheet extends crs.classes.BindableElement {
         const value = args.value;
 
         const page = this.querySelector(`[data-id="${id}"]`);
+        const tab = this.shadowRoot.querySelector(`tab[data-id="${id}"]`);
+        const isSelected = tab.matches("[aria-selected]");
+
         if (page == null) return;
 
         if (action === "ignore") {
             page.dataset.ignore = value;
             page.setAttribute("aria-hidden", "true");
 
-            if (value === false) {
+            if (value === "false") {
                 page.removeAttribute("aria-hidden");
                 delete page.dataset.ignore;
+                await this.makeActive(page.dataset.id);
             }
         }
 
-        this.header.onMessage(args);
+        await this.header.onMessage(args);
+
+        if (isSelected && action === "ignore") {
+            tab.removeAttribute("aria-selected");
+
+            const newTab = this.shadowRoot.querySelector("tab:not([aria-hidden])");
+            if (newTab != null) {
+                await this.makeActive(newTab.dataset.id);
+            }
+        }
     }
 }
 

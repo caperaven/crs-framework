@@ -134,7 +134,7 @@ export class OverflowBar extends crs.classes.BindableElement {
         const value = args.value;
 
         const item = this.querySelector(`[data-id="${id}"]`);
-
+        
         if (action === "ignore") {
             item.dataset.ignore = value;
 
