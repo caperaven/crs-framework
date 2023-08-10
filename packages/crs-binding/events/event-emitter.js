@@ -35,7 +35,9 @@ class EventEmitter {
   }
   async postMessage(query, args, scope) {
     const element = scope || document;
-    const items = Array.from(element.querySelectorAll(query));
+    const documentElements = Array.from(element.querySelectorAll(query));
+    const queryableElements = crs.binding.queryable.query(query);
+    const items = /* @__PURE__ */ new Set([...documentElements, ...queryableElements]);
     const promises = [];
     for (let item of items) {
       promises.push(item.onMessage.call(item, args));

@@ -27,7 +27,10 @@ async function post(intent, event) {
   const args = createEventPacket(intent, event);
   args.key = intent.event;
   for (const query of queries) {
-    document.querySelectorAll(query).forEach((element) => {
+    const documentElements = Array.from(document.querySelectorAll(query));
+    const queryableElements = crs.binding.queryable.query(query);
+    const items = /* @__PURE__ */ new Set([...documentElements, ...queryableElements]);
+    items.forEach((element) => {
       if (element.onMessage != null) {
         element.onMessage(args);
       }

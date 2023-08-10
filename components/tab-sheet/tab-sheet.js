@@ -40,12 +40,14 @@ export class TabSheet extends crs.classes.BindableElement {
     get shadowDom() { return true; }
 
     async load() {
+        crs.binding.queryable.add(this);
         await this.#createTabs();
         await this.#setDefaultTab();
         await this.#addCssToHeader();
     }
 
     async disconnectedCallback() {
+        crs.binding.queryable.remove(this);
         super.disconnectedCallback();
     }
 
@@ -158,6 +160,27 @@ export class TabSheet extends crs.classes.BindableElement {
 
     async execute(event) {
         await this.makeActive(event.detail.id);
+    }
+
+    async onMessage(args) {
+        const id = args.id;
+        const action = args.key;
+        const value = args.value;
+
+        const page = this.querySelector(`[data-id="${id}"]`);
+        if (page == null) return;
+
+        if (action === "ignore") {
+            page.dataset.ignore = value;
+            page.setAttribute("aria-hidden", "true");
+
+            if (value === false) {
+                page.removeAttribute("aria-hidden");
+                delete page.dataset.ignore;
+            }
+        }
+
+        this.header.onMessage(args);
     }
 }
 

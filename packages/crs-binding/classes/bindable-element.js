@@ -60,7 +60,7 @@ class BindableElement extends HTMLElement {
   }
   notify(event, detail) {
     if (this.allowNotifications === true) {
-      this.dispatchEvent(new CustomEvent(event, { detail, bubbles: true, composed: true }));
+      this.dispatchEvent(new CustomEvent(event, { detail, composed: true, bubbles: true }));
     }
   }
 }

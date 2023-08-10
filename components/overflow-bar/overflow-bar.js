@@ -127,6 +127,24 @@ export class OverflowBar extends crs.classes.BindableElement {
         link.href = url;
         this.shadowRoot.appendChild(link);
     }
+
+    async onMessage(args) {
+        const id = args.id;
+        const action = args.key;
+        const value = args.value;
+
+        const item = this.querySelector(`[data-id="${id}"]`);
+
+        if (action === "ignore") {
+            item.dataset.ignore = value;
+
+            if (value === false) {
+                delete item.dataset.ignore;
+            }
+        }
+
+        await this.refresh();
+    }
 }
 
 customElements.define("overflow-bar", OverflowBar);
