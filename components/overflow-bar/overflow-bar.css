@@ -100,7 +100,6 @@
 :host([data-count]) .items {
     justify-content: flex-end;
     width: initial !important;
-    margin-right: var(--padding);
 }
 
 ul {

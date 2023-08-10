@@ -119,6 +119,11 @@ export class OverflowBar extends crs.classes.BindableElement {
         else {
             await createOverflowFromCount(this, this.btnOverflow, this.overflow, Number(this.dataset.count), useIcons, pinned);
         }
+
+        this.overflowCell.style.display = "flex";
+        if (this.overflow.children.length === 0) {
+            this.overflowCell.style.display = "none";
+        }
     }
 
     async addCSS(url) {
@@ -134,7 +139,7 @@ export class OverflowBar extends crs.classes.BindableElement {
         const value = args.value;
 
         const item = this.querySelector(`[data-id="${id}"]`);
-        
+
         if (action === "ignore") {
             item.dataset.ignore = value;
 

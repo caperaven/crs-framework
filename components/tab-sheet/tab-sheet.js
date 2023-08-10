@@ -1,7 +1,7 @@
 /**
  * make pages data-ignore if you start with it as aria-hidden
  * If data-ignore then use as is
- * enable messaging to turn tabs visible or hidden based on id.
+ * Enable messaging to turn tabs visible or hidden based on id.
  *
  * show scenario where overflow is not showing
  *
@@ -73,6 +73,10 @@ export class TabSheet extends crs.classes.BindableElement {
                 button.dataset.invalid = page.dataset.invalid;
             }
 
+            if (page.dataset.ignore === "true") {
+                button.dataset.ignore = "true";
+            }
+
             fragment.appendChild(button);
         }
         this.header.appendChild(fragment);
@@ -84,7 +88,7 @@ export class TabSheet extends crs.classes.BindableElement {
      * @returns {Promise<void>}
      */
     async #setDefaultTab() {
-        const defaultId = this.dataset.default || this.header.firstElementChild.dataset.id;
+        const defaultId = this.dataset.default || this.shadowRoot.querySelector("tab:not([data-ignore])").dataset.id;
         await this.makeActive(defaultId);
     }
 
