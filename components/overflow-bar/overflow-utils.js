@@ -24,6 +24,11 @@ export async function createOverflowItems(instance, btnOverflow, overflowContain
     for (let i = 0; i < children.length; i++) {
         const child = children[i];
 
+        if (child.dataset.ignore === "true") {
+            child.setAttribute("aria-hidden", "true");
+            continue;
+        }
+
         if (hasOverflow) {
             await addItemToOverflow(child, overflowContainer, useIcons);
             continue;

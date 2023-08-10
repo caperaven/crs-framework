@@ -1,3 +1,13 @@
+/**
+ * make pages data-ignore if you start with it as aria-hidden
+ * If data-ignore then use as is
+ * enable messaging to turn tabs visible or hidden based on id.
+ *
+ * show scenario where overflow is not showing
+ *
+ * postMessage("#toolbar", { action: "show", id: "btnTest" });
+ */
+
 import "./../overflow-bar/overflow-bar.js";
 
 /**
