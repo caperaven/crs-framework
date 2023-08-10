@@ -101,7 +101,6 @@ export class OverflowBar extends crs.classes.BindableElement {
             if (event.code === "ArrowUp") {
                 return this.#highlighted = await moveHighlight(this.overflow, -1);
             }
-
         }
     }
 

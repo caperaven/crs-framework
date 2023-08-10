@@ -66,6 +66,18 @@ export async function createOverflowItems(instance, btnOverflow, overflowContain
     return hasOverflow;
 }
 
+/**
+ * @method addItemToOverflow - adds an item to the overflow container
+ * In this case we are only adding the number of items that exceed the count.
+ * When we are in a pinned state, we will add the pinned item to the overflow container as it is in the pinned UI.
+ * @param instance {OverflowBar} - the instance of the overflow bar
+ * @param btnOverflow {Button} - the button that opens the overflow
+ * @param overflowContainer {UL} - the container that holds the overflow items, normally a UL
+ * @param count {number} - the number of items to show before the overflow
+ * @param useIcons {boolean} - whether or not to use icons in the overflow
+ * @param pinned {boolean} - whether or not the overflow is pinned
+ * @returns {Promise<boolean>}
+ */
 export async function createOverflowFromCount(instance, btnOverflow, overflowContainer, count, useIcons, pinned) {
     await resetAllChildren(instance);
 
@@ -86,6 +98,11 @@ export async function createOverflowFromCount(instance, btnOverflow, overflowCon
     return true;
 }
 
+/**
+ * @method resetAllChildren - clear all the aria-hidden attributes from the children
+ * @param instance
+ * @returns {Promise<void>}
+ */
 async function resetAllChildren(instance) {
     for (const child of instance.children) {
         child.removeAttribute("aria-hidden");
@@ -110,6 +127,12 @@ async function addItemToOverflow(item, overflowContainer, useIcons) {
     await createLiForText(item, overflowContainer);
 }
 
+/**
+ * @method createLiForIcons - this function creates an LI for the overflow container when icons are used
+ * @param item - the item to be added to the overflow container
+ * @param parent - the parent of the item
+ * @returns {Promise<*>}
+ */
 async function createLiForIcons(item, parent) {
     const icon = item.textContent;
     const text_content = item.getAttribute("title");
@@ -135,6 +158,12 @@ async function createLiForIcons(item, parent) {
     return result;
 }
 
+/**
+ * @method createLiForText - this function creates an LI for the overflow container when text is used
+ * @param item
+ * @param parent
+ * @returns {Promise<*>}
+ */
 async function createLiForText(item, parent) {
     const isSelected = item.getAttribute("aria-selected") != null;
 
@@ -314,10 +343,6 @@ export async function moveHighlight(collection, direction) {
     highlighted.classList.remove('highlighted');
     nextHighlighted.classList.add('highlighted');
     return nextHighlighted;
-}
-
-export async function getHighlighted(collection) {
-    return collection.querySelector('.highlighted');
 }
 
 async function clearHighlighted(collection) {
