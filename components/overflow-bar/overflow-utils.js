@@ -44,8 +44,10 @@ export async function createOverflowItems(instance, btnOverflow, overflowContain
     // initially we measured things with the overflow button but, we want to do a final check
     // if the final right is less than the width we want to make the last item visible again and mark the overflow as hidden
     if (right < width) {
-        instance.lastElementChild.removeAttribute("aria-hidden");
-        hasOverflow = false;
+        // get the first element that is set as hidden but that is not ignored
+        const firstNotIgnoredChild = instance.querySelector("[aria-hidden='true']:not([data-ignore])");
+        firstNotIgnoredChild?.removeAttribute("aria-hidden");
+        hasOverflow = firstNotIgnoredChild != null;
     }
 
     if (hasOverflow == false) {
@@ -254,6 +256,19 @@ export async function setPinned(instance, action, id, textContent, icon, invalid
         instance.pinnedContent.textContent = icon;
         instance.pinnedContent.setAttribute("title", textContent);
     }
+}
+
+export async function unPin(instance) {
+    instance.pinnedContent.textContent = "";
+    instance.pinnedContent.setAttribute("aria-hidden", "true");
+    instance.overflowCell.removeAttribute("aria-selected");
+    instance.overflowCell.classList.remove("pinned");
+
+    delete instance.pinnedContent.dataset.id;
+    delete instance.pinnedContent.dataset.action;
+
+    const overflowCell = instance.shadowRoot.querySelector(".overflow-cell");
+    overflowCell.classList.remove("pinned");
 }
 
 export async function toggleSelection(selected, container) {

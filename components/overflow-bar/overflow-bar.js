@@ -4,9 +4,9 @@ import {
     closeOverflow,
     createOverflowFromCount,
     setPinned,
+    unPin,
     toggleSelection,
-    moveHighlight,
-    getHighlighted
+    moveHighlight
 } from "./overflow-utils.js";
 
 /**
@@ -143,6 +143,10 @@ export class OverflowBar extends crs.classes.BindableElement {
 
             if (value === false) {
                 delete item.dataset.ignore;
+            }
+
+            if (this.pinnedContent.dataset.id == id) {
+                await unPin(this);
             }
         }
 

@@ -50,6 +50,7 @@ export class TabSheet extends crs.classes.BindableElement {
 
         const fragment = document.createDocumentFragment();
         for (const page of pages) {
+            const wasHidden = page.matches("[aria-hidden='true']");
             page.setAttribute("aria-hidden", "true");
 
             const button = await crs.call("dom", "create_element", {
@@ -63,7 +64,7 @@ export class TabSheet extends crs.classes.BindableElement {
                 button.dataset.invalid = page.dataset.invalid;
             }
 
-            if (page.dataset.ignore === "true") {
+            if (page.dataset.ignore === "true" || wasHidden) {
                 button.dataset.ignore = "true";
             }
 
