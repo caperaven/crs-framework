@@ -46,8 +46,17 @@ export async function createOverflowItems(instance, btnOverflow, overflowContain
     if (right < width) {
         // get the first element that is set as hidden but that is not ignored
         const firstNotIgnoredChild = instance.querySelector("[aria-hidden='true']:not([data-ignore])");
-        firstNotIgnoredChild?.removeAttribute("aria-hidden");
-        hasOverflow = firstNotIgnoredChild != null;
+
+        // if there is a firstNotIgnoredChild, make it visible and remove the corresponding item from the overflow
+        if (firstNotIgnoredChild != null) {
+            const id = firstNotIgnoredChild.dataset.id;
+            firstNotIgnoredChild.removeAttribute("aria-hidden");
+
+            const listItem = overflowContainer.querySelector(`[data-id="${id}"]`);
+            listItem?.remove();
+        }
+
+        hasOverflow = overflowContainer.children.length > 0;
     }
 
     if (hasOverflow == false) {
