@@ -9,7 +9,7 @@
         display: flex;
         align-items: center;
         cursor: pointer;
-        margin: var(--padding) 0;
+        margin: var(--margin) 0;
     }
 
     ::slotted(li)::before {
@@ -17,7 +17,7 @@
         font-family: crsfrw;
         height: 1rem;
         width:  1rem;
-        margin-right: var(--padding);
+        margin-right: var(--margin);
     }
 
     ::slotted(li[aria-selected="true"])::before {
@@ -26,4 +26,5 @@
     }
 </style>
 
+<slot name="header"></slot>
 <slot></slot>
