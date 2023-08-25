@@ -1,0 +1,50 @@
+:host {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-rows: max-content 1fr;
+    user-select: none;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    margin: 0 var(--padding);
+    border-bottom: var(--border);
+    padding: var(--padding);
+}
+
+header label {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.container {
+    width: 100%;
+    height: 100%;
+}
+
+.spacer {
+    border-right: var(--border);
+    width: 1px;
+    height: 100%;
+    margin: 0 var(--padding);
+}
+
+#btnCollapseAll, #btnSorting {
+    background: transparent;
+    border: 0;
+    outline: none;
+    cursor: pointer;
+}
+
+#btnCollapseAll {
+    color: var(--blue);
+}
+
+#btnSorting {
+    font-family: crsfrw;
+    font-size: 1.2rem;
+}

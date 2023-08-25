@@ -16,6 +16,11 @@
             "view": "icons"
         },
         {
+            "title": "Entity-details",
+            "hash": "#entity-details",
+            "view": "entity-details"
+        },
+        {
             "title": "Form",
             "hash": "#form",
             "view": "form"

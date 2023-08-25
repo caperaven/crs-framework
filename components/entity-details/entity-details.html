@@ -1,0 +1,21 @@
+<header>
+    <button id="btnCollapseAll" data-action="collapseAll">&{entityDetails.collapseAll}</button>
+    <div class="spacer"></div>
+    <button id="btnSorting" class="icon" data-action="sort">sort-ascending</button>
+    <label>
+        <input type="checkbox" value="checked">
+        <div>&{entityDetails.showIds}</div>
+    </label>
+</header>
+
+<template id="entity">
+    <li data-action="expand" data-id="">
+        <div class="chevron" data-action="expand">chevron-right</div>
+        <ul></ul>
+    </li>
+</template>
+
+
+<div class="container">
+    <ul class="items"></ul>
+</div>
