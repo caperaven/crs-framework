@@ -91,7 +91,7 @@ export default class EntityDetails extends HTMLElement {
         for (const entityItems of data) {
             const clone = entityItemTemplate.content.cloneNode(true);
             clone.querySelector(".value").textContent = entityItems.value;
-            clone.querySelector(".description").textContent = entityItems.descriptor;
+            clone.querySelector(".description").textContent = entityItems.descriptor || "";
             const container = clone.querySelector("ul");
             await this.#drawRules(container, entityItems.rules, ruleItemTemplate);
             fragment.appendChild(clone);
@@ -100,7 +100,19 @@ export default class EntityDetails extends HTMLElement {
     }
 
     async #drawRules(target, data, ruleItemTemplate) {
+        const fragment = document.createDocumentFragment();
+        for (const item of data) {
+            const clone = ruleItemTemplate.content.cloneNode(true);
+            clone.querySelector(".value").textContent = item.value;
+            clone.querySelector(".description").textContent = item.descriptor || "";
+            target.appendChild(fragment);
+        }
+        target.appendChild(fragment);
+    }
 
+    async #collapse(target) {
+        target.querySelector("ul").innerHTML = "";
+        target.setAttribute("aria-expanded", "false");
     }
 
     /**
@@ -112,15 +124,20 @@ export default class EntityDetails extends HTMLElement {
         const entities = this.shadowRoot.querySelectorAll('.entity-item');
 
         for (const entity of entities) {
-            entity.querySelector("ul").innerHTML = ""
+            await this.#collapse(entity);
         }
     }
 
     async expand(event) {
         const target = event.composedPath()[0];
+        const listItem = target.closest("li");
 
-        const args = { entityId: target.closest("li").dataset.id }
+        if (listItem.getAttribute("aria-expanded") == "true") {
+            return await this.#collapse(listItem);
+        }
 
+        listItem.setAttribute("aria-expanded", "true");
+        const args = { entityId: listItem.dataset.id }
         this.dispatchEvent(new CustomEvent("get_entity_items", { detail: args }));
     }
 
