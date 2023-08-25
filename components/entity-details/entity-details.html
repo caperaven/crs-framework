@@ -8,13 +8,34 @@
     </label>
 </header>
 
-<template id="entity">
-    <li data-action="expand" data-id="">
-        <div class="chevron" data-action="expand">chevron-right</div>
+<template id="entity-template">
+    <li class="entity-item" data-action="expand" data-id="" aria-expanded="false">
+        <div class="entity">
+            <div class="entity-chevron" data-action="expand">chevron-right</div>
+            <div class="entity-value"></div>
+            <div class="entity-count"></div>
+        </div>
         <ul></ul>
     </li>
 </template>
 
+<template id="entity-item-template">
+    <li class="entity-child-item">
+        <div>
+            <div class="value"></div>
+            <div class="description"></div>
+        </div>
+
+        <ul></ul>
+    </li>
+</template>
+
+<template id="rule-item-template">
+    <li>
+        <div class="value"></div>
+        <div class="description"></div>
+    </li>
+</template>
 
 <div class="container">
     <ul class="items"></ul>

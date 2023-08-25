@@ -46,5 +46,75 @@ header label {
 
 #btnSorting {
     font-family: crsfrw;
+    font-size: 1.5rem;
+}
+
+.entity {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 0 var(--padding);
+    padding: var(--padding);
+    border-bottom: var(--border);
+}
+
+.entity-chevron {
+    font-family: crsfrw;
     font-size: 1.2rem;
+    margin-right: var(--padding);
+    cursor: pointer;
+}
+
+.entity-value {
+    flex: 1;
+    pointer-events: none;
+}
+
+.entity-count {
+    display: flex;
+    flex-direction: row;
+    padding: var(--padding);
+    background: var(--blue-s2);
+    color: var(--blue);
+    border-radius: var(--radius);
+    font-weight: bold;
+    pointer-events: none;
+}
+
+.entity-count:before {
+    content: "Count";
+    font-weight: normal;
+    display: block;
+    margin-right: var(--padding);
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.entity-child-item > div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 0 var(--padding);
+    padding: var(--padding);
+    width: 100%;
+    padding-left: 2rem;
+}
+
+.entity-child-item .value {
+    margin-right: var(--padding);
+}
+
+.entity-child-item .value:before {
+    content: "drag-vert-alt";
+    font-family: crsfrw;
+    font-size: 0.8rem;
+    border-radius: 50%;
+    color: white;
+    background: #B35320;
+    padding: 0.25rem;
+    margin-right: var(--padding);
 }

@@ -25,17 +25,43 @@ export default class EntityDetails extends crsbinding.classes.ViewBase {
     }
 
     async #getEntities(event) {
-        event.detail.data = [
-            {id: "e1", name: "Entity 1", count: 2},
-            {id: "e2", name: "Entity 2", count: 100},
-            {id: "e3", name: "Entity 3", count: 50},
-            {id: "e4", name: "Entity 4", count: 10},
-            {id: "e5", name: "Entity 5", count: 100},
+        const data = [
+            {id: "e1", value: "Entity 1", count: 2},
+            {id: "e2", value: "Entity 2", count: 5},
+            {id: "e3", value: "Entity 3", count: 10},
+            {id: "e4", value: "Entity 4", count: 10},
+            {id: "e5", value: "Entity 5", count: 3},
         ]
+
+        await this.#details.addEntities(data);
     }
 
-    #getEntityItems(event) {
-        const count = { e1: 2, e2: 100, e3: 50, e4: 10, e5: 100 }[event.detail.entityId];
-        console.log(count);
+    async #getEntityItems(event) {
+        const count = { e1: 2, e2: 5, e3: 10, e4: 10, e5: 3 }[event.detail.entityId];
+        const ruleCount = await crs.call("random", "integer", { min: 1, max: 100 });
+
+        const data = [];
+        for (let i = 0; i < count; i++) {
+            const entityItem = {
+                id: `e${i}`,
+                value: `Item ${i}`,
+                descriptor: `Item ${i} Description`,
+                rules: []
+            }
+
+            for (let j = 0; j < ruleCount; j++) {
+                const rule = {
+                    value: `Rule ${j}`,
+                    descriptor: `Rule ${j} Description`,
+                }
+                entityItem.rules.push(rule);
+            }
+
+            data.push(entityItem);
+        }
+
+        event.detail.data = data;
+
+        await this.#details.addEntityItems(event.detail.entityId, data);
     }
 }

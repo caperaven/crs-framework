@@ -19,7 +19,7 @@ export default class EntityDetails extends HTMLElement {
         this.addEventListener("click", this.#clickHandler);
         this.addEventListener("dblclick", this.#clickHandler);
 
-        await this.refresh();
+        await this.#refresh();
 
         await crs.call("component", "notify_ready", { element: this });
     }
@@ -45,42 +45,6 @@ export default class EntityDetails extends HTMLElement {
         }
     }
 
-
-    /**
-     * @method drawEntities - this will take the data and draw the entities on the screen.
-     * The entity UI is by default collapsed and will expand when clicked.
-     * @param data
-     * @returns {Promise<void>}
-     */
-    async #drawEntities(data) {
-        console.log(data);
-    }
-
-    async #drawEntityItems(target, data) {
-
-    }
-
-    async collapseAll() {
-        const entities = this.shadowRoot.querySelectorAll('li [data-action="expand"]');
-
-        for (const entity of entities) {
-            entity.querySelector("ul").innerHTML = ""
-        }
-    }
-
-    async expand(event) {
-        const target = event.composedPath()[0];
-
-        const args = {
-            entityId: target.dataset.id,
-            data: null
-        }
-
-        this.dispatchEvent(new CustomEvent("get_entity_items", { detail: args }));
-
-        await this.#drawEntityItems(target, args.data);
-    }
-
     /**
      * @method refresh - this is the main function that starts the drawing process.
      * This is used both internally and externally to refresh the component.
@@ -90,27 +54,93 @@ export default class EntityDetails extends HTMLElement {
      * @param {Object} data - the data to be used to draw the component if this is empty it will request it from the server
      * using a event
      */
-    async refresh() {
+    async #refresh() {
         const args = { data: null };
         this.dispatchEvent(new CustomEvent("get_entities", { detail: args }));
 
         if (args.data != null) {
-            await this.#drawEntities(args.data);
         }
+    }
+
+
+    /**
+     * @method drawEntities - this will take the data and draw the entities on the screen.
+     * The entity UI is by default collapsed and will expand when clicked.
+     * @param data
+     * @returns {Promise<void>}
+     */
+    async #drawEntities(data) {
+        const itemsContainer = this.shadowRoot.querySelector(".items");
+        itemsContainer.innerHTML = "";
+
+        const entityTemplate = this.shadowRoot.querySelector("#entity-template");
+
+        const fragment = document.createDocumentFragment()
+        for (const entity of data) {
+            const clone = createEntityItem(entityTemplate, entity);
+            fragment.appendChild(clone);
+        }
+        itemsContainer.appendChild(fragment);
+    }
+
+    async #drawEntityItems(target, data) {
+        const entityItemTemplate = this.shadowRoot.querySelector("#entity-item-template");
+        const ruleItemTemplate = this.shadowRoot.querySelector("#rule-item-template");
+
+        const fragment = document.createDocumentFragment();
+        for (const entityItems of data) {
+            const clone = entityItemTemplate.content.cloneNode(true);
+            clone.querySelector(".value").textContent = entityItems.value;
+            clone.querySelector(".description").textContent = entityItems.descriptor;
+            const container = clone.querySelector("ul");
+            await this.#drawRules(container, entityItems.rules, ruleItemTemplate);
+            fragment.appendChild(clone);
+        }
+        target.appendChild(fragment);
+    }
+
+    async #drawRules(target, data, ruleItemTemplate) {
+
+    }
+
+    /**
+     * @method collapseAll - this will collapse all the entities on the screen.
+     * This is executed from the click event based on a data-action attribute.
+     * @returns {Promise<void>}
+     */
+    async collapseAll() {
+        const entities = this.shadowRoot.querySelectorAll('.entity-item');
+
+        for (const entity of entities) {
+            entity.querySelector("ul").innerHTML = ""
+        }
+    }
+
+    async expand(event) {
+        const target = event.composedPath()[0];
+
+        const args = { entityId: target.closest("li").dataset.id }
+
+        this.dispatchEvent(new CustomEvent("get_entity_items", { detail: args }));
+    }
+
+    async addEntities(data) {
+        await this.#drawEntities(data);
+    }
+
+    async addEntityItems(entityId, data) {
+        const target = this.shadowRoot.querySelector(`[data-id="${entityId}"] ul`);
+        await this.#drawEntityItems(target, data);
     }
 }
 
+function createEntityItem(entityTemplate, entity) {
+    const clone = entityTemplate.content.cloneNode(true);
+    const entityElement = clone.querySelector("li");
+    entityElement.dataset.id = entity.id;
+    entityElement.querySelector(".entity-value").innerText = entity.value;
+    entityElement.querySelector(".entity-count").innerText = entity.count;
+    return clone;
+}
+
 customElements.define("entity-details", EntityDetails);
-
-
-// const entityItem = {
-//     "entityid": 123,
-//     "value": "__id or code value__",
-//     "descriptor": "none or value of description",
-//     "rules": [
-//         {
-//             "value": "__id or code value__",
-//             "descriptor": "none or value of description",
-//         }
-//     ]
-// }
