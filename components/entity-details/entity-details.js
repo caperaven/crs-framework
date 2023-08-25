@@ -105,7 +105,7 @@ export default class EntityDetails extends HTMLElement {
             const clone = ruleItemTemplate.content.cloneNode(true);
             clone.querySelector(".value").textContent = item.value;
             clone.querySelector(".description").textContent = item.descriptor || "";
-            target.appendChild(fragment);
+            fragment.appendChild(clone);
         }
         target.appendChild(fragment);
     }

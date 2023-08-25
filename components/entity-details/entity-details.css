@@ -58,6 +58,10 @@ header label {
     margin: 0 var(--padding);
     padding: var(--padding);
     border-bottom: var(--border);
+    position: sticky;
+    top: 0;
+    background: var(--window);
+    z-index: 1;
 }
 
 .entity-chevron {
@@ -104,9 +108,12 @@ ul {
     padding: var(--padding);
     width: 100%;
     padding-left: 2rem;
+    background: var(--window);
+    position: sticky;
+    top: 3.5rem;
 }
 
-.entity-child-item .value {
+.entity-child-item .value, .rule-item .value {
     margin-right: var(--padding);
 }
 
@@ -117,6 +124,24 @@ ul {
     border-radius: 50%;
     color: white;
     background: #B35320;
+    padding: 0.25rem;
+    margin-right: var(--padding);
+}
+
+.rule-item {
+    display: flex;
+    flex-direction: row;
+    padding: 0.5rem;
+    padding-left: 5rem;
+}
+
+.rule-item .value:before {
+    content: "kabab-horiz";
+    font-family: crsfrw;
+    font-size: 0.8rem;
+    border-radius: 50%;
+    color: white;
+    background: #4CADDA;
     padding: 0.25rem;
     margin-right: var(--padding);
 }
