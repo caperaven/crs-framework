@@ -17,7 +17,6 @@ export default class EntityDetails extends HTMLElement {
 
     async init() {
         this.addEventListener("click", this.#clickHandler);
-        this.addEventListener("dblclick", this.#clickHandler);
 
         await this.#refresh();
 
@@ -26,7 +25,6 @@ export default class EntityDetails extends HTMLElement {
 
     async disconnectedCallback() {
         this.removeEventListener("click", this.#clickHandler);
-        this.removeEventListener("dblclick", this.#clickHandler);
 
         this.#clickHandler = null;
     }
@@ -57,9 +55,6 @@ export default class EntityDetails extends HTMLElement {
     async #refresh() {
         const args = { data: null };
         this.dispatchEvent(new CustomEvent("get_entities", { detail: args }));
-
-        if (args.data != null) {
-        }
     }
 
 
@@ -137,7 +132,7 @@ export default class EntityDetails extends HTMLElement {
         }
 
         listItem.setAttribute("aria-expanded", "true");
-        const args = { entityId: listItem.dataset.id }
+        const args = { componentId: this.id, entityId: listItem.dataset.id }
         this.dispatchEvent(new CustomEvent("get_entity_items", { detail: args }));
     }
 
@@ -149,14 +144,20 @@ export default class EntityDetails extends HTMLElement {
         const target = this.shadowRoot.querySelector(`[data-id="${entityId}"] ul`);
         await this.#drawEntityItems(target, data);
     }
+
+    async onMessages(event) {
+        const action = "";
+
+
+    }
 }
 
 function createEntityItem(entityTemplate, entity) {
     const clone = entityTemplate.content.cloneNode(true);
     const entityElement = clone.querySelector("li");
     entityElement.dataset.id = entity.id;
-    entityElement.querySelector(".entity-value").innerText = entity.value;
-    entityElement.querySelector(".entity-count").innerText = entity.count;
+    entityElement.querySelector(".entity-value").textContent = entity.value;
+    entityElement.querySelector(".entity-count").textContent = entity.count;
     return clone;
 }
 

@@ -64,4 +64,6 @@ export default class EntityDetails extends crsbinding.classes.ViewBase {
 
         await this.#details.addEntityItems(event.detail.entityId, data);
     }
+
+
 }
