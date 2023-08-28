@@ -33,7 +33,7 @@ export default class EntityDetails extends crsbinding.classes.ViewBase {
             {id: "e5", value: "Entity 5", count: 3},
         ]
 
-        await this.#details.addEntities(data);
+        await crsbinding.events.emitter.postMessage("entity-details", { action: "addEntities", data: data })
     }
 
     async #getEntityItems(event) {
@@ -62,6 +62,6 @@ export default class EntityDetails extends crsbinding.classes.ViewBase {
 
         event.detail.data = data;
 
-        await this.#details.addEntityItems(event.detail.entityId, data);
+        await crsbinding.events.emitter.postMessage("entity-details", { action: "addEntityItems", entityId: event.detail.entityId, data: data })
     }
 }

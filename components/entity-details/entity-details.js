@@ -145,9 +145,13 @@ export default class EntityDetails extends HTMLElement {
         await this.#drawEntities(data);
     }
 
-    async addEntityItems(entityId, data) {
+    async addEntityItems(data, entityId) {
         const target = this.shadowRoot.querySelector(`[data-id="${entityId}"] ul`);
         await this.#drawEntityItems(target, data);
+    }
+
+    async onMessage(event) {
+        this[event.action](event.data, event.entityId);
     }
 }
 
