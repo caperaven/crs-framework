@@ -1,24 +1,43 @@
+/**
+ * @const SORT_DIRECTION - this is used to define the sort direction for the entities.
+ * @type {Readonly<{ASCENDING: string, DESCENDING: string}>}
+ */
 const SORT_DIRECTION = Object.freeze({
     ASCENDING: "ascending",
     DESCENDING: "descending"
 })
 
+/**
+ * @const SORT_ICONS - this is used to define the icons for the sort direction.
+ * @type {Readonly<{[p: string]: string}>}
+ */
 const SORT_ICONS = Object.freeze({
   [SORT_DIRECTION.ASCENDING]: "sort-ascending",
   [SORT_DIRECTION.DESCENDING]: "sort-descending"
 })
 
+
+/**
+ * @class EntityDetails - this is the main component that will display the entities and their items.
+ */
 export default class EntityDetails extends HTMLElement {
 
     #clickHandler = this.#click.bind(this);
     #sortDirection = SORT_DIRECTION.ASCENDING;
     #showIds = false;
 
+    /**
+     * @constructor - this will create the shadow root and attach it to the component.
+     */
     constructor() {
         super();
         this.attachShadow({mode: "open"});
     }
 
+    /**
+     * @method connectedCallback - this is the main function that will be called when the component is attached to the DOM.
+     * @returns {Promise<void>}
+     */
     async connectedCallback() {
         const css = `<link rel="stylesheet" href="${import.meta.url.replace(".js", ".css")}">`;
         const html = await fetch(import.meta.url.replace(".js", ".html")).then(result => result.text());
@@ -27,18 +46,20 @@ export default class EntityDetails extends HTMLElement {
         requestAnimationFrame(() => this.init())
     }
 
+    /**
+     * @method init - this function loads resources and sets up the component.
+     * @returns {Promise<void>}
+     */
     async init() {
         this.addEventListener("click", this.#clickHandler);
-
         await this.#refresh();
-
-        await crs.call("component", "notify_ready", { element: this });
     }
 
     async disconnectedCallback() {
         this.removeEventListener("click", this.#clickHandler);
-
+        this.#sortDirection = null;
         this.#clickHandler = null;
+        this.#showIds = null;
     }
 
     /**
@@ -88,6 +109,12 @@ export default class EntityDetails extends HTMLElement {
             fragment.appendChild(clone);
         }
         itemsContainer.appendChild(fragment);
+
+        requestAnimationFrame(async () => {
+            if (this.dataset.ready !== "true") {
+                await crs.call("component", "notify_ready", { element: this });
+            }
+        })
     }
 
     async #drawEntityItems(target, data) {
