@@ -89,7 +89,7 @@ export default class EntityDetails extends HTMLElement {
      * using a event
      */
     async #refresh() {
-        const args = { sortDirection: this.#sortDirection, showIds: this.#showIds };
+        const args = { showIds: this.#showIds };
         this.dispatchEvent(new CustomEvent("get_entities", { detail: args }));
     }
 
@@ -150,6 +150,7 @@ export default class EntityDetails extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #drawRules(target, data, ruleItemTemplate) {
+        data = sort(data, this.#sortDirection);
         const fragment = document.createDocumentFragment();
 
         for (const item of data) {
@@ -191,6 +192,7 @@ export default class EntityDetails extends HTMLElement {
         const target = event.composedPath()[0];
         this.#sortDirection = this.#sortDirection == SORT_DIRECTION.ASCENDING ? SORT_DIRECTION.DESCENDING : SORT_DIRECTION.ASCENDING;
         target.textContent = SORT_ICONS[this.#sortDirection];
+        await this.#refresh();
     }
 
     /**
@@ -208,7 +210,7 @@ export default class EntityDetails extends HTMLElement {
         }
 
         listItem.setAttribute("aria-expanded", "true");
-        const args = { componentId: this.id, entityId: listItem.dataset.id, sortDirection: this.#sortDirection, showIds: this.#showIds }
+        const args = { componentId: this.id, entityId: listItem.dataset.id, showIds: this.#showIds }
         this.dispatchEvent(new CustomEvent("get_entity_items", { detail: args }));
     }
 
@@ -230,6 +232,7 @@ export default class EntityDetails extends HTMLElement {
      * @returns {Promise<void>}
      */
     async addEntities(data) {
+        data = sort(data, this.#sortDirection);
         await this.#drawEntities(data);
     }
 
@@ -240,6 +243,7 @@ export default class EntityDetails extends HTMLElement {
      * @returns {Promise<void>}
      */
     async addEntityItems(data, entityId) {
+        data = sort(data, this.#sortDirection);
         const target = this.shadowRoot.querySelector(`[data-id="${entityId}"] ul`);
         await this.#drawEntityItems(target, data);
     }
@@ -280,6 +284,14 @@ function createRuleItem(ruleItemTemplate, item) {
     clone.querySelector(".value").textContent = item.value;
     clone.querySelector(".description").textContent = item.descriptor || "";
     return clone;
+}
+
+function sort(data, direction) {
+    if (direction == SORT_DIRECTION.ASCENDING) {
+        return data.sort((a, b) => a.value.localeCompare(b.value));
+    }
+
+    return data.sort((a, b) => b.value.localeCompare(a.value));
 }
 
 customElements.define("entity-details", EntityDetails);
