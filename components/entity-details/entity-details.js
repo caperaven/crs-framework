@@ -1,6 +1,18 @@
+const SORT_DIRECTION = Object.freeze({
+    ASCENDING: "ascending",
+    DESCENDING: "descending"
+})
+
+const SORT_ICONS = Object.freeze({
+  [SORT_DIRECTION.ASCENDING]: "sort-ascending",
+  [SORT_DIRECTION.DESCENDING]: "sort-descending"
+})
+
 export default class EntityDetails extends HTMLElement {
 
     #clickHandler = this.#click.bind(this);
+    #sortDirection = SORT_DIRECTION.ASCENDING;
+    #showIds = false;
 
     constructor() {
         super();
@@ -53,7 +65,7 @@ export default class EntityDetails extends HTMLElement {
      * using a event
      */
     async #refresh() {
-        const args = { data: null };
+        const args = { sortDirection: this.#sortDirection, showIds: this.#showIds };
         this.dispatchEvent(new CustomEvent("get_entities", { detail: args }));
     }
 
@@ -115,12 +127,18 @@ export default class EntityDetails extends HTMLElement {
      * This is executed from the click event based on a data-action attribute.
      * @returns {Promise<void>}
      */
-    async collapseAll() {
+    async collapseAll(event) {
         const entities = this.shadowRoot.querySelectorAll('.entity-item');
 
         for (const entity of entities) {
             await this.#collapse(entity);
         }
+    }
+
+    async sort(event) {
+        const target = event.composedPath()[0];
+        this.#sortDirection = this.#sortDirection == SORT_DIRECTION.ASCENDING ? SORT_DIRECTION.DESCENDING : SORT_DIRECTION.ASCENDING;
+        target.textContent = SORT_ICONS[this.#sortDirection];
     }
 
     async expand(event) {
@@ -132,8 +150,14 @@ export default class EntityDetails extends HTMLElement {
         }
 
         listItem.setAttribute("aria-expanded", "true");
-        const args = { componentId: this.id, entityId: listItem.dataset.id }
+        const args = { componentId: this.id, entityId: listItem.dataset.id, sortDirection: this.#sortDirection, showIds: this.#showIds }
         this.dispatchEvent(new CustomEvent("get_entity_items", { detail: args }));
+    }
+
+    async setShowIds(event) {
+        const target = event.composedPath()[0];
+        this.#showIds = target.checked;
+        console.log(this.#showIds)
     }
 
     async addEntities(data) {

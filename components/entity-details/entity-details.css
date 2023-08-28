@@ -145,3 +145,11 @@ ul {
     padding: 0.25rem;
     margin-right: var(--padding);
 }
+
+li .entity-chevron {
+    transition: transform 0.2s ease-in-out;
+}
+
+li[aria-expanded="true"] .entity-chevron {
+    transform: rotate(90deg);
+}
