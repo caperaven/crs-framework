@@ -16,7 +16,6 @@ const SORT_ICONS = Object.freeze({
   [SORT_DIRECTION.DESCENDING]: "sort-descending"
 })
 
-
 /**
  * @class EntityDetails - this is the main component that will display the entities and their items.
  */
@@ -55,6 +54,10 @@ export default class EntityDetails extends HTMLElement {
         await this.#refresh();
     }
 
+    /**
+     * @method disconnectedCallback - this is the main function that will be called when the component is removed from the DOM.
+     * @returns {Promise<void>}
+     */
     async disconnectedCallback() {
         this.removeEventListener("click", this.#clickHandler);
         this.#sortDirection = null;
@@ -117,6 +120,12 @@ export default class EntityDetails extends HTMLElement {
         })
     }
 
+    /**
+     * @method #drawEntityItems - this will take the data and draw the entity items on the screen.
+     * @param target {HTMLElement} - this is the target element that will be used to draw the entity items.
+     * @param data {Array} - this is the data that will be used to draw the entity items.
+     * @returns {Promise<void>}
+     */
     async #drawEntityItems(target, data) {
         const entityItemTemplate = this.shadowRoot.querySelector("#entity-item-template");
         const ruleItemTemplate = this.shadowRoot.querySelector("#rule-item-template");
@@ -133,17 +142,27 @@ export default class EntityDetails extends HTMLElement {
         target.appendChild(fragment);
     }
 
+    /**
+     * @method #drawRules - this will take the data and draw the rules on the screen.
+     * @param target {HTMLElement} - this is the target element that will be used to draw the rules.
+     * @param data {Array} - this is the data that will be used to draw the rules.
+     * @param ruleItemTemplate
+     * @returns {Promise<void>}
+     */
     async #drawRules(target, data, ruleItemTemplate) {
         const fragment = document.createDocumentFragment();
+
         for (const item of data) {
-            const clone = ruleItemTemplate.content.cloneNode(true);
-            clone.querySelector(".value").textContent = item.value;
-            clone.querySelector(".description").textContent = item.descriptor || "";
-            fragment.appendChild(clone);
+            fragment.appendChild(createRuleItem(ruleItemTemplate, item));
         }
         target.appendChild(fragment);
     }
 
+    /**
+     * @method #collapse - this will collapse the entity and remove the items from the screen.
+     * @param target
+     * @returns {Promise<void>}
+     */
     async #collapse(target) {
         target.querySelector("ul").innerHTML = "";
         target.setAttribute("aria-expanded", "false");
@@ -162,12 +181,24 @@ export default class EntityDetails extends HTMLElement {
         }
     }
 
+    /**
+     * @method sort - this will change the sort direction so that the next time the entities are drawn they will be sorted.
+     * The sorting is not done locally but on the server.
+     * @param event
+     * @returns {Promise<void>}
+     */
     async sort(event) {
         const target = event.composedPath()[0];
         this.#sortDirection = this.#sortDirection == SORT_DIRECTION.ASCENDING ? SORT_DIRECTION.DESCENDING : SORT_DIRECTION.ASCENDING;
         target.textContent = SORT_ICONS[this.#sortDirection];
     }
 
+    /**
+     * @method expand - this will expand the entity and request the items from the server.
+     * This is executed from the click event based on a data-action attribute.
+     * @param event
+     * @returns {Promise<void>}
+     */
     async expand(event) {
         const target = event.composedPath()[0];
         const listItem = target.closest("li");
@@ -181,32 +212,73 @@ export default class EntityDetails extends HTMLElement {
         this.dispatchEvent(new CustomEvent("get_entity_items", { detail: args }));
     }
 
+    /**
+     * @method setShowIds - this will set the showIds property based on the checkbox.
+     * The click event will forward the event to this function when clicking on the checkbox.
+     * @param event
+     * @returns {Promise<void>}
+     */
     async setShowIds(event) {
         const target = event.composedPath()[0];
         this.#showIds = target.checked;
         console.log(this.#showIds)
     }
 
+    /**
+     * @method addEntities - this will take the data and draw the entities on the screen.
+     * @param data {Array} - this is the data that will be used to draw the entities.
+     * @returns {Promise<void>}
+     */
     async addEntities(data) {
         await this.#drawEntities(data);
     }
 
+    /**
+     * @method addEntityItems - this will take the data and draw the entity items on the screen.
+     * @param data {Array} - this is the data that will be used to draw the entity items.
+     * @param entityId {any} - this is the id of the entity that the items belong to.
+     * @returns {Promise<void>}
+     */
     async addEntityItems(data, entityId) {
         const target = this.shadowRoot.querySelector(`[data-id="${entityId}"] ul`);
         await this.#drawEntityItems(target, data);
     }
 
+    /**
+     * @method onMessage - this is the main function that will be called when the component receives a message.
+     * @param event
+     * @returns {Promise<void>}
+     */
     async onMessage(event) {
-        this[event.action](event.data, event.entityId);
+        this[event.action]?.(event.data, event.entityId);
     }
 }
 
+/**
+ * @method createEntityItem - this will create the entity item and return it.
+ * @param entityTemplate - this is the template that will be used to create the entity item.
+ * @param entity - this is the data that will be used to populate the entity item.
+ * @returns {*}
+ */
 function createEntityItem(entityTemplate, entity) {
     const clone = entityTemplate.content.cloneNode(true);
     const entityElement = clone.querySelector("li");
     entityElement.dataset.id = entity.id;
     entityElement.querySelector(".entity-value").textContent = entity.value;
     entityElement.querySelector(".entity-count").textContent = entity.count;
+    return clone;
+}
+
+/**
+ * @method createRuleItem - this will create the rule item and return it.
+ * @param ruleItemTemplate - this is the template that will be used to create the rule item.
+ * @param item - this is the data that will be used to populate the rule item.
+ * @returns {*}
+ */
+function createRuleItem(ruleItemTemplate, item) {
+    const clone = ruleItemTemplate.content.cloneNode(true);
+    clone.querySelector(".value").textContent = item.value;
+    clone.querySelector(".description").textContent = item.descriptor || "";
     return clone;
 }
 
