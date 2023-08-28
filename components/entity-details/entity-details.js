@@ -286,6 +286,12 @@ function createRuleItem(ruleItemTemplate, item) {
     return clone;
 }
 
+/**
+ * @method sort - this will sort the data based on the direction.
+ * @param data - this is the data that will be sorted.
+ * @param direction - this is the direction that will be used to sort the data.
+ * @returns {*}
+ */
 function sort(data, direction) {
     if (direction == SORT_DIRECTION.ASCENDING) {
         return data.sort((a, b) => a.value.localeCompare(b.value));
