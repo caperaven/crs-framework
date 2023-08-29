@@ -258,6 +258,7 @@ export default class EntityDetails extends HTMLElement {
         }
 
         listItem.setAttribute("aria-expanded", "true");
+        listItem.setAttribute("aria-busy", "true");
 
         const entityType = listItem.dataset.entityType;
         const entityIds = this.#entityData.find(item => item.entityType === entityType).entityIds;
@@ -295,7 +296,9 @@ export default class EntityDetails extends HTMLElement {
      */
     async addEntityItems(data, entityType) {
         data = sort(data, this.#sortDirection, "code");
-        const target = this.shadowRoot.querySelector(`[data-entity-type="${entityType}"] ul`);
+        const li = this.shadowRoot.querySelector(`[data-entity-type="${entityType}"]`);
+        const target = li.querySelector("ul");
+        li.removeAttribute("aria-busy");
         await this.#drawEntityItems(target, data, entityType);
     }
 
@@ -369,30 +372,5 @@ function setStatus(parentElement, status, developmentStatuses) {
 }
 
 customElements.define("entity-details", EntityDetails);
-
-
-// const entities = [
-//     {
-//         entityType: "RegularAssetTypeTaskSpares", // split this
-//         entityIds: [1, 2, 3] // use this length as count (send this as part of event)
-//     }
-// ]
-//
-// const entityItemDataStructure = [ // -> dbl click send "parent: entityType" and "my: id"
-//     {
-//         id: 1,
-//         code: "ABC",
-//         description: "Hello world",
-//         status: "IsActive"
-//     }
-// ]
-// const devStatusLookupTable = {
-//     "IsActive": {
-//         "icon": "bla",
-//         "color": "red"
-//     }
-// }
-// empty state
-// at expand use busy thing
 
 

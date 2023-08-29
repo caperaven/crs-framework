@@ -100,7 +100,11 @@ export default class EntityDetails extends crsbinding.classes.ViewBase {
 
         event.detail.data = data;
 
-        await crsbinding.events.emitter.postMessage("entity-details", { action: "addEntityItems", entityType: entityType, data: data })
+        const timeout = setTimeout(async () => {
+            clearTimeout(timeout);
+            await crsbinding.events.emitter.postMessage("entity-details", { action: "addEntityItems", entityType: entityType, data: data })
+        }, 2000);
+
     }
 
     async #openEntityDetails(event) {
