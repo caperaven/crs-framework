@@ -166,8 +166,10 @@ export default class EntityDetails extends HTMLElement {
             li.dataset.entityType = entityType;
             li.dataset.id = entityItem.id;
 
-            li.querySelector(".value").textContent = entityItem.value;
+            li.querySelector(".value").textContent = entityItem.code;
             li.querySelector(".description").textContent = entityItem.descriptor || "";
+            li.querySelector(".count").textContent = entityItem.rules.length;
+
             const container = li.querySelector("ul");
             await this.#drawRules(container, entityItem.rules, ruleItemTemplate, entityType);
             fragment.appendChild(clone);
@@ -252,6 +254,17 @@ export default class EntityDetails extends HTMLElement {
     }
 
     /**
+     * @method expandItem - this will expand the entity item and request the rules from the server.
+     * @param event
+     * @returns {Promise<void>}
+     */
+    async expandItem(event) {
+        const li = event.composedPath()[0].closest("li");
+        const expanded = li.getAttribute("aria-expanded") == "true";
+        li.setAttribute("aria-expanded", expanded ? "false" : "true");
+    }
+
+    /**
      * @method addEntities - this will take the data and draw the entities on the screen.
      * @param data {Array} - this is the data that will be used to draw the entities.
      * @returns {Promise<void>}
@@ -294,7 +307,7 @@ function createEntityItem(entityTemplate, entity) {
     const entityElement = clone.querySelector("li");
     entityElement.dataset.entityType = entity.entityType;
     entityElement.querySelector(".entity-value").textContent = entity.entityType;
-    entityElement.querySelector(".entity-count").textContent = entity.entityIds.length;
+    entityElement.querySelector(".count").textContent = entity.entityIds.length;
     return clone;
 }
 
@@ -304,12 +317,12 @@ function createEntityItem(entityTemplate, entity) {
  * @param item - this is the data that will be used to populate the rule item.
  * @returns {*}
  */
-function createRuleItem(ruleItemTemplate, item, entityType) {
+function createRuleItem(ruleItemTemplate, item) {
     const clone = ruleItemTemplate.content.cloneNode(true);
     const li = clone.firstElementChild;
     li.dataset.entityType = item.entityType;
     li.dataset.id = item.id;
-    li.querySelector(".value").textContent = item.value;
+    li.querySelector(".value").textContent = item.code;
     li.querySelector(".description").textContent = item.descriptor || "";
     return clone;
 }

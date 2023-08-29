@@ -7,19 +7,22 @@
 <template id="entity-template">
     <li class="entity-item" data-id="" aria-expanded="false">
         <div class="entity">
-            <div class="entity-chevron" data-action="expand">chevron-right</div>
+            <div class="chevron" data-action="expand">chevron-right</div>
             <div class="entity-value"></div>
-            <div class="entity-count"></div>
+            <div class="count"></div>
         </div>
         <ul></ul>
     </li>
 </template>
 
 <template id="entity-item-template">
-    <li class="entity-child-item">
+    <li class="entity-child-item" aria-expanded="false">
         <div>
+            <div class="chevron" data-action="expandItem">chevron-right</div>
+            <div class="status">drag-vert-alt</div>
             <div class="value"></div>
             <div class="description"></div>
+            <div class="count"></div>
         </div>
 
         <ul></ul>
@@ -28,6 +31,7 @@
 
 <template id="rule-item-template">
     <li class="rule-item">
+        <div class="status">drag-vert-alt</div>
         <div class="value"></div>
         <div class="description"></div>
     </li>

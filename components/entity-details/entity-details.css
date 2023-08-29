@@ -25,7 +25,6 @@ header label {
     width: 100%;
     height: 100%;
     overflow-y: auto;
-    overflow-x: hidden;
 }
 
 .spacer {
@@ -55,7 +54,6 @@ header label {
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin: 0 var(--padding);
     padding: var(--padding);
     border-bottom: var(--border);
     position: sticky;
@@ -64,19 +62,12 @@ header label {
     z-index: 1;
 }
 
-.entity-chevron {
-    font-family: crsfrw;
-    font-size: 1.2rem;
-    margin-right: var(--padding);
-    cursor: pointer;
-}
-
 .entity-value {
     flex: 1;
     pointer-events: none;
 }
 
-.entity-count {
+.count {
     display: flex;
     flex-direction: row;
     padding: var(--padding);
@@ -87,7 +78,7 @@ header label {
     pointer-events: none;
 }
 
-.entity-count:before {
+.count:before {
     content: "Count";
     font-weight: normal;
     display: block;
@@ -98,6 +89,11 @@ ul {
     list-style-type: none;
     margin: 0;
     padding: 0;
+    width: 100%;
+}
+
+li {
+    width: 100%;
 }
 
 .entity-child-item {
@@ -108,21 +104,19 @@ ul {
     display: flex;
     flex-direction: row;
     align-items: center;
-    margin: 0 var(--padding);
-    padding: var(--padding);
-    width: 100%;
-    padding-left: 2rem;
     background: var(--window);
     position: sticky;
     top: 3.3rem;
+    padding: var(--padding);
+    margin-left: 1rem;
 }
 
-.entity-child-item .value, .rule-item .value {
-    margin-right: var(--padding);
+.entity-child-item .description, .rule-item .description {
+    flex: 1
 }
 
-.entity-child-item .value:before {
-    content: "drag-vert-alt";
+.status {
+    content: "";
     font-family: crsfrw;
     font-size: 0.8rem;
     border-radius: 50%;
@@ -132,31 +126,42 @@ ul {
     margin-right: var(--padding);
 }
 
+.entity-child-item[aria-expanded="false"] ul {
+    display: none;
+}
+
 .rule-item {
     display: flex;
     flex-direction: row;
-    padding: 0.5rem;
-    margin-left: 5rem;
     border-radius: var(--radius);
     background: var(--grey-s3);
     cursor: pointer;
+    padding: var(--padding);
+    margin-left: 4rem;
+    margin-bottom: 0.5rem;
 }
 
-.rule-item .value:before {
-    content: "kabab-horiz";
+.chevron {
     font-family: crsfrw;
-    font-size: 0.8rem;
-    border-radius: 50%;
-    color: white;
-    background: #4CADDA;
-    padding: 0.25rem;
+    font-size: 1.2rem;
+    transition: transform 0.2s ease-in-out;
+    cursor: pointer;
     margin-right: var(--padding);
 }
 
-li .entity-chevron {
-    transition: transform 0.2s ease-in-out;
+li[aria-expanded="true"] > div > .chevron {
+    transform: rotate(90deg);
 }
 
-li[aria-expanded="true"] .entity-chevron {
-    transform: rotate(90deg);
+.value {
+    font-weight: bold;
+    margin-right: var(--padding);
+}
+
+.value:before {
+    content: "["
+}
+
+.value:after {
+    content: "]"
 }
