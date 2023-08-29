@@ -128,17 +128,23 @@ export default class EntityDetails extends HTMLElement {
      * @param data {Array} - this is the data that will be used to draw the entity items.
      * @returns {Promise<void>}
      */
-    async #drawEntityItems(target, data) {
+    async #drawEntityItems(target, data, entityType) {
         const entityItemTemplate = this.shadowRoot.querySelector("#entity-item-template");
         const ruleItemTemplate = this.shadowRoot.querySelector("#rule-item-template");
 
         const fragment = document.createDocumentFragment();
-        for (const entityItems of data) {
+        for (const entityItem of data) {
             const clone = entityItemTemplate.content.cloneNode(true);
-            clone.querySelector(".value").textContent = entityItems.value;
-            clone.querySelector(".description").textContent = entityItems.descriptor || "";
-            const container = clone.querySelector("ul");
-            await this.#drawRules(container, entityItems.rules, ruleItemTemplate);
+
+            const li = clone.firstElementChild;
+
+            li.dataset.entityType = entityType;
+            li.dataset.id = entityItem.id;
+
+            li.querySelector(".value").textContent = entityItem.value;
+            li.querySelector(".description").textContent = entityItem.descriptor || "";
+            const container = li.querySelector("ul");
+            await this.#drawRules(container, entityItem.rules, ruleItemTemplate, entityType);
             fragment.appendChild(clone);
         }
         target.appendChild(fragment);
@@ -151,12 +157,12 @@ export default class EntityDetails extends HTMLElement {
      * @param ruleItemTemplate
      * @returns {Promise<void>}
      */
-    async #drawRules(target, data, ruleItemTemplate) {
+    async #drawRules(target, data, ruleItemTemplate, entityType) {
         data = sort(data, this.#sortDirection, "code");
         const fragment = document.createDocumentFragment();
 
         for (const item of data) {
-            fragment.appendChild(createRuleItem(ruleItemTemplate, item));
+            fragment.appendChild(createRuleItem(ruleItemTemplate, item, entityType));
         }
         target.appendChild(fragment);
     }
@@ -239,7 +245,7 @@ export default class EntityDetails extends HTMLElement {
     async addEntityItems(data, entityType) {
         data = sort(data, this.#sortDirection, "code");
         const target = this.shadowRoot.querySelector(`[data-entity-type="${entityType}"] ul`);
-        await this.#drawEntityItems(target, data);
+        await this.#drawEntityItems(target, data, entityType);
     }
 
     /**
@@ -273,10 +279,13 @@ function createEntityItem(entityTemplate, entity) {
  * @param item - this is the data that will be used to populate the rule item.
  * @returns {*}
  */
-function createRuleItem(ruleItemTemplate, item) {
+function createRuleItem(ruleItemTemplate, item, entityType) {
     const clone = ruleItemTemplate.content.cloneNode(true);
-    clone.querySelector(".value").textContent = item.value;
-    clone.querySelector(".description").textContent = item.descriptor || "";
+    const li = clone.firstElementChild;
+    li.dataset.entityType = entityType;
+    li.dataset.id = item.id;
+    li.querySelector(".value").textContent = item.value;
+    li.querySelector(".description").textContent = item.descriptor || "";
     return clone;
 }
 

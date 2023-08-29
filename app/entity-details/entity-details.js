@@ -55,6 +55,7 @@ export default class EntityDetails extends crsbinding.classes.ViewBase {
 
             for (let j = 0; j < ruleCount; j++) {
                 const rule = {
+                    id: `r${j}`,
                     code: `Rule ${j}`,
                     descriptor: `Rule ${j} Description`,
                 }
