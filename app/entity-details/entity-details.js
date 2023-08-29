@@ -4,6 +4,7 @@ export default class EntityDetails extends crsbinding.classes.ViewBase {
     #details;
     #getEntitiesHandler = this.#getEntities.bind(this);
     #getEntityItemsHandler = this.#getEntityItems.bind(this);
+    #openEntityDetailsHandler = this.#openEntityDetails.bind(this);
 
     #entities = null;
 
@@ -16,13 +17,19 @@ export default class EntityDetails extends crsbinding.classes.ViewBase {
         this.#details = this.element.querySelector("entity-details");
         this.#details.addEventListener("get_entities", this.#getEntitiesHandler);
         this.#details.addEventListener("get_entity_items", this.#getEntityItemsHandler);
+        this.#details.addEventListener("open_entity_details", this.#openEntityDetailsHandler);
         super.load()
     }
 
     async disconnectedCallback() {
         this.#details.removeEventListener("get_entities", this.#getEntitiesHandler);
         this.#details.removeEventListener("get_entity_items", this.#getEntityItemsHandler);
+        this.#details.removeEventListener("open_entity_details", this.#openEntityDetailsHandler);
         this.#details = null;
+        this.#getEntitiesHandler = null;
+        this.#getEntityItemsHandler = null;
+        this.#openEntityDetailsHandler = null;
+        this.#entities = null;
         super.disconnectedCallback();
     }
 
@@ -58,6 +65,7 @@ export default class EntityDetails extends crsbinding.classes.ViewBase {
                     id: `r${j}`,
                     code: `Rule ${j}`,
                     descriptor: `Rule ${j} Description`,
+                    entityType: "RuleType"
                 }
                 entityItem.rules.push(rule);
             }
@@ -70,5 +78,7 @@ export default class EntityDetails extends crsbinding.classes.ViewBase {
         await crsbinding.events.emitter.postMessage("entity-details", { action: "addEntityItems", entityType: entityType, data: data })
     }
 
-
+    async #openEntityDetails(event) {
+        console.log(event.detail);
+    }
 }

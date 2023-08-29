@@ -22,6 +22,7 @@ const SORT_ICONS = Object.freeze({
 export default class EntityDetails extends HTMLElement {
 
     #clickHandler = this.#click.bind(this);
+    #dblclickHandler = this.#dblclick.bind(this);
     #sortDirection = SORT_DIRECTION.ASCENDING;
     #entityData = null;
 
@@ -51,6 +52,7 @@ export default class EntityDetails extends HTMLElement {
      */
     async init() {
         this.addEventListener("click", this.#clickHandler);
+        this.addEventListener("dblclick", this.#dblclickHandler);
         await this.#refresh();
     }
 
@@ -60,8 +62,11 @@ export default class EntityDetails extends HTMLElement {
      */
     async disconnectedCallback() {
         this.removeEventListener("click", this.#clickHandler);
+        this.addEventListener("dblclick", this.#dblclickHandler);
+
         this.#sortDirection = null;
         this.#clickHandler = null;
+        this.#dblclickHandler = null;
         this.#entityData = null;
     }
 
@@ -77,6 +82,26 @@ export default class EntityDetails extends HTMLElement {
         if (this[action] != null) {
             this[action](event);
         }
+    }
+
+    /**
+     * @method #dblclick - this is the double click handler for the component
+     * This will check if you are dbl clicking on a entity item or it's details
+     * and will dispatch an event to open the details accordingly.
+     * @param event
+     */
+    #dblclick(event) {
+        const target = event.composedPath()[0];
+        const li = target.closest("li");
+
+        // if I did not click on a actual list item or the list item does not have a id then return
+        // the entity list item does not have a id
+        if (li == null || li.dataset.id == null || li.dataset.id.length == 0) return;
+
+        this.dispatchEvent(new CustomEvent("open_entity_details", { detail: {
+            entityType: li.dataset.entityType,
+            id: li.dataset.id
+        }}))
     }
 
     /**
@@ -162,7 +187,7 @@ export default class EntityDetails extends HTMLElement {
         const fragment = document.createDocumentFragment();
 
         for (const item of data) {
-            fragment.appendChild(createRuleItem(ruleItemTemplate, item, entityType));
+            fragment.appendChild(createRuleItem(ruleItemTemplate, item));
         }
         target.appendChild(fragment);
     }
@@ -282,7 +307,7 @@ function createEntityItem(entityTemplate, entity) {
 function createRuleItem(ruleItemTemplate, item, entityType) {
     const clone = ruleItemTemplate.content.cloneNode(true);
     const li = clone.firstElementChild;
-    li.dataset.entityType = entityType;
+    li.dataset.entityType = item.entityType;
     li.dataset.id = item.id;
     li.querySelector(".value").textContent = item.value;
     li.querySelector(".description").textContent = item.descriptor || "";
