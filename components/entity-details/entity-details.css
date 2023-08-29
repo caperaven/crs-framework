@@ -114,6 +114,8 @@ ul {
     font-family: crsfrw;
     font-size: 1.2rem;
     margin-right: var(--padding);
+    display: flex;
+    align-items: center;
 }
 
 .entity-child-item[aria-expanded="false"] ul {
@@ -129,6 +131,8 @@ ul {
     padding: var(--padding);
     margin-left: 4rem;
     margin-bottom: 0.5rem;
+    align-items: center;
+    border-radius: var(--radius);
 }
 
 .chevron {

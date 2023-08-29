@@ -68,22 +68,29 @@ export default class EntityDetails extends crsbinding.classes.ViewBase {
         const count = entityIds.length;
         const ruleCount = await crs.call("random", "integer", { min: 1, max: 9 });
 
+        const statuses = ["Confirmed", "NewUnderDevelopment", "NewAwaitingConfirmation", "ModifiedUnderDevelopment", "ModifiedAwaitingConfirmation", "DeletedAwaitingConfirmation", "DeletedConfirmed"]
+
         const data = [];
         for (let i = 0; i < count; i++) {
+            const itemStatus = await crs.call("random", "integer", { min: 0, max: 6 });
+
             const entityItem = {
                 id: `e${i}`,
                 code: `Item ${i}`,
                 descriptor: `Item ${i} Description`,
-                status: "DeletedConfirmed",
+                status: statuses[itemStatus],
                 rules: []
             }
 
             for (let j = 0; j < ruleCount; j++) {
+                const ruleStatus = await crs.call("random", "integer", { min: 0, max: 6 });
+
                 const rule = {
                     id: `r${j}`,
                     code: `Rule ${j}`,
                     descriptor: `Rule ${j} Description`,
-                    entityType: "RuleType"
+                    entityType: "RuleType",
+                    status: statuses[ruleStatus]
                 }
                 entityItem.rules.push(rule);
             }

@@ -2,37 +2,37 @@ const statusTranslations = globalThis.translations.treeTranslations.developmentS
 
 export const developmentStatuses = Object.freeze({
     DeletedConfirmed: {
-        icon: "deleted-awaiting-confirmation",
+        icon: "delete-confirmed",
         title: statusTranslations.DeletedConfirmed,
         color: "#6BB21F"
     },
     DeletedAwaitingConfirmation: {
         icon: "deleted-awaiting-confirmation",
         title: statusTranslations.DeletedAwaitingConfirmation,
-        color: "#6BB21F"
+        color: "#C04C00"
     },
     ModifiedAwaitingConfirmation: {
         icon: "modified-awaiting-confirmation",
         title: statusTranslations.ModifiedAwaitingConfirmation,
-        color: "#6BB21F"
+        color: "#C04C00"
     },
     ModifiedUnderDevelopment: {
         icon: "modified-under-development",
         title: statusTranslations.ModifiedUnderDevelopment,
-        color: "#6BB21F"
+        color: "#00AFDF"
     },
     NewAwaitingConfirmation: {
-        icon: "new-awaiting-confirmation",
+        icon: "new-awaiting--confirmation",
         title: statusTranslations.NewAwaitingConfirmation,
-        color: "#6BB21F"
+        color: "#C04C00"
     },
     NewUnderDevelopment: {
         icon: "new-under-development",
         title: statusTranslations.NewUnderDevelopment,
-        color: "#6BB21F"
+        color: "#00AFDF"
     },
     Confirmed: {
-        icon: "confirmed",
+        icon: "check-box",
         title: statusTranslations.Confirmed,
         color: "#6BB21F"
     }

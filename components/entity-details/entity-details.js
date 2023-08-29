@@ -177,23 +177,14 @@ export default class EntityDetails extends HTMLElement {
             li.dataset.entityType = entityType;
             li.dataset.id = entityItem.id;
 
-            const status = entityItem.status;
-            const icon = developmentStatuses[status].icon;
-            const title = developmentStatuses[status].title;
-            const color = developmentStatuses[status].color;
-
-            const statusElement = li.querySelector(".status");
-            statusElement.textContent = icon;
-            statusElement.setAttribute("title", title);
-            statusElement.style.color = color;
-
+            setStatus(li, entityItem.status, developmentStatuses);
 
             li.querySelector(".value").textContent = entityItem.code;
             li.querySelector(".description").textContent = entityItem.descriptor || "";
             li.querySelector(".count").textContent = entityItem.rules.length;
 
             const container = li.querySelector("ul");
-            await this.#drawRules(container, entityItem.rules, ruleItemTemplate, entityType);
+            await this.#drawRules(container, entityItem.rules, ruleItemTemplate, developmentStatuses);
             fragment.appendChild(clone);
         }
         target.appendChild(fragment);
@@ -206,12 +197,12 @@ export default class EntityDetails extends HTMLElement {
      * @param ruleItemTemplate
      * @returns {Promise<void>}
      */
-    async #drawRules(target, data, ruleItemTemplate, entityType) {
+    async #drawRules(target, data, ruleItemTemplate, developmentStatuses) {
         data = sort(data, this.#sortDirection, "code");
         const fragment = document.createDocumentFragment();
 
         for (const item of data) {
-            fragment.appendChild(createRuleItem(ruleItemTemplate, item));
+            fragment.appendChild(createRuleItem(ruleItemTemplate, item, developmentStatuses));
         }
         target.appendChild(fragment);
     }
@@ -339,11 +330,14 @@ function createEntityItem(entityTemplate, entity) {
  * @param item - this is the data that will be used to populate the rule item.
  * @returns {*}
  */
-function createRuleItem(ruleItemTemplate, item) {
+function createRuleItem(ruleItemTemplate, item, developmentStatuses) {
     const clone = ruleItemTemplate.content.cloneNode(true);
     const li = clone.firstElementChild;
     li.dataset.entityType = item.entityType;
     li.dataset.id = item.id;
+
+    setStatus(li, item.status, developmentStatuses);
+
     li.querySelector(".value").textContent = item.code;
     li.querySelector(".description").textContent = item.descriptor || "";
     return clone;
@@ -361,6 +355,17 @@ function sort(data, direction, field) {
     }
 
     return data.sort((a, b) => b[field].localeCompare(a[field]));
+}
+
+function setStatus(parentElement, status, developmentStatuses) {
+    const icon = developmentStatuses[status].icon;
+    const title = developmentStatuses[status].title;
+    const color = developmentStatuses[status].color;
+
+    const statusElement = parentElement.querySelector(".status");
+    statusElement.textContent = icon;
+    statusElement.setAttribute("title", title);
+    statusElement.style.color = color;
 }
 
 customElements.define("entity-details", EntityDetails);
