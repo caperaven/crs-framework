@@ -8,6 +8,23 @@ export default class EntityDetails extends crsbinding.classes.ViewBase {
 
     #entities = null;
 
+    constructor() {
+        super();
+        globalThis.translations = {
+            treeTranslations: {
+                "developmentStatus": {
+                    "Confirmed": "Confirmed",
+                    "NewUnderDevelopment": "New - Under Development",
+                    "NewAwaitingConfirmation": "New - Awaiting Confirmation",
+                    "ModifiedUnderDevelopment": "Modified - Under Development",
+                    "ModifiedAwaitingConfirmation": "Modified - Awaiting Confirmation",
+                    "DeletedAwaitingConfirmation": "Deleted - Awaiting Confirmation",
+                    "DeletedConfirmed": "Deleted - Confirmed"
+                }
+            }
+        }
+    }
+
     async load() {
         await crsbinding.translations.add({
             collapseAll: "Collapse All",
@@ -57,6 +74,7 @@ export default class EntityDetails extends crsbinding.classes.ViewBase {
                 id: `e${i}`,
                 code: `Item ${i}`,
                 descriptor: `Item ${i} Description`,
+                status: "DeletedConfirmed",
                 rules: []
             }
 

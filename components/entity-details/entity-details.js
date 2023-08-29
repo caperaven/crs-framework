@@ -1,4 +1,13 @@
 /**
+ * Todo.
+ * Add status stuff including random statuses on view.
+ * Add empty stat image since there is none.
+ * Add loading when updating tree.
+ */
+
+
+
+/**
  * @const SORT_DIRECTION - this is used to define the sort direction for the entities.
  * @type {Readonly<{ASCENDING: string, DESCENDING: string}>}
  */
@@ -158,6 +167,8 @@ export default class EntityDetails extends HTMLElement {
         const ruleItemTemplate = this.shadowRoot.querySelector("#rule-item-template");
 
         const fragment = document.createDocumentFragment();
+        const developmentStatuses = (await import("./../../src/lookup-tables/development-statuses.js")).developmentStatuses;
+
         for (const entityItem of data) {
             const clone = entityItemTemplate.content.cloneNode(true);
 
@@ -165,6 +176,17 @@ export default class EntityDetails extends HTMLElement {
 
             li.dataset.entityType = entityType;
             li.dataset.id = entityItem.id;
+
+            const status = entityItem.status;
+            const icon = developmentStatuses[status].icon;
+            const title = developmentStatuses[status].title;
+            const color = developmentStatuses[status].color;
+
+            const statusElement = li.querySelector(".status");
+            statusElement.textContent = icon;
+            statusElement.setAttribute("title", title);
+            statusElement.style.color = color;
+
 
             li.querySelector(".value").textContent = entityItem.code;
             li.querySelector(".description").textContent = entityItem.descriptor || "";

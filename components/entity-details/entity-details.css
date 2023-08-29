@@ -89,11 +89,6 @@ ul {
     list-style-type: none;
     margin: 0;
     padding: 0;
-    width: 100%;
-}
-
-li {
-    width: 100%;
 }
 
 .entity-child-item {
@@ -116,13 +111,8 @@ li {
 }
 
 .status {
-    content: "";
     font-family: crsfrw;
-    font-size: 0.8rem;
-    border-radius: 50%;
-    color: white;
-    background: #B35320;
-    padding: 0.25rem;
+    font-size: 1.2rem;
     margin-right: var(--padding);
 }
 
