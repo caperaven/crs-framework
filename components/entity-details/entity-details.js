@@ -23,7 +23,7 @@ export default class EntityDetails extends HTMLElement {
 
     #clickHandler = this.#click.bind(this);
     #sortDirection = SORT_DIRECTION.ASCENDING;
-    #showIds = false;
+    #entityData = null;
 
     /**
      * @constructor - this will create the shadow root and attach it to the component.
@@ -62,7 +62,7 @@ export default class EntityDetails extends HTMLElement {
         this.removeEventListener("click", this.#clickHandler);
         this.#sortDirection = null;
         this.#clickHandler = null;
-        this.#showIds = null;
+        this.#entityData = null;
     }
 
     /**
@@ -89,8 +89,8 @@ export default class EntityDetails extends HTMLElement {
      * using a event
      */
     async #refresh() {
-        const args = { showIds: this.#showIds };
-        this.dispatchEvent(new CustomEvent("get_entities", { detail: args }));
+        this.#entityData = null;
+        this.dispatchEvent(new CustomEvent("get_entities", {}));
     }
 
 
@@ -101,6 +101,8 @@ export default class EntityDetails extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #drawEntities(data) {
+        this.#entityData = data;
+
         const itemsContainer = this.shadowRoot.querySelector(".items");
         itemsContainer.innerHTML = "";
 
@@ -150,7 +152,7 @@ export default class EntityDetails extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #drawRules(target, data, ruleItemTemplate) {
-        data = sort(data, this.#sortDirection);
+        data = sort(data, this.#sortDirection, "code");
         const fragment = document.createDocumentFragment();
 
         for (const item of data) {
@@ -210,20 +212,12 @@ export default class EntityDetails extends HTMLElement {
         }
 
         listItem.setAttribute("aria-expanded", "true");
-        const args = { componentId: this.id, entityId: listItem.dataset.id, showIds: this.#showIds }
-        this.dispatchEvent(new CustomEvent("get_entity_items", { detail: args }));
-    }
 
-    /**
-     * @method setShowIds - this will set the showIds property based on the checkbox.
-     * The click event will forward the event to this function when clicking on the checkbox.
-     * @param event
-     * @returns {Promise<void>}
-     */
-    async setShowIds(event) {
-        const target = event.composedPath()[0];
-        this.#showIds = target.checked;
-        console.log(this.#showIds)
+        const entityType = listItem.dataset.entityType;
+        const entityIds = this.#entityData.find(item => item.entityType === entityType).entityIds;
+
+        const args = { componentId: this.id, entityType, entityIds }
+        this.dispatchEvent(new CustomEvent("get_entity_items", { detail: args }));
     }
 
     /**
@@ -232,7 +226,7 @@ export default class EntityDetails extends HTMLElement {
      * @returns {Promise<void>}
      */
     async addEntities(data) {
-        data = sort(data, this.#sortDirection);
+        data = sort(data, this.#sortDirection, "entityType");
         await this.#drawEntities(data);
     }
 
@@ -242,9 +236,9 @@ export default class EntityDetails extends HTMLElement {
      * @param entityId {any} - this is the id of the entity that the items belong to.
      * @returns {Promise<void>}
      */
-    async addEntityItems(data, entityId) {
-        data = sort(data, this.#sortDirection);
-        const target = this.shadowRoot.querySelector(`[data-id="${entityId}"] ul`);
+    async addEntityItems(data, entityType) {
+        data = sort(data, this.#sortDirection, "code");
+        const target = this.shadowRoot.querySelector(`[data-entity-type="${entityType}"] ul`);
         await this.#drawEntityItems(target, data);
     }
 
@@ -254,7 +248,7 @@ export default class EntityDetails extends HTMLElement {
      * @returns {Promise<void>}
      */
     async onMessage(event) {
-        this[event.action]?.(event.data, event.entityId);
+        this[event.action]?.(event.data, event.entityType);
     }
 }
 
@@ -267,9 +261,9 @@ export default class EntityDetails extends HTMLElement {
 function createEntityItem(entityTemplate, entity) {
     const clone = entityTemplate.content.cloneNode(true);
     const entityElement = clone.querySelector("li");
-    entityElement.dataset.id = entity.id;
-    entityElement.querySelector(".entity-value").textContent = entity.value;
-    entityElement.querySelector(".entity-count").textContent = entity.count;
+    entityElement.dataset.entityType = entity.entityType;
+    entityElement.querySelector(".entity-value").textContent = entity.entityType;
+    entityElement.querySelector(".entity-count").textContent = entity.entityIds.length;
     return clone;
 }
 
@@ -292,12 +286,39 @@ function createRuleItem(ruleItemTemplate, item) {
  * @param direction - this is the direction that will be used to sort the data.
  * @returns {*}
  */
-function sort(data, direction) {
+function sort(data, direction, field) {
     if (direction == SORT_DIRECTION.ASCENDING) {
-        return data.sort((a, b) => a.value.localeCompare(b.value));
+        return data.sort((a, b) => a[field].localeCompare(b[field]));
     }
 
-    return data.sort((a, b) => b.value.localeCompare(a.value));
+    return data.sort((a, b) => b[field].localeCompare(a[field]));
 }
 
 customElements.define("entity-details", EntityDetails);
+
+
+// const entities = [
+//     {
+//         entityType: "RegularAssetTypeTaskSpares", // split this
+//         entityIds: [1, 2, 3] // use this length as count (send this as part of event)
+//     }
+// ]
+//
+// const entityItemDataStructure = [ // -> dbl click send "parent: entityType" and "my: id"
+//     {
+//         id: 1,
+//         code: "ABC",
+//         description: "Hello world",
+//         status: "IsActive"
+//     }
+// ]
+// const devStatusLookupTable = {
+//     "IsActive": {
+//         "icon": "bla",
+//         "color": "red"
+//     }
+// }
+// empty state
+// at expand use busy thing
+
+

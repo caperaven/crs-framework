@@ -5,6 +5,8 @@ export default class EntityDetails extends crsbinding.classes.ViewBase {
     #getEntitiesHandler = this.#getEntities.bind(this);
     #getEntityItemsHandler = this.#getEntityItems.bind(this);
 
+    #entities = null;
+
     async load() {
         await crsbinding.translations.add({
             collapseAll: "Collapse All",
@@ -25,33 +27,35 @@ export default class EntityDetails extends crsbinding.classes.ViewBase {
     }
 
     async #getEntities(event) {
-        const data = [
-            {id: "e1", value: "Entity 1", count: 2},
-            {id: "e2", value: "Entity 2", count: 5},
-            {id: "e3", value: "Entity 3", count: 10},
-            {id: "e4", value: "Entity 4", count: 10},
-            {id: "e5", value: "Entity 5", count: 3},
+        this.#entities = [
+            {entityType: "Entity 1", entityIds: [1, 2, 3]},
+            {entityType: "Entity 2", entityIds: [4, 5, 6]},
+            {entityType: "Entity 3", entityIds: [7, 8, 9]},
+            {entityType: "Entity 4", entityIds: [10, 11, 12]},
+            {entityType: "Entity 5", entityIds: [13, 14, 15]},
         ]
 
-        await crsbinding.events.emitter.postMessage("entity-details", { action: "addEntities", data: data })
+        await crsbinding.events.emitter.postMessage("entity-details", { action: "addEntities", data: this.#entities })
     }
 
     async #getEntityItems(event) {
-        const count = { e1: 2, e2: 5, e3: 10, e4: 10, e5: 3 }[event.detail.entityId];
-        const ruleCount = await crs.call("random", "integer", { min: 1, max: 100 });
+        const entityType = event.detail.entityType;
+        const entityIds = event.detail.entityIds;
+        const count = entityIds.length;
+        const ruleCount = await crs.call("random", "integer", { min: 1, max: 9 });
 
         const data = [];
         for (let i = 0; i < count; i++) {
             const entityItem = {
                 id: `e${i}`,
-                value: `Item ${i}`,
+                code: `Item ${i}`,
                 descriptor: `Item ${i} Description`,
                 rules: []
             }
 
             for (let j = 0; j < ruleCount; j++) {
                 const rule = {
-                    value: `Rule ${j}`,
+                    code: `Rule ${j}`,
                     descriptor: `Rule ${j} Description`,
                 }
                 entityItem.rules.push(rule);
@@ -62,7 +66,7 @@ export default class EntityDetails extends crsbinding.classes.ViewBase {
 
         event.detail.data = data;
 
-        await crsbinding.events.emitter.postMessage("entity-details", { action: "addEntityItems", entityId: event.detail.entityId, data: data })
+        await crsbinding.events.emitter.postMessage("entity-details", { action: "addEntityItems", entityType: entityType, data: data })
     }
 
 
