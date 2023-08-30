@@ -284,6 +284,13 @@ export default class EntityDetails extends HTMLElement {
      * @returns {Promise<void>}
      */
     async addEntities(data) {
+        const parent = this.shadowRoot.querySelector(".container");
+        await crs.call("no_content", "hide", { parent: parent });
+
+        if (data == null || data.length === 0) {
+            return await crs.call("no_content", "show", { parent: parent })
+        }
+
         data = sort(data, this.#sortDirection, "entityType");
         await this.#drawEntities(data);
     }
@@ -295,10 +302,13 @@ export default class EntityDetails extends HTMLElement {
      * @returns {Promise<void>}
      */
     async addEntityItems(data, entityType) {
-        data = sort(data, this.#sortDirection, "code");
         const li = this.shadowRoot.querySelector(`[data-entity-type="${entityType}"]`);
-        const target = li.querySelector("ul");
         li.removeAttribute("aria-busy");
+
+        if (data == null || data.length === 0) return;
+
+        data = sort(data, this.#sortDirection, "code");
+        const target = li.querySelector("ul");
         await this.#drawEntityItems(target, data, entityType);
     }
 

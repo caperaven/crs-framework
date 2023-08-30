@@ -1,4 +1,5 @@
 import "./../../components/entity-details/entity-details.js";
+import "./../../packages/crs-process-api/action-systems/no-content-actions.js"
 
 export default class EntityDetails extends crsbinding.classes.ViewBase {
     #details;
@@ -10,18 +11,23 @@ export default class EntityDetails extends crsbinding.classes.ViewBase {
 
     constructor() {
         super();
-        globalThis.translations = {
-            treeTranslations: {
-                "developmentStatus": {
-                    "Confirmed": "Confirmed",
-                    "NewUnderDevelopment": "New - Under Development",
-                    "NewAwaitingConfirmation": "New - Awaiting Confirmation",
-                    "ModifiedUnderDevelopment": "Modified - Under Development",
-                    "ModifiedAwaitingConfirmation": "Modified - Awaiting Confirmation",
-                    "DeletedAwaitingConfirmation": "Deleted - Awaiting Confirmation",
-                    "DeletedConfirmed": "Deleted - Confirmed"
-                }
+        globalThis.translations ||= {}
+
+        globalThis.translations.treeTranslations = {
+            "developmentStatus": {
+                "Confirmed": "Confirmed",
+                "NewUnderDevelopment": "New - Under Development",
+                "NewAwaitingConfirmation": "New - Awaiting Confirmation",
+                "ModifiedUnderDevelopment": "Modified - Under Development",
+                "ModifiedAwaitingConfirmation": "Modified - Awaiting Confirmation",
+                "DeletedAwaitingConfirmation": "Deleted - Awaiting Confirmation",
+                "DeletedConfirmed": "Deleted - Confirmed"
             }
+        }
+
+        globalThis.translations.noContent = {
+            title: "No Records Found",
+            message: "Either you do not have sufficient user rights required to display the records or there are no records to be displayed."
         }
     }
 
