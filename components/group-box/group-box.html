@@ -10,7 +10,7 @@
         --header-font-size: 16px;
         --header-font-weight:bold;
         --icon-size: 20px;
-
+        --rotate: -180deg;
 
         display: block;
         width: auto;
@@ -26,7 +26,7 @@
     }
 
     :host([aria-expanded="false"]) #btnToggleExpand:after {
-        rotate: -180deg;
+        rotate: var(--rotate);
     }
 
     ::slotted([slot="header"]) {
@@ -88,6 +88,12 @@
 
     #title {
         flex: 1;
+    }
+
+    @media screen and (min-width: 260px)  and (max-width: 597px) {
+        #group-header {
+            flex-wrap: wrap;
+        }
     }
 </style>
 

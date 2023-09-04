@@ -79,7 +79,9 @@ export class GroupBox extends HTMLElement {
     load() {
         return new Promise(resolve => {
             requestAnimationFrame(async () => {
-                this.setAttribute("aria-expanded", "true");
+                if (this.getAttribute("aria-expanded") == null) {
+                    this.setAttribute("aria-expanded", "true");
+                }
                 this.shadowRoot.addEventListener("click", this.#clickHandler);
 
                 this.shadowRoot.querySelector("header").addEventListener("keyup", this.#headerKeyHandler);
@@ -132,7 +134,7 @@ export class GroupBox extends HTMLElement {
     }
 
     /**
-     * @method toggleExpanded - toggle the expanded state of the group bo.
+     * @method toggleExpanded - toggle the expanded state of the group box.
      * @returns {Promise<void>}
      */
     async #toggleExpanded() {
@@ -141,6 +143,9 @@ export class GroupBox extends HTMLElement {
         if (this.shadowRoot.querySelector("#btnToggleExpand") != null){
             this.shadowRoot.querySelector("#btnToggleExpand").setAttribute('aria-expanded', !expanded);
         }
+
+        this.dispatchEvent(new CustomEvent("group-box-expanded", {detail: {element: this, expanded: !expanded}, bubbles: true}));
+
         await this.#setTabIndex();
     }
 
