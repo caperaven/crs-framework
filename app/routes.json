@@ -18,6 +18,10 @@
             "view": "icons"
         },
         {
+            "title": "Cell Editing",
+            "view": "cell-editing"
+        },
+        {
             "title": "Overflow Bar",
             "view": "overflow-bar"
         },

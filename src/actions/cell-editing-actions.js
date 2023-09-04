@@ -37,6 +37,23 @@ class CellEditing {
 
     }
 
+    /**
+     * @method updateCells - for all the content editable cells update the HTML as required.
+     * @param element
+     * @returns {Promise<void>}
+     */
+    async #updateCells(element) {
+        // 1. Make all cells tab focusable.
+        if (element.matches("[contenteditable]")) {
+            element.setAttribute("tabindex", "0");
+        }
+
+        // 2. Check the children for contenteditable and  make them focusable.
+        for (const child of element.querySelectorAll("[contenteditable]")) {
+            child.setAttribute("tabindex", "0");
+        }
+    }
+
     register(name, definition, element, model) {
         this.#store[name] = {
             definition,

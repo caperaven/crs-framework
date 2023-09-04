@@ -1,0 +1,26 @@
+[data-contenteditable="true"] {
+    padding: var(--padding);
+}
+
+[data-contenteditable="true"]:focus {
+    border: solid 1px var(--blue);
+    background: var(--blue-s2);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    border-left: var(--border);
+    border-top: var(--border);
+    width: 500px;
+}
+
+.grid div {
+    border-right: var(--border);
+    border-bottom: var(--border);
+    padding: var(--padding);
+}
+
+[aria-readonly="true"] {
+    background: var(--grey-s3   );
+}
