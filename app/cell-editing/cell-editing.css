@@ -5,6 +5,7 @@
 [data-contenteditable="true"]:focus {
     border: solid 1px var(--blue);
     background: var(--blue-s2);
+    outline: none;
 }
 
 .grid {
@@ -22,5 +23,5 @@
 }
 
 [aria-readonly="true"] {
-    background: var(--grey-s3   );
+    background: var(--grey-s3);
 }
