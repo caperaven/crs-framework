@@ -135,16 +135,16 @@ ul {
     border-radius: var(--radius);
 }
 
-.chevron {
-    font-family: crsfrw;
-    font-size: 1.2rem;
-    transition: transform 0.2s ease-in-out;
-    cursor: pointer;
-    margin-right: var(--padding);
-}
-
 li[aria-expanded="true"] > div > .chevron {
     transform: rotate(90deg);
+}
+
+li[aria-busy="true"] > div > .chevron {
+    animation: spin 0.5s linear infinite;
+}
+
+li[aria-busy="true"] > div > .chevron:before {
+    content: "loader";
 }
 
 .value {
@@ -158,4 +158,25 @@ li[aria-expanded="true"] > div > .chevron {
 
 .value:after {
     content: "]"
+}
+
+.chevron {
+    font-family: crsfrw;
+    font-size: 1.2rem;
+    transition: transform 0.2s ease-in-out;
+    cursor: pointer;
+    margin-right: var(--padding);
+}
+
+.chevron.right:before {
+    content: "chevron-right";
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }

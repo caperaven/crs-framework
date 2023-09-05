@@ -258,6 +258,7 @@ export default class EntityDetails extends HTMLElement {
         }
 
         listItem.setAttribute("aria-expanded", "true");
+        listItem.setAttribute("aria-busy", "true");
 
         const entityType = listItem.dataset.entityType;
         const entityIds = this.#entityData.find(item => item.entityType === entityType).entityIds;
@@ -283,6 +284,13 @@ export default class EntityDetails extends HTMLElement {
      * @returns {Promise<void>}
      */
     async addEntities(data) {
+        const parent = this.shadowRoot.querySelector(".container");
+        await crs.call("no_content", "hide", { parent: parent });
+
+        if (data == null || data.length === 0) {
+            return await crs.call("no_content", "show", { parent: parent })
+        }
+
         data = sort(data, this.#sortDirection, "entityType");
         await this.#drawEntities(data);
     }
@@ -294,8 +302,13 @@ export default class EntityDetails extends HTMLElement {
      * @returns {Promise<void>}
      */
     async addEntityItems(data, entityType) {
+        const li = this.shadowRoot.querySelector(`[data-entity-type="${entityType}"]`);
+        li.removeAttribute("aria-busy");
+
+        if (data == null || data.length === 0) return;
+
         data = sort(data, this.#sortDirection, "code");
-        const target = this.shadowRoot.querySelector(`[data-entity-type="${entityType}"] ul`);
+        const target = li.querySelector("ul");
         await this.#drawEntityItems(target, data, entityType);
     }
 
@@ -369,30 +382,5 @@ function setStatus(parentElement, status, developmentStatuses) {
 }
 
 customElements.define("entity-details", EntityDetails);
-
-
-// const entities = [
-//     {
-//         entityType: "RegularAssetTypeTaskSpares", // split this
-//         entityIds: [1, 2, 3] // use this length as count (send this as part of event)
-//     }
-// ]
-//
-// const entityItemDataStructure = [ // -> dbl click send "parent: entityType" and "my: id"
-//     {
-//         id: 1,
-//         code: "ABC",
-//         description: "Hello world",
-//         status: "IsActive"
-//     }
-// ]
-// const devStatusLookupTable = {
-//     "IsActive": {
-//         "icon": "bla",
-//         "color": "red"
-//     }
-// }
-// empty state
-// at expand use busy thing
 
 
