@@ -54,7 +54,7 @@ const def = {
         },
         collectionField: {
             dataType: "string",
-            default: "#values",
+            default: "#{values}",
             display_path: "title",
             value_path: "value"
         }

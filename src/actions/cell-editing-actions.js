@@ -18,6 +18,12 @@ export class CellEditingActions {
         const name = await crs.process.getValue(step.args.name, context, process, item);
         await crs.cellEditing.unregister(name);
     }
+
+    static async get_field_definition(step, context, process, item) {
+        const name = await crs.process.getValue(step.args.name, context, process, item);
+        const fieldName = await crs.process.getValue(step.args.field_name, context, process, item);
+        return await crs.cellEditing.getFieldDefinition(name, fieldName);
+    }
 }
 
 crs.intent.cell_editing = CellEditingActions;

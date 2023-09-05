@@ -1,13 +1,3 @@
-[data-contenteditable="true"] {
-    padding: var(--padding);
-}
-
-[data-contenteditable="true"]:focus {
-    border: solid 1px var(--blue);
-    background: var(--blue-s2);
-    outline: none;
-}
-
 .grid {
     display: grid;
     grid-template-columns: 200px 1fr;

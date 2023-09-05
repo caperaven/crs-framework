@@ -1,15 +1,23 @@
+import {validateCell} from "./cell-validation.js";
+
 class CellEditingManager extends crs.classes.Observable {
     #store = {};
+    #currentCell = null;
     #keyDownHandler = this.#keyDown.bind(this);
+    #clickHandler = this.#click.bind(this);
+    #dblclickHandler = this.#dblclick.bind(this);
 
     constructor() {
         super();
         document.addEventListener("keydown", this.#keyDownHandler, { capture: true, composed: true });
-        document.addEventListener("click", async (event) => {console.log(event)}, { capture: true, composed: true, bubbles: true });
+        document.addEventListener("click", this.#clickHandler, { capture: true, composed: true, bubbles: true });
+        document.addEventListener("dblclick", this.#dblclickHandler, { capture: true, composed: true, bubbles: true });
     }
 
     dispose() {
         document.removeEventListener("keydown", this.#keyDownHandler, { capture: true, composed: true });
+        document.removeEventListener("click", this.#clickHandler, { capture: true, composed: true, bubbles: true });
+        document.removeEventListener("dblclick", this.#dblclickHandler, { capture: true, composed: true, bubbles: true });
 
         crs.binding.utils.disposeProperties(this.#store);
         this.#store = null;
@@ -19,13 +27,35 @@ class CellEditingManager extends crs.classes.Observable {
     async #startEditing(target) {
         target.__oldValue = target.textContent;
         target.setAttribute("contenteditable", "true");
+        this.#currentCell = target;
         setSelectionRange(target);
     }
 
     async #endEditing(target) {
-        delete target.__oldValue;
-        target.removeAttribute("contenteditable");
-        clearSelectionRange();
+        const result = await validateCell(target);
+
+        // if the value is valid then update accordingly.
+        if (result === true) {
+            this.#currentCell = null;
+            delete target.__oldValue;
+            target.removeAttribute("contenteditable");
+            clearSelectionRange();
+            return;
+        }
+
+        target.focus();
+    }
+
+    async #click(event) {
+        if (this.#currentCell != null) {
+            await this.#endEditing(this.#currentCell);
+        }
+    }
+
+    async #dblclick(event) {
+        const target = event.composedPath()[0];
+        if (target.dataset.field == null || target.dataset.contenteditable == null) return;
+        await this.#startEditing(target);
     }
 
     async #keyDown(event) {
@@ -59,10 +89,20 @@ class CellEditingManager extends crs.classes.Observable {
         // when you are tabbing through cells that are on the same shadow root the focusout and focusin events are not fired.
         // since we need to step editing on focus out we need to do it manually.
         if (event.code === "Tab") {
-            await this.#endEditing(target);
+            return await this.#endEditing(target);
         }
     }
 
+    /**
+     * @method register - register a cell or group of cells for editing.
+     * Pass the top most element that contains the cells.
+     * Sometimes that would be a single element or a element with children.
+     * @param name {string} - the name of the cell or group of cells.
+     * @param definition {object} - the definition of the cell or group of cells.
+     * @param element {HTMLElement} - the top most element that contains the cells.
+     * @param model {object} - the model that contains the data for the cells.
+     * @returns {Promise<void>}
+     */
     async register(name, definition, element, model) {
         this.#store[name] = {
             definition,
@@ -73,11 +113,34 @@ class CellEditingManager extends crs.classes.Observable {
         await updateCells(element);
     }
 
+    /**
+     * @method unregister - unregister a cell or group of cells for editing.
+     * @param name {string} - the name of the cell or group of cells.
+     * @returns {Promise<void>}
+     */
     async unregister(name) {
         if (this.#store[name != null]) {
             delete this.#store["definition"];
             delete this.#store["model"];
         }
+    }
+
+    async getDefinition(name) {
+        return this.#store[name]?.definition;
+    }
+
+    async getFieldDefinition(name, fieldName) {
+        const definition = await this.getDefinition(name);
+        return definition?.fields[fieldName];
+    }
+
+    /**
+     * @method getModel - get the model of a cell or group of cells.
+     * @param name {string} - the name of the cell or group of cells.
+     * @returns {Promise<*>}
+     */
+    async getModel(name) {
+        return this.#store[name]?.model;
     }
 }
 
