@@ -17,14 +17,6 @@ export default class DialogViewModel extends crs.classes.BindableElement {
         return true;
     }
 
-    async disconnectedCallback() {
-        for (const key of Object.keys(this.#anchor)) {
-            this.#anchor[key] = null;
-        }
-        this.#anchor = null;
-        await super.disconnectedCallback();
-    }
-
     async show() {
         const instance = this.shadowRoot.querySelector("#dialog-content").content.cloneNode(true);
 
@@ -40,49 +32,20 @@ export default class DialogViewModel extends crs.classes.BindableElement {
         const instance = this.shadowRoot.querySelector("#dialog-content").content.cloneNode(true);
         const position = this.shadowRoot.querySelector("#positionOptions").value;
 
+        const anchor = {
+            left: "top",
+            right: "top",
+            bottom: "left",
+        }
+
         await crs.call("dialog", "show", {
             title: "My Title",
             main: instance,
             target: event.composedPath()[0],
             position: position,
-            anchor: this.#anchor[position],
+            anchor: anchor[position],
             margin: 10,
             parent: "main"
-        });
-    }
-
-    async showParentDialog(event) {
-        const instance = this.shadowRoot.querySelector("#nested-dialog").content.cloneNode(true);
-        const position = this.shadowRoot.querySelector("#positionOption").value;
-        const header = this.shadowRoot.querySelector("#custom-header").content.cloneNode(true);
-
-        await crs.call("dialog", "show", {
-            title: "My Parent Dialog",
-            main: instance,
-            target: event.composedPath()[0],
-            position: position,
-            anchor: this.#anchor[position],
-            margin: 10,
-            parent: "main",
-            header: header,
-            callback: async (args) => {
-                if (args.action === "openDialog") {
-                    await this.#showChildDialog();
-                }
-            }
-        });
-    }
-
-    async #showChildDialog() {
-        const instance = this.shadowRoot.querySelector("#child-dialog").content.cloneNode(true);
-        const header = this.shadowRoot.querySelector("#custom-header").content.cloneNode(true);
-
-        await crs.call("dialog", "show", {
-            title: "My Child Dialog",
-            main: instance,
-            parent: "main",
-            header: header,
-            close: false
         });
     }
 
@@ -119,13 +82,18 @@ export default class DialogViewModel extends crs.classes.BindableElement {
             parent: "main"
         }
 
-        let position = this.shadowRoot.querySelector("#position").value;
+        let position = this.element.querySelector("#position").value;
+        const anchor = {
+            left: "top",
+            right: "top",
+            bottom: "left",
+        }
 
         if (position != "none") {
             Object.assign(args, {
                 target: target,
                 position: position,
-                anchor: this.#anchor[position],
+                anchor: anchor[position],
                 margin: 10
             })
         }

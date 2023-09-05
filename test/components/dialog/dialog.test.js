@@ -6,8 +6,8 @@ describe("Dialog", () => {
     let instance;
 
     beforeAll(async () => {
-        await init();
-        await import("./../../../components/dialog/dialog-actions.js");
+       await init();
+       await import("./../../../components/dialog/dialog-actions.js");
     });
 
     beforeEach(async () => {
@@ -21,33 +21,29 @@ describe("Dialog", () => {
 
     it("should show a dialog with a custom text title and text content", async () => {
         await instance.show(null, "my content", null, {title: "My Title"});
-        await timeOutAssert(instance.shadowRoot, "#headerText", "My Title", 400);
+        assertEquals(instance.shadowRoot.querySelector("#headerText").textContent, "My Title");
     });
 
     it("should be able to show elements in the body", async () => {
         const bodyDiv = document.createElement("div");
         bodyDiv.textContent = "my content";
         await instance.show(null, bodyDiv, null, null);
-        await timeOutAssert(instance, '[slot="body"]', "my content", 400);
+        assertEquals(instance.querySelector('[slot="body"]').textContent, "my content");
     });
 
     it("should be able to show elements in the header", async () => {
         const headerDiv = document.createElement("div");
         headerDiv.textContent = "my header";
         await instance.show(headerDiv, null, null, null);
-        await timeOutAssert(instance.shadowRoot, "header", "my header", 400);
+        assertEquals(instance.shadowRoot.querySelector("header").textContent, "my header");
     });
 
     it("should be able to accept strings for the close button and resize button", async () => {
         await instance.show(null, null, null, {closeText: "Close", resizeText: "Resize"});
-        await new Promise((resolve) => {
-            setTimeout(() => {
-                assertEquals(instance.shadowRoot.querySelector("#btnClose").getAttribute("aria-label"), "Close");
-                assertEquals(instance.shadowRoot.querySelector("#btnResize").getAttribute("aria-label"), "Resize");
-                resolve();
-            },400);
-        });
+        assertEquals(instance.shadowRoot.querySelector("#btnClose").getAttribute("aria-label"), "Close");
+        assertEquals(instance.shadowRoot.querySelector("#btnResize").getAttribute("aria-label"), "Resize");
     });
+
     // I want to be able to write tests like this the test framework is too restrictive
     // Connected callback should automatically be called.
     // it("should be able to close on clicking outside the dialog", async () => {
@@ -58,12 +54,3 @@ describe("Dialog", () => {
     //     assertEquals(globalThis.dialog == null, true);
     // });
 });
-
-function timeOutAssert(instance, selector, value, timeout) {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            assertEquals(instance.querySelector(selector).textContent, value);
-            resolve();
-        }, timeout);
-    });
-}

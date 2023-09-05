@@ -26,6 +26,11 @@
             "view": "overflow-bar"
         },
         {
+            "title": "Entity-details",
+            "hash": "#entity-details",
+            "view": "entity-details"
+        },
+        {
             "title": "Form",
             "view": "form"
         },

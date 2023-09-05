@@ -1,10 +1,53 @@
+<style>
+    #container {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+    }
+
+    check-box {
+        padding: var(--padding) 0rem;
+    }
+
+    check-box:not(check-box[data-master="true"]) {
+        margin-left: 2.25rem;
+    }
+
+    .tiered li {
+        margin-left: 2.25rem;
+        height: 1rem;
+    }
+
+    .tiered li::before {
+        font-size: 1.5rem;
+        height: 1.5rem;
+        width: 1.5rem;
+    }
+</style>
+
 <h2>${title}</h2>
-<button click.call="getAll">Get all</button>
 
-<check-list ref="checklist">
-    <li role="option" data-value="item1" aria-selected="true">&{checklist.item1}</li>
-    <li role="option" data-value="item2">&{checklist.item2}</li>
-    <li role="option" data-value="item3">&{checklist.item3}</li>
-    <li role="option" data-value="item4" aria-selected="true">&{checklist.item4}</li>
-</check-list>
+<div id="container">
+    <span class="example">
+        <button click.call="getAll">Get all</button>
 
+        <check-list ref="checklist">
+            <li role="option" data-value="item1" aria-selected="true">&{checklist.item1}</li>
+            <li role="option" data-value="item2">&{checklist.item2}</li>
+            <li role="option" data-value="item3">&{checklist.item3}</li>
+            <li role="option" data-value="item4" aria-selected="true">&{checklist.item4}</li>
+        </check-list>
+    </span>
+
+    <span class="example">
+        <check-list ref="checklist" class="tiered">
+            <div slot="header">
+                <check-box data-master="true" aria-label="Parent"></check-box>
+            </div>
+            <li role="option" data-value="item1" aria-selected="true">&{checklist.item1}</li>
+            <li role="option" data-value="item2">&{checklist.item2}</li>
+            <li role="option" data-value="item3">&{checklist.item3}</li>
+            <li role="option" data-value="item4">&{checklist.item4}</li>
+        </check-list>
+    </span>
+</div>
