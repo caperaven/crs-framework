@@ -1,0 +1,24 @@
+#container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+check-box {
+    padding: var(--padding) 0rem;
+}
+
+check-box:not(check-box[data-master="true"]) {
+    margin-left: 2.25rem;
+}
+
+.tiered li {
+    margin-left: 2.25rem;
+    height: 1rem;
+}
+
+.tiered li::before {
+    font-size: 1.5rem;
+    height: 1.5rem;
+    width: 1.5rem;
+}

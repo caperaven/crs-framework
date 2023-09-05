@@ -82,7 +82,7 @@ export default class DialogViewModel extends crs.classes.BindableElement {
             parent: "main"
         }
 
-        let position = this.element.querySelector("#position").value;
+        let position = this.shadowRoot.querySelector("#position").value;
         const anchor = {
             left: "top",
             right: "top",
