@@ -98,11 +98,22 @@ class CellEditingManager extends crs.classes.Observable {
             await this.#endEditing(target);
         }
 
+        // if we are editing a numeric input then only allow numeric keys.
         if (target.dataset.datatype === "number") {
             if (/Digit[0-9]|Numpad[0-9]|NumpadDecimal|Comma|Period|Backspace|ArrowRight|ArrowLeft|Tab/.test(event.code) == false) {
                 event.preventDefault();
                 event.stopPropagation();
             }
+            return;
+        }
+
+        // if we are editing a date input then only allow numeric keys.
+        if (target.dataset.datatype === "date") {
+            if (/Digit[0-9]|Numpad[0-9]|Backspace|ArrowRight|ArrowLeft|Tab|Slash|Minus/.test(event.code) == false) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            return;
         }
     }
 

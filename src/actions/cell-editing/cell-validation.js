@@ -14,7 +14,7 @@ export async function validateCell(cellElement) {
     // validate numbers
     if (fieldDefinition.dataType === "number") {
         if (isNaN(value)) {
-            cellElement.setAttribute("aria-errormessage", crs.binding.translations.get(defaultErrors["notANumber"]));
+            cellElement.setAttribute("aria-errormessage", await crs.binding.translations.get(defaultErrors["notANumber"]));
             return false;
         }
     }
@@ -22,7 +22,7 @@ export async function validateCell(cellElement) {
     // validate dates
     if (fieldDefinition.dataType === "boolean") {
         if (value != "true" && value != "false") {
-            cellElement.setAttribute("aria-errormessage", crs.binding.translations.get(defaultErrors["notABoolean"]));
+            cellElement.setAttribute("aria-errormessage", await crs.binding.translations.get(defaultErrors["notABoolean"]));
             return false;
         }
     }
@@ -31,7 +31,7 @@ export async function validateCell(cellElement) {
     if (fieldDefinition.dataType === "date") {
         const date = new Date(value);
         if (isNaN(date.getTime())) {
-            cellElement.setAttribute("aria-errormessage", crs.binding.translations.get(defaultErrors["notADate"]));
+            cellElement.setAttribute("aria-errormessage", await crs.binding.translations.get(defaultErrors["notADate"]));
             return false;
         }
     }
