@@ -2,10 +2,39 @@ export async function validateCell(cellElement) {
     const fieldName = cellElement.dataset.field;
     const definitionElement = cellElement.closest("[data-def]");
     const definition = definitionElement.dataset.def;
+
     const fieldDefinition = await crs.call("cell_editing", "get_field_definition", {
         name: definition,
         field_name: fieldName
     })
+
+    const value = Number(cellElement.textContent);
+    cellElement.removeAttribute("aria-errormessage");
+
+    // validate numbers
+    if (fieldDefinition.dataType === "number") {
+        if (isNaN(value)) {
+            cellElement.setAttribute("aria-errormessage", crs.binding.translations.get(defaultErrors["notANumber"]));
+            return false;
+        }
+    }
+
+    // validate dates
+    if (fieldDefinition.dataType === "boolean") {
+        if (value != "true" && value != "false") {
+            cellElement.setAttribute("aria-errormessage", crs.binding.translations.get(defaultErrors["notABoolean"]));
+            return false;
+        }
+    }
+
+    // validate dates
+    if (fieldDefinition.dataType === "date") {
+        const date = new Date(value);
+        if (isNaN(date.getTime())) {
+            cellElement.setAttribute("aria-errormessage", crs.binding.translations.get(defaultErrors["notADate"]));
+            return false;
+        }
+    }
 
     const result = await performDefaultValidations(fieldDefinition, cellElement);
 
@@ -14,7 +43,6 @@ export async function validateCell(cellElement) {
         return false;
     }
 
-    cellElement.removeAttribute("aria-errormessage");
     return true;
 }
 
@@ -23,6 +51,9 @@ export async function validateCell(cellElement) {
  * @type {{required: string}}
  */
 const defaultErrors = {
+    notANumber: "validation.notANumber",
+    notADate: "validation.notADate",
+    notABoolean: "validation.notABoolean",
     required: "validation.required"
 }
 
