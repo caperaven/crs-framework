@@ -10,14 +10,14 @@ class CellEditingManager extends crs.classes.Observable {
     constructor() {
         super();
         document.addEventListener("keydown", this.#keyDownHandler, { capture: true, composed: true });
-        document.addEventListener("click", this.#clickHandler, { capture: true, composed: true, bubbles: true });
-        document.addEventListener("dblclick", this.#dblclickHandler, { capture: true, composed: true, bubbles: true });
+        document.addEventListener("click", this.#clickHandler, { capture: true, composed: true });
+        document.addEventListener("dblclick", this.#dblclickHandler, { capture: true, composed: true });
     }
 
     dispose() {
         document.removeEventListener("keydown", this.#keyDownHandler, { capture: true, composed: true });
-        document.removeEventListener("click", this.#clickHandler, { capture: true, composed: true, bubbles: true });
-        document.removeEventListener("dblclick", this.#dblclickHandler, { capture: true, composed: true, bubbles: true });
+        document.removeEventListener("click", this.#clickHandler, { capture: true, composed: true });
+        document.removeEventListener("dblclick", this.#dblclickHandler, { capture: true, composed: true });
 
         crs.binding.utils.disposeProperties(this.#store);
         this.#store = null;
@@ -25,6 +25,10 @@ class CellEditingManager extends crs.classes.Observable {
     }
 
     async #startEditing(target) {
+        if (target.dataset.datatype == null) {
+            await setElementDataType(target);
+        }
+
         target.__oldValue = target.textContent;
         target.setAttribute("contenteditable", "true");
         this.#currentCell = target;
@@ -40,10 +44,12 @@ class CellEditingManager extends crs.classes.Observable {
             delete target.__oldValue;
             target.removeAttribute("contenteditable");
             clearSelectionRange();
-            return;
+            await setValueOnModel(target);
+            return true;
         }
 
         target.focus();
+        return false;
     }
 
     async #click(event) {
@@ -89,7 +95,14 @@ class CellEditingManager extends crs.classes.Observable {
         // when you are tabbing through cells that are on the same shadow root the focusout and focusin events are not fired.
         // since we need to step editing on focus out we need to do it manually.
         if (event.code === "Tab") {
-            return await this.#endEditing(target);
+            await this.#endEditing(target);
+        }
+
+        if (target.dataset.datatype === "number") {
+            if (/Digit[0-9]|Numpad[0-9]|NumpadDecimal|Comma|Period|Backspace|ArrowRight|ArrowLeft|Tab/.test(event.code) == false) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
         }
     }
 
@@ -119,9 +132,12 @@ class CellEditingManager extends crs.classes.Observable {
      * @returns {Promise<void>}
      */
     async unregister(name) {
-        if (this.#store[name != null]) {
-            delete this.#store["definition"];
-            delete this.#store["model"];
+        const storeItem = this.#store[name];
+
+        if (storeItem != null) {
+            delete storeItem["definition"];
+            delete storeItem["model"];
+            delete storeItem["callback"];
         }
     }
 
@@ -173,6 +189,51 @@ function setSelectionRange(target) {
     const selection = window.getSelection();
     selection.removeAllRanges();
     selection.addRange(range);
+}
+
+async function setValueOnModel(cellElement) {
+    const fieldName = cellElement.dataset.field;
+    const definitionElement = cellElement.closest("[data-def]");
+    const definition = definitionElement.dataset.def;
+
+    const fieldDefinition = await crs.call("cell_editing", "get_field_definition", {
+        name: definition,
+        field_name: fieldName
+    })
+
+    const model = await crs.call("cell_editing", "get_model", {
+        name: definition
+    });
+
+    let value = cellElement.textContent;
+
+    if (fieldDefinition.dataType === "number") {
+        value = Number(value);
+    }
+
+    if (fieldDefinition.dataType === "boolean") {
+        value = value === "true";
+    }
+
+    if (fieldDefinition.dataType === "date") {
+        value = new Date(value);
+    }
+
+    await crs.binding.utils.setValueOnPath(model, fieldName, value);
+}
+
+async function setElementDataType(cellElement) {
+    const definitionElement = cellElement.closest("[data-def]");
+    const definition = definitionElement.dataset.def;
+    const fieldName = cellElement.dataset.field;
+
+    const fieldDefinition = await crs.call("cell_editing", "get_field_definition", {
+        name: definition,
+        field_name: fieldName
+    })
+
+    const dataType = fieldDefinition.dataType || "string";
+    cellElement.dataset.datatype = dataType;
 }
 
 crs.cellEditing = new CellEditingManager();

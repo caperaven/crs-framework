@@ -24,6 +24,11 @@ export class CellEditingActions {
         const fieldName = await crs.process.getValue(step.args.field_name, context, process, item);
         return await crs.cellEditing.getFieldDefinition(name, fieldName);
     }
+
+    static async get_model(step, context, process, item) {
+        const name = await crs.process.getValue(step.args.name, context, process, item);
+        return await crs.cellEditing.getModel(name);
+    }
 }
 
 crs.intent.cell_editing = CellEditingActions;

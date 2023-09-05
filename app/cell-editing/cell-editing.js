@@ -33,7 +33,7 @@ export default class CellEditingViewModel extends crs.classes.BindableElement {
                     }
                 }
             },
-            model: this.model
+            model: this.#model
         });
 
         await crs.call("cell_editing", "register", {
