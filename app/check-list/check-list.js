@@ -1,4 +1,6 @@
 import AvailableSelectedViewModel from "../available-selected/available-selected.js";
+import "./../../components/check-list/check-list.js";
+import "./../../components/checkbox/checkbox.js";
 
 export default class CheckListViewModel extends crs.classes.BindableElement {
     get html() {
@@ -28,6 +30,13 @@ export default class CheckListViewModel extends crs.classes.BindableElement {
     }
 
     async disconnectedCallback() {
+        const checklists = document.querySelectorAll("check-list");
+        for (const checklist of checklists) {
+            if (checklist.__selectionManager != null) {
+                await crs.call("selection", "disable", {element: checklist});
+            }
+        }
+
         await crs.binding.translations.delete("checklist");
         await super.disconnectedCallback();
     }

@@ -48,6 +48,7 @@ html {
     --input-height: 2rem;
     --input-width: 15rem;
     --radius: 4px;
+    --margin: 0.5rem;
     --padding: 0.5rem;
     --half-padding: 0.25rem;
     --inline-label-length: 10rem;

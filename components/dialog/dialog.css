@@ -6,21 +6,11 @@
     --header-height: 3rem;
     --footer-height: 3.5rem;
     --body-height: 3.5rem;
-    transition: opacity 0.3s ease-in-out;
-}
-
-:host:before {
-    content: "";
-    position: fixed;
+    position: absolute;
     top: 0;
     bottom: 0;
     right: 0;
     left: 0;
-    background: transparent;
-}
-
-:host(.not-modal):before {
-    pointer-events: none;
 }
 
 :host([data-allow-resize="true"]) .popup {
@@ -37,6 +27,7 @@
     translate: unset !important;
     height: unset !important;
     width: unset !important;
+    position: absolute !important;
 }
 
 :host([data-allow-resize="false"]) #btnResize {
@@ -45,14 +36,6 @@
 
 :host([data-allow-move="false"]) header:active {
     cursor: unset;
-}
-
-:host(.visible) {
-    opacity: 1;
-}
-
-:host(.hidden) {
-    opacity: 0;
 }
 
 .popup {
@@ -102,7 +85,6 @@ header h2 {
 
 ::slotted([slot="body"]) {
     padding: var(--padding);
-    position: relative;
 }
 
 button.icon {
@@ -124,7 +106,6 @@ footer button {
 
 @media screen and (max-width: 480px) {
     .popup{
-        translate: 0 14.0625rem !important;
-        min-width: 100%;
+        min-width: 99%;
     }
 }
