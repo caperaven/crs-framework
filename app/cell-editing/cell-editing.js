@@ -1,6 +1,8 @@
 import "./../../src/actions/cell-editing-actions.js"
 
 export default class CellEditingViewModel extends crs.classes.BindableElement {
+    #getAllowedValuesHandler = this.#getAllowedValues.bind(this);
+
     #model = {
         "value": 10,
         "UDF1": null,
@@ -40,6 +42,39 @@ export default class CellEditingViewModel extends crs.classes.BindableElement {
             name: "grid",
             element: this.shadowRoot.querySelector(".grid"),
             definition: {
+                fields: {
+                    UDF1: {
+                        dataType: "string",
+                        defaultValidations: {
+                            required: {
+                                required: true,
+                                message: "UDF1 is required"
+                            }
+                        }
+                    },
+                    UDF2: {
+                        dataType: "string",
+                        cellType: "select",
+                        callback: this.#getAllowedValuesHandler,
+                        defaultValidations: {
+                            required: {
+                                required: true,
+                                message: "UDF2 is required"
+                            }
+                        }
+                    },
+                    UDF3: {
+                        dataType: "string",
+                        cellType: "lookup",
+                        callback: this.#getAllowedValuesHandler,
+                        defaultValidations: {
+                            required: {
+                                required: true,
+                                message: "UDF3 is required"
+                            }
+                        }
+                    }
+                }
             },
             model: this.#model
         })
@@ -55,5 +90,9 @@ export default class CellEditingViewModel extends crs.classes.BindableElement {
         });
 
         super.disconnectedCallback();
+    }
+
+    async #getAllowedValues(args) {
+
     }
 }

@@ -9,6 +9,17 @@
 }
 
 [data-contenteditable="true"][aria-errormessage] {
-    border: solid 1px var(--red);
     background: var(--red-s3);
+}
+
+[data-contenteditable="true"][aria-errormessage]:focus {
+    border: solid 1px var(--red);
+}
+
+[data-contenteditable="true"][aria-required]:empty {
+    background: var(--orange-s2);
+}
+
+[data-contenteditable="true"][aria-required]:empty:focus {
+    border: solid 1px var(--orange);
 }

@@ -25,10 +25,6 @@ class CellEditingManager extends crs.classes.Observable {
     }
 
     async #startEditing(target) {
-        if (target.dataset.datatype == null) {
-            await setElementDataType(target);
-        }
-
         target.__oldValue = target.textContent;
         target.setAttribute("contenteditable", "true");
         this.#currentCell = target;
@@ -38,17 +34,17 @@ class CellEditingManager extends crs.classes.Observable {
     async #endEditing(target) {
         const result = await validateCell(target);
 
+        this.#currentCell = null;
+        target.removeAttribute("contenteditable");
+        clearSelectionRange();
+
         // if the value is valid then update accordingly.
         if (result === true) {
-            this.#currentCell = null;
             delete target.__oldValue;
-            target.removeAttribute("contenteditable");
-            clearSelectionRange();
             await setValueOnModel(target);
             return true;
         }
 
-        target.focus();
         return false;
     }
 
@@ -180,11 +176,13 @@ async function updateCells(element) {
     // 1. Make all cells tab focusable.
     if (element.matches("[data-contenteditable]")) {
         element.setAttribute("tabindex", "0");
+        await setElementTypes(element);
     }
 
     // 2. Check the children for contenteditable and  make them focusable.
     for (const child of element.querySelectorAll("[data-contenteditable]")) {
         child.setAttribute("tabindex", "0");
+        await setElementTypes(child);
     }
 }
 
@@ -233,7 +231,7 @@ async function setValueOnModel(cellElement) {
     await crs.binding.utils.setValueOnPath(model, fieldName, value);
 }
 
-async function setElementDataType(cellElement) {
+async function setElementTypes(cellElement) {
     const definitionElement = cellElement.closest("[data-def]");
     const definition = definitionElement.dataset.def;
     const fieldName = cellElement.dataset.field;
@@ -245,6 +243,42 @@ async function setElementDataType(cellElement) {
 
     const dataType = fieldDefinition.dataType || "string";
     cellElement.dataset.datatype = dataType;
+
+    if (fieldDefinition.defaultValidations?.required?.required === true) {
+        cellElement.setAttribute("aria-required", "true");
+    }
+
+    if (fieldDefinition.cellType != null) {
+        cellElement.dataset.celltype = fieldDefinition.cellType;
+    }
+}
+
+async function createEditable(cellElement, type) {
+    const field = cellElement.dataset.field;
+
+    const span = document.createElement("span");
+    span.dataset.field = field;
+    span.dataset.contenteditable = "true";
+
+    let icon = "chevron-down";
+
+    switch (type) {
+        case "lookup": {
+            icon = "lookup";
+            break;
+        }
+        // ... add ore options as it may become necessary.
+    }
+
+    const button = document.createElement("button");
+    button.setAttribute("tabindex", "-1");
+    button.setAttribute("aria-label", "Open");
+    button.classList.add("icon");
+    button.textContent = icon;
+
+    delete cellElement.dataset.contenteditable;
+    delete cellElement.dataset.field;
+    cellElement.classList.add("collection");
 }
 
 crs.cellEditing = new CellEditingManager();
