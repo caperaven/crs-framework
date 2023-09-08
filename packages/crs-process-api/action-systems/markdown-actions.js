@@ -1,3 +1,36 @@
-import m,{markdown_to_html as w}from"./../bin/markdown.js";await m();class g{static async perform(t,r,s,i){await this[t.action](t,r,s,i)}static async to_html(t,r,s,i){let a=t.args.markdown;(a.startsWith("$context.")||a.startsWith("$process.")||a.startsWith("$item."))&&(a=await crs.process.getValue(t.args.markdown,r,s,i));const o=await crs.process.getValue(t.args.parameters,r,s,i);if(o!=null||a.indexOf("&{")!=-1){const c=[],e=a.split(`
-`);for(let n=0;n<e.length;n++)e[n].indexOf("$template")==-1&&c.push(await crs.call("string","inflate",{template:e[n],parameters:o}));a=c.join(`
-`)}const l=w(a);return t.args.target!=null&&await crs.process.setValue(t.args.target,l,r,s,i),l}}crs.intent.markdown=g;export{g as MarkdownActions};
+import init, { markdown_to_html } from "./../bin/markdown.js";
+await init();
+class MarkdownActions {
+  static async perform(step, context, process, item) {
+    await this[step.action](step, context, process, item);
+  }
+  static async to_html(step, context, process, item) {
+    let markdown = step.args.markdown;
+    if (markdown.startsWith("$context.") || markdown.startsWith("$process.") || markdown.startsWith("$item.")) {
+      markdown = await crs.process.getValue(step.args.markdown, context, process, item);
+    }
+    const parameters = await crs.process.getValue(step.args.parameters, context, process, item);
+    if (parameters != null || markdown.indexOf("&{") != -1) {
+      const parts = [];
+      const lines = markdown.split("\n");
+      for (let i = 0; i < lines.length; i++) {
+        if (lines[i].indexOf("$template") != -1)
+          continue;
+        parts.push(await crs.call("string", "inflate", {
+          template: lines[i],
+          parameters
+        }));
+      }
+      markdown = parts.join("\n");
+    }
+    const html = markdown_to_html(markdown);
+    if (step.args.target != null) {
+      await crs.process.setValue(step.args.target, html, context, process, item);
+    }
+    return html;
+  }
+}
+crs.intent.markdown = MarkdownActions;
+export {
+  MarkdownActions
+};

@@ -1,1 +1,144 @@
-class u{static async perform(e,t,a,s){await this[e.action]?.(e,t,a,s)}static async get_animation_layer(e,t,a,s){const n=document.querySelector("#animation-layer");if(n!=null)return n;const i=await crs.call("dom","create_element",{parent:document.body,tag_name:"div",id:"animation-layer",dataset:{layer:"animation"},styles:{position:"fixed",inset:0,zIndex:9999999999,background:"transparent",pointerEvents:"none"}},t,a,s);return e?.args?.target!=null&&await crs.process.setValue(e.args.target,i,t,a,s),i}static async clear_animation_layer(e,t,a,s){const n=document.querySelector("#animation-layer");n!=null&&(n.innerHTML="")}static async remove_animation_layer(e,t,a,s){const n=document.querySelector("#animation-layer");n?.parentElement?.removeChild(n)}static async highlight(e,t,a,s){const n=await this.get_animation_layer(),l=(await crs.dom.get_element(e.args.target,t,a,s)).getBoundingClientRect(),r=await crs.process.getValue(e.args.classes,t,a,s),m=await crs.process.getValue(e.args.duration,t,a,s)||0,g=await crs.process.getValue(e.args.template,t,a,s);let c;const o={position:"fixed",left:`${l.left}px`,top:`${l.top}px`,width:`${l.width}px`,height:`${l.height}px`};if(g!=null?(c=g.content.cloneNode(!0).children[0],await crs.call("dom","set_styles",{element:c,styles:o}),r!=null&&c.classList.add(...r),n.appendChild(c)):c=await crs.call("dom","create_element",{parent:n,tag_name:"div",styles:o,classes:r}),m>0){const d=setTimeout(()=>{clearTimeout(d),c?.parentElement?.removeChild(c)},m)}}static async clone_for_movement(e,t,a,s){const n=await crs.dom.get_element(e.args.element,t,a,s),i=await crs.dom.get_element(e.args.parent,t,a,s),l=await crs.process.getValue(e.args.position||{x:0,y:0},t,a,s),r=n.cloneNode(!0),m=Object.keys(e.args.attributes||{}),g=Object.keys(e.args.styles||{}),c=e.args.classes||[];for(let o of m)r.setAttribute(o,await crs.process.getValue(e.args.attributes[o],t,a,s));for(let o of g)r.style[o]=await crs.process.getValue(e.args.styles[o],t,a,s);for(let o of c)r.classList.add(o);return i!=null&&(i.appendChild(r),r.style.position="absolute",r.style.transform=`translate(${l.x}px, ${l.y}px)`),r}static async enable_resize(e,t,a,s){const n=await crs.dom.get_element(e.args.element,t,a,s),i=await crs.process.getValue(e.args.resize_query,t,a,s),l=await crs.process.getValue(e.args.options,t,a,s),m=await import(import.meta.url.replace("dom-interactive-actions.js","managers/resize-element-manager.js"));new m.ResizeElementManager(n,i,l)}static async disable_resize(e,t,a,s){(await crs.dom.get_element(e.args.element,t,a,s)).__resizeManager?.dispose()}static async enable_dragdrop(e,t,a,s){const n=await crs.process.getValue(e.args.options,t,a,s),i=await crs.dom.get_element(e.args.element,t,a,s),r=await import(import.meta.url.replace("dom-interactive-actions.js","managers/dragdrop-manager.js"));new r.DragDropManager(i,n)}static async disable_dragdrop(e,t,a,s){const n=await crs.dom.get_element(e.args.element,t,a,s);n.__dragDropManager?.dispose(),delete n.__dragDropManager}static async enable_move(e,t,a,s){const n=await crs.process.getValue(e.args.move_query,t,a,s),i=await crs.dom.get_element(e.args.element,t,a,s),r=await import(import.meta.url.replace("dom-interactive-actions.js","managers/move-manager.js"));new r.MoveManager(i,n)}static async disable_move(e,t,a,s){const n=await crs.dom.get_element(e.args.element,t,a,s);n.__moveManager?.dispose(),delete n.__moveManager}}crs.intent.dom_interactive=u;export{u as DomInteractiveActions};
+class DomInteractiveActions {
+  static async perform(step, context, process, item) {
+    await this[step.action]?.(step, context, process, item);
+  }
+  static async get_animation_layer(step, context, process, item) {
+    const layer = document.querySelector("#animation-layer");
+    if (layer != null) {
+      return layer;
+    }
+    const element = await crs.call("dom", "create_element", {
+      parent: document.body,
+      tag_name: "div",
+      id: "animation-layer",
+      dataset: {
+        layer: "animation"
+      },
+      styles: {
+        position: "fixed",
+        inset: 0,
+        zIndex: 9999999999,
+        background: "transparent",
+        pointerEvents: "none"
+      }
+    }, context, process, item);
+    if (step?.args?.target != null) {
+      await crs.process.setValue(step.args.target, element, context, process, item);
+    }
+    return element;
+  }
+  static async clear_animation_layer(step, context, process, item) {
+    const element = document.querySelector("#animation-layer");
+    if (element != null) {
+      element.innerHTML = "";
+    }
+  }
+  static async remove_animation_layer(step, context, process, item) {
+    const element = document.querySelector("#animation-layer");
+    element?.parentElement?.removeChild(element);
+  }
+  static async highlight(step, context, process, item) {
+    const animationLayer = await this.get_animation_layer();
+    const target = await crs.dom.get_element(step.args.target, context, process, item);
+    const bounds = target.getBoundingClientRect();
+    const classes = await crs.process.getValue(step.args.classes, context, process, item);
+    const duration = await crs.process.getValue(step.args.duration, context, process, item) || 0;
+    const template = await crs.process.getValue(step.args.template, context, process, item);
+    let highlight;
+    const styles = {
+      position: "fixed",
+      left: `${bounds.left}px`,
+      top: `${bounds.top}px`,
+      width: `${bounds.width}px`,
+      height: `${bounds.height}px`
+    };
+    if (template != null) {
+      highlight = template.content.cloneNode(true).children[0];
+      await crs.call("dom", "set_styles", {
+        element: highlight,
+        styles
+      });
+      if (classes != null) {
+        highlight.classList.add(...classes);
+      }
+      animationLayer.appendChild(highlight);
+    } else {
+      highlight = await crs.call("dom", "create_element", {
+        parent: animationLayer,
+        tag_name: "div",
+        styles,
+        classes
+      });
+    }
+    if (duration > 0) {
+      const timeout = setTimeout(() => {
+        clearTimeout(timeout);
+        highlight?.parentElement?.removeChild(highlight);
+      }, duration);
+    }
+  }
+  static async clone_for_movement(step, context, process, item) {
+    const element = await crs.dom.get_element(step.args.element, context, process, item);
+    const parent = await crs.dom.get_element(step.args.parent, context, process, item);
+    const position = await crs.process.getValue(step.args.position || { x: 0, y: 0 }, context, process, item);
+    const result = element.cloneNode(true);
+    const attributes = Object.keys(step.args.attributes || {});
+    const styles = Object.keys(step.args.styles || {});
+    const classes = step.args.classes || [];
+    for (let attr of attributes) {
+      result.setAttribute(attr, await crs.process.getValue(step.args.attributes[attr], context, process, item));
+    }
+    for (let style of styles) {
+      result.style[style] = await crs.process.getValue(step.args.styles[style], context, process, item);
+    }
+    for (let cls of classes) {
+      result.classList.add(cls);
+    }
+    if (parent != null) {
+      parent.appendChild(result);
+      result.style.position = "absolute";
+      result.style.transform = `translate(${position.x}px, ${position.y}px)`;
+    }
+    return result;
+  }
+  static async enable_resize(step, context, process, item) {
+    const element = await crs.dom.get_element(step.args.element, context, process, item);
+    const resizeQuery = await crs.process.getValue(step.args.resize_query, context, process, item);
+    const options = await crs.process.getValue(step.args.options, context, process, item);
+    const file = import.meta.url.replace("dom-interactive-actions.js", "managers/resize-element-manager.js");
+    const module = await import(file);
+    new module.ResizeElementManager(element, resizeQuery, options);
+  }
+  static async disable_resize(step, context, process, item) {
+    const element = await crs.dom.get_element(step.args.element, context, process, item);
+    element.__resizeManager?.dispose();
+  }
+  static async enable_dragdrop(step, context, process, item) {
+    const options = await crs.process.getValue(step.args.options, context, process, item);
+    const element = await crs.dom.get_element(step.args.element, context, process, item);
+    const file = import.meta.url.replace("dom-interactive-actions.js", "managers/dragdrop-manager.js");
+    const module = await import(file);
+    new module.DragDropManager(element, options);
+  }
+  static async disable_dragdrop(step, context, process, item) {
+    const element = await crs.dom.get_element(step.args.element, context, process, item);
+    element.__dragDropManager?.dispose();
+    delete element.__dragDropManager;
+  }
+  static async enable_move(step, context, process, item) {
+    const moveQuery = await crs.process.getValue(step.args.move_query, context, process, item);
+    const element = await crs.dom.get_element(step.args.element, context, process, item);
+    const file = import.meta.url.replace("dom-interactive-actions.js", "managers/move-manager.js");
+    const module = await import(file);
+    new module.MoveManager(element, moveQuery);
+  }
+  static async disable_move(step, context, process, item) {
+    const element = await crs.dom.get_element(step.args.element, context, process, item);
+    element.__moveManager?.dispose();
+    delete element.__moveManager;
+  }
+}
+crs.intent.dom_interactive = DomInteractiveActions;
+export {
+  DomInteractiveActions
+};

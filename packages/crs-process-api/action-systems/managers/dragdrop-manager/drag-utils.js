@@ -1,1 +1,18 @@
-function c(a,r){const t=r.drag?.query||"[draggable='true']",n=a.composedPath(),e=n[0];return e.matches(t)?r.drag.cpIndex!=null?n[r.drag.cpIndex]:e:e.parentElement?.matches(t)?e.parentElement:null}export{c as getDraggable};
+function getDraggable(event, options) {
+  const dragQuery = options.drag?.query || "[draggable='true']";
+  const cp = event.composedPath();
+  const target = cp[0];
+  if (target.matches(dragQuery)) {
+    if (options.drag.cpIndex != null) {
+      return cp[options.drag.cpIndex];
+    }
+    return target;
+  }
+  if (target.parentElement?.matches(dragQuery)) {
+    return target.parentElement;
+  }
+  return null;
+}
+export {
+  getDraggable
+};

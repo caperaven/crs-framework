@@ -1,1 +1,228 @@
-import"./action-actions.js";class w{static async perform(e,t,a,s){await this[e.action]?.(e,t,a,s)}static async set_attribute(e,t,a,s){(await crs.dom.get_element(e.args.element,t,a,s)).setAttribute(e.args.attr,await crs.process.getValue(e.args.value,t,a,s))}static async set_attributes(e,t,a,s){const l=await crs.dom.get_element(e.args.element,t,a,s);for(let r of Object.keys(e.args.attributes))l.setAttribute(r,await crs.process.getValue(e.args.attributes[r],t,a,s))}static async get_attribute(e,t,a,s){const r=(await crs.dom.get_element(e.args.element,t,a,s))?.getAttribute(e.args.attr);return e.args.target!=null&&await crs.process.setValue(e.args.target,r,t,a,s),r}static async add_class(e,t,a,s){const l=await crs.dom.get_element(e.args.element,t,a,s),r=await crs.process.getValue(e.args.value,t,a,s);let n=Array.isArray(r)==!0?r:[r];l.classList.add(...n)}static async remove_class(e,t,a,s){const l=await crs.dom.get_element(e.args.element,t,a,s),r=await crs.process.getValue(e.args.value,t,a,s);let n=Array.isArray(r)==!0?r:[r];l.classList.remove(...n)}static async set_style(e,t,a,s){const l=await crs.dom.get_element(e.args.element,t,a,s);l.style[e.args.style]=await crs.process.getValue(e.args.value,t,a,s)}static async set_styles(e,t,a,s){const l=await crs.dom.get_element(e.args.element,t,a,s);for(let r of Object.keys(e.args.styles))l.style[r]=await crs.process.getValue(e.args.styles[r],t,a,s)}static async get_style(e,t,a,s){const r=(await crs.dom.get_element(e.args.element,t,a,s))?.style[e.args.style];return e.args.target!=null&&await crs.process.setValue(e.args.target,r,t,a,s),r}static async set_text(e,t,a,s){const l=await crs.dom.get_element(e.args.element,t,a,s);l.textContent=await crs.process.getValue(e.args.value,t,a,s)}static async get_text(e,t,a,s){const r=(await crs.dom.get_element(e.args.element,t,a,s)).textContent;return e.args.target!=null&&await crs.process.setValue(e.args.target,r,t,a,s),r}static async get_element(e,t,a,s){if(e==null)return null;if(e instanceof Element||e instanceof DocumentFragment||e._dataId!=null)return e;if(typeof e=="string")return document.querySelector(e);let l=await crs.process.getValue(e.args.element,t,a,s);return typeof l=="string"&&(l=document.querySelector(l)),e.args.target!=null&&await crs.process.setValue(e.args.target,l,t,a,s),l}static async create_element(e,t,a,s){const l=await crs.dom.get_element(e.args.parent,t,a,s),r=document.createElement(e.args.tag_name||"div"),n=Object.keys(e.args.attributes||{}),g=Object.keys(e.args.styles||{}),o=e.args.classes||[],d=Object.keys(e.args.dataset||{}),y=Object.keys(e.args.variables||{}),u=await crs.process.getValue(e.args.id,t,a,s);u!=null&&(this.id=u);for(let c of n)r.setAttribute(c,await crs.process.getValue(e.args.attributes[c],t,a,s));for(let c of g)r.style[c]=await crs.process.getValue(e.args.styles[c],t,a,s);for(let c of o)r.classList.add(c);for(let c of d)r.dataset[c]=await crs.process.getValue(e.args.dataset[c],t,a,s);for(let c of y){const f=await crs.process.getValue(e.args.variables[c],t,a,s);r.style.setProperty(c,f)}if(e.args.text_content!=null&&(r.textContent=await crs.process.getValue(e.args.text_content,t,a,s)),e.args.id!=null&&(r.id=e.args.id),e.args.children!=null)for(let c of e.args.children)c.parent=r,await this.create_element({args:c},t,a,s);return l?.content!=null?l.content.appendChild(r):l?.appendChild(r),e.args.target!=null&&await crs.process.setValue(e.args.target,r,t,a,s),r}static async remove_element(e,t,a,s){const l=await crs.dom.get_element(e.args.element,t,a,s);l?.parentElement?.removeChild(l),await crsbinding.providerManager.releaseElement(l)}static async clear_element(e,t,a,s){const l=await crs.dom.get_element(e.args.element,t,a,s);if(l!=null)for(await crsbinding.observation.releaseChildBinding(l);l.firstElementChild!=null;)l.removeChild(l.firstElementChild)}static async move_element(e,t,a,s){const l=await crs.dom.get_element(e.args.element,t,a,s),r=await crs.dom.get_element(e.args.target,t,a,s);await m(l,r,e.args.position)}static async move_element_down(e,t,a,s){const l=await crs.dom.get_element(e.args.element,t,a,s),r=l.nextElementSibling;r!=null&&await m(l,r,"after")}static async move_element_up(e,t,a,s){const l=await crs.dom.get_element(e.args.element,t,a,s),r=l.previousElementSibling;r!=null&&await m(l,r,"before")}static async set_css_variable(e,t,a,s){const l=await crs.dom.get_element(e.args.element),r=await crs.process.getValue(e.args.variable,t,a,s),n=await crs.process.getValue(e.args.value,t,a,s);l.style.setProperty(r,n)}static async get_css_variable(e,t,a,s){const l=await crs.dom.get_element(e.args.element),r=await crs.process.getValue(e.args.variable,t,a,s),n=getComputedStyle(l).getPropertyValue(r);return e.args.target!=null&&await crs.process.setValue(e.args.target,n,t,a,s),n}static async set_css_variables(e,t,a,s){const l=await crs.dom.get_element(e.args.element),r=await crs.process.getValue(e.args.variables,t,a,s);for(let n of Object.keys(r)){const g=r[n];l.style.setProperty(n,g)}}static async get_css_variables(e,t,a,s){const l=await crs.dom.get_element(e.args.element),r=await crs.process.getValue(e.args.variables,t,a,s),n=[];for(let g=0;g<r.length;g++){const o=getComputedStyle(l).getPropertyValue(r[g]);n.push(o)}return n}}async function m(i,e,t){if(i==null||e==null)return console.error("both element and parent must exist to move the element");if(i.parentElement.removeChild(i),t==null)return e.appendChild(i);if(t=="before")return e.parentElement.insertBefore(i,e);if(e.nextElementSibling==null)return e.parentElement.appendChild(i);e.parentElement.insertBefore(i,e.nextElementSibling)}crs.intent.dom=w;export{w as DomActions};
+import { callFunctionOnPath } from "./action-actions.js";
+class DomActions {
+  static async perform(step, context, process, item) {
+    await this[step.action]?.(step, context, process, item);
+  }
+  static async set_attribute(step, context, process, item) {
+    const element = await crs.dom.get_element(step.args.element, context, process, item);
+    element.setAttribute(step.args.attr, await crs.process.getValue(step.args.value, context, process, item));
+  }
+  static async set_attributes(step, context, process, item) {
+    const element = await crs.dom.get_element(step.args.element, context, process, item);
+    for (let attr of Object.keys(step.args.attributes)) {
+      element.setAttribute(attr, await crs.process.getValue(step.args.attributes[attr], context, process, item));
+    }
+  }
+  static async get_attribute(step, context, process, item) {
+    const element = await crs.dom.get_element(step.args.element, context, process, item);
+    const value = element?.getAttribute(step.args.attr);
+    if (step.args.target != null) {
+      await crs.process.setValue(step.args.target, value, context, process, item);
+    }
+    return value;
+  }
+  static async add_class(step, context, process, item) {
+    const element = await crs.dom.get_element(step.args.element, context, process, item);
+    const cls = await crs.process.getValue(step.args.value, context, process, item);
+    let collection = Array.isArray(cls) == true ? cls : [cls];
+    element.classList.add(...collection);
+  }
+  static async remove_class(step, context, process, item) {
+    const element = await crs.dom.get_element(step.args.element, context, process, item);
+    const cls = await crs.process.getValue(step.args.value, context, process, item);
+    let collection = Array.isArray(cls) == true ? cls : [cls];
+    element.classList.remove(...collection);
+  }
+  static async set_style(step, context, process, item) {
+    const element = await crs.dom.get_element(step.args.element, context, process, item);
+    element.style[step.args.style] = await crs.process.getValue(step.args.value, context, process, item);
+  }
+  static async set_styles(step, context, process, item) {
+    const element = await crs.dom.get_element(step.args.element, context, process, item);
+    for (let style of Object.keys(step.args.styles)) {
+      element.style[style] = await crs.process.getValue(step.args.styles[style], context, process, item);
+    }
+  }
+  static async get_style(step, context, process, item) {
+    const element = await crs.dom.get_element(step.args.element, context, process, item);
+    const value = element?.style[step.args.style];
+    if (step.args.target != null) {
+      await crs.process.setValue(step.args.target, value, context, process, item);
+    }
+    return value;
+  }
+  static async set_text(step, context, process, item) {
+    const element = await crs.dom.get_element(step.args.element, context, process, item);
+    element.textContent = await crs.process.getValue(step.args.value, context, process, item);
+  }
+  static async get_text(step, context, process, item) {
+    const element = await crs.dom.get_element(step.args.element, context, process, item);
+    const value = element.textContent;
+    if (step.args.target != null) {
+      await crs.process.setValue(step.args.target, value, context, process, item);
+    }
+    return value;
+  }
+  static async get_element(step, context, process, item) {
+    if (step == null)
+      return null;
+    if (step instanceof Element) {
+      return step;
+    }
+    if (step instanceof DocumentFragment) {
+      return step;
+    }
+    if (step._dataId != null) {
+      return step;
+    }
+    if (typeof step == "string") {
+      return document.querySelector(step);
+    }
+    let result = await crs.process.getValue(step.args.element, context, process, item);
+    if (typeof result == "string") {
+      result = document.querySelector(result);
+    }
+    if (step.args.target != null) {
+      await crs.process.setValue(step.args.target, result, context, process, item);
+    }
+    return result;
+  }
+  static async create_element(step, context, process, item) {
+    const parentElement = await crs.dom.get_element(step.args.parent, context, process, item);
+    const element = document.createElement(step.args.tag_name || "div");
+    const attributes = Object.keys(step.args.attributes || {});
+    const styles = Object.keys(step.args.styles || {});
+    const classes = step.args.classes || [];
+    const dataset = Object.keys(step.args.dataset || {});
+    const variables = Object.keys(step.args.variables || {});
+    const id = await crs.process.getValue(step.args.id, context, process, item);
+    if (id != null) {
+      this.id = id;
+    }
+    for (let attr of attributes) {
+      element.setAttribute(attr, await crs.process.getValue(step.args.attributes[attr], context, process, item));
+    }
+    for (let style of styles) {
+      element.style[style] = await crs.process.getValue(step.args.styles[style], context, process, item);
+    }
+    for (let cls of classes) {
+      element.classList.add(cls);
+    }
+    for (let key of dataset) {
+      element.dataset[key] = await crs.process.getValue(step.args.dataset[key], context, process, item);
+    }
+    for (let key of variables) {
+      const value = await crs.process.getValue(step.args.variables[key], context, process, item);
+      element.style.setProperty(key, value);
+    }
+    if (step.args.text_content != null) {
+      element.textContent = await crs.process.getValue(step.args.text_content, context, process, item);
+    }
+    if (step.args.id != null) {
+      element.id = step.args.id;
+    }
+    if (step.args.children != null) {
+      for (let args of step.args.children) {
+        args.parent = element;
+        await this.create_element({
+          args
+        }, context, process, item);
+      }
+    }
+    if (parentElement?.content != null) {
+      parentElement.content.appendChild(element);
+    } else {
+      parentElement?.appendChild(element);
+    }
+    if (step.args.target != null) {
+      await crs.process.setValue(step.args.target, element, context, process, item);
+    }
+    return element;
+  }
+  static async remove_element(step, context, process, item) {
+    const element = await crs.dom.get_element(step.args.element, context, process, item);
+    element?.parentElement?.removeChild(element);
+    await crsbinding.providerManager.releaseElement(element);
+  }
+  static async clear_element(step, context, process, item) {
+    const element = await crs.dom.get_element(step.args.element, context, process, item);
+    if (element != null) {
+      await crsbinding.observation.releaseChildBinding(element);
+      while (element.firstElementChild != null) {
+        element.removeChild(element.firstElementChild);
+      }
+    }
+  }
+  static async move_element(step, context, process, item) {
+    const element = await crs.dom.get_element(step.args.element, context, process, item);
+    const parent = await crs.dom.get_element(step.args.target, context, process, item);
+    await move_element(element, parent, step.args.position);
+  }
+  static async move_element_down(step, context, process, item) {
+    const element = await crs.dom.get_element(step.args.element, context, process, item);
+    const target = element.nextElementSibling;
+    if (target != null) {
+      await move_element(element, target, "after");
+    }
+  }
+  static async move_element_up(step, context, process, item) {
+    const element = await crs.dom.get_element(step.args.element, context, process, item);
+    const target = element.previousElementSibling;
+    if (target != null) {
+      await move_element(element, target, "before");
+    }
+  }
+  static async set_css_variable(step, context, process, item) {
+    const element = await crs.dom.get_element(step.args.element);
+    const variable = await crs.process.getValue(step.args.variable, context, process, item);
+    const value = await crs.process.getValue(step.args.value, context, process, item);
+    element.style.setProperty(variable, value);
+  }
+  static async get_css_variable(step, context, process, item) {
+    const element = await crs.dom.get_element(step.args.element);
+    const variable = await crs.process.getValue(step.args.variable, context, process, item);
+    const result = getComputedStyle(element).getPropertyValue(variable);
+    if (step.args.target != null) {
+      await crs.process.setValue(step.args.target, result, context, process, item);
+    }
+    return result;
+  }
+  static async set_css_variables(step, context, process, item) {
+    const element = await crs.dom.get_element(step.args.element);
+    const variables = await crs.process.getValue(step.args.variables, context, process, item);
+    for (let key of Object.keys(variables)) {
+      const value = variables[key];
+      element.style.setProperty(key, value);
+    }
+  }
+  static async get_css_variables(step, context, process, item) {
+    const element = await crs.dom.get_element(step.args.element);
+    const variables = await crs.process.getValue(step.args.variables, context, process, item);
+    const variableList = [];
+    for (let item2 = 0; item2 < variables.length; item2++) {
+      const result = getComputedStyle(element).getPropertyValue(variables[item2]);
+      variableList.push(result);
+    }
+    return variableList;
+  }
+}
+async function move_element(element, target, position) {
+  if (element == null || target == null) {
+    return console.error(`both element and parent must exist to move the element`);
+  }
+  element.parentElement.removeChild(element);
+  if (position == null) {
+    return target.appendChild(element);
+  }
+  if (position == "before") {
+    return target.parentElement.insertBefore(element, target);
+  }
+  if (target.nextElementSibling == null) {
+    return target.parentElement.appendChild(element);
+  }
+  target.parentElement.insertBefore(element, target.nextElementSibling);
+}
+crs.intent.dom = DomActions;
+export {
+  DomActions
+};

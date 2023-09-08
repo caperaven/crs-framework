@@ -1,1 +1,72 @@
-class u{static async perform(a,t,r,s){await this[a.action]?.(a,t,r,s)}static async get(a,t,r,s){if(a.args.url!=null)return a.args.template!=null?await this.#t(a,t,r,s):await this.#a(a,t,r,s);if(a.args.schema!=null)return await this.#r(a,t,r,s);if(a.args.function!=null)return await this.#s(a,t,r,s);if(a.args.markdown!=null)return await crs.call("markdown","to_html",a.args,t,r,s)}static async template_from_file(a,t,r,s){const e=await crs.process.getValue(a.args.url,t,r,s),l=await fetch(e).then(c=>c.text()),n=document.createElement("template");return n.innerHTML=l,a.args.target!=null&&await crs.process.setValue(a.args.target,n,t,r,s),n}static async create(a,t,r,s){const e=a.args.html.indexOf("<")==-1?await crs.process.getValue(a.args.html,t,r,s):a.args.html,l=await crs.process.getValue(a.args.ctx,t,r,s),n=await crs.call("string","inflate",{parameters:l,template:e},t,r,s),c=document.createElement("template");c.innerHTML=n;const i=c.content;return a.args.target!=null&&await crs.process.setValue(args.target,i,t,r,s),i}static async#a(a,t,r,s){const e=await crs.process.getValue(a.args.url,t,r,s);return await fetch(e).then(l=>l.text())}static async#t(a,t,r,s){const e=await crs.process.getValue(a.args.template,t,r,s),l=await crs.process.getValue(a.args.url,t,r,s);return await crsbinding.templates.get(e,l)}static async#r(a,t,r,s){let e=await crs.process.getValue(a.args.schema,t,r,s);return typeof e=="string"&&(e=await fetch(e).then(l=>l.json())),schema?.parser?.parse(e)}static async#s(a,t,r,s){const e=await crs.process.getValue(a.args.function,t,r,s),l=await crs.process.getValue(a.args.parameters||[],t,r,s);return await e(...l)}}crs.intent.html=u;export{u as HtmlActions};
+class HtmlActions {
+  static async perform(step, context, process, item) {
+    await this[step.action]?.(step, context, process, item);
+  }
+  static async get(step, context, process, item) {
+    if (step.args.url != null) {
+      if (step.args.template != null) {
+        return await this.#from_template(step, context, process, item);
+      }
+      return await this.#from_file(step, context, process, item);
+    }
+    if (step.args.schema != null) {
+      return await this.#from_schema(step, context, process, item);
+    }
+    if (step.args.function != null) {
+      return await this.#from_function(step, context, process, item);
+    }
+    if (step.args.markdown != null) {
+      return await crs.call("markdown", "to_html", step.args, context, process, item);
+    }
+  }
+  static async template_from_file(step, context, process, item) {
+    const url = await crs.process.getValue(step.args.url, context, process, item);
+    const html = await fetch(url).then((result) => result.text());
+    const template = document.createElement("template");
+    template.innerHTML = html;
+    if (step.args.target != null) {
+      await crs.process.setValue(step.args.target, template, context, process, item);
+    }
+    return template;
+  }
+  static async create(step, context, process, item) {
+    const html = step.args.html.indexOf("<") == -1 ? await crs.process.getValue(step.args.html, context, process, item) : step.args.html;
+    const ctx = await crs.process.getValue(step.args.ctx, context, process, item);
+    const inflated = await crs.call("string", "inflate", {
+      parameters: ctx,
+      template: html
+    }, context, process, item);
+    const template = document.createElement("template");
+    template.innerHTML = inflated;
+    const result = template.content;
+    if (step.args.target != null) {
+      await crs.process.setValue(args.target, result, context, process, item);
+    }
+    return result;
+  }
+  static async #from_file(step, context, process, item) {
+    const url = await crs.process.getValue(step.args.url, context, process, item);
+    return await fetch(url).then((result) => result.text());
+  }
+  static async #from_template(step, context, process, item) {
+    const template = await crs.process.getValue(step.args.template, context, process, item);
+    const url = await crs.process.getValue(step.args.url, context, process, item);
+    return await crsbinding.templates.get(template, url);
+  }
+  static async #from_schema(step, context, process, item) {
+    let json = await crs.process.getValue(step.args.schema, context, process, item);
+    if (typeof json == "string") {
+      json = await fetch(json).then((result) => result.json());
+    }
+    return schema?.parser?.parse(json);
+  }
+  static async #from_function(step, context, process, item) {
+    const fn = await crs.process.getValue(step.args.function, context, process, item);
+    const parameters = await crs.process.getValue(step.args.parameters || [], context, process, item);
+    return await fn(...parameters);
+  }
+}
+crs.intent.html = HtmlActions;
+export {
+  HtmlActions
+};

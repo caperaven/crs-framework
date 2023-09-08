@@ -1,1 +1,27 @@
-class l{static async perform(e,s,a,c){await this[e.action]?.(e,s,a,c)}static async load_file(e,s,a,c){const n=await crs.process.getValue(e.args.id,s,a,c),i=await crs.process.getValue(e.args.file,s,a,c);if(document.querySelector(`#${n}`)!=null)return;const t=document.createElement("link");return t.id=n,t.rel="stylesheet",t.type="text/css",t.href=i,document.getElementsByTagName("head")[0].appendChild(t),t}static async unload_file(e,s,a,c){const n=await crs.process.getValue(e.args.id),i=document.querySelector(`#${n}`);i.parentElement.removeChild(i)}}crs.intent.styles=l;export{l as StylesActions};
+class StylesActions {
+  static async perform(step, context, process, item) {
+    await this[step.action]?.(step, context, process, item);
+  }
+  static async load_file(step, context, process, item) {
+    const id = await crs.process.getValue(step.args.id, context, process, item);
+    const file = await crs.process.getValue(step.args.file, context, process, item);
+    if (document.querySelector(`#${id}`) != null)
+      return;
+    const link = document.createElement("link");
+    link.id = id;
+    link.rel = "stylesheet";
+    link.type = "text/css";
+    link.href = file;
+    document.getElementsByTagName("head")[0].appendChild(link);
+    return link;
+  }
+  static async unload_file(step, context, process, item) {
+    const id = await crs.process.getValue(step.args.id);
+    const link = document.querySelector(`#${id}`);
+    link.parentElement.removeChild(link);
+  }
+}
+crs.intent.styles = StylesActions;
+export {
+  StylesActions
+};

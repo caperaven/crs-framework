@@ -1,1 +1,114 @@
-class y{static async perform(e,a,t,l){await this[e.action]?.(e,a,t,l)}static async show_widget_dialog(e,a,t,l){return new Promise(s=>{const n=m(e);document.documentElement.appendChild(n.layer),requestAnimationFrame(async()=>{await g(n.widget.id,e.args.html,e.args.url,a,t,l),s()})})}static async show_form_dialog(e,a,t,l){return new Promise(s=>{const n=m(e);document.documentElement.appendChild(n.layer),requestAnimationFrame(async()=>{await g(n.widget.id,e.args.html,e.args.url,a,t,l);let o=crsbinding.data.getContext(t.parameters.bId);const c=async d=>{if(d==="pass_step"){let i=await f(`#${n.layer.id} form`);if(i.length>0){t.parameters?.bId!==null&&(e.args.errors=i,await crs.call("binding","set_errors",e.args,a,t,l));return}}delete o.pass,delete o.fail,await this.remove_element({args:{element:`#${n.layer.id}`}});const u=e[d];if(u!=null){const i=crsbinding.utils.getValueOnPath(t.steps,u);i!=null&&await crs.process.runStep(i,a,t,l)}e.args.callback!=null&&e.args.callback(),s()};o.pass=()=>c("pass_step"),o.fail=()=>c("fail_step")})})}}async function f(r){const a=document.querySelector(r)?.querySelectorAll("label"),t=[];for(let l of a){const n=l.querySelector("input").validationMessage;n.length>0&&t.push(`${l.children[0].textContent}: ${n}`)}return t}function m(r){const e=document.createElement("div");e.style.zIndex="99999999",e.style.position="fixed",e.style.left="0",e.style.top="0",e.style.width="100%",e.style.height="100%",e.id=r.args.id||"widget_layer";const a=document.createElement("div");a.classList.add("modal-background");const t=document.createElement("crs-widget");return t.style.position="fixed",t.style.left="50%",t.style.top="50%",t.style.transform="translate(-50%, -50%)",t.id=`${e.id}_widget`,e.appendChild(a),e.appendChild(t),{layer:e,widget:t}}async function g(r,e,a,t,l,s){await crs.call("dom_binding","set_widget",{element:`#${r}`,html:e,url:a},t,l,s);const n=document.querySelector(`#${r} [autofocus]`);n!=null?n.focus():document.querySelector(`#${r}`).focus()}crs.intent.dom_widget=y;export{y as DomWidgetsActions};
+class DomWidgetsActions {
+  static async perform(step, context, process, item) {
+    await this[step.action]?.(step, context, process, item);
+  }
+  static async show_widget_dialog(step, context, process, item) {
+    return new Promise((resolve) => {
+      const parts = createWidgetLayer(step);
+      document.documentElement.appendChild(parts.layer);
+      requestAnimationFrame(async () => {
+        await setWidgetContent(parts.widget.id, step.args.html, step.args.url, context, process, item);
+        resolve();
+      });
+    });
+  }
+  static async show_form_dialog(step, context, process, item) {
+    return new Promise((resolve) => {
+      const parts = createWidgetLayer(step);
+      document.documentElement.appendChild(parts.layer);
+      requestAnimationFrame(async () => {
+        await setWidgetContent(parts.widget.id, step.args.html, step.args.url, context, process, item);
+        let bc = crsbinding.data.getContext(process.parameters.bId);
+        const callback = async (next_step) => {
+          if (next_step === "pass_step") {
+            let errors = await validate_form(`#${parts.layer.id} form`);
+            if (errors.length > 0) {
+              if (process.parameters?.bId !== null) {
+                step.args.errors = errors;
+                await crs.call("binding", "set_errors", step.args, context, process, item);
+              }
+              return;
+            }
+          }
+          delete bc.pass;
+          delete bc.fail;
+          await this.remove_element({ args: { element: `#${parts.layer.id}` } });
+          const stepName = step[next_step];
+          if (stepName != null) {
+            const nextStep = crsbinding.utils.getValueOnPath(process.steps, stepName);
+            if (nextStep != null) {
+              await crs.process.runStep(nextStep, context, process, item);
+            }
+          }
+          if (step.args.callback != null) {
+            step.args.callback();
+          }
+          resolve();
+        };
+        bc.pass = () => callback("pass_step");
+        bc.fail = () => callback("fail_step");
+      });
+    });
+  }
+}
+async function validate_form(query) {
+  const form = document.querySelector(query);
+  const labels = form?.querySelectorAll("label");
+  const errors = [];
+  for (let label of labels) {
+    const input = label.querySelector("input");
+    const message = input.validationMessage;
+    if (message.length > 0) {
+      errors.push(`${label.children[0].textContent}: ${message}`);
+    }
+  }
+  return errors;
+}
+function createWidgetLayer(step) {
+  const layer = document.createElement("div");
+  layer.style.zIndex = "99999999";
+  layer.style.position = "fixed";
+  layer.style.left = "0";
+  layer.style.top = "0";
+  layer.style.width = "100%";
+  layer.style.height = "100%";
+  layer.id = step.args.id || "widget_layer";
+  const background = document.createElement("div");
+  background.classList.add("modal-background");
+  const widget = document.createElement("crs-widget");
+  widget.style.position = "fixed";
+  widget.style.left = "50%";
+  widget.style.top = "50%";
+  widget.style.transform = "translate(-50%, -50%)";
+  widget.id = `${layer.id}_widget`;
+  layer.appendChild(background);
+  layer.appendChild(widget);
+  return {
+    layer,
+    widget
+  };
+}
+async function setWidgetContent(id, html, url, context, process, item) {
+  await crs.call(
+    "dom_binding",
+    "set_widget",
+    {
+      element: `#${id}`,
+      html,
+      url
+    },
+    context,
+    process,
+    item
+  );
+  const element = document.querySelector(`#${id} [autofocus]`);
+  if (element != null) {
+    element.focus();
+  } else {
+    document.querySelector(`#${id}`).focus();
+  }
+}
+crs.intent.dom_widget = DomWidgetsActions;
+export {
+  DomWidgetsActions
+};

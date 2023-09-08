@@ -1,1 +1,79 @@
-import{callFunctionOnPath as g}from"./action-actions.js";class o{static async perform(a,t,e,r){await this[a.action]?.(a,t,e,r)}static async call_on_element(a,t,e,r){const s=await crs.dom.get_element(a.args.element,t,e,r),n=await g(s,a,t,e,r);return a.args.target!=null&&await crs.process.setValue(a.args.target,n,t,e,r),n}static async get_property(a,t,e,r){const s=await crs.dom.get_element(a,t,e,r),n=await crsbinding.utils.getValueOnPath(s,a.args.property);return a.args.target!=null&&await crs.process.setValue(a.args.target,n,t,e,r),n}static async set_properties(a,t,e,r){const s=await crs.dom.get_element(a,t,e,r),n=await crs.process.getValue(a.args.properties,t,e,r),i=Object.keys(n);for(let l of i)s[l]=await crs.process.getValue(n[l],t,e,r)}static async open_tab(a,t,e,r){let s=await crs.call("string","inflate",{template:a.args.url,parameters:a.args.parameters},t,e,r);window.open(s,"_blank")}static async get_element_bounds(a,t,e,r){const n=(await crs.dom.get_element(a.args.element,t,e,r)).getBoundingClientRect();return a.args.target!=null&&await crs.process.setValue(a.args.target,n,t,e,r),n}static async find_parent_of_type(a,t,e,r){const s=await crs.dom.get_element(a.args.element,t,e,r),n=await crs.process.getValue(a.args.stopAtNodeName,t,e,r),i=await crs.process.getValue(a.args.stopAtNodeQuery,t,e,r),l=await crs.process.getValue(a.args.nodeName,t,e,r),c=await crs.process.getValue(a.args.nodeQuery,t,e,r);if(s==null||l==null&&c==null)return;const u=await this.#a(s,l,c,n,i);return a.args.target!=null&&await crs.process.setValue(a.args.target,u,t,e,r),u}static async#a(a,t,e,r,s){const n=t!=null||r!=null?a.nodeName.toLowerCase():null;if(!(r!=null&&n===r)&&!(s!=null&&a.matches(s))){if(t!=null&&n===t.toLowerCase()||e!=null&&a.matches(e))return a;if(a.parentElement!=null)return await this.#a(a.parentElement,t,e,r,s)}}}crs.intent.dom_utils=o;export{o as DomUtilsActions};
+import { callFunctionOnPath } from "./action-actions.js";
+class DomUtilsActions {
+  static async perform(step, context, process, item) {
+    await this[step.action]?.(step, context, process, item);
+  }
+  static async call_on_element(step, context, process, item) {
+    const element = await crs.dom.get_element(step.args.element, context, process, item);
+    const result = await callFunctionOnPath(element, step, context, process, item);
+    if (step.args.target != null) {
+      await crs.process.setValue(step.args.target, result, context, process, item);
+    }
+    return result;
+  }
+  static async get_property(step, context, process, item) {
+    const element = await crs.dom.get_element(step, context, process, item);
+    const value = await crsbinding.utils.getValueOnPath(element, step.args.property);
+    if (step.args.target != null) {
+      await crs.process.setValue(step.args.target, value, context, process, item);
+    }
+    return value;
+  }
+  static async set_properties(step, context, process, item) {
+    const element = await crs.dom.get_element(step, context, process, item);
+    const properties = await crs.process.getValue(step.args.properties, context, process, item);
+    const keys = Object.keys(properties);
+    for (let key of keys) {
+      element[key] = await crs.process.getValue(properties[key], context, process, item);
+    }
+  }
+  static async open_tab(step, context, process, item) {
+    let url = await crs.call("string", "inflate", {
+      template: step.args.url,
+      parameters: step.args.parameters
+    }, context, process, item);
+    window.open(url, "_blank");
+  }
+  static async get_element_bounds(step, context, process, item) {
+    const element = await crs.dom.get_element(step.args.element, context, process, item);
+    const bounds = element.getBoundingClientRect();
+    if (step.args.target != null) {
+      await crs.process.setValue(step.args.target, bounds, context, process, item);
+    }
+    return bounds;
+  }
+  static async find_parent_of_type(step, context, process, item) {
+    const element = await crs.dom.get_element(step.args.element, context, process, item);
+    const stopAtNodeName = await crs.process.getValue(step.args.stopAtNodeName, context, process, item);
+    const stopAtNodeQuery = await crs.process.getValue(step.args.stopAtNodeQuery, context, process, item);
+    const nodeName = await crs.process.getValue(step.args.nodeName, context, process, item);
+    const nodeQuery = await crs.process.getValue(step.args.nodeQuery, context, process, item);
+    if (element == null || nodeName == null && nodeQuery == null)
+      return;
+    const result = await this.#findParentOfType(element, nodeName, nodeQuery, stopAtNodeName, stopAtNodeQuery);
+    if (step.args.target != null) {
+      await crs.process.setValue(step.args.target, result, context, process, item);
+    }
+    return result;
+  }
+  static async #findParentOfType(element, nodeName, nodeQuery, stopAtNodeName, stopAtNodeQuery) {
+    const currentNodeName = nodeName != null || stopAtNodeName != null ? element.nodeName.toLowerCase() : null;
+    if (stopAtNodeName != null && currentNodeName === stopAtNodeName)
+      return;
+    if (stopAtNodeQuery != null && element.matches(stopAtNodeQuery))
+      return;
+    if (nodeName != null && currentNodeName === nodeName.toLowerCase()) {
+      return element;
+    }
+    if (nodeQuery != null && element.matches(nodeQuery)) {
+      return element;
+    }
+    if (element.parentElement == null)
+      return;
+    return await this.#findParentOfType(element.parentElement, nodeName, nodeQuery, stopAtNodeName, stopAtNodeQuery);
+  }
+}
+crs.intent.dom_utils = DomUtilsActions;
+export {
+  DomUtilsActions
+};

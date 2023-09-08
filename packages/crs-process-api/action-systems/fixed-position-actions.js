@@ -1,1 +1,55 @@
-class h{static async perform(n,t,i,o){await this[n.action]?.(n,t,i,o)}static async set(n,t,i,o){const s=await crs.dom.get_element(n.args.element,t,i,o),a=await crs.process.getValue(n.args.position,t,i,o),r=await crs.process.getValue(n.args.margin||0,t,i,o);s.style.position="fixed",s.style.left=0,s.style.top=0;const c=s.getBoundingClientRect();d[a](s,r,c)}}class d{static"top-left"(n,t){t=Math.round(t),n.style.translate=`${t}px ${t}px`}static"top-center"(n,t,i){const o=Math.round(window.innerWidth/2-i.width/2),s=Math.round(t);n.style.translate=`${o}px ${s}px`}static"top-right"(n,t,i){const o=Math.round(window.innerWidth-i.width-t),s=Math.round(t);n.style.translate=`${o}px ${s}px`}static"bottom-left"(n,t,i){const o=Math.round(t),s=Math.round(window.innerHeight-i.height-t);n.style.translate=`${o}px ${s}px`}static"bottom-center"(n,t,i){const o=Math.round(window.innerWidth/2-i.width/2),s=Math.round(window.innerHeight-i.height-t);n.style.translate=`${o}px ${s}px`}static"bottom-right"(n,t,i){const o=Math.round(window.innerWidth-i.width-t),s=Math.round(window.innerHeight-i.height-t);n.style.translate=`${o}px ${s}px`}static"center-screen"(n,t,i){const o=Math.round(window.innerWidth/2-i.width/2),s=Math.round(window.innerHeight/2-i.height/2);n.style.translate=`${o}px ${s}px`}}crs.intent.fixed_position=h;export{h as FixedPositionActions};
+class FixedPositionActions {
+  static async perform(step, context, process, item) {
+    await this[step.action]?.(step, context, process, item);
+  }
+  static async set(step, context, process, item) {
+    const element = await crs.dom.get_element(step.args.element, context, process, item);
+    const position = await crs.process.getValue(step.args.position, context, process, item);
+    const margin = await crs.process.getValue(step.args.margin || 0, context, process, item);
+    element.style.position = "fixed";
+    element.style.left = 0;
+    element.style.top = 0;
+    const elementBounds = element.getBoundingClientRect();
+    Positioning[position](element, margin, elementBounds);
+  }
+}
+class Positioning {
+  static "top-left"(element, margin) {
+    margin = Math.round(margin);
+    element.style.translate = `${margin}px ${margin}px`;
+  }
+  static "top-center"(element, margin, elementBounds) {
+    const x = Math.round(window.innerWidth / 2 - elementBounds.width / 2);
+    const y = Math.round(margin);
+    element.style.translate = `${x}px ${y}px`;
+  }
+  static "top-right"(element, margin, elementBounds) {
+    const x = Math.round(window.innerWidth - elementBounds.width - margin);
+    const y = Math.round(margin);
+    element.style.translate = `${x}px ${y}px`;
+  }
+  static "bottom-left"(element, margin, elementBounds) {
+    const x = Math.round(margin);
+    const y = Math.round(window.innerHeight - elementBounds.height - margin);
+    element.style.translate = `${x}px ${y}px`;
+  }
+  static "bottom-center"(element, margin, elementBounds) {
+    const x = Math.round(window.innerWidth / 2 - elementBounds.width / 2);
+    const y = Math.round(window.innerHeight - elementBounds.height - margin);
+    element.style.translate = `${x}px ${y}px`;
+  }
+  static "bottom-right"(element, margin, elementBounds) {
+    const x = Math.round(window.innerWidth - elementBounds.width - margin);
+    const y = Math.round(window.innerHeight - elementBounds.height - margin);
+    element.style.translate = `${x}px ${y}px`;
+  }
+  static "center-screen"(element, margin, elementBounds) {
+    const x = Math.round(window.innerWidth / 2 - elementBounds.width / 2);
+    const y = Math.round(window.innerHeight / 2 - elementBounds.height / 2);
+    element.style.translate = `${x}px ${y}px`;
+  }
+}
+crs.intent.fixed_position = FixedPositionActions;
+export {
+  FixedPositionActions
+};

@@ -1,1 +1,87 @@
-class g{static async perform(t,r,a,e){await this[t.action]?.(t,r,a,e)}static async create_context(t,r,a,e){const s=a.id||t?.args?.context_id||"process_context",n=crsbinding.data.addObject(s);return a!=null&&(a.parameters=a.parameters||{},a.parameters.bId=n),crsbinding.data.addContext(n,{}),n}static async free_context(t,r,a,e){a.parameters.bId!=null&&(crsbinding.data.removeObject(a.parameters.bId),delete a.parameters.bId)}static async get_property(t,r,a,e){const s=t.args.property,n=await crsbinding.data.getProperty(a.parameters.bId,s);return t.args.target!=null&&await crs.process.setValue(t.args.target,n,r,a,e),n}static async set_property(t,r,a,e){const s=t.args.property,n=await crs.process.getValue(t.args.value,r,a,e);crsbinding.data.setProperty(a.parameters.bId,s,n)}static async get_data(t,r,a,e){const s=crsbinding.data._data[a.parameters.bId];t.args.target!=null&&await crs.process.setValue(t.args.target,s,r,a,e)}static async set_errors(t,r,a,e){const s=t.args.error_store||"errors",n=await crs.process.getValue(t.args.errors,r,a,e),c=[];for(let i of n)c.push({message:i});await crsbinding.data.setProperty(a.parameters.bId,s,c)}static async set_global(t,r,a,e){const s=await crs.process.getValue(t.args.property,r,a,e),n=await crs.process.getValue(t.args.value,r,a,e);crsbinding.data.setProperty(crsbinding.$globals,s,n)}static async set_globals(t,r,a,e){const s=await crs.process.getValue(t.args.values,r,a,e),n=Object.keys(s);for(let c of n)crsbinding.data.setProperty(crsbinding.$globals,c,s[c])}static async get_global(t,r,a,e){const s=await crs.process.getValue(t.args.property,r,a,e),n=crsbinding.data.getProperty(crsbinding.$globals,s);return t.args.target!=null&&await crs.process.setValue(t.args.target,n,r,a,e),n}static async get_globals(t,r,a,e){const s=await crs.process.getValue(t.args.values,r,a,e),n=Object.keys(s);for(let c of n){const i=crsbinding.data.getProperty(crsbinding.$globals,c);s[c]=i}return t.args.target!=null&&await crs.process.setValue(t.args.target,value,r,a,e),s}}crs.intent.binding=g;export{g as BindingActions};
+class BindingActions {
+  static async perform(step, context, process, item) {
+    await this[step.action]?.(step, context, process, item);
+  }
+  static async create_context(step, context, process, item) {
+    const name = process.id || step?.args?.context_id || "process_context";
+    const bId = crsbinding.data.addObject(name);
+    if (process != null) {
+      process.parameters = process.parameters || {};
+      process.parameters.bId = bId;
+    }
+    crsbinding.data.addContext(bId, {});
+    return bId;
+  }
+  static async free_context(step, context, process, item) {
+    if (process.parameters.bId != null) {
+      crsbinding.data.removeObject(process.parameters.bId);
+      delete process.parameters.bId;
+    }
+  }
+  static async get_property(step, context, process, item) {
+    const property = step.args.property;
+    const value2 = await crsbinding.data.getProperty(process.parameters.bId, property);
+    if (step.args.target != null) {
+      await crs.process.setValue(step.args.target, value2, context, process, item);
+    }
+    return value2;
+  }
+  static async set_property(step, context, process, item) {
+    const property = step.args.property;
+    const value2 = await crs.process.getValue(step.args.value, context, process, item);
+    crsbinding.data.setProperty(process.parameters.bId, property, value2);
+  }
+  static async get_data(step, context, process, item) {
+    const data = crsbinding.data._data[process.parameters.bId];
+    if (step.args.target != null) {
+      await crs.process.setValue(step.args.target, data, context, process, item);
+    }
+  }
+  static async set_errors(step, context, process, item) {
+    const store = step.args.error_store || "errors";
+    const source = await crs.process.getValue(step.args.errors, context, process, item);
+    const errors = [];
+    for (let error of source) {
+      errors.push({
+        message: error
+      });
+    }
+    await crsbinding.data.setProperty(process.parameters.bId, store, errors);
+  }
+  static async set_global(step, context, process, item) {
+    const property = await crs.process.getValue(step.args.property, context, process, item);
+    const value2 = await crs.process.getValue(step.args.value, context, process, item);
+    crsbinding.data.setProperty(crsbinding.$globals, property, value2);
+  }
+  static async set_globals(step, context, process, item) {
+    const values = await crs.process.getValue(step.args.values, context, process, item);
+    const keys = Object.keys(values);
+    for (let key of keys) {
+      crsbinding.data.setProperty(crsbinding.$globals, key, values[key]);
+    }
+  }
+  static async get_global(step, context, process, item) {
+    const property = await crs.process.getValue(step.args.property, context, process, item);
+    const value2 = crsbinding.data.getProperty(crsbinding.$globals, property);
+    if (step.args.target != null) {
+      await crs.process.setValue(step.args.target, value2, context, process, item);
+    }
+    return value2;
+  }
+  static async get_globals(step, context, process, item) {
+    const values = await crs.process.getValue(step.args.values, context, process, item);
+    const keys = Object.keys(values);
+    for (let key of keys) {
+      const value2 = crsbinding.data.getProperty(crsbinding.$globals, key);
+      values[key] = value2;
+    }
+    if (step.args.target != null) {
+      await crs.process.setValue(step.args.target, value, context, process, item);
+    }
+    return values;
+  }
+}
+crs.intent.binding = BindingActions;
+export {
+  BindingActions
+};

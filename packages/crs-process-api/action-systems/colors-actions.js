@@ -1,1 +1,112 @@
-class m{static async perform(t,s,e,c){await this[t.action]?.(t,s,e,c)}static async hex_to_rgb(t,s,e,c){const r=await crs.process.getValue(t.args.hex,s,e,c),a=/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(r);return a?{r:parseInt(a[1],16),g:parseInt(a[2],16),b:parseInt(a[3],16)}:null}static async hex_to_rgba(t,s,e,c){const r=await crs.process.getValue(t.args.hex,s,e,c),a=/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(r);return a?{r:parseInt(a[1],16),g:parseInt(a[2],16),b:parseInt(a[3],16),a:parseInt(a[4],16)}:null}static async hex_to_normalised(t,s,e,c){const r=await this.hex_to_rgba(t,s,e,c);return r.r=await crs.call("math","normalize",{value:r.r,min:0,max:255}),r.g=await crs.call("math","normalize",{value:r.g,min:0,max:255}),r.b=await crs.call("math","normalize",{value:r.b,min:0,max:255}),r.a=await crs.call("math","normalize",{value:r.a,min:0,max:255}),r}static async rgb_to_hex(t,s,e,c){const r=await crs.process.getValue(t.args.r,s,e,c)||0,a=await crs.process.getValue(t.args.g,s,e,c)||0,n=await crs.process.getValue(t.args.b,s,e,c)||0;return["#",i(r),i(a),i(n)].join("")}static async rgba_to_hex(t,s,e,c){const r=await crs.process.getValue(t.args.r,s,e,c)||0,a=await crs.process.getValue(t.args.g,s,e,c)||0,n=await crs.process.getValue(t.args.b,s,e,c)||0,o=await crs.process.getValue(t.args.a,s,e,c)||255;return["#",i(r),i(a),i(n),i(o)].join("")}static async rgb_text_to_hex(t,s,e,c){let r=await crs.process.getValue(t.args.value,s,e,c);r=r.replace("rgba(",""),r=r.replace("rgb(",""),r=r.replace(")","");const a=r.split(",");return await this.rgb_to_hex({args:{r:Number(a[0].trim()),g:Number(a[1].trim()),b:Number(a[2].trim())}},s,e,c)}static async css_to_hex(t,s,e,c){return await _(t,s,e,c,async a=>{if(a.indexOf("#")!=-1)return a.length==7?`${a}ff`:a;{a=a.replace("rgba(",""),a=a.replace("rgb(",""),a=a.replace(")","");const n=a.split(",");return await this.rgba_to_hex({args:{r:Number(n[0].trim()),g:Number(n[1].trim()),b:Number(n[2].trim()),a:n.length==3?255:Number(n[3].trim())}},s,e,c)}})}static async css_to_normalized(t,s,e,c){const r=await this.css_to_hex(t,s,e,c),a=Object.keys(r);for(const n of a){const o=r[n];r[n]=await this.hex_to_normalised({args:{hex:o}},s,e,c).catch(g=>console.error(error))}return r}}async function _(l,t,s,e,c){const r=await crs.dom.get_element(l.args.element),a=await crs.process.getValue(l.args.variables,t,s,e),n=getComputedStyle(r),o={};for(let g of a){const u=n.getPropertyValue(g).trim(),b=await c(u).catch(h=>console.error(h));o[g]=b}return o}function i(l){const t=l.toString(16);return t.length==1?"0"+t:t}crs.intent.colors=m;export{m as ColorsActions};
+class ColorsActions {
+  static async perform(step, context, process, item) {
+    await this[step.action]?.(step, context, process, item);
+  }
+  static async hex_to_rgb(step, context, process, item) {
+    const hex = await crs.process.getValue(step.args.hex, context, process, item);
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16)
+    } : null;
+  }
+  static async hex_to_rgba(step, context, process, item) {
+    const hex = await crs.process.getValue(step.args.hex, context, process, item);
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result ? {
+      r: parseInt(result[1], 16),
+      g: parseInt(result[2], 16),
+      b: parseInt(result[3], 16),
+      a: parseInt(result[4], 16)
+    } : null;
+  }
+  static async hex_to_normalised(step, context, process, item) {
+    const result = await this.hex_to_rgba(step, context, process, item);
+    result.r = await crs.call("math", "normalize", { value: result.r, min: 0, max: 255 });
+    result.g = await crs.call("math", "normalize", { value: result.g, min: 0, max: 255 });
+    result.b = await crs.call("math", "normalize", { value: result.b, min: 0, max: 255 });
+    result.a = await crs.call("math", "normalize", { value: result.a, min: 0, max: 255 });
+    return result;
+  }
+  static async rgb_to_hex(step, context, process, item) {
+    const r = await crs.process.getValue(step.args.r, context, process, item) || 0;
+    const g = await crs.process.getValue(step.args.g, context, process, item) || 0;
+    const b = await crs.process.getValue(step.args.b, context, process, item) || 0;
+    return ["#", decimalToHex(r), decimalToHex(g), decimalToHex(b)].join("");
+  }
+  static async rgba_to_hex(step, context, process, item) {
+    const r = await crs.process.getValue(step.args.r, context, process, item) || 0;
+    const g = await crs.process.getValue(step.args.g, context, process, item) || 0;
+    const b = await crs.process.getValue(step.args.b, context, process, item) || 0;
+    const a = await crs.process.getValue(step.args.a, context, process, item) || 255;
+    return ["#", decimalToHex(r), decimalToHex(g), decimalToHex(b), decimalToHex(a)].join("");
+  }
+  static async rgb_text_to_hex(step, context, process, item) {
+    let value = await crs.process.getValue(step.args.value, context, process, item);
+    value = value.replace("rgba(", "");
+    value = value.replace("rgb(", "");
+    value = value.replace(")", "");
+    const parts = value.split(",");
+    return await this.rgb_to_hex({
+      args: {
+        r: Number(parts[0].trim()),
+        g: Number(parts[1].trim()),
+        b: Number(parts[2].trim())
+      }
+    }, context, process, item);
+  }
+  static async css_to_hex(step, context, process, item) {
+    const results = await processVariables(step, context, process, item, async (value) => {
+      if (value.indexOf("#") != -1) {
+        if (value.length == 7) {
+          return `${value}ff`;
+        }
+        return value;
+      } else {
+        value = value.replace("rgba(", "");
+        value = value.replace("rgb(", "");
+        value = value.replace(")", "");
+        const parts = value.split(",");
+        return await this.rgba_to_hex({
+          args: {
+            r: Number(parts[0].trim()),
+            g: Number(parts[1].trim()),
+            b: Number(parts[2].trim()),
+            a: parts.length == 3 ? 255 : Number(parts[3].trim())
+          }
+        }, context, process, item);
+      }
+    });
+    return results;
+  }
+  static async css_to_normalized(step, context, process, item) {
+    const results = await this.css_to_hex(step, context, process, item);
+    const keys = Object.keys(results);
+    for (const key of keys) {
+      const value = results[key];
+      results[key] = await this.hex_to_normalised({ args: { hex: value } }, context, process, item).catch((e) => console.error(error));
+    }
+    return results;
+  }
+}
+async function processVariables(step, context, process, item, callback) {
+  const element = await crs.dom.get_element(step.args.element);
+  const variables = await crs.process.getValue(step.args.variables, context, process, item);
+  const style = getComputedStyle(element);
+  const result = {};
+  for (let variable of variables) {
+    const cssValue = style.getPropertyValue(variable).trim();
+    const value = await callback(cssValue).catch((e) => console.error(e));
+    result[variable] = value;
+  }
+  return result;
+}
+function decimalToHex(value) {
+  const hex = value.toString(16);
+  return hex.length == 1 ? "0" + hex : hex;
+}
+crs.intent.colors = ColorsActions;
+export {
+  ColorsActions
+};

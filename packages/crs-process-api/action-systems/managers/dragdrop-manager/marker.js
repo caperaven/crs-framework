@@ -1,1 +1,64 @@
-async function l(t){n.call(this,t);const a=await crs.call("dom","create_element",{tag_name:"div",styles:{position:"absolute",left:"0",top:"0",willChange:"transform",translate:`${t._bounds.x}px ${t._bounds.y}px`,width:`${t._bounds.width}px`},classes:["drag-marker"]});return(await crs.call("dom_interactive","get_animation_layer")).appendChild(a),a}async function u(t){if(this.updateMarkerHandler==null)return;Math.abs(t-(this._lastTime||0))>=16&&(this._lastTime=t,i.call(this).catch(e=>console.error(e))),requestAnimationFrame(this.updateMarkerHandler)}async function i(){const t=await this.validateDropTarget(this.target),a=t?.target;if(a!=null&&a!==this.lastTarget){if(this.lastTarget=a,a===this.element||t.position==="append")return o.call(this,t.target);n.call(this,a),this.marker.style.translate=`${a._bounds.x}px ${a._bounds.y}px`}}function o(t){const a=t||this.element,e=a.lastElementChild;let s="bottom",r=e;e==null&&(s="top",r=a),n.call(this,r),this.marker.style.translate=`${r._bounds.x}px ${r._bounds[s]}px`}function n(t){t._bounds==null&&(t._bounds=t.getBoundingClientRect(),this.boundsCache.push(t))}export{l as startMarker,u as updateMarker};
+async function startMarker(dragElement) {
+  ensureBounds.call(this, dragElement);
+  const marker = await crs.call("dom", "create_element", {
+    tag_name: "div",
+    styles: {
+      position: "absolute",
+      left: "0",
+      top: "0",
+      willChange: "transform",
+      translate: `${dragElement._bounds.x}px ${dragElement._bounds.y}px`,
+      width: `${dragElement._bounds.width}px`
+    },
+    classes: ["drag-marker"]
+  });
+  const layer = await crs.call("dom_interactive", "get_animation_layer");
+  layer.appendChild(marker);
+  return marker;
+}
+async function updateMarker(now) {
+  if (this.updateMarkerHandler == null)
+    return;
+  const duration = Math.abs(now - (this._lastTime || 0));
+  if (duration >= 16) {
+    this._lastTime = now;
+    performUpdateMarker.call(this).catch((error) => console.error(error));
+  }
+  requestAnimationFrame(this.updateMarkerHandler);
+}
+async function performUpdateMarker() {
+  const dropIntent = await this.validateDropTarget(this.target);
+  const dropTarget = dropIntent?.target;
+  if (dropTarget == null)
+    return;
+  if (dropTarget === this.lastTarget)
+    return;
+  this.lastTarget = dropTarget;
+  if (dropTarget === this.element || dropIntent.position === "append") {
+    return addMarkerToContainer.call(this, dropIntent.target);
+  }
+  ensureBounds.call(this, dropTarget);
+  this.marker.style.translate = `${dropTarget._bounds.x}px ${dropTarget._bounds.y}px`;
+}
+function addMarkerToContainer(target) {
+  const container = target || this.element;
+  const lastChild = container.lastElementChild;
+  let property = "bottom";
+  let newTarget = lastChild;
+  if (lastChild == null) {
+    property = "top";
+    newTarget = container;
+  }
+  ensureBounds.call(this, newTarget);
+  this.marker.style.translate = `${newTarget._bounds.x}px ${newTarget._bounds[property]}px`;
+}
+function ensureBounds(element) {
+  if (element._bounds == null) {
+    element._bounds = element.getBoundingClientRect();
+    this.boundsCache.push(element);
+  }
+}
+export {
+  startMarker,
+  updateMarker
+};

@@ -1,1 +1,51 @@
-class o{static async perform(e,a,t,s){await this[e.action]?.(e,a,t,s)}static async filter_children(e,a,t,s){const r=await crs.process.getValue(e.args.filter,a,t,s);await u(e.args.element,r)}static async toggle_selection(e,a,t,s){const r=await crs.dom.get_element(e.args.target,a,t,s),n=await crs.process.getValue(e.args.multiple||!1,a,t,s),i="aria-selected";if(n!==!0){const l=r.parentElement.querySelector("[aria-selected='true']");if(l===r)return;l?.removeAttribute(i),r.setAttribute(i,"true")}else r.hasAttribute(i)&&r.getAttribute(i)==="true"?r.removeAttribute(i):r.setAttribute(i,"true")}static async get_selected_state(e,a,t,s){const r=await crs.dom.get_element(e.args.target,a,t,s),n={};for(const i of r.children)n[i.dataset.value]=i.getAttribute("aria-selected")=="true";return n}}async function u(c,e){c=await crs.dom.get_element(c);const a=e.length>0;for(let t of c.children){if(t.removeAttribute("aria-hidden"),t.tagName=="HR"&&a){t.setAttribute("aria-hidden","true");continue}t.dataset.tags&&a&&t.dataset.tags.indexOf(e)==-1&&t.setAttribute("aria-hidden","true")}}crs.intent.dom_collection=o;export{o as DomCollectionActions};
+class DomCollectionActions {
+  static async perform(step, context, process, item) {
+    await this[step.action]?.(step, context, process, item);
+  }
+  static async filter_children(step, context, process, item) {
+    const filterString = await crs.process.getValue(step.args.filter, context, process, item);
+    await filter(step.args.element, filterString);
+  }
+  static async toggle_selection(step, context, process, item) {
+    const target = await crs.dom.get_element(step.args.target, context, process, item);
+    const multiple = await crs.process.getValue(step.args.multiple || false, context, process, item);
+    const attr = "aria-selected";
+    if (multiple !== true) {
+      const selectedElement = target.parentElement.querySelector("[aria-selected='true']");
+      if (selectedElement === target)
+        return;
+      if (selectedElement != null) {
+        selectedElement.removeAttribute(attr);
+      }
+      target.setAttribute(attr, "true");
+    } else {
+      target.hasAttribute(attr) && target.getAttribute(attr) === "true" ? target.removeAttribute(attr) : target.setAttribute(attr, "true");
+    }
+  }
+  static async get_selected_state(step, context, process, item) {
+    const target = await crs.dom.get_element(step.args.target, context, process, item);
+    const result = {};
+    for (const child of target.children) {
+      result[child.dataset.value] = child.getAttribute("aria-selected") == "true";
+    }
+    return result;
+  }
+}
+async function filter(element, filter2) {
+  element = await crs.dom.get_element(element);
+  const hasFilter = filter2.length > 0;
+  for (let child of element.children) {
+    child.removeAttribute("aria-hidden");
+    if (child.tagName == "HR" && hasFilter) {
+      child.setAttribute("aria-hidden", "true");
+      continue;
+    }
+    if (child.dataset.tags && hasFilter && child.dataset.tags.indexOf(filter2) == -1) {
+      child.setAttribute("aria-hidden", "true");
+    }
+  }
+}
+crs.intent.dom_collection = DomCollectionActions;
+export {
+  DomCollectionActions
+};

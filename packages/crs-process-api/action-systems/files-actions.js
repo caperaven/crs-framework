@@ -1,1 +1,153 @@
-class f{static async perform(e,a,t,n){await this[e.action](e,a,t,n)}static async load(e,a,t,n){if(await crs.process.getValue(e.args.dialog,a,t,n)==!0){const r=await g(e);let o=[];for(const s of r){const c=await d(s.name);o.push({name:c.name,ext:c.ext,type:s.type,size:s.size,value:s})}return e.args.target!=null&&await crs.process.setValue(e.args.target,o,a,t,n),o}else{const r=await m(e,a,t,n);return e.args.target!=null&&await crs.process.setValue(e.args.target,r,a,t,n),r}}static async save(e,a,t,n){const l=await crs.process.getValue(e.args.details,a,t,n);let r=document.createElement("a");r.style.display="none",document.body.appendChild(r);for(let o of l){let s=new Blob([o.value],{type:o.type}),c=window.URL.createObjectURL(s);r.href=c,r.download=`${o.name}.${o.ext}`,r.click(),window.URL.revokeObjectURL(c),c=null,s=null}r.parentElement.removeChild(r),r=null}static async save_canvas(e,a,t,n){const l=await crs.dom.get_element(e.args.source),r=await crs.process.getValue(e.args.name,a,t,n)||"image",o=l.toDataURL("image/png");let s=document.createElement("a");s.style.display="none",document.body.appendChild(s),s.href=o.replace("image/png","image/octet-stream"),s.download=`${r}.png`,s.click(),s.parentElement.removeChild(s),s=null}static async enable_dropzone(e,a,t,n){const l=await crs.dom.get_element(e.args.element,a,t,n),r=await crs.process.getValue(e.args.handler,a,t,n),o=p.bind(this,r);l.addEventListener("drop",o),l.addEventListener("dragover",u),l.__dropHandler=o,l.__dragoverHandler=u}static async disable_dropzone(e,a,t,n){const l=await crs.dom.get_element(e.args.element,a,t,n);l.removeEventListener("drop",l.__dropHandler),l.removeEventListener("dragover",l.__dragoverHandler),delete l.__dropHandler,delete l.__dragoverHandler}}class w{static async blob(e){return new Promise(a=>{const t=new FileReader;t.onload=()=>{t.onload=null,a(t.result)},t.readAsArrayBuffer(e)})}}async function d(i){const e=i.split("/"),t=e[e.length-1].split("."),n=t[t.length-1];return{name:t[0],ext:n}}async function g(){return new Promise(i=>{let e=document.createElement("input");e.type="file",e.setAttribute("multiple","multiple"),e.onchange=()=>{e.onchange=null;const a=Array.from(e.files);i(a)},e.click()})}async function m(i,e,a,t){const n=await crs.process.getValue(i.args.files,e,a,t),l=[];for(const r of n){const o=await d(r);l.push({name:o.name,ext:o.ext,value:await fetch(r).then(s=>s.blob())})}return l}async function u(i){i.preventDefault()}async function p(i,e){e.preventDefault();const a=e.dataTransfer.files,t=[];for(const n of a){const l=await d(n.name);t.push({type:n.type,name:l.name,ext:l.ext,size:n.size,value:n})}i.call(this,t)}crs.intent.files=f;export{w as FileFormatter,f as FilesActions,d as get_file_name,m as get_files};
+class FilesActions {
+  static async perform(step, context, process, item) {
+    await this[step.action](step, context, process, item);
+  }
+  static async load(step, context, process, item) {
+    const dialog = await crs.process.getValue(step.args.dialog, context, process, item);
+    if (dialog == true) {
+      const files = await get_files_dialog(step);
+      let results = [];
+      for (const file of files) {
+        const fileDetails = await get_file_name(file.name);
+        results.push({
+          name: fileDetails.name,
+          ext: fileDetails.ext,
+          type: file.type,
+          size: file.size,
+          value: file
+        });
+      }
+      if (step.args.target != null) {
+        await crs.process.setValue(step.args.target, results, context, process, item);
+      }
+      return results;
+    } else {
+      const results = await get_files(step, context, process, item);
+      if (step.args.target != null) {
+        await crs.process.setValue(step.args.target, results, context, process, item);
+      }
+      return results;
+    }
+  }
+  static async save(step, context, process, item) {
+    const fileDetails = await crs.process.getValue(step.args.details, context, process, item);
+    let link = document.createElement("a");
+    link.style.display = "none";
+    document.body.appendChild(link);
+    for (let fileDetail of fileDetails) {
+      let blob = new Blob([fileDetail.value], { type: fileDetail.type });
+      let url = window.URL.createObjectURL(blob);
+      link.href = url;
+      link.download = `${fileDetail.name}.${fileDetail.ext}`;
+      link.click();
+      window.URL.revokeObjectURL(url);
+      url = null;
+      blob = null;
+    }
+    link.parentElement.removeChild(link);
+    link = null;
+  }
+  static async save_canvas(step, context, process, item) {
+    const source = await crs.dom.get_element(step.args.source);
+    const name = await crs.process.getValue(step.args.name, context, process, item) || "image";
+    const url = source.toDataURL("image/png");
+    let link = document.createElement("a");
+    link.style.display = "none";
+    document.body.appendChild(link);
+    link.href = url.replace("image/png", "image/octet-stream");
+    link.download = `${name}.png`;
+    link.click();
+    link.parentElement.removeChild(link);
+    link = null;
+  }
+  static async enable_dropzone(step, context, process, item) {
+    const element = await crs.dom.get_element(step.args.element, context, process, item);
+    const handler = await crs.process.getValue(step.args.handler, context, process, item);
+    const fileDropHandler = filedrop_handler.bind(this, handler);
+    element.addEventListener("drop", fileDropHandler);
+    element.addEventListener("dragover", dragover_handler);
+    element.__dropHandler = fileDropHandler;
+    element.__dragoverHandler = dragover_handler;
+  }
+  static async disable_dropzone(step, context, process, item) {
+    const element = await crs.dom.get_element(step.args.element, context, process, item);
+    element.removeEventListener("drop", element.__dropHandler);
+    element.removeEventListener("dragover", element.__dragoverHandler);
+    delete element.__dropHandler;
+    delete element.__dragoverHandler;
+  }
+}
+class FileFormatter {
+  static async blob(file) {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        reader.onload = null;
+        resolve(reader.result);
+      };
+      reader.readAsArrayBuffer(file);
+    });
+  }
+}
+async function get_file_name(path) {
+  const pathParts = path.split("/");
+  const filePart = pathParts[pathParts.length - 1];
+  const fileParts = filePart.split(".");
+  const ext = fileParts[fileParts.length - 1];
+  return {
+    name: fileParts[0],
+    ext
+  };
+}
+async function get_files_dialog() {
+  return new Promise((resolve) => {
+    let input = document.createElement("input");
+    input.type = "file";
+    input.setAttribute("multiple", "multiple");
+    input.onchange = () => {
+      input.onchange = null;
+      const files = Array.from(input.files);
+      resolve(files);
+    };
+    input.click();
+  });
+}
+async function get_files(step, context, process, item) {
+  const files = await crs.process.getValue(step.args.files, context, process, item);
+  const results = [];
+  for (const file of files) {
+    const fileDetails = await get_file_name(file);
+    results.push({
+      name: fileDetails.name,
+      ext: fileDetails.ext,
+      value: await fetch(file).then((result) => result.blob())
+    });
+  }
+  return results;
+}
+async function dragover_handler(event) {
+  event.preventDefault();
+}
+async function filedrop_handler(handler, event) {
+  event.preventDefault();
+  const files = event.dataTransfer.files;
+  const results = [];
+  for (const file of files) {
+    const fileDetails = await get_file_name(file.name);
+    results.push({
+      type: file.type,
+      name: fileDetails.name,
+      ext: fileDetails.ext,
+      size: file.size,
+      value: file
+    });
+  }
+  handler.call(this, results);
+}
+crs.intent.files = FilesActions;
+export {
+  FileFormatter,
+  FilesActions,
+  get_file_name,
+  get_files
+};

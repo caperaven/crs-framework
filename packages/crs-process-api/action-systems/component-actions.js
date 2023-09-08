@@ -1,1 +1,78 @@
-class p{static async perform(a,t,r,s){await this[a.action](a,t,r,s)}static async observe(a,t,r,s){const e=await crs.dom.get_element(a.args.element,t,r,s),c=await crs.process.getValue(a.args.properties,t,r,s),l=await crs.process.getValue(a.args.callback,t,r,s);e._dataId==null&&(e._dataId=crsbinding.data.addObject(e.id));let n=e._dataId;e._processObserver=e._processObserver||{nextId:0};const o=b(e);e._processObserver[o]={properties:c,eval:u(e,c,o),callback:l};for(let i of c)crsbinding.data.addCallback(n,i,e._processObserver[o].eval);return o}static async unobserve(a,t,r,s){const e=await crs.dom.get_element(a.args.element,t,r,s),c=await crs.process.getValue(a.args.ids,t,r,s);for(const l of c){const n=e._processObserver[l];for(const o of n.properties)crsbinding.data.removeCallback(e._dataId,o,n.eval);n.properties=null,n.eval=null,n.callback=null,delete e._processObserver[l]}}static async notify_ready(a,t,r,s){const e=await crs.dom.get_element(a.args.element,t,r,s);e.dataset.ready="true",e.dispatchEvent(new CustomEvent("ready",{bubbles:!1}))}static async on_ready(a,t,r,s){const e=await crs.dom.get_element(a.args.element,t,r,s),c=await crs.process.getValue(a.args.callback,t,r,s),l=await crs.process.getValue(a.args.caller,t,r,s);if(e.dataset.ready=="true")return await c.call(l);const n=async()=>{e.removeEventListener("ready",n),await c.call(l)};e.addEventListener("ready",n)}}function b(d){const a=d._processObserver.nextId;return d._processObserver.nextId=a+1,a}function u(d,a,t){let r=["if ( "];for(const e of a)r.push(`crsbinding.data.getProperty(this._dataId, "${e}")  != null && `);return r.push(`) { this._processObserver[${t}].callback.call(this) };`),r=r.join("").replace("&& )",")"),new Function(r).bind(d)}crs.intent.component=p;export{p as ComponentActions};
+class ComponentActions {
+  static async perform(step, context, process, item) {
+    await this[step.action](step, context, process, item);
+  }
+  static async observe(step, context, process, item) {
+    const element = await crs.dom.get_element(step.args.element, context, process, item);
+    const properties = await crs.process.getValue(step.args.properties, context, process, item);
+    const callback = await crs.process.getValue(step.args.callback, context, process, item);
+    if (element._dataId == null) {
+      element._dataId = crsbinding.data.addObject(element.id);
+    }
+    let dataId = element._dataId;
+    element._processObserver = element._processObserver || {
+      nextId: 0
+    };
+    const id = getNextId(element);
+    element._processObserver[id] = {
+      properties,
+      eval: createPropertiesEvaluation(element, properties, id),
+      callback
+    };
+    for (let property of properties) {
+      crsbinding.data.addCallback(dataId, property, element._processObserver[id].eval);
+    }
+    return id;
+  }
+  static async unobserve(step, context, process, item) {
+    const element = await crs.dom.get_element(step.args.element, context, process, item);
+    const ids = await crs.process.getValue(step.args.ids, context, process, item);
+    for (const id of ids) {
+      const def = element._processObserver[id];
+      for (const property of def.properties) {
+        crsbinding.data.removeCallback(element._dataId, property, def.eval);
+      }
+      def.properties = null;
+      def.eval = null;
+      def.callback = null;
+      delete element._processObserver[id];
+    }
+  }
+  static async notify_ready(step, context, process, item) {
+    const element = await crs.dom.get_element(step.args.element, context, process, item);
+    element.dataset.ready = "true";
+    element.dispatchEvent(new CustomEvent("ready", { bubbles: false }));
+  }
+  static async on_ready(step, context, process, item) {
+    const element = await crs.dom.get_element(step.args.element, context, process, item);
+    const callback = await crs.process.getValue(step.args.callback, context, process, item);
+    const caller = await crs.process.getValue(step.args.caller, context, process, item);
+    if (element.dataset.ready == "true") {
+      return await callback.call(caller);
+    }
+    const fn = async () => {
+      element.removeEventListener("ready", fn);
+      await callback.call(caller);
+    };
+    element.addEventListener("ready", fn);
+  }
+}
+function getNextId(element) {
+  const id = element._processObserver.nextId;
+  element._processObserver.nextId = id + 1;
+  return id;
+}
+function createPropertiesEvaluation(context, properties, id) {
+  let script = ["if ( "];
+  for (const property of properties) {
+    script.push(`crsbinding.data.getProperty(this._dataId, "${property}")  != null && `);
+  }
+  script.push(`) { this._processObserver[${id}].callback.call(this) };`);
+  script = script.join("").replace("&& )", ")");
+  const fn = new Function(script);
+  return fn.bind(context);
+}
+crs.intent.component = ComponentActions;
+export {
+  ComponentActions
+};

@@ -1,1 +1,28 @@
-class c{static async perform(a,r,s,t){const l=a.args.context?await crs.process.getValue(a.args.context,r,s,t):r,e=await this[a.action]?.(a,l);e!=null&&a.args.target!=null&&await crs.process.setValue(a.args.target,e,r,s,t)}static async call(a,r){return a.args.default===!0?await crs.modules.callDefault(a.args.module,r,a.args.parameters):await crs.modules.call(a.args.module,r,a.args.fnName,a.args.parameters)}static async create_class(a){return a.args.default===!0?await crs.modules.getInstanceOfDefault(a.args.module,a.args.parameters):await crs.modules.getInstanceOf(a.args.module,a.args.class,a.args.parameters)}static async get_constant(a){return await crs.modules.getConstant(a.args.module,a.args.name)}}crs.intent.module=c;export{c as ModuleActions};
+class ModuleActions {
+  static async perform(step, context, process, item) {
+    const ctx = step.args.context ? await crs.process.getValue(step.args.context, context, process, item) : context;
+    const result = await this[step.action]?.(step, ctx);
+    if (result != null && step.args.target != null) {
+      await crs.process.setValue(step.args.target, result, context, process, item);
+    }
+  }
+  static async call(step, context) {
+    if (step.args.default === true) {
+      return await crs.modules.callDefault(step.args.module, context, step.args.parameters);
+    }
+    return await crs.modules.call(step.args.module, context, step.args.fnName, step.args.parameters);
+  }
+  static async create_class(step) {
+    if (step.args.default === true) {
+      return await crs.modules.getInstanceOfDefault(step.args.module, step.args.parameters);
+    }
+    return await crs.modules.getInstanceOf(step.args.module, step.args.class, step.args.parameters);
+  }
+  static async get_constant(step) {
+    return await crs.modules.getConstant(step.args.module, step.args.name);
+  }
+}
+crs.intent.module = ModuleActions;
+export {
+  ModuleActions
+};

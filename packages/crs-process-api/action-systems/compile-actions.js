@@ -1,1 +1,25 @@
-class c{static async perform(a,s,r,t){await this[a.action]?.(a,s,r,t)}static async if_value(a,s,r,t){const e=await crs.process.getValue(a.args.exp,s,r,t),i=await crsbinding.expression.ifFunction(e);return a.args.target!=null&&await crs.process.setValue(a.args.target,i,s,r,t),i}static async case_value(a,s,r,t){let e=await crs.process.getValue(a.args.exp,s,r,t);const i=await crsbinding.expression.caseFunction(e);return a.args.target!=null&&await crs.process.setValue(a.args.target,i,s,r,t),i}}crs.intent.compile=c;export{c as CompileActions};
+class CompileActions {
+  static async perform(step, context, process, item) {
+    await this[step.action]?.(step, context, process, item);
+  }
+  static async if_value(step, context, process, item) {
+    const exp = await crs.process.getValue(step.args.exp, context, process, item);
+    const fn = await crsbinding.expression.ifFunction(exp);
+    if (step.args.target != null) {
+      await crs.process.setValue(step.args.target, fn, context, process, item);
+    }
+    return fn;
+  }
+  static async case_value(step, context, process, item) {
+    let exp = await crs.process.getValue(step.args.exp, context, process, item);
+    const fn = await crsbinding.expression.caseFunction(exp);
+    if (step.args.target != null) {
+      await crs.process.setValue(step.args.target, fn, context, process, item);
+    }
+    return fn;
+  }
+}
+crs.intent.compile = CompileActions;
+export {
+  CompileActions
+};

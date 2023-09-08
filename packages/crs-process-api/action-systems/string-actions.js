@@ -1,1 +1,149 @@
-class d{static async perform(a,t,r,s){await this[a.action]?.(a,t,r,s)}static async inflate(a,t,r,s){if(a.args.parameters==null)return a.args.template;let l=a.args.template,n=a.args.parameters,e=await _(l,n,t,r,s);return e.indexOf("&{")!=-1&&(e=f(e)),a.args.target!=null&&await crs.process.setValue(a.args.target,e,t,r,s),e}static async translate(a,t,r,s){let n=await crs.process.getValue(a.args.template,t,r,s);return n.indexOf("&{")!=-1&&(n=f(n)),a.args.target!=null&&await crs.process.setValue(a.args.target,n,t,r,s),n}static async to_array(a,t,r,s){let n=(await crs.process.getValue(a.args.source,t,r,s)).split(a.args.pattern);return a.args.target!=null&&await crs.process.setValue(a.args.target,n,t,r,s),n}static async from_array(a,t,r,s){let l=await crs.process.getValue(a.args.source,t,r,s),n=a.args.separator||"",e=l.join(n);return a.args.target!=null&&await crs.process.setValue(a.args.target,e,t,r,s),e}static async replace(a,t,r,s){let l=await crs.process.getValue(a.args.source,t,r,s);const n=await crs.process.getValue(a.args.pattern,t,r,s),e=await crs.process.getValue(a.args.value,t,r,s);let g=l.split(n).join(e);return a.args.target!=null&&await crs.process.setValue(a.args.target,g,t,r,s),g}static async get_query_string(a,t,r,s){const l=await crs.process.getValue(a.args.source,t,r,s),n=await crs.process.getValue(a.args.complex_parameters,t,r,s);if((l||"").trim()==="")return;let e;const g=l.includes("?")?l.split("?")[1]:l,u=new URLSearchParams(g);for(const[c,o]of u)if(!((c||"").trim()===""||(o||"").trim()==="")){if((n||[]).includes(c)){const y=o.split(";");for(const V of y){const w=await this.get_query_string({args:{source:V}});w!=null&&(e=e||{},e[c]=e[c]||{},Object.assign(e[c],w))}continue}e=e||{},e[c]=o}return a.args.target!=null&&e!=null&&await crs.process.setValue(a.args.target,e,t,r,s),e}static async template(a,t,r,s){let l=await crs.process.getValue(a.args.template,t,r,s);const n=await crs.process.getValue(a.args.options,t,r,s);for(const e of Object.keys(n))l=l.replaceAll(`__${e}__`,n[e]);return a.args.target!=null&&await crs.process.setValue(a.args.target,l,t,r,s),l}static async slice(a,t,r,s){const l=await crs.process.getValue(a.args.value,t,r,s),n=await crs.process.getValue(a.args.index||0,t,r,s),e=await crs.process.getValue(a.args.length,t,r,s),g=await crs.process.getValue(a.args.overflow||null,t,r,s),u=n+e;let c=l.substring(n,u);return g==="ellipsis"&&l.length>c.length&&(c=`${c.substring(0,e-3)}...`),a.args.target!=null&&await crs.process.setValue(a.args.target,c,t,r,s),c}}async function _(i,a,t,r,s){i=i.split("${").join("${context.");const l=await m(a,t,r,s);let n=new Function("context",["return `",i,"`;"].join("")),e=n(l);return n=null,e}async function m(i,a,t,r){const s=Object.keys(i),l={};for(let n of s){let e=i[n];l[n]=await crs.process.getValue(e,a,t,r)}return l}async function f(i){const a=i.indexOf("&{"),t=i.indexOf("}",a+1),r=i.substring(a+2,t),s=await crsbinding.translations.get(r);return i=i.split(`&{${r}}`).join(s),i.indexOf("&{")!=-1?f(i):i}crs.intent.string=d;export{d as StringActions};
+class StringActions {
+  static async perform(step, context, process, item) {
+    await this[step.action]?.(step, context, process, item);
+  }
+  static async inflate(step, context, process, item) {
+    if (step.args.parameters == null) {
+      return step.args.template;
+    }
+    let template = step.args.template;
+    let parameters = step.args.parameters;
+    let result = await inflate_string(template, parameters, context, process, item);
+    if (result.indexOf("&{") != -1) {
+      result = translate_string(result);
+    }
+    if (step.args.target != null) {
+      await crs.process.setValue(step.args.target, result, context, process, item);
+    }
+    return result;
+  }
+  static async translate(step, context, process, item) {
+    const template = await crs.process.getValue(step.args.template, context, process, item);
+    let result = template;
+    if (result.indexOf("&{") != -1) {
+      result = translate_string(result);
+    }
+    if (step.args.target != null) {
+      await crs.process.setValue(step.args.target, result, context, process, item);
+    }
+    return result;
+  }
+  static async to_array(step, context, process, item) {
+    let str = await crs.process.getValue(step.args.source, context, process, item);
+    let result = str.split(step.args.pattern);
+    if (step.args.target != null) {
+      await crs.process.setValue(step.args.target, result, context, process, item);
+    }
+    return result;
+  }
+  static async from_array(step, context, process, item) {
+    let array = await crs.process.getValue(step.args.source, context, process, item);
+    let separator = step.args.separator || "";
+    let result = array.join(separator);
+    if (step.args.target != null) {
+      await crs.process.setValue(step.args.target, result, context, process, item);
+    }
+    return result;
+  }
+  static async replace(step, context, process, item) {
+    let str = await crs.process.getValue(step.args.source, context, process, item);
+    const pattern = await crs.process.getValue(step.args.pattern, context, process, item);
+    const value = await crs.process.getValue(step.args.value, context, process, item);
+    let result = str.split(pattern).join(value);
+    if (step.args.target != null) {
+      await crs.process.setValue(step.args.target, result, context, process, item);
+    }
+    return result;
+  }
+  static async get_query_string(step, context, process, item) {
+    const str = await crs.process.getValue(step.args.source, context, process, item);
+    const complex_parameters = await crs.process.getValue(step.args.complex_parameters, context, process, item);
+    if ((str || "").trim() === "")
+      return;
+    let result;
+    const queryStr = str.includes("?") ? str.split("?")[1] : str;
+    const searchParams = new URLSearchParams(queryStr);
+    for (const [key, value] of searchParams) {
+      if ((key || "").trim() === "" || (value || "").trim() === "")
+        continue;
+      if ((complex_parameters || []).includes(key)) {
+        const nestedParamPairs = value.split(";");
+        for (const nestedParamPair of nestedParamPairs) {
+          const nestedParamResult = await this.get_query_string({ args: { source: nestedParamPair } });
+          if (nestedParamResult != null) {
+            result = result || {};
+            result[key] = result[key] || {};
+            Object.assign(result[key], nestedParamResult);
+          }
+        }
+        continue;
+      }
+      result = result || {};
+      result[key] = value;
+    }
+    if (step.args.target != null && result != null) {
+      await crs.process.setValue(step.args.target, result, context, process, item);
+    }
+    return result;
+  }
+  static async template(step, context, process, item) {
+    let template = await crs.process.getValue(step.args.template, context, process, item);
+    const options = await crs.process.getValue(step.args.options, context, process, item);
+    for (const key of Object.keys(options)) {
+      template = template.replaceAll(`__${key}__`, options[key]);
+    }
+    if (step.args.target != null) {
+      await crs.process.setValue(step.args.target, template, context, process, item);
+    }
+    return template;
+  }
+  static async slice(step, context, process, item) {
+    const value = await crs.process.getValue(step.args.value, context, process, item);
+    const index = await crs.process.getValue(step.args.index || 0, context, process, item);
+    const length = await crs.process.getValue(step.args.length, context, process, item);
+    const overflow = await crs.process.getValue(step.args.overflow || null, context, process, item);
+    const endIndex = index + length;
+    let result = value.substring(index, endIndex);
+    if (overflow === "ellipsis") {
+      if (value.length > result.length) {
+        result = `${result.substring(0, length - 3)}...`;
+      }
+    }
+    if (step.args.target != null) {
+      await crs.process.setValue(step.args.target, result, context, process, item);
+    }
+    return result;
+  }
+}
+async function inflate_string(string, parameters, context, process, item) {
+  string = string.split("${").join("${context.");
+  const localParameters = await sanitise_parameters(parameters, context, process, item);
+  let fn = new Function("context", ["return `", string, "`;"].join(""));
+  let result = fn(localParameters);
+  fn = null;
+  return result;
+}
+async function sanitise_parameters(parameters, context, process, item) {
+  const keys = Object.keys(parameters);
+  const returnParameters = {};
+  for (let key of keys) {
+    let value = parameters[key];
+    returnParameters[key] = await crs.process.getValue(value, context, process, item);
+  }
+  return returnParameters;
+}
+async function translate_string(value) {
+  const si = value.indexOf("&{");
+  const ei = value.indexOf("}", si + 1);
+  const key = value.substring(si + 2, ei);
+  const trans = await crsbinding.translations.get(key);
+  value = value.split(`&{${key}}`).join(trans);
+  if (value.indexOf("&{") != -1) {
+    return translate_string(value);
+  }
+  return value;
+}
+crs.intent.string = StringActions;
+export {
+  StringActions
+};

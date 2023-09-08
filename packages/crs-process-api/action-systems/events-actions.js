@@ -1,1 +1,30 @@
-class o{static async perform(s,e,t,r){await this[s.action]?.(s,e,t,r)}static async post_message(s,e,t,r){const a=s.args.parameters==null?{}:JSON.parse(JSON.stringify(s.args.parameters)),i=Object.keys(a);for(let n of i)a[n]=await crs.process.getValue(a[n],e,t,r);await crsbinding.events.emitter.postMessage(s.args.query,a)}static async emit(s,e,t,r){const a=s.args.parameters==null?{}:JSON.parse(JSON.stringify(s.args.parameters)),i=Object.keys(a);for(let g of i)a[g]=await crs.process.getValue(a[g],e,t,r);const n=await crs.process.getValue(s.args.event,e,t,r),c=await crsbinding.events.emitter.emit(n,a);return s.args.target!=null&&await crs.process.setValue(s.args.target,c,e,t,r),c}}crs.intent.events=o;export{o as EventsActions};
+class EventsActions {
+  static async perform(step, context, process, item) {
+    await this[step.action]?.(step, context, process, item);
+  }
+  static async post_message(step, context, process, item) {
+    const parameters = step.args.parameters == null ? {} : JSON.parse(JSON.stringify(step.args.parameters));
+    const keys = Object.keys(parameters);
+    for (let key of keys) {
+      parameters[key] = await crs.process.getValue(parameters[key], context, process, item);
+    }
+    await crsbinding.events.emitter.postMessage(step.args.query, parameters);
+  }
+  static async emit(step, context, process, item) {
+    const parameters = step.args.parameters == null ? {} : JSON.parse(JSON.stringify(step.args.parameters));
+    const keys = Object.keys(parameters);
+    for (let key of keys) {
+      parameters[key] = await crs.process.getValue(parameters[key], context, process, item);
+    }
+    const event = await crs.process.getValue(step.args.event, context, process, item);
+    const result = await crsbinding.events.emitter.emit(event, parameters);
+    if (step.args.target != null) {
+      await crs.process.setValue(step.args.target, result, context, process, item);
+    }
+    return result;
+  }
+}
+crs.intent.events = EventsActions;
+export {
+  EventsActions
+};

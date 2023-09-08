@@ -1,1 +1,114 @@
-class p{static async perform(t,a,e,n){await this[t.action]?.(t,a,e,n)}static async set_widget(t,a,e,n){const r=t.args.element,s=await _(t,a,e,n),o=await crs.process.getValue(t.args.context,a,e,n)||e?.parameters?.bId;await crsbinding.events.emitter.postMessage(r,{context:o,html:s})}static async clear_widget(t,a,e,n){const r=t.args.element;if(await crsbinding.events.emitter.postMessage(r,{context:null,html:""}),e?.bindable==!0){let s=crsbinding.data.getContext(e.parameters.bId);delete s.pass,delete s.fail}}static async create_inflation_template(t,a,e,n){const r=await crs.process.getValue(t.args.template_id,a,e,n),s=await crs.process.getValue(t.args.source,a,e,n),o=await crs.process.getValue(t.args.tag_name,a,e,n),d=await crs.process.getValue(t.args.wrapper,a,e,n),m=await crs.process.getValue(t.args.ctx,a,e,n),u=Object.keys(s),i=document.createElement("template");let g=i;if(d!=null){const c=await crs.call("dom","create_element",d,a,e,n);i.content.appendChild(c),g=c}for(let c of u){let w=s[c];w.tag_name=o;let f=await crs.call("dom","create_element",w,a,e,n);f.textContent=["${",c,"}"].join(""),g.content!=null?g.content.appendChild(f):g.appendChild(f)}await crsbinding.inflationManager.register(r,i,m||"context")}static async elements_from_template(t,a,e,n){const r=await crs.process.getValue(t.args.template_id,a,e,n),s=await crs.process.getValue(t.args.template,a,e,n),o=await crs.process.getValue(t.args.data,a,e,n),d=await crs.process.getValue(t.args.remove_template,a,e,n),m=await crs.process.getValue(t.args.recycle,a,e,n),u=await crs.process.getValue(t.args.row_index,a,e,n);let i=await crs.process.getValue(t.args.parent,a,e,n);i=await crs.dom.get_element(i,a,e,n),s!=null&&await b(s,r);let g=null;i!=null&&(m!=!1&&i.childElementCount>0?g=i.children:i.innerHTML="");const c=crsbinding.inflationManager.get(r,o,g,u||0);return c!=null&&i?.appendChild(c),d==!0&&crsbinding.inflationManager.unregister(r),c}static async update_cells(t,a,e,n){return this.elements_from_template(t,a,e,n)}}async function _(l,t){if(l.args.url.indexOf("$fn")!=-1){const a=l.args.url.replace("$fn.",""),e=await t[a](l.args),n=document.createElement("template"),r=l.args.html.split(".")[1];return n.innerHTML=e,crsbinding.templates.add(r,n),e}if(l.args.html.indexOf("$template")==0){const a=l.args.html.split(".")[1];return await crsbinding.templates.get(a,l.args.url)}}async function b(l,t,a){let e;l instanceof HTMLTemplateElement?e=l:e=document.querySelector(l),await crsbinding.inflationManager.register(t,e)}crs.intent.dom_binding=p;export{p as DomBindingActions};
+class DomBindingActions {
+  static async perform(step, context, process, item) {
+    await this[step.action]?.(step, context, process, item);
+  }
+  static async set_widget(step, context, process, item) {
+    const element = step.args.element;
+    const html = await getHTML(step, context, process, item);
+    const ctx = await crs.process.getValue(step.args.context, context, process, item) || process?.parameters?.bId;
+    await crsbinding.events.emitter.postMessage(element, {
+      context: ctx,
+      html
+    });
+  }
+  static async clear_widget(step, context, process, item) {
+    const element = step.args.element;
+    await crsbinding.events.emitter.postMessage(element, {
+      context: null,
+      html: ""
+    });
+    if (process?.bindable == true) {
+      let bc = crsbinding.data.getContext(process.parameters.bId);
+      delete bc.pass;
+      delete bc.fail;
+    }
+  }
+  static async create_inflation_template(step, context, process, item) {
+    const id = await crs.process.getValue(step.args.template_id, context, process, item);
+    const obj = await crs.process.getValue(step.args.source, context, process, item);
+    const tag_name = await crs.process.getValue(step.args.tag_name, context, process, item);
+    const wrapper = await crs.process.getValue(step.args.wrapper, context, process, item);
+    const ctxName = await crs.process.getValue(step.args.ctx, context, process, item);
+    const keys = Object.keys(obj);
+    const template = document.createElement("template");
+    let parent = template;
+    if (wrapper != null) {
+      const wrapperElement = await crs.call("dom", "create_element", wrapper, context, process, item);
+      template.content.appendChild(wrapperElement);
+      parent = wrapperElement;
+    }
+    for (let key of keys) {
+      let args = obj[key];
+      args.tag_name = tag_name;
+      let child = await crs.call("dom", "create_element", args, context, process, item);
+      child.textContent = ["${", key, "}"].join("");
+      if (parent.content != null) {
+        parent.content.appendChild(child);
+      } else {
+        parent.appendChild(child);
+      }
+    }
+    await crsbinding.inflationManager.register(id, template, ctxName || "context");
+  }
+  static async elements_from_template(step, context, process, item) {
+    const id = await crs.process.getValue(step.args.template_id, context, process, item);
+    const template = await crs.process.getValue(step.args.template, context, process, item);
+    const data = await crs.process.getValue(step.args.data, context, process, item);
+    const remove_template = await crs.process.getValue(step.args.remove_template, context, process, item);
+    const recycle = await crs.process.getValue(step.args.recycle, context, process, item);
+    const row_index = await crs.process.getValue(step.args.row_index, context, process, item);
+    let parent = await crs.process.getValue(step.args.parent, context, process, item);
+    parent = await crs.dom.get_element(parent, context, process, item);
+    if (template != null) {
+      await load_template(template, id);
+    }
+    let elements = null;
+    if (parent != null) {
+      if (recycle != false && parent.childElementCount > 0) {
+        elements = parent.children;
+      } else {
+        parent.innerHTML = "";
+      }
+    }
+    const fragment = crsbinding.inflationManager.get(id, data, elements, row_index || 0);
+    if (fragment != null) {
+      parent?.appendChild(fragment);
+    }
+    if (remove_template == true) {
+      crsbinding.inflationManager.unregister(id);
+    }
+    return fragment;
+  }
+  static async update_cells(step, context, process, item) {
+    return this.elements_from_template(step, context, process, item);
+  }
+}
+async function getHTML(step, context) {
+  if (step.args.url.indexOf("$fn") != -1) {
+    const fn = step.args.url.replace("$fn.", "");
+    const html = await context[fn](step.args);
+    const template = document.createElement("template");
+    const id = step.args.html.split(".")[1];
+    template.innerHTML = html;
+    crsbinding.templates.add(id, template);
+    return html;
+  }
+  if (step.args.html.indexOf("$template") == 0) {
+    const id = step.args.html.split(".")[1];
+    const template = await crsbinding.templates.get(id, step.args.url);
+    return template;
+  }
+}
+async function load_template(template, id, context) {
+  let templateElement;
+  if (template instanceof HTMLTemplateElement) {
+    templateElement = template;
+  } else {
+    templateElement = document.querySelector(template);
+  }
+  await crsbinding.inflationManager.register(id, templateElement);
+}
+crs.intent.dom_binding = DomBindingActions;
+export {
+  DomBindingActions
+};

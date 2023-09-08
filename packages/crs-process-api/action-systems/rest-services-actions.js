@@ -1,1 +1,74 @@
-const u={cache:"default",mode:"cors",credentials:"same-origin",referrerPolicy:"no-referrer",redirect:"follow",headers:{"Content-Type":"application/json"}};class d{static async perform(s,a,e,t){await this[s.action]?.(s,a,e,t)}static async get(s,a,e,t){let r=await crs.process.getValue(s.args.request,a,e,t);const n=await crs.process.getValue(s.args.url,a,e,t);r=r||Object.assign({method:"GET"},u);const c=await fetch(n,r).then(o=>o.json());return l(s,c,a,e,t)}static async post(s,a,e,t){const r=await crs.process.getValue(s.args.url,a,e,t),n=await crs.process.getValue(s.args.body);let c=await crs.process.getValue(s.args.request,a,e,t);c=c||Object.assign({body:n,method:"POST"},u);const o=await fetch(r,c).then(g=>g.json());return l(s,o,a,e,t)}static async put(s,a,e,t){const r=await crs.process.getValue(s.args.url,a,e,t),n=await crs.process.getValue(s.args.body);let c=await crs.process.getValue(s.args.request,a,e,t);c=c||Object.assign({body:n,method:"PUT"},u);const o=await fetch(r,c).then(g=>g.json());return l(s,o,a,e,t)}static async patch(s,a,e,t){const r=await crs.process.getValue(s.args.body);let n=await crs.process.getValue(s.args.request);n=n||Object.assign({body:r,method:"PATCH"},u);const c=await fetch(s.args.url,n).then(o=>o.json());return l(s,c,a,e,t)}static async delete(s,a,e,t){let r=await crs.process.getValue(s.args.request);r=r||Object.assign({method:"DELETE"},u);const n=await fetch(s.args.url,r).then(c=>c.json());return l(s,n,a,e,t)}}async function l(i,s,a,e,t){return i.args.target!=null&&await crs.process.setValue(i.args.target,s,a,e,t),s}crs.intent.rest_services=d;export{d as RestServicesActions};
+const BASE_REQUEST = {
+  cache: "default",
+  mode: "cors",
+  credentials: "same-origin",
+  referrerPolicy: "no-referrer",
+  redirect: "follow",
+  headers: {
+    "Content-Type": "application/json"
+  }
+};
+class RestServicesActions {
+  static async perform(step, context, process, item) {
+    await this[step.action]?.(step, context, process, item);
+  }
+  static async get(step, context, process, item) {
+    let request = await crs.process.getValue(step.args.request, context, process, item);
+    const url = await crs.process.getValue(step.args.url, context, process, item);
+    request = request || Object.assign({
+      method: "GET"
+    }, BASE_REQUEST);
+    const result = await fetch(url, request).then((result2) => result2.json());
+    return setTarget(step, result, context, process, item);
+  }
+  static async post(step, context, process, item) {
+    const url = await crs.process.getValue(step.args.url, context, process, item);
+    const body = await crs.process.getValue(step.args.body);
+    let request = await crs.process.getValue(step.args.request, context, process, item);
+    request = request || Object.assign({
+      body,
+      method: "POST"
+    }, BASE_REQUEST);
+    const result = await fetch(url, request).then((result2) => result2.json());
+    return setTarget(step, result, context, process, item);
+  }
+  static async put(step, context, process, item) {
+    const url = await crs.process.getValue(step.args.url, context, process, item);
+    const body = await crs.process.getValue(step.args.body);
+    let request = await crs.process.getValue(step.args.request, context, process, item);
+    request = request || Object.assign({
+      body,
+      method: "PUT"
+    }, BASE_REQUEST);
+    const result = await fetch(url, request).then((result2) => result2.json());
+    return setTarget(step, result, context, process, item);
+  }
+  static async patch(step, context, process, item) {
+    const body = await crs.process.getValue(step.args.body);
+    let request = await crs.process.getValue(step.args.request);
+    request = request || Object.assign({
+      body,
+      method: "PATCH"
+    }, BASE_REQUEST);
+    const result = await fetch(step.args.url, request).then((result2) => result2.json());
+    return setTarget(step, result, context, process, item);
+  }
+  static async delete(step, context, process, item) {
+    let request = await crs.process.getValue(step.args.request);
+    request = request || Object.assign({
+      method: "DELETE"
+    }, BASE_REQUEST);
+    const result = await fetch(step.args.url, request).then((result2) => result2.json());
+    return setTarget(step, result, context, process, item);
+  }
+}
+async function setTarget(step, result, context, process, item) {
+  if (step.args.target != null) {
+    await crs.process.setValue(step.args.target, result, context, process, item);
+  }
+  return result;
+}
+crs.intent.rest_services = RestServicesActions;
+export {
+  RestServicesActions
+};

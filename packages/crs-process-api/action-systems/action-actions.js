@@ -1,1 +1,46 @@
-class f{static async perform(n,r,a,s){let t=`return await ${n.action.replace("$","")}(...(args||[]))`,e=a.functions?.[t];e==null&&(e=new globalThis.crs.AsyncFunction("context","process","item","args",t),a.functions[t]=e);let c=await u(n,r,a,s);const l=await e(r,a,s,c);return n.args.target!=null&&await crs.process.setValue(n.args.target,l,r,a,s),l}}async function u(i,n,r,a){const s=await crs.process.getValue(i.args.parameters,n,r,a);let t=[];if(s==null)return t;for(const e of s){const c=await crs.process.getValue(e,n,r,a);t.push(c)}return t}async function w(i,n,r,a,s){const t=await crs.process.getValue(n.args.action,r,a,s),e=await u(n,r,a,s),c=await crsbinding.utils.getValueOnPath(i,t);let l=i;if(t.indexOf(".")!==-1){const o=t.split(".");o.pop();const g=o.join(".");l=await crsbinding.utils.getValueOnPath(i,g)}return c.call(l,...e)}crs.intent.action=f;export{f as ActionActions,w as callFunctionOnPath,u as getParameters};
+class ActionActions {
+  static async perform(step, context, process, item) {
+    let expr = `return await ${step.action.replace("$", "")}(...(args||[]))`;
+    let fn = process.functions?.[expr];
+    if (fn == null) {
+      fn = new globalThis.crs.AsyncFunction("context", "process", "item", "args", expr);
+      process.functions[expr] = fn;
+    }
+    let parameters = await getParameters(step, context, process, item);
+    const result = await fn(context, process, item, parameters);
+    if (step.args.target != null) {
+      await crs.process.setValue(step.args.target, result, context, process, item);
+    }
+    return result;
+  }
+}
+async function getParameters(step, context, process, item) {
+  const parameters = await crs.process.getValue(step.args.parameters, context, process, item);
+  let result = [];
+  if (parameters == null)
+    return result;
+  for (const parameter of parameters) {
+    const value = await crs.process.getValue(parameter, context, process, item);
+    result.push(value);
+  }
+  return result;
+}
+async function callFunctionOnPath(source, step, context, process, item) {
+  const action = await crs.process.getValue(step.args.action, context, process, item);
+  const args = await getParameters(step, context, process, item);
+  const fn = await crsbinding.utils.getValueOnPath(source, action);
+  let callContext = source;
+  if (action.indexOf(".") !== -1) {
+    const parts = action.split(".");
+    parts.pop();
+    const contextPath = parts.join(".");
+    callContext = await crsbinding.utils.getValueOnPath(source, contextPath);
+  }
+  return fn.call(callContext, ...args);
+}
+crs.intent.action = ActionActions;
+export {
+  ActionActions,
+  callFunctionOnPath,
+  getParameters
+};

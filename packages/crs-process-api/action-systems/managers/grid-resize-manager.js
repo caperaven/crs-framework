@@ -1,1 +1,163 @@
-import{getMouseInputMap as r,clientX as l,clientY as o}from"./input-mapping.js";class m{#t;#s;#e;#l;#h=1;#d=1;#p=[];#y=[];#r=this.#x.bind(this);#u=this.#g.bind(this);#c=this.#v.bind(this);#m=this.#z.bind(this);#a;#o;#n;#i;constructor(t,s){this.#t=t,this.#s=t.getBoundingClientRect(),this.#t.__cssGridResizeMananger=this,this.#l=s,this.#i=r()}dispose(){(this.#t.shadowRoot||this.#t).removeEventListener(this.#i.mousedown,this.#r),this.#t.__cssGridResizeMananger=null,this.#t=null,this.#e=null,this.#l=null,this.#h=null,this.#d=null,this.#p=null,this.#y=null,this.#r=null,this.#u=null,this.#c=null,this.#m=null,this.#a=null,this.#o=null,this.#n=null,this.#s=null,this.#i=null}async initialize(){this.#t.style.position="relative",this.#e=await crs.call("cssgrid","get_column_sizes",{element:this.#t}),this.#h=await crs.call("cssgrid","row_count",{element:this.#t}),this.#d=await crs.call("cssgrid","column_count",{element:this.#t}),await this.#f(),await this.#w(),(this.#t.shadowRoot||this.#t).addEventListener(this.#i.mousedown,this.#r,{passive:!1})}async#f(){const t=this.#t;let s=this.#e.map(i=>`${i}px`);s[s.length-1]="1fr",s=s.join(" "),await crs.call("cssgrid","set_columns",{element:t,columns:s})}async#w(){if(this.#l.columns==null){this.#l.columns=[];for(let t=0;t<this.#h;t++)this.#l.columns.push(t)}for(let t of this.#l.columns){const s=a(t,this.#e);this.#p.push(await u(t,s,this.#h,this.#t.shadowRoot||this.#t))}}async#x(t){if(t.target.dataset.type!="resize-column")return;const s=l(t),i=o(t);this.#a={x:s-this.#s.x,y:i-this.#s.y},this.#o={x:s-this.#s.x,y:i-this.#s.y},this.#n=t.target,t.target.style.background="silver",document.addEventListener(this.#i.mousemove,this.#u,{passive:!1}),document.addEventListener(this.#i.mouseup,this.#c,{passive:!1}),t.preventDefault(),this.#m()}async#g(t){this.#o.x=l(t)-this.#s.x-4,this.#o.y=o(t)-this.#s.y-4,t.preventDefault()}async#v(t){const s=l(t),i=o(t),e={x:s-this.#a.x-this.#s.x-4,y:i-this.#a.y-this.#s.y-4},h=Number(this.#n.dataset.column);this.#n.style.background="transparent",document.removeEventListener(this.#i.mousemove,this.#u),document.removeEventListener(this.#i.mouseup,this.#c),this.#n=null,this.#a=null,this.#o=null,t.preventDefault(),await this.#M(h,e)}async#z(){if(this.#n==null)return;const t=this.#o.x;this.#n.style.translate=`${t}px`,requestAnimationFrame(this.#m)}async#M(t,s){let i=this.#e[t]+s.x+4;this.#e[t]=i,await crs.call("cssgrid","set_column_width",{element:this.#t,position:t,width:`${i}px`}),await this.#_()}async#_(){const t=this.#t.querySelectorAll('[data-type="resize-column"]');for(const s of t){const i=Number(s.dataset.column),e=a(i,this.#e);s.style.translate=`${e}px`}}}async function u(n,t,s,i){const e=await crs.call("dom","create_element",{tag_name:"div",styles:{position:"absolute",top:0,bottom:0,left:0,width:"8px",background:"transparent",translate:`${t-4}px 0`,cursor:"col-resize"},dataset:{column:n,type:"resize-column"}});return i.appendChild(e),e}function a(n,t){let s=0;for(let i=0;i<=n;i++)s+=t[i];return s-4}export{m as CSSGridResizeManager};
+import { getMouseInputMap, clientX, clientY } from "./input-mapping.js";
+class CSSGridResizeManager {
+  #element;
+  #bounds;
+  #sizes;
+  #options;
+  #rowCount = 1;
+  #columnCount = 1;
+  #columnModifiers = [];
+  #rowModifiers = [];
+  #mouseDownHandler = this.#mouseDown.bind(this);
+  #mouseMoveHandler = this.#mouseMove.bind(this);
+  #mouseUpHandler = this.#mouseUp.bind(this);
+  #animateHandler = this.#animate.bind(this);
+  #startPos;
+  #movePos;
+  #dragElement;
+  #inputMap;
+  constructor(element, options) {
+    this.#element = element;
+    this.#bounds = element.getBoundingClientRect();
+    this.#element.__cssGridResizeMananger = this;
+    this.#options = options;
+    this.#inputMap = getMouseInputMap();
+  }
+  dispose() {
+    (this.#element.shadowRoot || this.#element).removeEventListener(this.#inputMap["mousedown"], this.#mouseDownHandler);
+    this.#element.__cssGridResizeMananger = null;
+    this.#element = null;
+    this.#sizes = null;
+    this.#options = null;
+    this.#rowCount = null;
+    this.#columnCount = null;
+    this.#columnModifiers = null;
+    this.#rowModifiers = null;
+    this.#mouseDownHandler = null;
+    this.#mouseMoveHandler = null;
+    this.#mouseUpHandler = null;
+    this.#animateHandler = null;
+    this.#startPos = null;
+    this.#movePos = null;
+    this.#dragElement = null;
+    this.#bounds = null;
+    this.#inputMap = null;
+  }
+  async initialize() {
+    this.#element.style.position = "relative";
+    this.#sizes = await crs.call("cssgrid", "get_column_sizes", { element: this.#element });
+    this.#rowCount = await crs.call("cssgrid", "row_count", { element: this.#element });
+    this.#columnCount = await crs.call("cssgrid", "column_count", { element: this.#element });
+    await this.#setColumnsInPx();
+    await this.#createModifiers();
+    (this.#element.shadowRoot || this.#element).addEventListener(this.#inputMap["mousedown"], this.#mouseDownHandler, { passive: false });
+  }
+  async #setColumnsInPx() {
+    const element = this.#element;
+    let columns = this.#sizes.map((item) => `${item}px`);
+    columns[columns.length - 1] = "1fr";
+    columns = columns.join(" ");
+    await crs.call("cssgrid", "set_columns", { element, columns });
+  }
+  async #createModifiers() {
+    if (this.#options.columns == null) {
+      this.#options.columns = [];
+      for (let i = 0; i < this.#rowCount; i++) {
+        this.#options.columns.push(i);
+      }
+    }
+    for (let column of this.#options.columns) {
+      const size = getColumnX(column, this.#sizes);
+      this.#columnModifiers.push(await createColumnModifier(column, size, this.#rowCount, this.#element.shadowRoot || this.#element));
+    }
+  }
+  async #mouseDown(event) {
+    if (event.target.dataset.type != "resize-column")
+      return;
+    const x = clientX(event);
+    const y = clientY(event);
+    this.#startPos = { x: x - this.#bounds.x, y: y - this.#bounds.y };
+    this.#movePos = { x: x - this.#bounds.x, y: y - this.#bounds.y };
+    this.#dragElement = event.target;
+    event.target.style.background = "silver";
+    document.addEventListener(this.#inputMap["mousemove"], this.#mouseMoveHandler, { passive: false });
+    document.addEventListener(this.#inputMap["mouseup"], this.#mouseUpHandler, { passive: false });
+    event.preventDefault();
+    this.#animateHandler();
+  }
+  async #mouseMove(event) {
+    this.#movePos.x = clientX(event) - this.#bounds.x - 4;
+    this.#movePos.y = clientY(event) - this.#bounds.y - 4;
+    event.preventDefault();
+  }
+  async #mouseUp(event) {
+    const x = clientX(event);
+    const y = clientY(event);
+    const difference = { x: x - this.#startPos.x - this.#bounds.x - 4, y: y - this.#startPos.y - this.#bounds.y - 4 };
+    const column = Number(this.#dragElement.dataset.column);
+    this.#dragElement.style.background = "transparent";
+    document.removeEventListener(this.#inputMap["mousemove"], this.#mouseMoveHandler);
+    document.removeEventListener(this.#inputMap["mouseup"], this.#mouseUpHandler);
+    this.#dragElement = null;
+    this.#startPos = null;
+    this.#movePos = null;
+    event.preventDefault();
+    await this.#resize(column, difference);
+  }
+  async #animate() {
+    if (this.#dragElement == null)
+      return;
+    const x = this.#movePos.x;
+    this.#dragElement.style.translate = `${x}px`;
+    requestAnimationFrame(this.#animateHandler);
+  }
+  async #resize(column, difference) {
+    let newSize = this.#sizes[column] + difference.x + 4;
+    this.#sizes[column] = newSize;
+    await crs.call("cssgrid", "set_column_width", {
+      element: this.#element,
+      position: column,
+      width: `${newSize}px`
+    });
+    await this.#updateModifiers();
+  }
+  async #updateModifiers() {
+    const elements = this.#element.querySelectorAll('[data-type="resize-column"]');
+    for (const element of elements) {
+      const index = Number(element.dataset.column);
+      const x = getColumnX(index, this.#sizes);
+      element.style.translate = `${x}px`;
+    }
+  }
+}
+async function createColumnModifier(column, x, rowSpan, parent) {
+  const element = await crs.call("dom", "create_element", {
+    tag_name: "div",
+    styles: {
+      position: "absolute",
+      top: 0,
+      bottom: 0,
+      left: 0,
+      width: "8px",
+      background: "transparent",
+      translate: `${x - 4}px 0`,
+      cursor: "col-resize"
+    },
+    dataset: {
+      column,
+      type: "resize-column"
+    }
+  });
+  parent.appendChild(element);
+  return element;
+}
+function getColumnX(column, sizes) {
+  let size = 0;
+  for (let i = 0; i <= column; i++) {
+    size += sizes[i];
+  }
+  return size - 4;
+}
+export {
+  CSSGridResizeManager
+};

@@ -1,1 +1,19 @@
-import"./no-content/no-content.js";class s{static async perform(t,n,e,a){await this[t.action](t,n,e,a)}static async show(t,n,e,a){const c=await crs.dom.get_element(t.args.parent,n,e,a),o=document.createElement("no-content");c.appendChild(o)}static async hide(t,n,e,a){(await crs.dom.get_element(t.args.parent,n,e,a)).querySelector("no-content")?.remove()}}crs.intent.no_content=s;export{s as NoContentActions};
+import "./no-content/no-content.js";
+class NoContentActions {
+  static async perform(step, context, process, item) {
+    await this[step.action](step, context, process, item);
+  }
+  static async show(step, context, process, item) {
+    const parent = await crs.dom.get_element(step.args.parent, context, process, item);
+    const instance = document.createElement("no-content");
+    parent.appendChild(instance);
+  }
+  static async hide(step, context, process, item) {
+    const parent = await crs.dom.get_element(step.args.parent, context, process, item);
+    parent.querySelector("no-content")?.remove();
+  }
+}
+crs.intent.no_content = NoContentActions;
+export {
+  NoContentActions
+};

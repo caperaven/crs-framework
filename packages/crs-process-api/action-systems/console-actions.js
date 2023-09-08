@@ -1,1 +1,31 @@
-class o{static async perform(a,e,r,c){await this[a.action](a,e,r,c)}static async log(a,e,r,c){let s=await crs.process.getValue(a.args.message||a.args.messages,e,r,c);Array.isArray(s)||(s=[s]);for(let t=0;t<s.length;t++)s[t]=await crs.process.getValue(s[t],e,r,c);console.log(...s)}static async error(a,e,r,c){const s=await crs.process.getValue(a.args.message,e,r,c);console.error(s)}static async warn(a,e,r,c){const s=await crs.process.getValue(a.args.message,e,r,c);console.warn(s)}static async table(a,e,r,c){const s=await crs.process.getValue(a.args.message,e,r,c);console.table(s)}}crs.intent.console=o;export{o as ConsoleActions};
+class ConsoleActions {
+  static async perform(step, context, process, item) {
+    await this[step.action](step, context, process, item);
+  }
+  static async log(step, context, process, item) {
+    let message = await crs.process.getValue(step.args.message || step.args.messages, context, process, item);
+    if (!Array.isArray(message)) {
+      message = [message];
+    }
+    for (let i = 0; i < message.length; i++) {
+      message[i] = await crs.process.getValue(message[i], context, process, item);
+    }
+    console.log(...message);
+  }
+  static async error(step, context, process, item) {
+    const message = await crs.process.getValue(step.args.message, context, process, item);
+    console.error(message);
+  }
+  static async warn(step, context, process, item) {
+    const message = await crs.process.getValue(step.args.message, context, process, item);
+    console.warn(message);
+  }
+  static async table(step, context, process, item) {
+    const message = await crs.process.getValue(step.args.message, context, process, item);
+    console.table(message);
+  }
+}
+crs.intent.console = ConsoleActions;
+export {
+  ConsoleActions
+};

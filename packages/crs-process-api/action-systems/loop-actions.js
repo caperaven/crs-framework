@@ -1,1 +1,48 @@
-const m=500;class h{static async perform(s,r,a){const t=await crs.process.getValue(s.args.source,r,a);if(t==null)throw new Error(`object on path ${s.args.source} was not set`);const n=Object.keys(s.args.steps),c=s.args.target;if(t.length<=500)await w(s,n,t,c,r,a,0,t.length);else for(let o=0;o<t.length;o+=500){const l=o;let e=o+500;e>t.length&&(e=t.length);let i=new Promise(u=>{let f=setTimeout(async()=>{await w(s,n,t,c,r,a,l,e),clearTimeout(f),f=null,u()},0)});await i,i=null}}}async function w(g,s,r,a,t,n,c,o){for(let l=c;l<o;l++){const e=r[l];a!=null&&await crs.process.setValue(a,e,t,n,e);for(let i of s){const u=g.args.steps[i];await crs.process.runStep(u,t,n,e)}}}crs.intent.loop=h;export{h as LoopActions};
+const BATCH_SIZE = 500;
+class LoopActions {
+  static async perform(step, context, process) {
+    const source = await crs.process.getValue(step.args.source, context, process);
+    if (source == null) {
+      throw new Error(`object on path ${step.args.source} was not set`);
+    }
+    const stepKeys = Object.keys(step.args.steps);
+    const target = step.args.target;
+    if (source.length <= BATCH_SIZE) {
+      await processBatch(step, stepKeys, source, target, context, process, 0, source.length);
+    } else {
+      for (let i = 0; i < source.length; i += BATCH_SIZE) {
+        const start = i;
+        let end = i + BATCH_SIZE;
+        if (end > source.length) {
+          end = source.length;
+        }
+        let promise = new Promise((resolve) => {
+          let timeout = setTimeout(async () => {
+            await processBatch(step, stepKeys, source, target, context, process, start, end);
+            clearTimeout(timeout);
+            timeout = null;
+            resolve();
+          }, 0);
+        });
+        await promise;
+        promise = null;
+      }
+    }
+  }
+}
+async function processBatch(step, stepKeys, collection, target, context, process, start, end) {
+  for (let i = start; i < end; i++) {
+    const item = collection[i];
+    if (target != null) {
+      await crs.process.setValue(target, item, context, process, item);
+    }
+    for (let stepKey of stepKeys) {
+      const s = step.args.steps[stepKey];
+      await crs.process.runStep(s, context, process, item);
+    }
+  }
+}
+crs.intent.loop = LoopActions;
+export {
+  LoopActions
+};

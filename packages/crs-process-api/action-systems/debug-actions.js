@@ -1,3 +1,85 @@
-class m{static async perform(e,a,s,i){await this[e.action]?.(e,a,s,i)}static async start_monitor_events(e,a,s,i){const v=await crs.process.getValue(e.args.log,a,s,i),t=await crs.process.getValue((e.args.tag_name||"").toUpperCase(),a,s,i),d=await crs.process.getValue(e.args.event_name,a,s,i);globalThis.__monitoredEvents={events:[],addedCount:0,removedCount:0},EventTarget.prototype.addEventListenerBase=EventTarget.prototype.addEventListener,EventTarget.prototype.addEventListener=function(n,o){if(this.addEventListenerBase(n,o),t&&this.tagName!==t||d&&n!==d)return;const l=new Error().stack.split(`
-`);v===!0&&console.log("Event added: ",{target:this,type:n,listener:o,trace:l}),globalThis.__monitoredEvents.addedCount++,globalThis.__monitoredEvents.events.push({target:this,type:n,listener:o,trace:l,path:E(this)})},EventTarget.prototype.removeEventListenerBase=EventTarget.prototype.removeEventListener,EventTarget.prototype.removeEventListener=function(n,o){if(this.removeEventListenerBase(n,o),t&&this.tagName!==t||d&&n!==d)return;const l=new Error().stack.split(`
-`);v===!0&&console.log("Event removed: ",{target:this,type:n,listener:o,trace:l}),globalThis.__monitoredEvents.removedCount++,globalThis.__monitoredEvents.events=globalThis.__monitoredEvents.events.filter(g=>g.target!==this||g.type!==n||g.listener!==o)},console.log("Started monitoring events.")}static async stop_monitor_events(e,a,s,i){if(globalThis.__monitoredEvents===void 0){console.warn("No events are being monitored.");return}EventTarget.prototype.addEventListener=EventTarget.prototype.addEventListenerBase,EventTarget.prototype.removeEventListener=EventTarget.prototype.removeEventListenerBase,delete EventTarget.prototype.addEventListenerBase,delete EventTarget.prototype.removeEventListenerBase,globalThis.__monitoredEvents.addedCount>globalThis.__monitoredEvents.removedCount?console.warn(`The number of added events does not match the number of removed events. This may indicate a memory leak. Added: ${globalThis.__monitoredEvents.addedCount}, Removed: ${globalThis.__monitoredEvents.removedCount}`):console.log("No event leaks found");const v=globalThis.__monitoredEvents.events.map(t=>({target:[t.target.tagName,t.target.id||""].join("#"),type:t.type,path:t.path,trace:t.trace}));return console.table(globalThis.__monitoredEvents.events),globalThis.__monitoredEvents=null,delete globalThis.__monitoredEvents,v}}function E(r){if(!(r instanceof HTMLElement))return"";let e="";for(;r;)e=r.tagName+(e?">"+e:""),r=r.parentElement;return e}crs.intent.debug=m;export{m as DebugActions};
+class DebugActions {
+  static async perform(step, context, process, item) {
+    await this[step.action]?.(step, context, process, item);
+  }
+  static async start_monitor_events(step, context, process, item) {
+    const log = await crs.process.getValue(step.args.log, context, process, item);
+    const tagName = await crs.process.getValue((step.args.tag_name || "").toUpperCase(), context, process, item);
+    const eventName = await crs.process.getValue(step.args.event_name, context, process, item);
+    globalThis.__monitoredEvents = {
+      events: [],
+      addedCount: 0,
+      removedCount: 0
+    };
+    EventTarget.prototype.addEventListenerBase = EventTarget.prototype.addEventListener;
+    EventTarget.prototype.addEventListener = function(type, listener) {
+      this.addEventListenerBase(type, listener);
+      if (tagName && this.tagName !== tagName)
+        return;
+      if (eventName && type !== eventName)
+        return;
+      const trace = new Error().stack.split("\n");
+      if (log === true) {
+        console.log("Event added: ", { target: this, type, listener, trace });
+      }
+      globalThis.__monitoredEvents.addedCount++;
+      globalThis.__monitoredEvents.events.push({ target: this, type, listener, trace, path: build_element_path(this) });
+    };
+    EventTarget.prototype.removeEventListenerBase = EventTarget.prototype.removeEventListener;
+    EventTarget.prototype.removeEventListener = function(type, listener) {
+      this.removeEventListenerBase(type, listener);
+      if (tagName && this.tagName !== tagName)
+        return;
+      if (eventName && type !== eventName)
+        return;
+      const trace = new Error().stack.split("\n");
+      if (log === true) {
+        console.log("Event removed: ", { target: this, type, listener, trace });
+      }
+      globalThis.__monitoredEvents.removedCount++;
+      globalThis.__monitoredEvents.events = globalThis.__monitoredEvents.events.filter((e) => e.target !== this || e.type !== type || e.listener !== listener);
+    };
+    console.log("Started monitoring events.");
+  }
+  static async stop_monitor_events(step, context, process, item) {
+    if (globalThis.__monitoredEvents === void 0) {
+      console.warn("No events are being monitored.");
+      return;
+    }
+    EventTarget.prototype.addEventListener = EventTarget.prototype.addEventListenerBase;
+    EventTarget.prototype.removeEventListener = EventTarget.prototype.removeEventListenerBase;
+    delete EventTarget.prototype.addEventListenerBase;
+    delete EventTarget.prototype.removeEventListenerBase;
+    if (globalThis.__monitoredEvents.addedCount > globalThis.__monitoredEvents.removedCount) {
+      console.warn(`The number of added events does not match the number of removed events. This may indicate a memory leak. Added: ${globalThis.__monitoredEvents.addedCount}, Removed: ${globalThis.__monitoredEvents.removedCount}`);
+    } else {
+      console.log(`No event leaks found`);
+    }
+    const result = globalThis.__monitoredEvents.events.map((e) => {
+      return {
+        target: [e.target.tagName, e.target.id || ""].join("#"),
+        type: e.type,
+        path: e.path,
+        trace: e.trace
+      };
+    });
+    console.table(globalThis.__monitoredEvents.events);
+    globalThis.__monitoredEvents = null;
+    delete globalThis.__monitoredEvents;
+    return result;
+  }
+}
+function build_element_path(element) {
+  if (element instanceof HTMLElement === false)
+    return "";
+  let path = "";
+  while (element) {
+    path = element.tagName + (path ? ">" + path : "");
+    element = element.parentElement;
+  }
+  return path;
+}
+crs.intent.debug = DebugActions;
+export {
+  DebugActions
+};

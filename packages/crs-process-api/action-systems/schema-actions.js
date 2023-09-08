@@ -1,1 +1,83 @@
-class u{#a={};#s={};constructor(){this.#a={}}dispose(){this.#a=null,this.#s=null}async register(s,a,r,e){const t=await crs.createSchemaLoader(new a(e));for(const i of r)t.register((await import(i)).default);return this.#a[s]=t,this.#s[s]=[],t}async unregister(s){this.#a[s]?.dispose(),this.#s[s]=null,delete this.#a[s]}async parse(s,a,r){return new Promise(async e=>{const t=async()=>{typeof a=="string"&&(a=await fetch(a).then(c=>c.json()));const i=await this.#a[s].parse(a,r);e(i)};this.#e(s,t)})}#e(s,a){this.#s[s].push(a),this.#s[s].length===1&&this.#r(s)}#r(s){this.#s[s].length<1||this.#s[s][0]().then(()=>this.#s[s].shift()).then(this.#r.bind(this,s))}}class l{static async perform(s,a,r,e){await this[s.action]?.(s,a,r,e)}static async register(s,a,r,e){const t=await crs.process.getValue(s.args.id,a,r,e),i=await crs.process.getValue(s.args.parser,a,r,e),c=await crs.process.getValue(s.args.providers,a,r,e),h=await crs.process.getValue(s.args.parameters,a,r,e),n=await crs.schemaParserManager.register(t,i,c,h);return s.args.target!=null&&await crs.process.setValue(s.args.target,n,a,r,e),n}static async unregister(s,a,r,e){const t=await crs.process.getValue(s.args.id,a,r,e);await crs.schemaParserManager.unregister(t)}static async parse(s,a,r,e){const t=await crs.process.getValue(s.args.id,a,r,e),i=await crs.process.getValue(s.args.schema,a,r,e),c=await crs.schemaParserManager.parse(t,i,a);return s.args.target!=null&&await crs.process.setValue(s.args.target,c,a,r,e),c}}globalThis.crs||={},crs.schemaParserManager=new u,crs.intent.schema=l;export{l as SchemaActions};
+class SchemaParserManager {
+  #parsers = {};
+  #queue = {};
+  constructor() {
+    this.#parsers = {};
+  }
+  dispose() {
+    this.#parsers = null;
+    this.#queue = null;
+  }
+  async register(id, parser, providers, parameters) {
+    const instance = await crs.createSchemaLoader(new parser(parameters));
+    for (const provider of providers) {
+      instance.register((await import(provider)).default);
+    }
+    this.#parsers[id] = instance;
+    this.#queue[id] = [];
+    return instance;
+  }
+  async unregister(id) {
+    this.#parsers[id]?.dispose();
+    this.#queue[id] = null;
+    delete this.#parsers[id];
+  }
+  async parse(id, schema, ctx) {
+    return new Promise(async (resolve) => {
+      const callback = async () => {
+        if (typeof schema == "string") {
+          schema = await fetch(schema).then((result2) => result2.json());
+        }
+        const result = await this.#parsers[id].parse(schema, ctx);
+        resolve(result);
+      };
+      this.#addToQueue(id, callback);
+    });
+  }
+  #addToQueue(id, promise) {
+    this.#queue[id].push(promise);
+    if (this.#queue[id].length === 1) {
+      this.#runQueue(id);
+    }
+  }
+  #runQueue(id) {
+    if (this.#queue[id].length < 1)
+      return;
+    this.#queue[id][0]().then(() => this.#queue[id].shift()).then(this.#runQueue.bind(this, id));
+  }
+}
+class SchemaActions {
+  static async perform(step, context, process, item) {
+    await this[step.action]?.(step, context, process, item);
+  }
+  static async register(step, context, process, item) {
+    const id = await crs.process.getValue(step.args.id, context, process, item);
+    const parser = await crs.process.getValue(step.args.parser, context, process, item);
+    const providers = await crs.process.getValue(step.args.providers, context, process, item);
+    const parameters = await crs.process.getValue(step.args.parameters, context, process, item);
+    const instance = await crs.schemaParserManager.register(id, parser, providers, parameters);
+    if (step.args.target != null) {
+      await crs.process.setValue(step.args.target, instance, context, process, item);
+    }
+    return instance;
+  }
+  static async unregister(step, context, process, item) {
+    const id = await crs.process.getValue(step.args.id, context, process, item);
+    await crs.schemaParserManager.unregister(id);
+  }
+  static async parse(step, context, process, item) {
+    const id = await crs.process.getValue(step.args.id, context, process, item);
+    const schema = await crs.process.getValue(step.args.schema, context, process, item);
+    const result = await crs.schemaParserManager.parse(id, schema, context);
+    if (step.args.target != null) {
+      await crs.process.setValue(step.args.target, result, context, process, item);
+    }
+    return result;
+  }
+}
+globalThis.crs ||= {};
+crs.schemaParserManager = new SchemaParserManager();
+crs.intent.schema = SchemaActions;
+export {
+  SchemaActions
+};

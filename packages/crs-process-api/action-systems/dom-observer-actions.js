@@ -1,1 +1,24 @@
-class o{static async perform(e,s,r,t){await this[e.action]?.(e,s,r,t)}static async observe_resize(e,s,r,t){const a=await crs.dom.get_element(e.args.element,s,r,t),c=await crs.process.getValue(e.args.callback,s,r,t);a.__resizeObserver=new ResizeObserver(n=>{for(let i of n)c(i)}),a.__resizeObserver.observe(a)}static async unobserve_resize(e,s,r,t){const a=await crs.dom.get_element(e.args.element,s,r,t);a.__resizeObserver.disconnect(),delete a.__resizeObserver}}crs.intent.dom_observer=o;export{o as DomObserverActions};
+class DomObserverActions {
+  static async perform(step, context, process, item) {
+    await this[step.action]?.(step, context, process, item);
+  }
+  static async observe_resize(step, context, process, item) {
+    const element = await crs.dom.get_element(step.args.element, context, process, item);
+    const callback = await crs.process.getValue(step.args.callback, context, process, item);
+    element.__resizeObserver = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        callback(entry);
+      }
+    });
+    element.__resizeObserver.observe(element);
+  }
+  static async unobserve_resize(step, context, process, item) {
+    const element = await crs.dom.get_element(step.args.element, context, process, item);
+    element.__resizeObserver.disconnect();
+    delete element.__resizeObserver;
+  }
+}
+crs.intent.dom_observer = DomObserverActions;
+export {
+  DomObserverActions
+};

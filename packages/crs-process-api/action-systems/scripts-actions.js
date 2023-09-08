@@ -1,1 +1,29 @@
-class l{static async perform(e,t,s,c){await this[e.action]?.(e,t,s,c)}static async load_file(e,t,s,c){const n=await crs.process.getValue(e.args.id,t,s,c),r=await crs.process.getValue(e.args.file,t,s,c);return new Promise(i=>{const o=document.querySelector(`#${n}`);if(o!=null)return i(o);const a=document.createElement("script");a.onload=()=>i(a),a.id=n,a.setAttribute("src",r),document.getElementsByTagName("head")[0].appendChild(a)})}static async unload_file(e,t,s,c){const n=await crs.process.getValue(e.args.id),r=document.querySelector(`#${n}`);r.parentElement.removeChild(r)}}crs.intent.scripts=l;export{l as ScriptsActions};
+class ScriptsActions {
+  static async perform(step, context, process, item) {
+    await this[step.action]?.(step, context, process, item);
+  }
+  static async load_file(step, context, process, item) {
+    const id = await crs.process.getValue(step.args.id, context, process, item);
+    const file = await crs.process.getValue(step.args.file, context, process, item);
+    return new Promise((resolve) => {
+      const element = document.querySelector(`#${id}`);
+      if (element != null) {
+        return resolve(element);
+      }
+      const script = document.createElement("script");
+      script.onload = () => resolve(script);
+      script.id = id;
+      script.setAttribute("src", file);
+      document.getElementsByTagName("head")[0].appendChild(script);
+    });
+  }
+  static async unload_file(step, context, process, item) {
+    const id = await crs.process.getValue(step.args.id);
+    const element = document.querySelector(`#${id}`);
+    element.parentElement.removeChild(element);
+  }
+}
+crs.intent.scripts = ScriptsActions;
+export {
+  ScriptsActions
+};

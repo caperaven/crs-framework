@@ -1,1 +1,96 @@
-import{RouteManager as p}from"./managers/router-manager.js";class f{static async perform(e,a,r,t){await this[e.action](e,a,r,t)}static async register(e,a,r,t){const s=await crs.process.getValue(e.args.definition,a,r,t),o=await crs.process.getValue(e.args.routes,a,r,t),l=await crs.process.getValue(e.args.callback,a,r,t);globalThis.routeManager=new p(o,s,l)}static async dispose(e,a,r,t){globalThis.routeManager?.dispose(),delete globalThis.routeManager}static async parse(e,a,r,t){let s=await crs.process.getValue(e.args.url||window.location.href,a,r,t);s.indexOf("://")===-1&&(s=`http://${s}`);const o={params:{},query:{}},l=s.split("?")[1]?.split("&");s=s.split("?")[0];const c=s.split("/");o.protocol=c[0].replace(":",""),o.host=c[2];const g=globalThis.routeManager?.definition?.parameters;for(let i=3;i<c.length;i++){const u=i-3,n=g?.[u]??u;o.params[n]=c[i]}if(l)for(const i of l){const u=i.split("=")[0],n=i.split("=")[1];o.query[u]=n}return o}static async create_url(e,a,r,t){const s=await crs.process.getValue(e.args.definition,a,r,t);if(s==null)return;const o=[s.protocol||"http","://"].join(""),l=s.host,c=[],g=[];if(s.params)for(const n in s.params)c.push(s.params[n]);if(s.query)for(const n in s.query)g.push([`${n}=${s.query[n]}`]);const i=c.join("/"),u=g.length===0?"":`?${g.join("&")}`;return`${o}${l}/${i}${u}`}static async goto(e,a,r,t){await globalThis.routeManager?.goto(e.args.definition)}static async refresh(e,a,r,t){await globalThis.routeManager?.refresh()}static async set_parameters(e,a,r,t){const s=await crs.process.getValue(e.args.parameters,a,r,t);if(s==null)return;const o=await crs.process.getValue(e.args.refresh||!1,a,r,t);globalThis.routeManager.setParameters(s),o&&await globalThis.routeManager.refresh()}static async set_queries(e,a,r,t){const s=await crs.process.getValue(e.args.queries,a,r,t);if(s==null)return;const o=await crs.process.getValue(e.args.refresh||!1,a,r,t);globalThis.routeManager?.setQueries(s),o&&await globalThis.routeManager.refresh()}}crs.intent.route=f;export{f as RouteActions};
+import { RouteManager } from "./managers/router-manager.js";
+class RouteActions {
+  static async perform(step, context, process, item) {
+    await this[step.action](step, context, process, item);
+  }
+  static async register(step, context, process, item) {
+    const definition = await crs.process.getValue(step.args.definition, context, process, item);
+    const routes = await crs.process.getValue(step.args.routes, context, process, item);
+    const callback = await crs.process.getValue(step.args.callback, context, process, item);
+    globalThis.routeManager = new RouteManager(routes, definition, callback);
+  }
+  static async dispose(step, context, process, item) {
+    globalThis.routeManager?.dispose();
+    delete globalThis.routeManager;
+  }
+  static async parse(step, context, process, item) {
+    let url = await crs.process.getValue(step.args.url || window.location.href, context, process, item);
+    if (url.indexOf("://") === -1)
+      url = `http://${url}`;
+    const result = {
+      params: {},
+      query: {}
+    };
+    const queries = url.split("?")[1]?.split("&");
+    url = url.split("?")[0];
+    const parts = url.split("/");
+    result.protocol = parts[0].replace(":", "");
+    result.host = parts[2];
+    const parameters = globalThis.routeManager?.definition?.parameters;
+    for (let i = 3; i < parts.length; i++) {
+      const index = i - 3;
+      const key = parameters?.[index] ?? index;
+      result.params[key] = parts[i];
+    }
+    if (queries) {
+      for (const query of queries) {
+        const key = query.split("=")[0];
+        const value = query.split("=")[1];
+        result.query[key] = value;
+      }
+    }
+    return result;
+  }
+  static async create_url(step, context, process, item) {
+    const definition = await crs.process.getValue(step.args.definition, context, process, item);
+    if (definition == null)
+      return;
+    const protocol = [definition.protocol || "http", "://"].join("");
+    const host = definition.host;
+    const parameters = [];
+    const query = [];
+    if (definition.params) {
+      for (const key in definition.params) {
+        parameters.push(definition.params[key]);
+      }
+    }
+    if (definition.query) {
+      for (const key in definition.query) {
+        query.push([`${key}=${definition.query[key]}`]);
+      }
+    }
+    const paramString = parameters.join("/");
+    const queryString = query.length === 0 ? "" : `?${query.join("&")}`;
+    return `${protocol}${host}/${paramString}${queryString}`;
+  }
+  static async goto(step, context, process, item) {
+    await globalThis.routeManager?.goto(step.args.definition);
+  }
+  static async refresh(step, context, process, item) {
+    await globalThis.routeManager?.refresh();
+  }
+  static async set_parameters(step, context, process, item) {
+    const parameters = await crs.process.getValue(step.args.parameters, context, process, item);
+    if (parameters == null)
+      return;
+    const refresh = await crs.process.getValue(step.args.refresh || false, context, process, item);
+    globalThis.routeManager.setParameters(parameters);
+    if (refresh) {
+      await globalThis.routeManager.refresh();
+    }
+  }
+  static async set_queries(step, context, process, item) {
+    const queries = await crs.process.getValue(step.args.queries, context, process, item);
+    if (queries == null)
+      return;
+    const refresh = await crs.process.getValue(step.args.refresh || false, context, process, item);
+    globalThis.routeManager?.setQueries(queries);
+    if (refresh) {
+      await globalThis.routeManager.refresh();
+    }
+  }
+}
+crs.intent.route = RouteActions;
+export {
+  RouteActions
+};

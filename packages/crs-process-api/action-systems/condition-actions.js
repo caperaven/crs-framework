@@ -1,1 +1,53 @@
-class l{static async perform(t,n,s,r){const e=u(t.args.condition,s)(n,s,r);if(e&&t.pass_step!=null){const o=await crs.getNextStep(s,t.pass_step);await crs.process.runStep(o,n,s,r)}if(!e&&t.fail_step!=null){const o=await crs.getNextStep(s,t.fail_step);await crs.process.runStep(o,n,s,r)}return t.args.target!=null&&await crs.process.setValue(t.args.target,e,n,s,r),e}}function u(i,t){let n=i;for(const r of Object.keys(t.prefixes))n=n.split(r).join(t.prefixes[r]);n.indexOf("$binding")!=-1&&(n=f(n,t.parameters.bId)),n=n.split("$").join("");const s=`return ${n}`;return new Function("context","process","item",s)}function f(i,t){const n=i.indexOf("$binding"),s=i.indexOf(" ",n),c=i.substring(n,s).split("."),e=c[1],o=[`crsbinding.data.getProperty(${t}, "${e}")`];c.length>2&&(c.splice(0,2),o.push(c.join(".")));const a=Array.from(i);return a.splice(n,s-n,o.join(".")),i=a.join(""),i.indexOf("$binding")!=-1&&(i=f(i,t)),i}crs.intent.condition=l;export{l as ConditionActions};
+class ConditionActions {
+  static async perform(step, context, process, item) {
+    const fn = compileExpression(step.args.condition, process);
+    const success = fn(context, process, item);
+    if (success && step.pass_step != null) {
+      const nextStep = await crs.getNextStep(process, step.pass_step);
+      await crs.process.runStep(nextStep, context, process, item);
+    }
+    if (!success && step.fail_step != null) {
+      const nextStep = await crs.getNextStep(process, step.fail_step);
+      await crs.process.runStep(nextStep, context, process, item);
+    }
+    if (step.args.target != null) {
+      await crs.process.setValue(step.args.target, success, context, process, item);
+    }
+    return success;
+  }
+}
+function compileExpression(condition, process) {
+  let exp = condition;
+  for (const key of Object.keys(process.prefixes)) {
+    exp = exp.split(key).join(process.prefixes[key]);
+  }
+  if (exp.indexOf("$binding") != -1) {
+    exp = processBinding(exp, process.parameters.bId);
+  }
+  exp = exp.split("$").join("");
+  const code = `return ${exp}`;
+  return new Function("context", "process", "item", code);
+}
+function processBinding(exp, bId) {
+  const is = exp.indexOf("$binding");
+  const ie = exp.indexOf(" ", is);
+  const sub = exp.substring(is, ie);
+  const parts = sub.split(".");
+  const property = parts[1];
+  const code = [`crsbinding.data.getProperty(${bId}, "${property}")`];
+  if (parts.length > 2) {
+    parts.splice(0, 2);
+    code.push(parts.join("."));
+  }
+  const expa = Array.from(exp);
+  expa.splice(is, ie - is, code.join("."));
+  exp = expa.join("");
+  if (exp.indexOf("$binding") != -1) {
+    exp = processBinding(exp, bId);
+  }
+  return exp;
+}
+crs.intent.condition = ConditionActions;
+export {
+  ConditionActions
+};
