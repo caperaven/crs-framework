@@ -29,12 +29,15 @@ export default class EntityDetails extends crsbinding.classes.ViewBase {
             title: "No Records Found",
             message: "Either you do not have sufficient user rights required to display the records or there are no records to be displayed."
         }
+
+        globalThis.translations.entityDetails = {
+           collapseAll: "Collapse All"
+        }
     }
 
     async load() {
         await crsbinding.translations.add({
             collapseAll: "Collapse All",
-            showIds: "Show Ids",
         }, "entityDetails");
 
         this.#details = this.element.querySelector("entity-details");
@@ -58,19 +61,19 @@ export default class EntityDetails extends crsbinding.classes.ViewBase {
 
     async #getEntities(event) {
         this.#entities = [
-            {entityType: "Entity 1", entityIds: [1, 2, 3]},
-            {entityType: "Entity 2", entityIds: [4, 5, 6]},
-            {entityType: "Entity 3", entityIds: [7, 8, 9]},
-            {entityType: "Entity 4", entityIds: [10, 11, 12]},
-            {entityType: "Entity 5", entityIds: [13, 14, 15]},
+            {entityType: "Entity 1", title:  "Entity 1", entityIds: [1, 2, 3]},
+            {entityType: "Entity 2", title: "Entity 2", entityIds: [4, 5, 6]},
+            {entityType: "Entity 3", title: "Entity 3", entityIds: [7, 8, 9]},
+            {entityType: "Entity 4", title: "Entity 4", entityIds: [10, 11, 12]},
+            {entityType: "Entity 5", title: "Entity 5", entityIds: [13, 14, 15]},
         ]
 
         await crsbinding.events.emitter.postMessage("entity-details", { action: "addEntities", data: this.#entities })
     }
 
     async #getEntityItems(event) {
-        const entityType = event.detail.entityType;
-        const entityIds = event.detail.entityIds;
+        const entityType = event.detail.entity.entityType;
+        const entityIds = event.detail.entity.entityIds;
         const count = entityIds.length;
         const ruleCount = await crs.call("random", "integer", { min: 1, max: 9 });
 
