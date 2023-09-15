@@ -67,7 +67,7 @@ export default class EntityDetails extends HTMLElement {
     async init() {
         this.addEventListener("click", this.#clickHandler);
         this.addEventListener("dblclick", this.#dblclickHandler);
-        await this.#refresh();
+        await this.refresh();
     }
 
     /**
@@ -128,7 +128,9 @@ export default class EntityDetails extends HTMLElement {
      * @param {Object} data - the data to be used to draw the component if this is empty it will request it from the server
      * using a event
      */
-    async #refresh() {
+    async refresh() {
+        const itemsContainer = this.shadowRoot.querySelector(".items");
+        itemsContainer.innerHTML = "";
         this.#entityData = null;
         this.dispatchEvent(new CustomEvent("get_entities", {}));
     }
@@ -254,7 +256,7 @@ export default class EntityDetails extends HTMLElement {
         const target = event.composedPath()[0];
         this.#sortDirection = this.#sortDirection == SORT_DIRECTION.ASCENDING ? SORT_DIRECTION.DESCENDING : SORT_DIRECTION.ASCENDING;
         target.textContent = SORT_ICONS[this.#sortDirection];
-        await this.#refresh();
+        await this.refresh();
     }
 
     /**
@@ -333,13 +335,6 @@ export default class EntityDetails extends HTMLElement {
      */
     async onMessage(event) {
         this[event.action]?.(event.data, event.entityType);
-    }
-
-    /**
-     * @method refresh - Redraws the component.
-     */
-    async refresh() {
-        await this.#refresh();
     }
 }
 

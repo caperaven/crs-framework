@@ -122,7 +122,7 @@ ul {
     align-items: center;
     background: var(--window);
     position: sticky;
-    top: 3.3rem;
+    top: 40px;
     padding: 0 var(--padding);
     height: 40px;
     margin-left: 1rem;
