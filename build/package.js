@@ -130,6 +130,11 @@ export async function packageHTML(sourceFile, targetFile, minified) {
         src = decoder.decode(minify(encoder.encode(src), { minify_css: true, minify_js: true, do_not_minify_doctype: true, keep_closing_tags: true }));
     }
 
+    // NOTE GM: This is a temporary fix because the data-folder is different when using it as a package. This needs to be relooked with crs-binding3
+    if(sourceFile === "./components/calendar/calendar.html") {
+        src = src.replaceAll('./components/calendar/', './packages/crs-framework/components/calendar/');
+    }
+
     await Deno.writeTextFile(targetFile, src);
     console.log(sourceFile);
 }

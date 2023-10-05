@@ -35,6 +35,10 @@ export default class EntityDetails extends HTMLElement {
     #sortDirection = SORT_DIRECTION.ASCENDING;
     #entityData = null;
 
+    get entityData() {
+        return this.#entityData;
+    }
+
     /**
      * @constructor - this will create the shadow root and attach it to the component.
      */
@@ -51,6 +55,7 @@ export default class EntityDetails extends HTMLElement {
         const css = `<link rel="stylesheet" href="${import.meta.url.replace(".js", ".css")}">`;
         const html = await fetch(import.meta.url.replace(".js", ".html")).then(result => result.text());
         this.shadowRoot.innerHTML = `${css}${html}`;
+        await crsbinding.translations.add( globalThis.translations.entityDetails, "entityDetails");
         await crsbinding.translations.parseElement(this.shadowRoot.querySelector("header"));
         requestAnimationFrame(() => this.init())
     }
@@ -62,7 +67,7 @@ export default class EntityDetails extends HTMLElement {
     async init() {
         this.addEventListener("click", this.#clickHandler);
         this.addEventListener("dblclick", this.#dblclickHandler);
-        await this.#refresh();
+        await this.refresh();
     }
 
     /**
@@ -72,6 +77,7 @@ export default class EntityDetails extends HTMLElement {
     async disconnectedCallback() {
         this.removeEventListener("click", this.#clickHandler);
         this.addEventListener("dblclick", this.#dblclickHandler);
+        await crsbinding.translations.delete("entityDetails");
 
         this.#sortDirection = null;
         this.#clickHandler = null;
@@ -122,7 +128,9 @@ export default class EntityDetails extends HTMLElement {
      * @param {Object} data - the data to be used to draw the component if this is empty it will request it from the server
      * using a event
      */
-    async #refresh() {
+    async refresh() {
+        const itemsContainer = this.shadowRoot.querySelector(".items");
+        itemsContainer.innerHTML = "";
         this.#entityData = null;
         this.dispatchEvent(new CustomEvent("get_entities", {}));
     }
@@ -174,17 +182,25 @@ export default class EntityDetails extends HTMLElement {
 
             const li = clone.firstElementChild;
 
-            li.dataset.entityType = entityType;
+            li.dataset.entityType = entityItem.entityType;
             li.dataset.id = entityItem.id;
 
             setStatus(li, entityItem.status, developmentStatuses);
 
             li.querySelector(".value").textContent = entityItem.code;
             li.querySelector(".description").textContent = entityItem.descriptor || "";
-            li.querySelector(".count").textContent = entityItem.rules.length;
 
-            const container = li.querySelector("ul");
-            await this.#drawRules(container, entityItem.rules, ruleItemTemplate, developmentStatuses);
+            if (entityItem.rules == null || entityItem.rules.length == 0) {
+                li.querySelector(".count").remove();
+                li.querySelector("[data-action='expandItem']").remove();
+                li.classList.add("no-rules");
+            }
+            else {
+                li.querySelector(".count").textContent = entityItem.rules.length;
+                const container = li.querySelector("ul");
+                await this.#drawRules(container, entityItem.rules, ruleItemTemplate, developmentStatuses);
+            }
+
             fragment.appendChild(clone);
         }
         target.appendChild(fragment);
@@ -240,7 +256,7 @@ export default class EntityDetails extends HTMLElement {
         const target = event.composedPath()[0];
         this.#sortDirection = this.#sortDirection == SORT_DIRECTION.ASCENDING ? SORT_DIRECTION.DESCENDING : SORT_DIRECTION.ASCENDING;
         target.textContent = SORT_ICONS[this.#sortDirection];
-        await this.#refresh();
+        await this.refresh();
     }
 
     /**
@@ -261,9 +277,9 @@ export default class EntityDetails extends HTMLElement {
         listItem.setAttribute("aria-busy", "true");
 
         const entityType = listItem.dataset.entityType;
-        const entityIds = this.#entityData.find(item => item.entityType === entityType).entityIds;
+        const entity = this.#entityData.find(item => item.entityType === entityType);
 
-        const args = { componentId: this.id, entityType, entityIds }
+        const args = { componentId: this.id, entity, entityData: this.#entityData }
         this.dispatchEvent(new CustomEvent("get_entity_items", { detail: args }));
     }
 
@@ -332,7 +348,7 @@ function createEntityItem(entityTemplate, entity) {
     const clone = entityTemplate.content.cloneNode(true);
     const entityElement = clone.querySelector("li");
     entityElement.dataset.entityType = entity.entityType;
-    entityElement.querySelector(".entity-value").textContent = entity.entityType;
+    entityElement.querySelector(".entity-value").textContent = entity.title;
     entityElement.querySelector(".count").textContent = entity.entityIds.length;
     return clone;
 }
@@ -351,7 +367,13 @@ function createRuleItem(ruleItemTemplate, item, developmentStatuses) {
 
     setStatus(li, item.status, developmentStatuses);
 
-    li.querySelector(".value").textContent = item.code;
+    if(item.code) {
+        li.querySelector(".value").textContent = item.code;
+    }
+    else {
+        li.querySelector(".value").remove();
+    }
+
     li.querySelector(".description").textContent = item.descriptor || "";
     return clone;
 }
@@ -378,6 +400,7 @@ function setStatus(parentElement, status, developmentStatuses) {
     const statusElement = parentElement.querySelector(".status");
     statusElement.textContent = icon;
     statusElement.setAttribute("title", title);
+    statusElement.setAttribute("tooltip", title);
     statusElement.style.color = color;
 }
 

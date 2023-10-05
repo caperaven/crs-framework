@@ -10,9 +10,8 @@ header {
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    margin: 0 var(--padding);
     border-bottom: var(--border);
-    padding: var(--padding);
+    padding-bottom: var(--padding);
 }
 
 header label {
@@ -27,6 +26,10 @@ header label {
     overflow-y: auto;
 }
 
+.items {
+    margin: 0 0.5rem;
+}
+
 .spacer {
     border-right: var(--border);
     width: 1px;
@@ -34,7 +37,7 @@ header label {
     margin: 0 var(--padding);
 }
 
-#btnCollapseAll, #btnSorting {
+#btnCollapseAll, #btnSorting, #btnRefresh {
     background: transparent;
     border: 0;
     outline: none;
@@ -43,19 +46,31 @@ header label {
 
 #btnCollapseAll {
     color: var(--blue);
+    font-size: 1rem;
+    height: 40px;
 }
 
-#btnSorting {
+#btnSorting, #btnRefresh {
     font-family: crsfrw;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
+    height: 40px;
+    width: 40px;
+}
+
+#btnRefresh {
+    padding-right: var(--padding);
+}
+
+.entity-item {
+    border-bottom: var(--border);
 }
 
 .entity {
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding: var(--padding);
-    border-bottom: var(--border);
+    padding: 0 var(--padding);
+    height: 40px;
     position: sticky;
     top: 0;
     background: var(--window);
@@ -65,12 +80,18 @@ header label {
 .entity-value {
     flex: 1;
     pointer-events: none;
+    font-weight: bold;
+}
+
+.no-rules {
+    padding-left: 1.75rem;
 }
 
 .count {
     display: flex;
     flex-direction: row;
-    padding: var(--padding);
+    height: 26px;
+    padding: 0 var(--padding);
     background: var(--blue-s2);
     color: var(--blue);
     border-radius: var(--radius);
@@ -101,8 +122,9 @@ ul {
     align-items: center;
     background: var(--window);
     position: sticky;
-    top: 3.3rem;
-    padding: var(--padding);
+    top: 40px;
+    padding: 0 var(--padding);
+    height: 40px;
     margin-left: 1rem;
 }
 
@@ -125,12 +147,14 @@ ul {
 .rule-item {
     display: flex;
     flex-direction: row;
+    height: 32px;
     border-radius: var(--radius);
     background: var(--grey-s3);
     cursor: pointer;
-    padding: var(--padding);
+    padding: 0 var(--padding);
     margin-left: 4rem;
-    margin-bottom: 0.5rem;
+    margin-bottom: var(--margin);
+    margin-right: var(--margin);
     align-items: center;
     border-radius: var(--radius);
 }
