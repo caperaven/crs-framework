@@ -3,7 +3,10 @@ import {validateCell} from "./cell-validation.js";
 class CellEditingManager extends crs.classes.Observable {
     #store = {};
     #currentCell = null;
+    #focusCell = null;
     #keyDownHandler = this.#keyDown.bind(this);
+    #focusInHandler = this.#focusIn.bind(this);
+    #keyUpTarget = null;
     #clickHandler = this.#click.bind(this);
     #dblclickHandler = this.#dblclick.bind(this);
 
@@ -24,7 +27,26 @@ class CellEditingManager extends crs.classes.Observable {
         super.dispose();
     }
 
+    async #setFocusCell(element) {
+        // 1 remove focus decorations from current focus item
+        if (this.#focusCell != null && this.#focusCell.dataset.celltype != null) {
+            const text = this.#focusCell.firstElementChild.textContent;
+            this.#focusCell.classList.remove("collection");
+            this.#focusCell.innerHTML = text;
+        }
+
+        // 2 add focus decoration to new focus item if required
+        this.#focusCell = element;
+        if (this.#focusCell.dataset.celltype != null) {
+            await createEditable(this.#focusCell);
+        }
+    }
+
     async #startEditing(target) {
+        if (target.classList.contains("collection")) {
+            target = target.firstElementChild;
+        }
+
         target.__oldValue = target.textContent;
         target.setAttribute("contenteditable", "true");
         this.#currentCell = target;
@@ -49,8 +71,46 @@ class CellEditingManager extends crs.classes.Observable {
     }
 
     async #click(event) {
+        const target = event.composedPath()[0];
+
+        if (target.nodeName === "SPAN" && target.parentElement.dataset.contenteditable != null) return;
+
+        if (target.nodeName === "BUTTON" && target.parentElement.dataset.contenteditable != null) {
+            return this.#btnClick(target);
+        }
+
         if (this.#currentCell != null) {
             await this.#endEditing(this.#currentCell);
+        }
+
+        await this.#setFocusCell(target);
+    }
+
+    async #btnClick(target) {
+        const action = target.dataset.action;
+        const fieldName = target.parentElement.dataset.field;
+        const definitionElement = target.closest("[data-def]");
+        const definition = definitionElement.dataset.def;
+
+        const fieldDefinition = await crs.call("cell_editing", "get_field_definition", {
+            name: definition,
+            field_name: fieldName
+        })
+
+        const model = await crs.call("cell_editing", "get_model", {
+            name: definition
+        });
+
+        if (fieldDefinition.callback != null) {
+            // 1. call the callback and get the result
+            const result = await fieldDefinition.callback(action, fieldName, fieldDefinition, model);
+
+            // if the result is a collection then we show a select to find the item.
+            if (Array.isArray(result)) {
+                return this.#showSelect(target, result);
+            }
+
+            return this.#selectItem(target, result);
         }
     }
 
@@ -92,6 +152,8 @@ class CellEditingManager extends crs.classes.Observable {
         // since we need to step editing on focus out we need to do it manually.
         if (event.code === "Tab") {
             await this.#endEditing(target);
+            this.#keyUpTarget = target.getRootNode();
+            this.#keyUpTarget.addEventListener("focusin", this.#focusInHandler, { capture: true, composed: true });
         }
 
         // if we are editing a numeric input then only allow numeric keys.
@@ -111,6 +173,38 @@ class CellEditingManager extends crs.classes.Observable {
             }
             return;
         }
+    }
+
+    async #focusIn(event) {
+        this.#keyUpTarget.removeEventListener("focusin", this.#focusInHandler, { capture: true, composed: true });
+        this.#keyUpTarget = null;
+
+        const target = event.composedPath()[0];
+        if (target.dataset.field != null && target.dataset.contenteditable != null) {
+            await this.#setFocusCell(target);
+        }
+    }
+
+    /**
+     * Show a select to find the item and once you have found it use selectItem to select it.
+     * @param target - the button that was clicked.
+     * @param items - the data items to select from.
+     * @returns {Promise<void>}
+     */
+    async #showSelect(target, items) {
+
+    }
+
+    /**
+     * Update the model with the selected item.
+     * This also includes other properties that may be required.
+     * Also make sure that the relevant UI has been updated.
+     * @param target - the button that was clicked.
+     * @param item - the selected item.
+     * @returns {Promise<void>}
+     */
+    async #selectItem(target, item) {
+
     }
 
     /**
@@ -198,6 +292,7 @@ function setSelectionRange(target) {
     const selection = window.getSelection();
     selection.removeAllRanges();
     selection.addRange(range);
+    target.focus();
 }
 
 async function setValueOnModel(cellElement) {
@@ -253,16 +348,20 @@ async function setElementTypes(cellElement) {
     }
 }
 
-async function createEditable(cellElement, type) {
+async function createEditable(cellElement) {
     const field = cellElement.dataset.field;
 
+    const fragment = document.createDocumentFragment();
     const span = document.createElement("span");
     span.dataset.field = field;
     span.dataset.contenteditable = "true";
+    span.textContent = cellElement.textContent;
+
+    fragment.appendChild(span);
 
     let icon = "chevron-down";
 
-    switch (type) {
+    switch (cellElement.dataset.celltype) {
         case "lookup": {
             icon = "lookup";
             break;
@@ -275,10 +374,12 @@ async function createEditable(cellElement, type) {
     button.setAttribute("aria-label", "Open");
     button.classList.add("icon");
     button.textContent = icon;
+    button.dataset.action = cellElement.dataset.celltype;
+    fragment.appendChild(button);
 
-    delete cellElement.dataset.contenteditable;
-    delete cellElement.dataset.field;
+    cellElement.textContent = "";
     cellElement.classList.add("collection");
+    cellElement.appendChild(fragment);
 }
 
 crs.cellEditing = new CellEditingManager();

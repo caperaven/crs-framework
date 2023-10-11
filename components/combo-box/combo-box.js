@@ -110,7 +110,7 @@ class ComboBox extends crs.classes.BindableElement {
     #setTextFromValue(value) {
         if (this.#busy === LOADING) return;
 
-        if ((value ?? "").trim().length == 0) {
+        if ((value.toString() ?? "").trim().length == 0) {
             return this.setProperty("searchText", "");
         }
 

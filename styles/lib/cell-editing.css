@@ -23,3 +23,21 @@
 [data-contenteditable="true"][aria-required]:empty:focus {
     border: solid 1px var(--orange);
 }
+
+[data-contenteditable="true"].collection {
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+}
+
+[data-contenteditable="true"].collection span {
+    flex: 1;
+}
+
+[data-contenteditable="true"].collection button {
+    font-family: crsfrw;
+    font-size: 1.2rem;
+    border: none;
+    border-left: var(--border);
+    cursor: pointer;
+}
