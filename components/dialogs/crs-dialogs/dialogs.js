@@ -105,6 +105,10 @@ class Dialogs extends crs.classes.BindableElement {
         }
 
         await newDialog.initialize(content, options, context);
+
+        if (options?.maximize === true) {
+            await newDialog.toggleFullscreen();
+        }
     }
 
     /**

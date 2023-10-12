@@ -139,29 +139,31 @@ class CRSDialog extends crs.classes.BindableElement {
     }
 
     async toggleFullscreen(event) {
-        const btnResize = event.composedPath()[0];
-        this.classList.toggle("fullscreen");
+        requestAnimationFrame(async () => {
+            const btnResize = this.shadowRoot.querySelector("#btnResize");
+            this.classList.toggle("fullscreen");
 
-        const icon = this.classList.contains("fullscreen") ? "close-fullscreen" : "open-fullscreen";
-        btnResize.textContent = icon;
+            const icon = this.classList.contains("fullscreen") ? "close-fullscreen" : "open-fullscreen";
+            btnResize.textContent = icon;
 
-        const canMove = this.classList.contains("fullscreen") ? false : true;
-        await this.#canMove(canMove);
+            const canMove = this.classList.contains("fullscreen") ? false : true;
+            await this.#canMove(canMove);
 
-        if (canMove == false) {
-            this.#translateBackup = this.style.translate;
-            this.style.translate = null;
-        }
-        else {
-            if (this.#translateBackup == "-50% -50%") {
-                this.style.left = "50%";
-                this.style.top = "50%";
+            if (canMove == false) {
+                this.#translateBackup = this.style.translate;
+                this.style.translate = null;
             }
+            else {
+                if (this.#translateBackup == "-50% -50%") {
+                    this.style.left = "50%";
+                    this.style.top = "50%";
+                }
 
-            this.style.translate = this.#translateBackup;
-            this.#translateBackup = null;
+                this.style.translate = this.#translateBackup;
+                this.#translateBackup = null;
 
-        }
+            }
+        })
     }
 }
 

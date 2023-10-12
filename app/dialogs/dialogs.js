@@ -94,4 +94,18 @@ export default class DialogsViewModel extends crs.classes.BindableElement {
             }
         }, this)
     }
+
+    async maximize(event) {
+        const body = this.shadowRoot.querySelector("#tplSubBody").content.cloneNode(true).firstElementChild;
+
+        await crs.call("dialogs", "show", {
+            id: "sub-dialog",
+            content: {
+                body
+            },
+            options: {
+                maximize: true
+            }
+        }, this)
+    }
 }
