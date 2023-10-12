@@ -94,4 +94,22 @@ export default class DialogsViewModel extends crs.classes.BindableElement {
             }
         }, this)
     }
+
+    async displayMaximized(id) {
+        const header = this.shadowRoot.querySelector("#tplHeader").content.cloneNode(true).firstElementChild;
+        const body = this.shadowRoot.querySelector("#tplBody").content.cloneNode(true).firstElementChild;
+        const footer = this.shadowRoot.querySelector("#tplFooter").content.cloneNode(true).firstElementChild;
+
+        await crs.call("dialogs", "show", {
+            id,
+            content: {
+                header, body, footer
+            },
+            options: {
+                modal: id === "maximized-dialog",
+                maximized: true,
+                remember: true
+            }
+        }, this)
+    }
 }
