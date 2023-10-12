@@ -96,7 +96,10 @@ export default class DialogsViewModel extends crs.classes.BindableElement {
     }
 
     async maximize(event) {
-        const body = this.shadowRoot.querySelector("#tplSubBody").content.cloneNode(true).firstElementChild;
+        const body = document.createElement("div");
+        body.style.width = "1024px";
+        body.style.height = "768px";
+        body.style.background = "red";
 
         await crs.call("dialogs", "show", {
             id: "sub-dialog",
