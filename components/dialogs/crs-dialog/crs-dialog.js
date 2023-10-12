@@ -158,13 +158,11 @@ class CRSDialog extends crs.classes.BindableElement {
 
     async toggleFullscreen(event) {
         requestAnimationFrame(async () => {
-            const btnResize = this.shadowRoot.querySelector("#btnResize");
             this.classList.toggle("fullscreen");
 
-            const icon = this.classList.contains("fullscreen") ? "close-fullscreen" : "open-fullscreen";
-            btnResize.textContent = icon;
+            const isFullScreen = this.classList.contains("fullscreen")
 
-            const canMove = this.classList.contains("fullscreen") ? false : true;
+            const canMove = isFullScreen ? false : true;
             await this.#canMove(canMove);
 
             if (canMove == false) {
@@ -179,8 +177,14 @@ class CRSDialog extends crs.classes.BindableElement {
 
                 this.style.translate = this.#translateBackup;
                 this.#translateBackup = null;
-
             }
+
+            const icon = this.classList.contains("fullscreen") ? "close-fullscreen" : "open-fullscreen";
+            const btnResize = this.shadowRoot.querySelector("#btnResize");
+            if (btnResize == null) {
+                debugger;
+            }
+            btnResize.textContent = icon;
         })
     }
 }
