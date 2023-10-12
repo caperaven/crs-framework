@@ -38,6 +38,7 @@ class DialogsActions {
             options.position = await crs.process.getValue(options.position ?? "left", context, process, item);
             options.anchor = await crs.process.getValue(options.anchor ?? "top", context, process, item);
             options.margin = await crs.process.getValue(options.margin ?? 0, context, process, item);
+            options.maximized = await crs.process.getValue(options.maximized ?? false, context, process, item);
         }
 
         await crs.dialogs.showDialog(id, content, options, context);

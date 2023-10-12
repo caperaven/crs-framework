@@ -94,6 +94,24 @@ class CRSDialog extends crs.classes.BindableElement {
                 this.style.left = "50%";
                 this.style.translate = "-50% -50%";
 
+                if(options?.maximized === true){
+                    this.classList.toggle("fullscreen");
+
+                    if(options?.transform != null){
+                        this.style.translate = `${options.transform.x}px ${options.transform.y}px`;
+                        this.style.width = `${options.transform.width}px`;
+                        this.style.height = `${options.transform.height}px`;
+                    }
+
+                    this.style.translate = "0px";
+
+                    this.style.top = 0;
+                    this.style.left = 0;
+
+                    // how to handle remember state?
+                    // Needs to check state when initialize is called and handle classes accordingly.
+                }
+
                 if (options?.transform != null) {
                     const x = options.transform.x;
                     const y = options.transform.y;
