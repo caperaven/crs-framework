@@ -89,12 +89,18 @@ class Dialogs extends crs.classes.BindableElement {
         newDialog.dataset.id = id;
         parent.appendChild(newDialog);
 
+        let maximize = options?.maximize;
+
         if (options?.remember === true) {
             newDialog.dataset.remember = "true";
 
             const transform = this.#transforms[id];
-            if (transform != null) {
+            if (transform != null && transform.fullscreen != "true") {
                 options.transform = transform;
+            }
+
+            if (transform?.fullscreen === "true") {
+                maximize = true;
             }
         }
 
@@ -106,7 +112,8 @@ class Dialogs extends crs.classes.BindableElement {
 
         await newDialog.initialize(content, options, context);
 
-        if (options?.maximize === true) {
+        if (maximize === true) {
+            newDialog.dataset.maximized = "true";
             await crs.call("component", "on_ready", {
                 element: newDialog,
                 callback: newDialog.toggleFullscreen,
@@ -128,6 +135,7 @@ class Dialogs extends crs.classes.BindableElement {
             const transform = this.#transforms[id] ||= {};
             const aabb = dialog.getBoundingClientRect();
 
+            transform.fullscreen = dialog.dataset.fullscreen || false;
             transform.x = Math.round(aabb.x);
             transform.y = Math.round(aabb.y);
             transform.width = Math.round(aabb.width);

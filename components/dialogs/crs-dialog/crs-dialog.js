@@ -159,7 +159,8 @@ class CRSDialog extends crs.classes.BindableElement {
     async toggleFullscreen(event) {
         this.classList.toggle("fullscreen");
 
-        const isFullScreen = this.classList.contains("fullscreen")
+        const isFullScreen = this.classList.contains("fullscreen");
+        this.dataset.fullscreen = isFullScreen;
 
         const canMove = isFullScreen ? false : true;
         await this.#canMove(canMove);
