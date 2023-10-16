@@ -57,7 +57,7 @@ class DialogsActions {
      * @returns {Promise<void>}
      *
      * @example <caption>javascript</caption>
-     * await crs.call("dialogs", "show", {
+     * await crs.call("dialogs", "close", {
      *     id: "my-dialog"
      * })
      */

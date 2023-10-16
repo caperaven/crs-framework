@@ -54,7 +54,14 @@ class TextEditor extends HTMLElement {
         else if (content.length > 0) {
             this.#setValue(content);
         }
+    }
 
+    /**
+     * Called by binding engine once parsing is done.
+     * @param context
+     * @returns {Promise<void>}
+     */
+    async parseCompleted(context) {
         await crs.call("component", "notify_ready", { element: this });
     }
 
