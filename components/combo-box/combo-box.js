@@ -92,7 +92,8 @@ class ComboBox extends crs.classes.BindableElement {
                 const value = this.getProperty("value");
                 this.#setTextFromValue(value);
 
-                await crs.call("component", "notify_ready", { element: this });
+                // this is already called in the base class so we don't want to call it again.
+                // await crs.call("component", "notify_ready", { element: this });
                 resolve();
             })
         })
@@ -163,7 +164,9 @@ class ComboBox extends crs.classes.BindableElement {
             fragment.appendChild(option);
         }
 
-        this.shadowRoot.querySelector("ul").appendChild(fragment);
+        const ul = this.shadowRoot.querySelector("ul");
+        ul.innerHTML = "";
+        ul.appendChild(fragment);
     }
 
     async select(event) {
