@@ -6,7 +6,7 @@
   # JHR - cards manager
   # JHR - swimlane component
   # JHR - horizontal virtualization
-  # Charles - kanban settings
+  # Charles / Kieran - kanban settings
   # Kieran - data management (grouping, creating data managers, etc)
   # Kieran - kanban component
 

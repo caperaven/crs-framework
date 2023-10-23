@@ -1,6 +1,7 @@
 import "./mockups/init.js";
 
 export {
+    assert,
     assertEquals,
     assertStrictEquals,
     assertThrows,
