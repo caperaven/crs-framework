@@ -7,7 +7,7 @@
   # Kieran - data management (grouping, creating data managers, etc)
   # Kieran - kanban component
 
-Feature: kanban component
+Feature: kanban component - HTMLElement
   # this is the overarching component that ties all the features together
   # it is the main component that is used in the app
 
@@ -68,7 +68,7 @@ Feature: kanban component
       Then refresh the data for each data manager and refresh the cards for each swim lane
       Example the user clicks on the refresh button
 
-Feature: kanban settings
+Feature: kanban settings - Schema HTMLElement (ask Gerhard)
   # this is a process that allows the user to configure the kanban component
   # you define what data to fetch and what swim lanes will be available
   # there are two steps to this process
@@ -79,7 +79,7 @@ Feature: kanban settings
   # -----------------------------------------------------------------------------------
   # NB: keep in mind that this must be generic and must be reusable for other scenarios
 
-Feature: swimlane component
+Feature: swimlane component - HTMLElement
   # this is the component that is used to display the swim lanes
   # it displays cards in a vertical column and is virtualized
   # it operates from it's own data manger
@@ -140,7 +140,7 @@ Feature: swimlane component
       Then apply the change to the swimlane in this cas adding it
 
 
-Feature: cards manager
+Feature: cards manager - process api
   # this is used to store templates and create cards based on what is registered
   # it has two parts
   # 1. the data manager class - cards-manager.js
