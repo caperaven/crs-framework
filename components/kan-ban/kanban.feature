@@ -13,6 +13,7 @@
 Feature: kanban component - HTMLElement
   # this is the overarching component that ties all the features together
   # it is the main component that is used in the app
+  # <kanban-component></kanban-component>
 
   @requirements
     | entity type name  | what entity is this going to use          | passed to the settings    |
@@ -21,6 +22,8 @@ Feature: kanban component - HTMLElement
     | data              | what data is going to be used             | retried from the settings |
     | swim lanes        | what swim lanes are going to be used      | retried from the settings |
     | bucket field name | what field must be used for the bucket    | used internally           |
+    | swim_lane_header  | what is the card name that we need for the header | passed to the swimlane |
+    | swim_lane_car     | what is the card name that we need for the record | passed to the swimlane |
 
   @startup
     Scenario: open and process the kanban settings
@@ -39,6 +42,22 @@ Feature: kanban component - HTMLElement
       |-----------------|----------------------------------------|
       | data            | create data managers based on grouping |
       | swim lanes      | create swim lanes based on swim lanes  |
+
+  @registerCards
+    Scenario: register the card header and record templates with the card manager
+      Given the kanban has templates for the header and record cards
+      When the kanban component is loading
+      Then read the templates from the component body and register them with the card manager
+      Example:
+        """
+          <kanban-component>
+            <template data-type="header-card" id="staff_kanban_header">...</template>
+            <template data-type="record-card" id="staff_kanban_record>...</template>
+          </kanban-component>
+
+          // data-type is a standard with one of two values as seen above.
+          // add id for unique key to be used in cards manager
+        """
 
   @settingsChangedHandler
     Scenario: process the kanban settings
