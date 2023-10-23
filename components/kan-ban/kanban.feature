@@ -1,4 +1,7 @@
 @kanban
+  # Note we are not using any binding engine features here.
+  # Keep it bare metal
+  # --------------------------------------------------------------------------------------------------------------------
   # Basic work breakdown
   # JHR - cards manager
   # JHR - swimlane component
