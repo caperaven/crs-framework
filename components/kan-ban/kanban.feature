@@ -3,8 +3,7 @@
   # Keep it bare metal
   # --------------------------------------------------------------------------------------------------------------------
   # Basic work breakdown
-  # JHR - cards manager
-  # JHR - swimlane component
+swim  # JHR - swimlane component
   # JHR - horizontal virtualization
   # Charles / Kieran - kanban settings
   # Kieran - data management (grouping, creating data managers, etc)
@@ -107,7 +106,7 @@ Feature: swimlane component - HTMLElement
   # it operates from it's own data manger
 
   @requirements
-    | data              | data manager name to use                            |
+    | manager           | data manager name to use                            |
     | headerCard        | name of card in card manager to use for header      |
     | recordCard        | name of card in card manager to use for each record |
     | allowDrag         | can records be dragged and dropped                  |

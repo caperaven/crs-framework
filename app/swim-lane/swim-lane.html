@@ -1,0 +1,23 @@
+<link rel="stylesheet" href="/app/swim-lane/swim-lane.css">
+<h2>${title}</h2>
+
+<template data-type="header-card" id="staff_header_template">
+    <h2></h2>
+</template>
+
+<template data-type="record-card" id="staff_record_template">
+    <div class="card">
+        <div class="code"></div>
+        <div class="value"></div>
+    </div>
+</template>
+
+</template>
+
+<swim-lane
+    data-manager="swimLaneDataManager",
+    data-header-card = "headerCard",
+    data-record-card = "recordCard",
+    data-allow-drag = "false",
+    data-allow-drop = "false">
+</swim-lane>

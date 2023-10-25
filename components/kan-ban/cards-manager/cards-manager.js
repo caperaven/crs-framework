@@ -1,27 +1,22 @@
+/**
+ * @class CardsManager - this class is used to register templates for cards and help inflate them.
+ */
 export class CardsManager {
     #cards = {};
 
-    async register(name, card) {
-        this.#cards[name] = card;
+    get cards() {
+        return this.#cards;
+    }
+
+    async register(name, template, inflationFn) {
+        this.#cards[name] = { template, inflationFn };
     }
 
     async unregister(name) {
         delete this.#cards[name];
     }
 
-    async create(name, data) {
-        const template = this.#cards[name];
-        const result = [];
-
-        for (const record of data) {
-            const card = await inflateCard(template, record);
-            result.push(card);
-        }
-
-        return result;
+    async get(name) {
+        return this.#cards[name];
     }
-}
-
-async function inflateCard(cardTemplate, record) {
-
 }

@@ -16,6 +16,11 @@
             "view": "icons"
         },
         {
+            "title": "Swim Lane",
+            "hash": "#swim-lane",
+            "view": "swim-lane"
+        },
+        {
             "title": "Entity-details",
             "hash": "#entity-details",
             "view": "entity-details"

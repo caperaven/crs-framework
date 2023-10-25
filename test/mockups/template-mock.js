@@ -1,10 +1,10 @@
 import {createMockChildren} from "./child-mock-factory.js";
-import {mockElement} from "./element-mock.js";
+import {ElementMock, mockElement} from "./element-mock.js";
 
 export class TemplateMock {
     constructor(innerHTML) {
-        mockElement(this);
-        this.innerHTML = innerHTML;
-        createMockChildren(this);
+        this.content = new ElementMock("template")
+        this.content.innerHTML = innerHTML;
+        createMockChildren(this.content);
     }
 }

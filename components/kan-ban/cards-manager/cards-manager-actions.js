@@ -7,8 +7,9 @@ export class CardsManagerActions {
 
     static async register(step, context, process, item) {
         const name = await crs.process.getValue(step.args.name, context, process, item);
-        const card = await crs.process.getValue(step.args.card, context, process, item);
-        await crs.cardsManager.register(name, card);
+        const template = await crs.process.getValue(step.args.template, context, process, item);
+        const inflationFn = await crs.process.getValue(step.args.inflationFn, context, process, item);
+        await crs.cardsManager.register(name, template, inflationFn);
     }
 
     static async unregister(step, context, process, item) {
@@ -16,10 +17,9 @@ export class CardsManagerActions {
         await crs.cardsManager.unregister(name);
     }
 
-    static async create(step, context, process, item) {
+    static async get(step, context, process, item) {
         const name = await crs.process.getValue(step.args.name, context, process, item);
-        const data = await crs.process.getValue(step.args.data, context, process, item);
-        await crs.cardsManager.create(name, data);
+        return await crs.cardsManager.get(name);
     }
 }
 
