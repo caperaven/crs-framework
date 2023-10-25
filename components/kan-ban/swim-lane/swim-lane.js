@@ -54,7 +54,7 @@ export class SwimLane extends HTMLElement {
         await crs.call("virtualization", "enable", {
             element: this.#ul,
             manager: this.dataset.manager,
-            itemSize: Number(this.dataset.itemSize),
+            itemSize: Number(this.dataset.cardSize),
             template: this.#recordCard.template,
             inflation: this.#recordCard.inflationFn
         });

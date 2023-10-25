@@ -1,3 +1,8 @@
 swim-lane {
     height: 600px;
 }
+
+.card {
+    height: 3rem;
+    border: var(--border);
+}

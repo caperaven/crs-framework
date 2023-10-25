@@ -1,0 +1,11 @@
+.card {
+    height: 3rem;
+    border: var(--border);
+    display: flex;
+    align-items: center;
+    padding: var(--padding);
+}
+
+.card .code {
+    flex: 1;
+}
