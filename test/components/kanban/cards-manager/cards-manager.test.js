@@ -1,9 +1,10 @@
 import {assertEquals, beforeAll, beforeEach, describe, it, assert} from "../../../dependencies.js";
 import {init} from "../../../mockups/init.js";
+import {ElementMock} from "../../../mockups/element-mock.js";
 
 await init();
 
-const card = `<div>__name__</div>`;
+const template = {};
 
 describe("Layout", () => {
     beforeAll(async () => {
@@ -18,19 +19,19 @@ describe("Layout", () => {
     it ("register", async () => {
         await crs.call("cards_manager", "register", {
             "name": "test",
-            "card": card
+            "template": template
         })
 
-        assertEquals(crs.cardsManager.cards["test"], card);
+        assertEquals(crs.cardsManager.cards["test"].template, template);
     })
 
     it ("unregister", async () => {
         await crs.call("cards_manager", "register", {
             "name": "test",
-            "card": card
+            "template": template
         })
 
-        assertEquals(crs.cardsManager.cards["test"], card);
+        assertEquals(crs.cardsManager.cards["test"].template, template);
 
         await crs.call("cards_manager", "unregister", {
             "name": "test"
@@ -39,17 +40,16 @@ describe("Layout", () => {
         assertEquals(crs.cardsManager.cards["test"], undefined);
     })
 
-    it ("create", async () => {
+    it ("get", async () => {
         await crs.call("cards_manager", "register", {
             "name": "test",
-            "card": card
+            "template": template
         })
 
-        const result = await crs.call("cards_manager", "create", {
+        const result = await crs.call("cards_manager", "get", {
             "name": "test",
-            "data": [{ name: "John" }, { name: "Jane" }]
         });
 
-        assertEquals(result.length, 2);
+        assertEquals(result.template, template);
     })
 });
