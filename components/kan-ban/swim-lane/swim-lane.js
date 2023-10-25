@@ -1,5 +1,3 @@
-import {loadHTML} from "../../../dist/src/load-resources.js";
-
 export class SwimLane extends HTMLElement {
     #cardDef = null;
     #header = null;
@@ -10,7 +8,9 @@ export class SwimLane extends HTMLElement {
     }
 
     async connectedCallback() {
-        this.shadowRoot.innerHTML = await loadHTML(import.meta.url);
+        const css = `<link rel="stylesheet" href="${import.meta.url.replace(".js", ".css")}">`;
+        const html = await fetch(import.meta.url.replace(".js", ".html")).then(result => result.text());
+        this.shadowRoot.innerHTML = `${css}${html}`;
         await this.load();
     }
 
@@ -33,7 +33,7 @@ export class SwimLane extends HTMLElement {
     async addHeader() {
         const header = await crs.call("cards_manager", "get", { name: this.dataset.headerCard });
         const instance = header.template.content.cloneNode(true);
-        await header.inflationFn(instance, this.header);
+        await header.inflationFn(instance, this.#header);
         this.shadowRoot.querySelector("header").appendChild(instance);
     }
 
