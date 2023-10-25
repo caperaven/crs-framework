@@ -1,6 +1,7 @@
 import "./../../components/kan-ban/swim-lane/swim-lane.js";
 import "./../../src/managers/data-manager/data-manager-actions.js";
 import "./../../components/kan-ban/cards-manager/cards-manager-actions.js";
+import "./../../src/actions/virtualization-actions.js";
 
 export default class Welcome extends crsbinding.classes.ViewBase {
 
@@ -35,7 +36,13 @@ export default class Welcome extends crsbinding.classes.ViewBase {
     }
 
     async load() {
-        await this.element.querySelector("swim-lane").setHeader({ title: "John Doe" });
+        const swimLane = this.element.querySelector("swim-lane");
+        await crs.call("component", "on_ready", {
+            element: swimLane,
+            caller: this,
+            callback: () => swimLane.setHeader({ title: "John Doe" })
+        });
+
         await super.load();
     }
 }
