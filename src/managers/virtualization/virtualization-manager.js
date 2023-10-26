@@ -360,6 +360,8 @@ export class VirtualizationManager {
          * If I am on page 1 that shows 10 records and I update record 500.
          * I don't need to do anything.
          * So what is the record index bounds on the data that we are rendering and does the index fall within that?
+         * Currently the update also does not update the right card.
+         * We might need to put a data-index on the cards so that we can update the right card.
          */
 
         const index = change.index + this.#virtualSize;
@@ -369,24 +371,23 @@ export class VirtualizationManager {
     }
 
     async add(change) {
-        const count = this.#sizeManager.itemCount + change.models.length;
-        this.#sizeManager.setItemCount(count);
+        const newCount = this.#sizeManager.itemCount + change.count;
+        this.#sizeManager.setItemCount(newCount);
 
         const fragment = document.createDocumentFragment();
 
         let top = this.#bottomIndex * this.#sizeManager.itemSize;
 
-        for (let i = 0; i < count; i++) {
+        for (let i = 0; i < change.count; i++) {
             top += this.#sizeManager.itemSize;
             const element = this.#createElement();
-
-            this.#inflationManager.inflate(element, i);
             this.#setTop(element, top);
-
             fragment.appendChild(element);
         }
 
         this.#element.append(fragment);
+        await this.#updateMarker();
+        await this.refreshCurrent();
     }
 
     /**
