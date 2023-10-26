@@ -6,7 +6,7 @@ import "./../../src/actions/virtualization-actions.js";
 export default class Welcome extends crsbinding.classes.ViewBase {
 
     async preLoad() {
-        const data  = generateData(1000);
+        this.setProperty("recordCount", 1000);
         const staffHeaderTemplate = this.element.querySelector("#staff_header_template");
         const staffRecordTemplate = this.element.querySelector("#staff_record_template");
 
@@ -30,8 +30,7 @@ export default class Welcome extends crsbinding.classes.ViewBase {
         await crs.call("data_manager", "register", {
             manager: "swimLaneDataManager",
             id_field: "id",
-            type: "memory",
-            records: data
+            type: "memory"
         })
     }
 
@@ -40,10 +39,52 @@ export default class Welcome extends crsbinding.classes.ViewBase {
         await crs.call("component", "on_ready", {
             element: swimLane,
             caller: this,
-            callback: () => swimLane.setHeader({ title: "John Doe" })
+            callback: async () => {
+                const data  = generateData(1000);
+
+                await swimLane.setHeader({ title: "John Doe" });
+
+            }
         });
 
         await super.load();
+    }
+
+    async refresh() {
+        const recordCount = this.getProperty("recordCount");
+
+        await crs.call("data_manager", "set_records", {
+            manager: "swimLaneDataManager",
+            records: generateData(recordCount)
+        })
+    }
+
+    async update() {
+        await crs.call("data_manager", "update", {
+            manager: "swimLaneDataManager",
+            id: 0,
+            changes: { code: "Updated Code", value: 1024 }
+        });
+    }
+
+    async insert() {
+        await crs.call("data_manager", "append", {
+            manager: "swimLaneDataManager",
+            records: [
+                { id: 2000, code: "bingo_0", value: 2000 },
+                { id: 2001, code: "bingo_1", value: 2010 },
+                { id: 2002, code: "bingo_2", value: 2020 },
+                { id: 2003, code: "bingo_3", value: 2030 },
+                { id: 2004, code: "bingo_4", value: 2040 },
+            ]
+        });
+    }
+
+    async delete() {
+        await crs.call("data_manager", "remove", {
+            manager: "swimLaneDataManager",
+            indexes: 0
+        });
     }
 }
 

@@ -18,13 +18,18 @@ export class VirtualizationActions {
      * @returns {Promise<void>}
      */
     static async enable(step, context, process, item) {
-        const element = await crs.dom.get_element(step, context, process, item);
-        const itemSize = await crs.process.getValue(step.args.itemSize, context, process, item);
-        const template = await crs.process.getValue(step.args.template, context, process, item);
-        const inflationFn = await crs.process.getValue(step.args.inflation, context, process, item);
-        const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        return new Promise(async resolve => {
+            const element = await crs.dom.get_element(step, context, process, item);
+            const itemSize = await crs.process.getValue(step.args.itemSize, context, process, item);
+            const template = await crs.process.getValue(step.args.template, context, process, item);
+            const inflationFn = await crs.process.getValue(step.args.inflation, context, process, item);
+            const manager = await crs.process.getValue(step.args.manager, context, process, item);
 
-        element.__virtualizationManager = new VirtualizationManager(element, template, inflationFn, manager, itemSize);
+            element.__virtualizationManager = new VirtualizationManager(element, template, inflationFn, manager, itemSize);
+
+            await waitForElementRender(element);
+            await element.__virtualizationManager.initialize();
+        });
     }
 
     static async disable(step, context, process, item) {
@@ -35,6 +40,23 @@ export class VirtualizationActions {
             delete element.__virtualizationManager;
         }
     }
+}
+
+async function waitForElementRender(element) {
+    if (element.offsetWidth > 0 && element.offsetHeight > 0) {
+        return;
+    }
+
+    return new Promise(resolve => {
+        const observer = new ResizeObserver(() => {
+            if (element.offsetWidth > 0 && element.offsetHeight > 0) {
+                observer.disconnect();
+                resolve();
+            }
+        });
+
+        observer.observe(element);
+    });
 }
 
 crs.intent.virtualization = VirtualizationActions;

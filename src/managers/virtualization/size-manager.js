@@ -72,6 +72,11 @@ export class SizeManager {
         this.#batchSize = null;
     }
 
+    setItemCount(itemCount) {
+        this.#itemCount = itemCount;
+        this.#contentHeight = this.#itemSize * this.#itemCount;
+    }
+
     /**
      * @method getDataIndex - Returns the index of the data item that is at the top of the container.
      * @param scrollTop {number} - The current scroll position of the container.

@@ -10,10 +10,14 @@ export class VirtualizationManager {
     #topIndex = 0;
     #bottomIndex = 0;
     #virtualSize = 0;
+    #itemSize = 0;
     #inflationManager;
     #scrollManager;
     #syncPage = false;
     #scrollTop = 0;
+    #recordCount = 0;
+    #dataManager = null;
+    #dataManagerChangeHandler = this.#dataManagerChange.bind(this);
 
     /**
      * @constructor
@@ -25,25 +29,11 @@ export class VirtualizationManager {
      * @param itemSize {number} - The size of each item.
      */
     constructor(element, itemTemplate, inflationFn, dataManager, itemSize) {
+        this.#dataManager = dataManager;
         this.#element = element;
         this.#itemTemplate = itemTemplate;
         this.#inflationManager = new InflationManager(dataManager, inflationFn);
-
-        const bounds = this.#element.getBoundingClientRect();
-
-        crs.call("data_manager", "record_count", {manager: dataManager}).then((itemCount) => {
-            this.#sizeManager = new SizeManager(itemSize, itemCount, bounds.height);
-            this.#virtualSize = Math.floor(this.#sizeManager.pageItemCount / 2);
-
-            this.#scrollManager = new ScrollManager(
-                this.#element,
-                null,
-                this.#onScroll.bind(this),
-                this.#onEndScroll.bind(this),
-                this.#sizeManager.itemSize);
-
-            this.#initialize();
-        })
+        this.#itemSize = itemSize;
     }
 
     /**
@@ -69,21 +59,10 @@ export class VirtualizationManager {
         this.#scrollManager = null;
         this.#syncPage = null;
         this.#scrollTop = null;
+        this.#recordCount = null;
+        this.#dataManager = null;
+        this.#itemSize = null;
         return null;
-    }
-
-    /**
-     * @private
-     * @method #initialize - create resources required for the virtualization to work.
-     * That includes the element that will be used for the virtualization.
-     */
-    #initialize() {
-        this.#element.style.position = "relative";
-        this.#element.style.overflowY = "auto";
-        this.#element.style.willChange = "transform";
-
-        this.#createItems();
-        this.#createMarker();
     }
 
     /**
@@ -102,31 +81,57 @@ export class VirtualizationManager {
         this.#element.appendChild(marker);
     }
 
+    #createExactItems(count) {
+        const fragment = document.createDocumentFragment();
+
+        for (let i = 0; i < count; i++) {
+            const top = i * this.#sizeManager.itemSize;
+            const element = this.#createElement();
+
+            this.#inflationManager.inflate(element, i);
+            this.#setTop(element, top);
+
+            fragment.appendChild(element);
+        }
+
+        this.#element.append(fragment);
+    }
+
+    #createElement() {
+        const clone = this.#itemTemplate.content.cloneNode(true);
+        const element = clone.firstElementChild;
+        element.style.position = "absolute";
+        element.style.top = "0";
+        element.style.right = "4px";
+        element.style.left = "4px";
+        element.style.willChange = "translate";
+        return element;
+    }
+
     /**
      * @private
      * @method #createItems - Creates the items that will be used for the virtualization.
      */
-    #createItems() {
+    #createItems(count) {
         const fragment = document.createDocumentFragment();
+
+        if (count < this.#sizeManager.pageItemCount) {
+            return this.#createExactItems(count)
+        }
+
         let childCount = this.#sizeManager.pageItemCount + (this.#virtualSize * 2);
 
         // half of virtualize elements at the top and half at the bottom.
         for (let i = -this.#virtualSize; i < childCount - this.#virtualSize; i++) {
             const top = i * this.#sizeManager.itemSize;
-            const clone = this.#itemTemplate.content.cloneNode(true);
-            const element = clone.firstElementChild;
-            element.style.position = "absolute";
-            element.style.top = "0";
-            element.style.right = "4px";
-            element.style.left = "4px";
-            element.style.willChange = "translate";
+            const element = this.#createElement();
 
             if (i >= 0) {
                 this.#inflationManager.inflate(element, i);
             }
 
             this.#setTop(element, top);
-            fragment.appendChild(clone);
+            fragment.appendChild(element);
         }
 
         this.#element.appendChild(fragment);
@@ -316,7 +321,103 @@ export class VirtualizationManager {
         this.#bottomIndex = topIndex + count - 1;
     }
 
+    async #dataManagerChange(change) {
+        console.log(change);
+        if (this[change.action] != null) {
+            this[change.action](change);
+        }
+    }
+
+    async #updateMarker() {
+        const marker = this.#element.querySelector("#marker");
+        marker.style.translate = `${0}px ${this.#sizeManager.contentHeight}px`;
+    }
+
+    async #clear() {
+        this.#recordCount = 0;
+        this.#element.innerHTML = "";
+        this.#sizeManager.setItemCount(0);
+    }
+
     async refreshCurrent() {
         await this.#performSyncPage(this.#scrollTop);
+    }
+
+    async refresh() {
+        await this.#clear();
+
+        const count = await crs.call("data_manager", "record_count", { manager: this.#dataManager })
+        this.#sizeManager.setItemCount(count);
+
+        await this.#createItems(count);
+        await this.#createMarker();
+        await this.#updateMarker();
+    }
+
+    async update(change) {
+        /**
+         * Todo: JHR
+         * If I am on page 1 that shows 10 records and I update record 500.
+         * I don't need to do anything.
+         * So what is the record index bounds on the data that we are rendering and does the index fall within that?
+         */
+
+        const index = change.index + this.#virtualSize;
+        const element = this.#element.children[index];
+        const data = await crs.call("data_manager", "get", { manager: this.#dataManager, index: change.index });
+        this.#inflationManager.call(element, data);
+    }
+
+    async add(change) {
+        const count = this.#sizeManager.itemCount + change.models.length;
+        this.#sizeManager.setItemCount(count);
+
+        const fragment = document.createDocumentFragment();
+
+        let top = this.#bottomIndex * this.#sizeManager.itemSize;
+
+        for (let i = 0; i < count; i++) {
+            top += this.#sizeManager.itemSize;
+            const element = this.#createElement();
+
+            this.#inflationManager.inflate(element, i);
+            this.#setTop(element, top);
+
+            fragment.appendChild(element);
+        }
+
+        this.#element.append(fragment);
+    }
+
+    /**
+     * @method initialize - create resources required for the virtualization to work.
+     * That includes the element that will be used for the virtualization.
+     */
+    async initialize() {
+        const bounds = this.#element.getBoundingClientRect();
+
+        this.#sizeManager = new SizeManager(this.#itemSize, 0, bounds.height);
+        this.#virtualSize = Math.floor(this.#sizeManager.pageItemCount / 2);
+
+        this.#scrollManager = new ScrollManager(
+            this.#element,
+            null,
+            this.#onScroll.bind(this),
+            this.#onEndScroll.bind(this),
+            this.#sizeManager.itemSize
+        );
+
+
+        await crs.call("data_manager", "on_change", {
+            manager: this.#dataManager,
+            callback: this.#dataManagerChangeHandler.bind(this)
+        })
+
+        this.#element.style.position = "relative";
+        this.#element.style.overflowY = "auto";
+        this.#element.style.willChange = "transform";
+
+        // this.#createItems(); we need to create this on refresh instead
+        this.#createMarker();
     }
 }
