@@ -6,6 +6,13 @@ import {TemplateMock} from "../../../mockups/template-mock.js";
 
 await init();
 
+let virtualized = false;
+
+crs.intent.virtualization = {
+    enable: async () => { virtualized = true; },
+    disable: async () => { virtualized = false; }
+}
+
 describe("Layout", () => {
     let instance;
     let headerInflationCalled = false;
@@ -17,6 +24,12 @@ describe("Layout", () => {
 
         await crs.call("cards_manager", "register", {
             name: "headerCard",
+            template: new TemplateMock("<h2></h2>"),
+            inflationFn: (element, record) => { headerInflationCalled = true; }
+        })
+
+        await crs.call("cards_manager", "register", {
+            name: "recordCard",
             template: new TemplateMock("<h2></h2>"),
             inflationFn: (element, record) => { headerInflationCalled = true; }
         })
