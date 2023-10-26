@@ -94,6 +94,8 @@ export class VirtualizationManager {
             fragment.appendChild(element);
         }
 
+        this.#topIndex = 0;
+        this.#bottomIndex = count - 1;
         this.#element.append(fragment);
     }
 
@@ -381,9 +383,13 @@ export class VirtualizationManager {
         for (let i = 0; i < change.count; i++) {
             top += this.#sizeManager.itemSize;
             const element = this.#createElement();
+
+            this.#inflationManager.call(element, change.models[i]);
             this.#setTop(element, top);
             fragment.appendChild(element);
         }
+
+        this.#bottomIndex += change.count;
 
         this.#element.append(fragment);
         await this.#updateMarker();
