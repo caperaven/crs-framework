@@ -97,6 +97,7 @@ export class VirtualizationManager {
         this.#topIndex = 0;
         this.#bottomIndex = count - 1;
         this.#element.append(fragment);
+        this.#initializeRowMap(0);
     }
 
     #createElement() {
@@ -137,7 +138,7 @@ export class VirtualizationManager {
         }
 
         this.#element.appendChild(fragment);
-        this.#initializeRowMap();
+        this.#initializeRowMap(-this.#virtualSize);
 
         this.#topIndex = -this.#virtualSize;
         this.#bottomIndex = childCount - 1 - this.#virtualSize;
@@ -148,9 +149,11 @@ export class VirtualizationManager {
      * @method #initializeRowMap - Creates a map of the elements that are currently visible.
      * This is used internally to keep the order of items on screen without having to change the DOM.
      */
-    #initializeRowMap() {
+    #initializeRowMap(start) {
+        this.#rowMap = {};
+
         for (let i = 0; i < this.#element.children.length; i++) {
-            const index = -this.#virtualSize + i;
+            const index = start + i;
             this.#rowMap[index] = this.#element.children[i];
         }
     }
@@ -357,28 +360,19 @@ export class VirtualizationManager {
     }
 
     async update(change) {
-        /**
-         * Todo: JHR
-         * If I am on page 1 that shows 10 records and I update record 500.
-         * I don't need to do anything.
-         * So what is the record index bounds on the data that we are rendering and does the index fall within that?
-         * Currently the update also does not update the right card.
-         * We might need to put a data-index on the cards so that we can update the right card.
-         */
-
-        const index = change.index + this.#virtualSize;
-        const element = this.#element.children[index];
-        const data = await crs.call("data_manager", "get", { manager: this.#dataManager, index: change.index });
-        this.#inflationManager.call(element, data);
+        // todo: jhr need to figure out the individual updates.
+        // find the card that has the same data-id as the record being updated.
+        await this.refreshCurrent();
     }
 
     async add(change) {
+        const itemCount = this.#sizeManager.itemCount;
         const newCount = this.#sizeManager.itemCount + change.count;
         this.#sizeManager.setItemCount(newCount);
 
         const fragment = document.createDocumentFragment();
 
-        let top = this.#bottomIndex * this.#sizeManager.itemSize;
+        let top = (itemCount-1) * this.#sizeManager.itemSize;
 
         for (let i = 0; i < change.count; i++) {
             top += this.#sizeManager.itemSize;

@@ -29,6 +29,7 @@ export class VirtualizationActions {
 
             await waitForElementRender(element);
             await element.__virtualizationManager.initialize();
+            resolve();
         });
     }
 

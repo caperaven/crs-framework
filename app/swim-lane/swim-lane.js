@@ -67,6 +67,23 @@ export default class Welcome extends crsbinding.classes.ViewBase {
         });
     }
 
+    /**
+     * Todo: JHR / Gerhard, support batch updates
+     * @returns {Promise<void>}
+     */
+    async batchUpdate() {
+        await crs.call("data_manager", "batch_update", {
+            manager: "swimLaneDataManager",
+            updates: [
+                { id: 0, changes: { code: "Updated Code 0", value: 1020 } },
+                { id: 1, changes: { code: "Updated Code 1", value: 1021 } },
+                { id: 2, changes: { code: "Updated Code 2", value: 1022 } },
+                { id: 3, changes: { code: "Updated Code 3", value: 1023 } },
+                { id: 4, changes: { code: "Updated Code 4", value: 1024 } }
+            ]
+        });
+    }
+
     async insert() {
         await crs.call("data_manager", "append", {
             manager: "swimLaneDataManager",
