@@ -26,7 +26,7 @@ export class DataManagerMemoryProvider extends BaseDataManager {
      */
     async append(...record) {
         this.#records.push(...record);
-        super.append(this.#records.length);
+        this.count = this.#records.length;
     }
 
     /**

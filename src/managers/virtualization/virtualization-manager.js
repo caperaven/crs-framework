@@ -10,6 +10,7 @@ export class VirtualizationManager {
     #topIndex = 0;
     #bottomIndex = 0;
     #virtualSize = 0;
+    #fitsOnScreen = true;
     #itemSize = 0;
     #inflationManager;
     #scrollManager;
@@ -98,6 +99,7 @@ export class VirtualizationManager {
         this.#bottomIndex = count - 1;
         this.#element.append(fragment);
         this.#initializeRowMap(0);
+        this.#fitsOnScreen = true;
     }
 
     #createElement() {
@@ -142,6 +144,7 @@ export class VirtualizationManager {
 
         this.#topIndex = -this.#virtualSize;
         this.#bottomIndex = childCount - 1 - this.#virtualSize;
+        this.#fitsOnScreen = false;
     }
 
     /**
@@ -156,6 +159,11 @@ export class VirtualizationManager {
             const index = start + i;
             this.#rowMap[index] = this.#element.children[i];
         }
+    }
+
+    #getLastRowMapKey() {
+        const keys = Object.keys(this.#rowMap);
+        return Number(keys[keys.length - 1]);
     }
 
     /**
@@ -355,8 +363,11 @@ export class VirtualizationManager {
         this.#sizeManager.setItemCount(count);
 
         await this.#createItems(count);
-        await this.#createMarker();
-        await this.#updateMarker();
+
+        if (this.#fitsOnScreen == false) {
+            await this.#createMarker();
+            await this.#updateMarker();
+        }
     }
 
     async update(change) {
@@ -373,6 +384,7 @@ export class VirtualizationManager {
         const fragment = document.createDocumentFragment();
 
         let top = (itemCount-1) * this.#sizeManager.itemSize;
+        let lastRowMapKey = this.#getLastRowMapKey()
 
         for (let i = 0; i < change.count; i++) {
             top += this.#sizeManager.itemSize;
@@ -380,14 +392,21 @@ export class VirtualizationManager {
 
             this.#inflationManager.call(element, change.models[i]);
             this.#setTop(element, top);
+
+            this.#rowMap[lastRowMapKey + i] = element;
+
             fragment.appendChild(element);
         }
 
         this.#bottomIndex += change.count;
 
         this.#element.append(fragment);
-        await this.#updateMarker();
-        await this.refreshCurrent();
+
+        // We have now grown beyond what can be displayed on the screen.
+        // This means we need to recreate the items so that virtualization cache is in place.
+        if (this.#fitsOnScreen == true && this.#sizeManager.itemCount > this.#sizeManager.pageItemCount) {
+            await this.refresh();
+        }
     }
 
     /**

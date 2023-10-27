@@ -84,15 +84,15 @@ export default class Welcome extends crsbinding.classes.ViewBase {
         });
     }
 
-    async insert() {
+    async insert(start) {
         await crs.call("data_manager", "append", {
             manager: "swimLaneDataManager",
             records: [
-                { id: 2000, code: "bingo_0", value: 2000 },
-                { id: 2001, code: "bingo_1", value: 2010 },
-                { id: 2002, code: "bingo_2", value: 2020 },
-                { id: 2003, code: "bingo_3", value: 2030 },
-                { id: 2004, code: "bingo_4", value: 2040 },
+                { id: start, code: "bingo_0", value: start },
+                { id: start + 1, code: "bingo_1", value: start + 1 },
+                { id: start + 2, code: "bingo_2", value: start + 2 },
+                { id: start + 3, code: "bingo_3", value: start + 3 },
+                { id: start + 4, code: "bingo_4", value: start + 4 },
             ]
         });
     }
