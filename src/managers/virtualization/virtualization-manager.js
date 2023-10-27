@@ -335,7 +335,6 @@ export class VirtualizationManager {
     }
 
     async #dataManagerChange(change) {
-        console.log(change);
         if (this[change.action] != null) {
             this[change.action](change);
         }
@@ -375,43 +374,11 @@ export class VirtualizationManager {
     }
 
     async update(change) {
-        // todo: jhr need to figure out the individual updates.
-        // find the card that has the same data-id as the record being updated.
         await this.refreshCurrent();
     }
 
     async add(change) {
         await this.refresh();
-        // const itemCount = this.#sizeManager.itemCount;
-        // const newCount = this.#sizeManager.itemCount + change.count;
-        // this.#sizeManager.setItemCount(newCount);
-        //
-        // const fragment = document.createDocumentFragment();
-        //
-        // let top = (itemCount-1) * this.#sizeManager.itemSize;
-        // let lastRowMapKey = this.#getLastRowMapKey()
-        //
-        // for (let i = 0; i < change.count; i++) {
-        //     top += this.#sizeManager.itemSize;
-        //     const element = this.#createElement();
-        //
-        //     this.#inflationManager.call(element, change.models[i]);
-        //     this.#setTop(element, top);
-        //
-        //     this.#rowMap[lastRowMapKey + i] = element;
-        //
-        //     fragment.appendChild(element);
-        // }
-        //
-        // this.#bottomIndex += change.count;
-        //
-        // this.#element.append(fragment);
-        //
-        // // We have now grown beyond what can be displayed on the screen.
-        // // This means we need to recreate the items so that virtualization cache is in place.
-        // if (this.#fitsOnScreen == true) { // && this.#sizeManager.itemCount > this.#sizeManager.pageItemCount
-        //     await this.refresh();
-        // }
     }
 
     /**

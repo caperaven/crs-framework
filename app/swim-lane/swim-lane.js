@@ -84,16 +84,16 @@ export default class Welcome extends crsbinding.classes.ViewBase {
         });
     }
 
-    async insert(start) {
+    async insert(start, count) {
+        const records = [];
+
+        for (let i = 0; i < count; i++) {
+            records.push({ id: start + i, code: `bingo_${start + i}`, value: start + i });
+        }
+
         await crs.call("data_manager", "append", {
             manager: "swimLaneDataManager",
-            records: [
-                { id: start, code: "bingo_0", value: start },
-                { id: start + 1, code: "bingo_1", value: start + 1 },
-                { id: start + 2, code: "bingo_2", value: start + 2 },
-                { id: start + 3, code: "bingo_3", value: start + 3 },
-                { id: start + 4, code: "bingo_4", value: start + 4 },
-            ]
+            records
         });
     }
 
