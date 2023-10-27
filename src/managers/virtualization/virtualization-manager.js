@@ -367,6 +367,10 @@ export class VirtualizationManager {
         if (this.#fitsOnScreen == false) {
             await this.#createMarker();
             await this.#updateMarker();
+            await this.refreshCurrent();
+        }
+        else {
+            await this.#scrollManager.scrollToTop();
         }
     }
 
@@ -377,36 +381,37 @@ export class VirtualizationManager {
     }
 
     async add(change) {
-        const itemCount = this.#sizeManager.itemCount;
-        const newCount = this.#sizeManager.itemCount + change.count;
-        this.#sizeManager.setItemCount(newCount);
-
-        const fragment = document.createDocumentFragment();
-
-        let top = (itemCount-1) * this.#sizeManager.itemSize;
-        let lastRowMapKey = this.#getLastRowMapKey()
-
-        for (let i = 0; i < change.count; i++) {
-            top += this.#sizeManager.itemSize;
-            const element = this.#createElement();
-
-            this.#inflationManager.call(element, change.models[i]);
-            this.#setTop(element, top);
-
-            this.#rowMap[lastRowMapKey + i] = element;
-
-            fragment.appendChild(element);
-        }
-
-        this.#bottomIndex += change.count;
-
-        this.#element.append(fragment);
-
-        // We have now grown beyond what can be displayed on the screen.
-        // This means we need to recreate the items so that virtualization cache is in place.
-        if (this.#fitsOnScreen == true && this.#sizeManager.itemCount > this.#sizeManager.pageItemCount) {
-            await this.refresh();
-        }
+        await this.refresh();
+        // const itemCount = this.#sizeManager.itemCount;
+        // const newCount = this.#sizeManager.itemCount + change.count;
+        // this.#sizeManager.setItemCount(newCount);
+        //
+        // const fragment = document.createDocumentFragment();
+        //
+        // let top = (itemCount-1) * this.#sizeManager.itemSize;
+        // let lastRowMapKey = this.#getLastRowMapKey()
+        //
+        // for (let i = 0; i < change.count; i++) {
+        //     top += this.#sizeManager.itemSize;
+        //     const element = this.#createElement();
+        //
+        //     this.#inflationManager.call(element, change.models[i]);
+        //     this.#setTop(element, top);
+        //
+        //     this.#rowMap[lastRowMapKey + i] = element;
+        //
+        //     fragment.appendChild(element);
+        // }
+        //
+        // this.#bottomIndex += change.count;
+        //
+        // this.#element.append(fragment);
+        //
+        // // We have now grown beyond what can be displayed on the screen.
+        // // This means we need to recreate the items so that virtualization cache is in place.
+        // if (this.#fitsOnScreen == true) { // && this.#sizeManager.itemCount > this.#sizeManager.pageItemCount
+        //     await this.refresh();
+        // }
     }
 
     /**

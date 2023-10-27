@@ -136,4 +136,12 @@ export class ScrollManager {
             this.#scrollTimerHandler();
         })
     }
+
+    async scrollToTop() {
+        this.#element.scrollTop = 0;
+        this.#lastScrollTop = 0;
+        this.#scrollTop = 0;
+        this.#scrollOffset = 0;
+        this.#lastStopScrollTop = 0;
+    }
 }
