@@ -100,7 +100,7 @@ export default class Welcome extends crsbinding.classes.ViewBase {
     async delete() {
         await crs.call("data_manager", "remove", {
             manager: "swimLaneDataManager",
-            indexes: 0
+            indexes: [0, 1, 2, 3, 4]
         });
     }
 }

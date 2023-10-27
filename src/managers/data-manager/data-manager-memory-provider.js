@@ -92,7 +92,7 @@ export class DataManagerMemoryProvider extends BaseDataManager {
             this.#records.splice(index, 1);
         }
 
-        super.removeIndexes(this.#records.length);
+        this.count = this.#records.length;
         return {indexes, ids};
     }
 

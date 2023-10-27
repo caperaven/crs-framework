@@ -381,6 +381,10 @@ export class VirtualizationManager {
         await this.refresh();
     }
 
+    async delete() {
+        await this.refresh();
+    }
+
     /**
      * @method initialize - create resources required for the virtualization to work.
      * That includes the element that will be used for the virtualization.
