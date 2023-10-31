@@ -10,19 +10,11 @@ export default class Virtualization extends crsbinding.classes.ViewBase {
 
         const itemTemplate = document.querySelector("#item-template");
 
-        const data = await crs.call("test_data", "get", {
-            fields: {
-                code: "string:auto",
-                quantity: "int:1:100"
-            },
-            count: 5000
-        });
-
         await crs.call("data_manager", "register", {
             manager: "my_data",
             id_field: "id",
             type: "memory",
-            records: data
+            records: []
         })
 
         await crs.call("virtualization", "enable", {
@@ -49,10 +41,10 @@ export default class Virtualization extends crsbinding.classes.ViewBase {
             virtualized_element: this.ul,
             manager: "my_data"
         });
+    }
 
-        await crs.call("data_manager", "refresh", {
-            manager: "my_data"
-        })
+    async preLoad() {
+        this.setProperty("recordCount", 5);
     }
 
     async disconnectedCallback() {
@@ -72,5 +64,36 @@ export default class Virtualization extends crsbinding.classes.ViewBase {
 
     debug() {
         this.ul.__virtualizationManager.debug();
+    }
+
+    async refresh() {
+        const count = this.getProperty("recordCount");
+        const data = await crs.call("test_data", "get", {
+            fields: {
+                code: "string:auto",
+                quantity: "int:1:100"
+            },
+            count: count
+        });
+
+        await crs.call("data_manager", "set_records", {
+            manager: "my_data",
+            records: data
+        })
+    }
+
+    async add() {
+        const data = await crs.call("test_data", "get", {
+            fields: {
+                code: "string:auto",
+                quantity: "int:1:100"
+            },
+            count: 5
+        });
+
+        await crs.call("data_manager", "append", {
+            manager: "my_data",
+            records: data
+        })
     }
 }

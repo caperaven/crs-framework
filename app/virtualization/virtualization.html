@@ -48,6 +48,13 @@
         display: flex;
         flex-direction: row;
     }
+
+    .toolbar {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: var(--padding);
+    }
 </style>
 
 <h2>${title}</h2>
@@ -70,4 +77,8 @@
     <ul id="horizontal" ref="hul"></ul>
 </div>
 
-<button click.call="debug">debug</button>
+<div class="toolbar">
+    <input type="number" value.bind="recordCount" />
+    <button click.call="refresh">Refresh</button>
+    <button click.call="add">Add</button>
+</div>
