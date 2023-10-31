@@ -74,7 +74,7 @@ describe("data manager tests", () => {
         })
 
         const record = await manager.getByIndex(2);
-        assertEquals(manager.count, 5);
+        assertEquals(manager.count, 3);
         assertEquals(record.id, "2000");
 
         assertEquals(changeArgs[0].action, "add");
