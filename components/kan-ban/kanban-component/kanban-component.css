@@ -1,0 +1,27 @@
+:host {
+    --lane-width: 10rem;
+
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    width: 100%;
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+unassigned-container {
+    width: var(--lane-width);
+    height: 100%;
+    overflow-x: hidden;
+    border-right: var(--border);
+}
+
+swim-lanes-container {
+    flex: 1;
+    height: 100%;
+    overflow-y: hidden;
+}

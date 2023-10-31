@@ -1,41 +1,35 @@
 <style>
     .main {
-        display: grid;
-        grid-template-rows: 3rem 1fr;
+        display: flex;
+        flex-direction: column;
         width: 100%;
         height: 100%;
     }
 
-    .card {
-        border: var(--border);
-        background: var(--grey-surface);
-        padding: var(--padding);
+    kanban-component {
+        flex: 1;
+        height: 100%;
     }
 </style>
 
-<template id="tplSimple">
-    <div class="card" data-value.attr="statusId" data-id.attr="id" draggable="true">
-        <label>Code</label>
-        <div>${code}</div>
-    </div>
-</template>
-
 <div class="main">
     <div role="toolbar">
-        <button click.call="addColumn">Add</button>
         <button click.call="refresh">Refresh</button>
-        <button click.call="add">Add</button>
-        <button click.call="remove">Remove</button>
-        <button click.call="update">Update</button>
     </div>
 
-    <kan-ban
-        ref="kanban"
-        data-manager="kanban_data"
-        data-headertemplate="simple"
-        data-template="simple"
-        data-field="statusId"
-        data-allow-drop="kanban_drop[allow_drop()]"
-        data-on-drop="kanban_drop[on_drop()]"
-    ></kan-ban>
+    <kanban-component
+        id="staffKanban"
+        data-manager="kanbanDataManager",
+        data-lane-width="160">
+        <template id="tplHeader">
+            <div>${title}</div>
+        </template>
+
+        <template id="tplRecord">
+            <li>
+                <div>${code}</div>
+                <div>${value}</div>
+            </li>
+        </template>
+    </kanban-component>
 </div>
