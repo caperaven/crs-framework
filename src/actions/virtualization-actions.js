@@ -24,8 +24,9 @@ export class VirtualizationActions {
             const template = await crs.process.getValue(step.args.template, context, process, item);
             const inflationFn = await crs.process.getValue(step.args.inflation, context, process, item);
             const manager = await crs.process.getValue(step.args.manager, context, process, item);
+            const direction = await crs.process.getValue(step.args.direction || "vertical", context, process, item);
 
-            element.__virtualizationManager = new VirtualizationManager(element, template, inflationFn, manager, itemSize);
+            element.__virtualizationManager = new VirtualizationManager(element, template, inflationFn, manager, itemSize, direction);
 
             await waitForElementRender(element);
             await element.__virtualizationManager.initialize();

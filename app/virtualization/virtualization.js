@@ -33,6 +33,15 @@ export default class Virtualization extends crsbinding.classes.ViewBase {
             inflation: this.#inflationFn
         });
 
+        await crs.call("virtualization", "enable", {
+            element: this.hul,
+            direction: "horizontal",
+            manager: "my_data",
+            itemSize: 160,
+            template: itemTemplate,
+            inflation: this.#inflationFn
+        });
+
         await crs.call("collection_selection", "enable", {
             element: this._element,
             master_query: "#master-checkbox",

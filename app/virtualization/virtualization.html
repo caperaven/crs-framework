@@ -1,24 +1,52 @@
 <style>
-    ul {
+    #vertical {
         list-style: none;
         padding: 0;
         margin: 0;
         height: 800px;
         width: 300px;
         border: var(--border);
+        overflow-x: hidden;
     }
 
-    li {
+    #horizontal {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        width: 800px;
+        height: 800px;
+        border: var(--border);
+        overflow-y: hidden;
+    }
+
+    #vertical li {
         box-sizing: border-box;
         display: flex;
         flex-direction: row;
         align-items: center;
         border-bottom: var(--border);
         height: 2rem;
+        width: 100%;
+    }
+
+    #horizontal li {
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        border-right: var(--border);
+        width: 10rem;
+        height: 100%;
+        padding: var(--padding);
     }
 
     .flex {
         flex: 1;
+    }
+
+    .container {
+        display: flex;
+        flex-direction: row;
     }
 </style>
 
@@ -36,6 +64,10 @@
         <check-box id="master-checkbox" aria-checked="false"></check-box>
     </div>
 </div>
-<ul ref="ul"></ul>
+
+<div class="container">
+    <ul id="vertical" ref="ul"></ul>
+    <ul id="horizontal" ref="hul"></ul>
+</div>
 
 <button click.call="debug">debug</button>

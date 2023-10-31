@@ -18,6 +18,7 @@ export class VirtualizationManager {
     #scrollTop = 0;
     #recordCount = 0;
     #dataManager = null;
+    #direction = "vertical";
     #dataManagerChangeHandler = this.#dataManagerChange.bind(this);
 
     /**
@@ -29,12 +30,13 @@ export class VirtualizationManager {
      * @param itemCount {number} - The number of items.
      * @param itemSize {number} - The size of each item.
      */
-    constructor(element, itemTemplate, inflationFn, dataManager, itemSize) {
+    constructor(element, itemTemplate, inflationFn, dataManager, itemSize, direction = "vertical") {
         this.#dataManager = dataManager;
         this.#element = element;
         this.#itemTemplate = itemTemplate;
         this.#inflationManager = new InflationManager(dataManager, inflationFn);
         this.#itemSize = itemSize;
+        this.#direction = direction;
     }
 
     /**
@@ -78,7 +80,7 @@ export class VirtualizationManager {
         marker.style.position = "absolute";
         marker.style.top = "0";
         marker.style.left = "0";
-        marker.style.translate = `${0}px ${this.#sizeManager.contentHeight}px`;
+        marker.style.translate = this.#direction == "vertical" ? `${0}px ${this.#sizeManager.contentHeight}px` : `${this.#sizeManager.contentHeight}px ${0}px`;
         this.#element.appendChild(marker);
     }
 
@@ -107,8 +109,7 @@ export class VirtualizationManager {
         const element = clone.firstElementChild;
         element.style.position = "absolute";
         element.style.top = "0";
-        element.style.right = "4px";
-        element.style.left = "4px";
+        element.style.left = "0";
         element.style.willChange = "translate";
         return element;
     }
@@ -178,7 +179,7 @@ export class VirtualizationManager {
             top = -this.#sizeManager.itemSize * 2;
         }
 
-        element.style.transform = `translate(0, ${top}px)`;
+        element.style.transform = this.#direction == "vertical" ? `translate(0, ${top}px)` : `translate(${top}px, 0)`;
     }
 
     /**
@@ -342,7 +343,7 @@ export class VirtualizationManager {
 
     async #updateMarker() {
         const marker = this.#element.querySelector("#marker");
-        marker.style.translate = `${0}px ${this.#sizeManager.contentHeight}px`;
+        marker.style.translate = this.#direction == "vertical" ? `${0}px ${this.#sizeManager.contentHeight}px` : `${this.#sizeManager.contentHeight}px ${0}px`;
     }
 
     async #clear() {
