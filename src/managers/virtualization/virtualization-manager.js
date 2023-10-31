@@ -218,11 +218,11 @@ export class VirtualizationManager {
     /**
      * @private
      * @method #onScrollDown - This is called when the scroll event fires to perform scroll operations down.
-     * @param scrollTopIndex {number} - The current scroll top index.
+     * @param scrollIndex {number} - The current scroll top index.
      * @returns {Promise<void>}
      */
-    async #onScrollDown(scrollTopIndex) {
-        const count = scrollTopIndex - this.#topIndex;
+    async #onScrollDown(scrollIndex) {
+        const count = scrollIndex - this.#topIndex;
         const toMove = count - this.#virtualSize;
 
         const startIndex = this.#topIndex;
@@ -239,11 +239,11 @@ export class VirtualizationManager {
     /**
      * @private
      * @method #onScrollUp - This is called when the scroll event fires to perform scroll operations up.
-     * @param scrollTopIndex {number} - The current scroll top index.
+     * @param scrollIndex {number} - The current scroll top index.
      * @returns {Promise<void>}
      */
-    async #onScrollUp(scrollTopIndex) {
-        const count = scrollTopIndex - this.#topIndex;
+    async #onScrollUp(scrollIndex) {
+        const count = scrollIndex - this.#topIndex;
         const toMove = Math.abs(count - this.#virtualSize);
 
         const startIndex = this.#bottomIndex;
@@ -292,15 +292,15 @@ export class VirtualizationManager {
      * @method #onEndScroll - This is called when the scroll event ends.
      * This checks if we have jumped pages and if it did jump pages it will sync the page.
      * @param event {Event} - The scroll event.
-     * @param scrollTop {number} - The current scroll top position.
+     * @param scrollPos {number} - The current scroll top position.
      * @returns {Promise<void>}
      */
-    async #onEndScroll(event, scrollTop) {
+    async #onEndScroll(event, scrollPos) {
         if (this.#syncPage) {
-            await this.#performSyncPage(scrollTop);
+            await this.#performSyncPage(scrollPos);
         }
 
-        this.#scrollPos = scrollTop;
+        this.#scrollPos = scrollPos;
     }
 
     /**
@@ -309,11 +309,11 @@ export class VirtualizationManager {
      * The elements are moved so that you have a top buffer, bottom buffer and elements on page again.
      * This is an expensive operation because it affects all the elements.
      * Because it is so expensive, we don't do this on scroll but only on scroll end.
-     * @param scrollTop {number} - The current scroll top position.
+     * @param scrollPos {number} - The current scroll top position.
      * @returns {Promise<void>}
      */
-    async #performSyncPage(scrollTop) {
-        const topIndex = Math.floor(scrollTop / this.#sizeManager.itemSize) - this.#virtualSize;
+    async #performSyncPage(scrollPos) {
+        const topIndex = Math.floor(scrollPos / this.#sizeManager.itemSize) - this.#virtualSize;
         let count = 0;
 
         const newMap = {};
