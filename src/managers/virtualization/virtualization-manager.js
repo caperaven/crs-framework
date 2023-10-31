@@ -1,6 +1,6 @@
 import {SizeManager} from "./size-manager.js";
 import {InflationManager} from "./inflation-manager.js";
-import {ScrollManager} from "../scroll-manager/scroll-manager.js";
+import {ScrollDirection, ScrollManager} from "../scroll-manager/scroll-manager.js";
 
 export class VirtualizationManager {
     #sizeManager;
@@ -200,7 +200,7 @@ export class VirtualizationManager {
         if (itemsScrolled <= this.#virtualSize) {
             this.#syncPage = false;
 
-            if (direction === "down") {
+            if (direction === ScrollDirection.TO_END) {
                 await this.#onScrollDown(topIndex, itemsScrolled);
             } else {
                 await this.#onScrollUp(topIndex, itemsScrolled);
@@ -401,7 +401,8 @@ export class VirtualizationManager {
             null,
             this.#onScroll.bind(this),
             this.#onEndScroll.bind(this),
-            this.#sizeManager.itemSize
+            this.#sizeManager.itemSize,
+            this.#direction
         );
 
         await crs.call("data_manager", "on_change", {

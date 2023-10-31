@@ -3,8 +3,8 @@
  * @type {Readonly<{DOWN: string, UP: string, NONE: string}>}
  */
 export const ScrollDirection = Object.freeze({
-    UP: "up",
-    DOWN: "down",
+    TO_START: "to_start",
+    TO_END: "to_end",
     NONE: "none"
 });
 
@@ -30,15 +30,16 @@ export class ScrollManager {
     #onEndScroll;
     #scrollHandler = this.#scroll.bind(this);
     #scrollTimerHandler = this.#scrollTimer.bind(this);
-    #lastScrollTop = 0;
-    #scrollTop = 0;
+    #lastScrollPos = 0;
+    #scrollPos = 0;
     #scrollOffset = 0;
-    #lastStopScrollTop = 0;
+    #lastStopScrollPos = 0;
     #timeout = 0;
     #scrolling = false;
     #direction;
     #triggerSize;
     #event;
+    #layoutDirection;
 
     /**
      * @constructor
@@ -48,7 +49,7 @@ export class ScrollManager {
      * @param onEndScroll {function} - The function to call when the scroll ends.
      * @param triggerSize {number} - The number of pixels that need to pass before action is taken.
      */
-    constructor(element, onStartScroll, onScroll, onEndScroll, triggerSize) {
+    constructor(element, onStartScroll, onScroll, onEndScroll, triggerSize, layoutDirection) {
         this.#element = element;
         this.#onStartScroll = onStartScroll;
         this.#onScroll = onScroll;
@@ -56,6 +57,7 @@ export class ScrollManager {
         this.#triggerSize = triggerSize || 1;
         this.#scrollHandler = this.#scroll.bind(this);
         this.#element.addEventListener("scroll", this.#scrollHandler);
+        this.#layoutDirection = layoutDirection || "vertical";
     }
 
     /**
@@ -72,11 +74,11 @@ export class ScrollManager {
         this.#scrolling = null;
         this.#direction = null;
         this.#triggerSize = null;
-        this.#scrollTop = null;
+        this.#scrollPos = null;
         this.#scrollOffset = null;
         this.#event = null;
-        this.#lastScrollTop = null;
-        this.#lastStopScrollTop = null;
+        this.#lastScrollPos = null;
+        this.#lastStopScrollPos = null;
         this.#timeout = null;
         return null;
     }
@@ -91,15 +93,15 @@ export class ScrollManager {
      */
     async #scroll(event) {
         this.#event = event;
-        this.#scrollTop = this.#element.scrollTop;
-        this.#scrollOffset = Math.abs(Math.ceil(this.#lastScrollTop - this.#scrollTop));
-        this.#direction = this.#lastScrollTop < this.#scrollTop ? ScrollDirection.DOWN : ScrollDirection.UP;
+        this.#scrollPos = this.#element.scrollTop;
+        this.#scrollOffset = Math.abs(Math.ceil(this.#lastScrollPos - this.#scrollPos));
+        this.#direction = this.#lastScrollPos < this.#scrollPos ? ScrollDirection.TO_END : ScrollDirection.TO_START;
 
         if (this.#scrolling !== true) {
             this.#scrolling = true;
 
             if (this.#onStartScroll) {
-                this.#onStartScroll(event, this.#scrollTop, this.#scrollOffset, ScrollDirection.NONE);
+                this.#onStartScroll(event, this.#scrollPos, this.#scrollOffset, ScrollDirection.NONE);
             }
 
             this.#scrollTimerHandler();
@@ -116,9 +118,9 @@ export class ScrollManager {
      */
     async #scrollTimer() {
         requestAnimationFrame(async () => {
-            if (this.#lastScrollTop === this.#scrollTop) {
+            if (this.#lastScrollPos === this.#scrollPos) {
                 if (this.#onEndScroll) {
-                    await this.#onEndScroll(this.#event, this.#scrollTop, this.#scrollOffset, this.#direction);
+                    await this.#onEndScroll(this.#event, this.#scrollPos, this.#scrollOffset, this.#direction);
                 }
                 this.#scrolling = false;
 
@@ -127,10 +129,10 @@ export class ScrollManager {
             }
 
             if (this.#onScroll) {
-                await this.#onScroll(this.#event, this.#scrollTop, this.#scrollOffset, this.#direction);
+                await this.#onScroll(this.#event, this.#scrollPos, this.#scrollOffset, this.#direction);
             }
 
-            this.#lastScrollTop = this.#scrollTop;
+            this.#lastScrollPos = this.#scrollPos;
 
             // Call this timer recursively until the scroll has stopped.
             this.#scrollTimerHandler();
@@ -139,9 +141,9 @@ export class ScrollManager {
 
     async scrollToTop() {
         this.#element.scrollTop = 0;
-        this.#lastScrollTop = 0;
-        this.#scrollTop = 0;
+        this.#lastScrollPos = 0;
+        this.#scrollPos = 0;
         this.#scrollOffset = 0;
-        this.#lastStopScrollTop = 0;
+        this.#lastStopScrollPos = 0;
     }
 }
