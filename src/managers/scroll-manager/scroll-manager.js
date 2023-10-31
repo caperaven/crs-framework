@@ -39,7 +39,7 @@ export class ScrollManager {
     #direction;
     #triggerSize;
     #event;
-    #layoutDirection;
+    #scrollProperty;
 
     /**
      * @constructor
@@ -57,7 +57,7 @@ export class ScrollManager {
         this.#triggerSize = triggerSize || 1;
         this.#scrollHandler = this.#scroll.bind(this);
         this.#element.addEventListener("scroll", this.#scrollHandler);
-        this.#layoutDirection = layoutDirection || "vertical";
+        this.#scrollProperty = layoutDirection === "vertical" ? "scrollTop" : "scrollLeft";
     }
 
     /**
@@ -93,7 +93,7 @@ export class ScrollManager {
      */
     async #scroll(event) {
         this.#event = event;
-        this.#scrollPos = this.#element.scrollTop;
+        this.#scrollPos = this.#element[this.#scrollProperty];
         this.#scrollOffset = Math.abs(Math.ceil(this.#lastScrollPos - this.#scrollPos));
         this.#direction = this.#lastScrollPos < this.#scrollPos ? ScrollDirection.TO_END : ScrollDirection.TO_START;
 
@@ -140,7 +140,7 @@ export class ScrollManager {
     }
 
     async scrollToTop() {
-        this.#element.scrollTop = 0;
+        this.#element[this.#scrollProperty] = 0
         this.#lastScrollPos = 0;
         this.#scrollPos = 0;
         this.#scrollOffset = 0;
