@@ -403,7 +403,6 @@ export class VirtualizationManager {
             this.#sizeManager.itemSize
         );
 
-
         await crs.call("data_manager", "on_change", {
             manager: this.#dataManager,
             callback: this.#dataManagerChangeHandler.bind(this)

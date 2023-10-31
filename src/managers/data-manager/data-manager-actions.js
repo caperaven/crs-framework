@@ -252,6 +252,18 @@ class DataManagerActions {
         })
     }
 
+    static async refresh(step, context, process, item) {
+        const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return;
+
+        const dataManager = globalThis.dataManagers[manager];
+
+        await dataManager.notifyChanges({
+            action: CHANGE_TYPES.refresh,
+            count: dataManager.count
+        })
+    }
+
     /**
      * @method append - Append records to a data manager
      * @param step {object} - The step that contains the action to perform

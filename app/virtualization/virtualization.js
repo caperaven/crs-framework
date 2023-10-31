@@ -40,6 +40,10 @@ export default class Virtualization extends crsbinding.classes.ViewBase {
             virtualized_element: this.ul,
             manager: "my_data"
         });
+
+        await crs.call("data_manager", "refresh", {
+            manager: "my_data"
+        })
     }
 
     async disconnectedCallback() {
