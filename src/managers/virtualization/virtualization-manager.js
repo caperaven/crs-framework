@@ -15,7 +15,7 @@ export class VirtualizationManager {
     #inflationManager;
     #scrollManager;
     #syncPage = false;
-    #scrollTop = 0;
+    #scrollPos = 0;
     #recordCount = 0;
     #dataManager = null;
     #direction = "vertical";
@@ -61,7 +61,7 @@ export class VirtualizationManager {
         this.#inflationManager = null;
         this.#scrollManager = null;
         this.#syncPage = null;
-        this.#scrollTop = null;
+        this.#scrollPos = null;
         this.#recordCount = null;
         this.#dataManager = null;
         this.#itemSize = null;
@@ -80,7 +80,7 @@ export class VirtualizationManager {
         marker.style.position = "absolute";
         marker.style.top = "0";
         marker.style.left = "0";
-        marker.style.translate = this.#direction == "vertical" ? `${0}px ${this.#sizeManager.contentHeight}px` : `${this.#sizeManager.contentHeight}px ${0}px`;
+        marker.style.translate = this.#direction == "vertical" ? `${0}px ${this.#sizeManager.contentSize}px` : `${this.#sizeManager.contentSize}px ${0}px`;
         this.#element.appendChild(marker);
     }
 
@@ -175,7 +175,7 @@ export class VirtualizationManager {
      * @param top {number} - The top position to set.
      */
     #setTop(element, top) {
-        if (top >= this.#sizeManager.contentHeight) {
+        if (top >= this.#sizeManager.contentSize) {
             top = -this.#sizeManager.itemSize * 2;
         }
 
@@ -188,14 +188,14 @@ export class VirtualizationManager {
      * We first check the quantity of items scrolled. If it is greater than the virtual size cache we don't do anything.
      * The user in that scenario is jumping pages and once the scroll ends we will sync the page.
      * @param event {Event} - The scroll event.
-     * @param scrollTop {number} - The current scroll top position.
+     * @param scrollPos {number} - The current scroll top position.
      * @param scrollOffset {number} - How big was the jump between the previous scroll and this one.
      * @param direction {string} - The direction of the scroll. Either "up" or "down".
      * @returns {Promise<void>}
      */
-    async #onScroll(event, scrollTop, scrollOffset, direction) {
+    async #onScroll(event, scrollPos, scrollOffset, direction) {
         const itemsScrolled = Math.floor(scrollOffset / this.#sizeManager.itemSize);
-        const topIndex = Math.floor(scrollTop / this.#sizeManager.itemSize);
+        const topIndex = Math.floor(scrollPos / this.#sizeManager.itemSize);
 
         if (itemsScrolled <= this.#virtualSize) {
             this.#syncPage = false;
@@ -300,7 +300,7 @@ export class VirtualizationManager {
             await this.#performSyncPage(scrollTop);
         }
 
-        this.#scrollTop = scrollTop;
+        this.#scrollPos = scrollTop;
     }
 
     /**
@@ -343,7 +343,7 @@ export class VirtualizationManager {
 
     async #updateMarker() {
         const marker = this.#element.querySelector("#marker");
-        marker.style.translate = this.#direction == "vertical" ? `${0}px ${this.#sizeManager.contentHeight}px` : `${this.#sizeManager.contentHeight}px ${0}px`;
+        marker.style.translate = this.#direction == "vertical" ? `${0}px ${this.#sizeManager.contentSize}px` : `${this.#sizeManager.contentSize}px ${0}px`;
     }
 
     async #clear() {
@@ -353,7 +353,7 @@ export class VirtualizationManager {
     }
 
     async refreshCurrent() {
-        await this.#performSyncPage(this.#scrollTop);
+        await this.#performSyncPage(this.#scrollPos);
     }
 
     async refresh() {
@@ -392,8 +392,9 @@ export class VirtualizationManager {
      */
     async initialize() {
         const bounds = this.#element.getBoundingClientRect();
+        const containerSize = this.#direction == "vertical" ? bounds.height : bounds.width;
 
-        this.#sizeManager = new SizeManager(this.#itemSize, 0, bounds.height);
+        this.#sizeManager = new SizeManager(this.#itemSize, 0, containerSize);
         this.#virtualSize = Math.floor(this.#sizeManager.pageItemCount / 2);
 
         this.#scrollManager = new ScrollManager(
