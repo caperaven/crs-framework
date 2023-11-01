@@ -20,6 +20,7 @@ export class VirtualizationManager {
     #dataManager = null;
     #direction = "vertical";
     #dataManagerChangeHandler = this.#dataManagerChange.bind(this);
+    #createdCallback = null;
 
     /**
      * @constructor
@@ -30,13 +31,14 @@ export class VirtualizationManager {
      * @param itemCount {number} - The number of items.
      * @param itemSize {number} - The size of each item.
      */
-    constructor(element, itemTemplate, inflationFn, dataManager, itemSize, direction = "vertical") {
+    constructor(element, itemTemplate, inflationFn, dataManager, itemSize, createdCallback, direction = "vertical") {
         this.#dataManager = dataManager;
         this.#element = element;
         this.#itemTemplate = itemTemplate;
         this.#inflationManager = new InflationManager(dataManager, inflationFn);
         this.#itemSize = itemSize;
         this.#direction = direction;
+        this.#createdCallback = createdCallback;
     }
 
     /**
@@ -65,6 +67,7 @@ export class VirtualizationManager {
         this.#recordCount = null;
         this.#dataManager = null;
         this.#itemSize = null;
+        this.#createdCallback = null;
         return null;
     }
 
@@ -111,6 +114,11 @@ export class VirtualizationManager {
         element.style.top = "0";
         element.style.left = "0";
         element.style.willChange = "translate";
+
+        if (this.#createdCallback != null) {
+            this.#createdCallback(element);
+        }
+
         return element;
     }
 

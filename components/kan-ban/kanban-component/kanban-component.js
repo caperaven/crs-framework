@@ -1,11 +1,15 @@
 import "./../cards-manager/cards-manager-actions.js";
 // JHR: TODO remove when binding engine is updated
 import "./../utils/inflation.js";
+import "./../swim-lane/swim-lane.js";
 
 export class KanbanComponent extends HTMLElement {
 
     #cardHeaderName;
     #cardRecordName;
+    #swimLaneCreatedHandle = this.#swimLaneCreated.bind(this);
+    #inflateSwimLaneHandler = this.#inflateSwimLane.bind(this);
+    #itemSize;
 
     constructor() {
         super();
@@ -64,6 +68,9 @@ export class KanbanComponent extends HTMLElement {
 
         this.#cardHeaderName = null;
         this.#cardRecordName = null;
+        this.#swimLaneCreatedHandle = null;
+        this.#inflateSwimLaneHandler = null;
+        this.#itemSize = null;
     }
 
     async #dataManagerChange(change) {
@@ -78,6 +85,25 @@ export class KanbanComponent extends HTMLElement {
             callback: this.#dataManagerChange.bind(this)
         })
 
+        this.#itemSize = Number(getComputedStyle(this)
+            .getPropertyValue('--lane-width')
+            .trim()
+            .replace("rem", "")) * 16;
+
+        const ul = this.shadowRoot.querySelector(".swim-lanes-container");
+        const template = this.shadowRoot.querySelector("#swimlane-template");
+        const inflation = await crs.binding.expression.inflationFactory(template);
+
+        await crs.call("virtualization", "enable", {
+            element: ul,
+            manager: this.dataset.manager,
+            itemSize: this.#itemSize,
+            template,
+            inflation: this.#inflateSwimLaneHandler,
+            direction: "horizontal",
+            created_callback: this.#swimLaneCreatedHandle
+        })
+
         this.dispatchEvent(new CustomEvent("change-settings", {
             // todo: open kan ban settings dialog
             detail: {
@@ -87,6 +113,29 @@ export class KanbanComponent extends HTMLElement {
             bubbles: true,
             composed: true
         }));
+    }
+
+    /**
+     * @method swimlandCreated - when the swimlane is created set the attributes required for it to function.
+     * @param element
+     * @returns {Promise<void>}
+     */
+    async #swimLaneCreated(element) {
+        element.firstElementChild.dataset.manager = this.dataset.manager;
+        element.firstElementChild.dataset.headerCard = this.#cardHeaderName;
+        element.firstElementChild.dataset.recordCard = this.#cardRecordName;
+        element.firstElementChild.dataset.cardSize = this.#itemSize;
+    }
+
+    /**
+     * @method inflateSwimLane - inflate the swimlane with the data.
+     * This includes setting of the header information and updating the data if when required.
+     * @param element
+     * @param data
+     * @returns {Promise<void>}
+     */
+    async #inflateSwimLane(element, data) {
+        await element.firstElementChild.setHeader(data.header);
     }
 
     /**

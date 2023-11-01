@@ -36,6 +36,8 @@ export default class Welcome extends crsbinding.classes.ViewBase {
 
     async load() {
         const swimLane = this.element.querySelector("swim-lane");
+        await swimLane.initialize();
+
         await crs.call("component", "on_ready", {
             element: swimLane,
             caller: this,

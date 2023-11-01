@@ -1,5 +1,5 @@
 :host {
-    --lane-width: 300px;
+    --lane-width: 10rem;
 
     width: var(--lane-width);
     height: 100%;

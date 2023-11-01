@@ -1,8 +1,10 @@
 export class SwimLane extends HTMLElement {
     #cardDef = null;
-    #header = null;
     #ul = null;
     #recordCard = null;
+    #headerDef = null;
+    #headerInstance = null;
+    #headerModel = null;
 
     constructor() {
         super();
@@ -16,17 +18,18 @@ export class SwimLane extends HTMLElement {
         await this.load();
     }
 
-    async load() {
-        requestAnimationFrame(async () => {
+    load() {
+        return new Promise(async resolve => {
             this.#cardDef = await crs.call("cards_manager", "get", { name: this.dataset.recordCard });
 
-            if (this.#header != null) {
-                await this.#addHeader();
+            // if this is set before the model is fully loaded.
+            // at this point we want to inflate it.
+            if (this.#headerModel != null) {
+                await this.#setHeader(this.#headerModel);
             }
 
-            await this.#enableVirtualization();
-
             await crs.call("component", "notify_ready", { element: this });
+            resolve();
         })
     }
 
@@ -38,16 +41,25 @@ export class SwimLane extends HTMLElement {
         this.#cardDef = null;
         this.#ul = null;
         this.#recordCard = null;
+        this.#headerDef = null;
+        this.#headerInstance = null;
     }
 
-    async #addHeader() {
-        const header = await crs.call("cards_manager", "get", { name: this.dataset.headerCard });
-        const instance = header.template.content.cloneNode(true);
-        await header.inflationFn(instance, this.#header);
-        this.shadowRoot.querySelector("header").appendChild(instance);
+    async #setHeader(model) {
+        if (this.#headerInstance == null) {
+            this.#headerDef = await crs.call("cards_manager", "get", { name: this.dataset.headerCard });
+            this.#headerInstance = this.#headerDef.template.content.cloneNode(true).firstElementChild;
+            this.shadowRoot.querySelector("header").appendChild(this.#headerInstance);
+        }
+
+        await this.#headerDef.inflationFn(this.#headerInstance, model);
     }
 
-    async #enableVirtualization() {
+    /**
+     * @method enableVirtualization - Enables virtualization for the swim lane
+     * @returns {Promise<void>}
+     */
+    async enableVirtualization() {
         this.#ul = this.shadowRoot.querySelector("ul");
         this.#recordCard = await crs.call("cards_manager", "get", { name: this.dataset.recordCard });
 
@@ -60,13 +72,27 @@ export class SwimLane extends HTMLElement {
         });
     }
 
+    /**
+     * @method disableVirtualization - Disables virtualization for the swim lane
+     * @returns {Promise<void>}
+     */
+    async disableVirtualization() {
+        this.#ul = this.shadowRoot.querySelector("ul");
+
+        await crs.call("virtualization", "disable", {
+            element: this.#ul
+        })
+
+        this.#ul.innerHTML = "";
+    }
+
     async setHeader(newValue) {
-        this.#header = newValue;
+        this.#headerModel = newValue;
 
         if (this.dataset.ready != "true") return;
 
         if (newValue != null) {
-            await this.#addHeader();
+            await this.#setHeader(newValue);
         }
     }
 

@@ -1,4 +1,5 @@
 import "./../../components/kan-ban/kanban-component/kanban-component.js";
+import "./../../src/actions/virtualization-actions.js";
 
 export default class KanBan extends crsbinding.classes.ViewBase {
     #data;
@@ -21,7 +22,7 @@ export default class KanBan extends crsbinding.classes.ViewBase {
         await crs.call("component", "on_loading", {
             element: kanban,
             callback: async () => {
-                await crs.call("data_manager", "register", { manager: "kanbanDataManager", records: this.#data });
+                await crs.call("data_manager", "register", { manager: "kanbanDataManager", records: this.#data, type: "memory" });
                 await kanban.initialize();
             }
         });
