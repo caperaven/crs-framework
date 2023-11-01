@@ -399,8 +399,9 @@ export class VirtualizationManager {
      * That includes the element that will be used for the virtualization.
      */
     async initialize() {
-        const bounds = this.#element.getBoundingClientRect();
-        const containerSize = this.#direction == "vertical" ? bounds.height : bounds.width;
+        await waitForElementRender(this.#element);
+
+        const containerSize = this.#direction == "vertical" ? this.#element.offsetHeight : this.#element.offsetWidth;
 
         this.#sizeManager = new SizeManager(this.#itemSize, 0, containerSize);
         this.#virtualSize = Math.floor(this.#sizeManager.pageItemCount / 2);
@@ -426,4 +427,21 @@ export class VirtualizationManager {
         // this.#createItems(); we need to create this on refresh instead
         this.#createMarker();
     }
+}
+
+export async function waitForElementRender(element) {
+    if (element.offsetWidth > 0 && element.offsetHeight > 0) {
+        return;
+    }
+
+    return new Promise(resolve => {
+        const observer = new ResizeObserver(() => {
+            if (element.offsetWidth > 0 && element.offsetHeight > 0) {
+                observer.disconnect();
+                resolve();
+            }
+        });
+
+        observer.observe(element);
+    });
 }

@@ -1,4 +1,4 @@
-import {VirtualizationManager} from "./../managers/virtualization/virtualization-manager.js";
+import {VirtualizationManager, waitForElementRender} from "./../managers/virtualization/virtualization-manager.js";
 
 export class VirtualizationActions {
     static async perform(step, context, process, item) {
@@ -37,29 +37,13 @@ export class VirtualizationActions {
 
     static async disable(step, context, process, item) {
         const element = await crs.dom.get_element(step, context, process, item);
+        if (element == null) return;
 
         if (element.__virtualizationManager != null) {
             element.__virtualizationManager.dispose();
             delete element.__virtualizationManager;
         }
     }
-}
-
-async function waitForElementRender(element) {
-    if (element.offsetWidth > 0 && element.offsetHeight > 0) {
-        return;
-    }
-
-    return new Promise(resolve => {
-        const observer = new ResizeObserver(() => {
-            if (element.offsetWidth > 0 && element.offsetHeight > 0) {
-                observer.disconnect();
-                resolve();
-            }
-        });
-
-        observer.observe(element);
-    });
 }
 
 crs.intent.virtualization = VirtualizationActions;

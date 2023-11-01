@@ -92,7 +92,6 @@ export class KanbanComponent extends HTMLElement {
 
         const ul = this.shadowRoot.querySelector(".swim-lanes-container");
         const template = this.shadowRoot.querySelector("#swimlane-template");
-        const inflation = await crs.binding.expression.inflationFactory(template);
 
         await crs.call("virtualization", "enable", {
             element: ul,

@@ -35,7 +35,7 @@ export class SwimLane extends HTMLElement {
 
     async disconnectedCallback() {
         await crs.call("virtualization", "disable", {
-            element: this.ul
+            element: this.#ul
         })
 
         this.#cardDef = null;
