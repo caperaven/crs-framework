@@ -1,3 +1,5 @@
+import "./src/managers/data-manager/data-manager-actions.js";
+
 export default class IndexViewModel extends crsbinding.classes.ViewBase {
     async connectedCallback() {
         await super.connectedCallback();

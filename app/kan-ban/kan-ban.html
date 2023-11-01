@@ -19,7 +19,7 @@
 
     <kanban-component
         id="staffKanban"
-        data-manager="kanbanDataManager",
+        data-manager="kanbanDataManager"
         data-lane-width="160">
         <template id="tplHeader">
             <div>${title}</div>
@@ -27,8 +27,8 @@
 
         <template id="tplRecord">
             <li>
-                <div>${code}</div>
-                <div>${value}</div>
+                <div class="code">${code}</div>
+                <div class="value">${value}</div>
             </li>
         </template>
     </kanban-component>

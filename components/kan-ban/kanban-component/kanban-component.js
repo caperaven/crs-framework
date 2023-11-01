@@ -1,27 +1,11 @@
 import "./../cards-manager/cards-manager-actions.js";
+// JHR: TODO remove when binding engine is updated
+import "./../utils/inflation.js";
 
 export class KanbanComponent extends HTMLElement {
 
-    #headerInflateFn;
-    #recordInflateFn;
     #cardHeaderName;
     #cardRecordName;
-
-    get headerInflateFn() {
-        return this.#headerInflateFn;
-    }
-
-    set headerInflateFn(newValue) {
-        this.#headerInflateFn = newValue;
-    }
-
-    get recordInflateFn() {
-        return this.#recordInflateFn;
-    }
-
-    set recordInflateFn(newValue) {
-        this.#recordInflateFn = newValue;
-    }
 
     constructor() {
         super();
@@ -29,7 +13,9 @@ export class KanbanComponent extends HTMLElement {
     }
 
     async connectedCallback() {
+        // 1. load templates before we replace the HTML
         await this.#loadTemplates();
+        // 2, replace the html
         const css = `<link rel="stylesheet" href="${import.meta.url.replace(".js", ".css")}">`;
         const html = await fetch(import.meta.url.replace(".js", ".html")).then(result => result.text());
         this.shadowRoot.innerHTML = `${css}${html}`;
@@ -39,25 +25,31 @@ export class KanbanComponent extends HTMLElement {
     async #loadTemplates() {
         const headerTemplate = this.querySelector("#tplHeader");
         const recordTemplate = this.querySelector("#tplRecord");
+
+        const headerInflateFn = await crs.binding.expression.inflationFactory(headerTemplate);
+        const recordInflateFn = await crs.binding.expression.inflationFactory(recordTemplate);
+
         this.#cardHeaderName = `${this.id}-header`;
         this.#cardRecordName = `${this.id}-record`;
 
         await crs.call("cards_manager", "register", {
             name: this.#cardHeaderName,
             template: headerTemplate,
-            inflationFn: this.headerInflateFn
+            inflationFn: headerInflateFn
         })
 
         await crs.call("cards_manager", "register", {
             name: this.#cardRecordName,
             template: recordTemplate,
-            inflationFn: this.recordInflateFn
+            inflationFn: recordInflateFn
         });
+
+        this.innerHTML = "";
     }
 
     async load() {
         requestAnimationFrame(async () => {
-            await crs.call("component", "notify_ready", { element: this });
+            await crs.call("component", "notify_loading", { element: this });
         });
     }
 
@@ -70,10 +62,41 @@ export class KanbanComponent extends HTMLElement {
             name: this.#cardRecordName
         });
 
-        this.#headerInflateFn = null;
-        this.#recordInflateFn = null;
         this.#cardHeaderName = null;
         this.#cardRecordName = null;
+    }
+
+    async #dataManagerChange(change) {
+        if (this[change.action] != null) {
+            this[change.action](change);
+        }
+    }
+
+    async initialize() {
+        await crs.call("data_manager", "on_change", {
+            manager: this.dataset.manager,
+            callback: this.#dataManagerChange.bind(this)
+        })
+
+        this.dispatchEvent(new CustomEvent("change-settings", {
+            // todo: open kan ban settings dialog
+            detail: {
+                manager: this.dataset.manager
+                // pass on current state with all the info the settings needs.
+            },
+            bubbles: true,
+            composed: true
+        }));
+    }
+
+    /**
+     * @method - refresh - call this to refresh the component
+     * This is typically called when the data manager has changes on the data.
+     * @param changes
+     * @returns {Promise<void>}
+     */
+    async refresh(changes) {
+        console.log(changes);
     }
 }
 

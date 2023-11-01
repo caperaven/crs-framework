@@ -1,18 +1,35 @@
 import "./../../components/kan-ban/kanban-component/kanban-component.js";
-import "./../../src/managers/data-manager/data-manager-actions.js";
 
 export default class KanBan extends crsbinding.classes.ViewBase {
+    #data;
+
     async preLoad() {
-        const data = [];
+        this.#data = [];
 
         for (let i = 0; i < 100; i++) {
-            data.push({
-                title: `User ${i}`,
+            this.#data.push({
+                header: {
+                    title: `User ${i}`,
+                },
                 records: generateRecords(1000, i * 100, i * 100)
             })
         }
+    }
 
-        await crs.call("data_manager", "register", { manager: "kanbanDataManager", records: data });
+    async load() {
+        const kanban = this.element.querySelector("kanban-component");
+        await crs.call("component", "on_loading", {
+            element: kanban,
+            callback: async () => {
+                await crs.call("data_manager", "register", { manager: "kanbanDataManager", records: this.#data });
+                await kanban.initialize();
+            }
+        });
+        super.load();
+    }
+
+    async refresh() {
+        await crs.call("data_manager", "refresh", { manager: "kanbanDataManager" });
     }
 }
 

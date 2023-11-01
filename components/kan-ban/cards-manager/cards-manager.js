@@ -13,6 +13,9 @@ export class CardsManager {
     }
 
     async unregister(name) {
+        const card = this.#cards[name];
+        card.template = null;
+        card.inflationFn = null;
         delete this.#cards[name];
     }
 
