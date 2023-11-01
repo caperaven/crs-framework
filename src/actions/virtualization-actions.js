@@ -1,4 +1,4 @@
-import {VirtualizationManager, waitForElementRender} from "./../managers/virtualization/virtualization-manager.js";
+import {VirtualizationManager} from "./../managers/virtualization/virtualization-manager.js";
 
 export class VirtualizationActions {
     static async perform(step, context, process, item) {
@@ -29,7 +29,8 @@ export class VirtualizationActions {
 
             element.__virtualizationManager = new VirtualizationManager(element, template, inflationFn, manager, itemSize, createdCallback, direction);
 
-            await waitForElementRender(element);
+            await crs.call("component", "wait_for_element_render", { element })
+
             await element.__virtualizationManager.initialize();
             resolve();
         });

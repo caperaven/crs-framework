@@ -62,7 +62,7 @@ export class ComponentActions {
         const callback = await crs.process.getValue(step.args.callback, context, process, item);
 
         if (element._dataId == null) {
-            element._dataId = crs.binding.data.addObject(element.id);
+            element._dataId = crsbinding.data.addObject(element.id);
         }
 
         let dataId = element._dataId;
@@ -72,12 +72,14 @@ export class ComponentActions {
         };
 
         const id = getNextId(element);
-        const evalResult = await createPropertiesEvaluation(element, properties, id);
-
-        element._processObserver[id] = { properties, eval: evalResult, callback }
+        element._processObserver[id] = {
+            properties: properties,
+            eval: createPropertiesEvaluation(element, properties, id),
+            callback: callback
+        }
 
         for (let property of properties) {
-            await crs.binding.data.addCallback(dataId, property, element._processObserver[id].eval);
+            crsbinding.data.addCallback(dataId, property, element._processObserver[id].eval);
         }
 
         return id;
@@ -120,7 +122,7 @@ export class ComponentActions {
         for (const id of ids) {
             const def = element._processObserver[id];
             for (const property of def.properties) {
-                await crs.binding.data.removeCallback(element._dataId, property, def.eval);
+                crsbinding.data.removeCallback(element._dataId, property, def.eval);
             }
             def.properties = null;
             def.eval = null;
@@ -291,6 +293,36 @@ export class ComponentActions {
 
         element.addEventListener("loading", fn);
     }
+
+    /**
+     * @method wait_for_element_render - Wait for an element to be rendered.
+     * We wait until the width of the height of the element is greater than 0.
+     * @param step {Object} - The step object.
+     * @param context {Object} - The context of the process.
+     * @param process {Object} - The process that is currently running.
+     * @param item {Object} - The item that is being processed.
+     *
+     * @param step.args.element {HTMLElement} - The element that is being observed.
+     * @returns {Promise<unknown>}
+     */
+    static async wait_for_element_render(step, context, process, item) {
+        const element = await crs.dom.get_element(step.args.element, context, process, item);
+
+        if (element.offsetWidth > 0 && element.offsetHeight > 0) {
+            return true;
+        }
+
+        return new Promise(resolve => {
+            const observer = new ResizeObserver(() => {
+                if (element.offsetWidth > 0 && element.offsetHeight > 0) {
+                    observer.disconnect();
+                    resolve(true);
+                }
+            });
+
+            observer.observe(element);
+        });
+    }
 }
 
 
@@ -314,16 +346,16 @@ function getNextId(element) {
  * @param id {String|Number} - The id of the observer.
  * @returns A function that will be called when the properties are available.
  */
-async function createPropertiesEvaluation(context, properties, id) {
+function createPropertiesEvaluation(context, properties, id) {
     let script = ["if ( "];
     for (const property of properties) {
-        script.push(`(await crs.binding.data.getProperty(this._dataId, "${property}"))  != null && `)
+        script.push(`crsbinding.data.getProperty(this._dataId, "${property}")  != null && `)
     }
     script.push(`) { this._processObserver[${id}].callback.call(this) };`)
     script = script.join("").replace("&& )", ")");
 
-    const fn = new crs.classes.AsyncFunction(script);
-    return await fn.bind(context);
+    const fn = new Function(script);
+    return fn.bind(context);
 }
 
 crs.intent.component = ComponentActions;

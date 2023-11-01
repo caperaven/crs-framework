@@ -1,5 +1,6 @@
 import "./../../components/kan-ban/kanban-component/kanban-component.js";
 import "./../../src/actions/virtualization-actions.js";
+import "./../../packages/crs-process-api/action-systems/component-actions.js";
 
 export default class KanBan extends crsbinding.classes.ViewBase {
     #data;

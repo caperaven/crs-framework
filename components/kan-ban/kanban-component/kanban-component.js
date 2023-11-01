@@ -85,10 +85,7 @@ export class KanbanComponent extends HTMLElement {
             callback: this.#dataManagerChange.bind(this)
         })
 
-        this.#itemSize = Number(getComputedStyle(this)
-            .getPropertyValue('--lane-width')
-            .trim()
-            .replace("rem", "")) * 16;
+        this.#itemSize = Number(this.dataset.itemSize || 160);
 
         const ul = this.shadowRoot.querySelector(".swim-lanes-container");
         const template = this.shadowRoot.querySelector("#swimlane-template");

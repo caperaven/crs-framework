@@ -399,7 +399,7 @@ export class VirtualizationManager {
      * That includes the element that will be used for the virtualization.
      */
     async initialize() {
-        await waitForElementRender(this.#element);
+        await crs.call("component", "wait_for_element_render", { element: this.#element })
 
         const containerSize = this.#direction == "vertical" ? this.#element.offsetHeight : this.#element.offsetWidth;
 
@@ -427,21 +427,4 @@ export class VirtualizationManager {
         // this.#createItems(); we need to create this on refresh instead
         this.#createMarker();
     }
-}
-
-export async function waitForElementRender(element) {
-    if (element.offsetWidth > 0 && element.offsetHeight > 0) {
-        return;
-    }
-
-    return new Promise(resolve => {
-        const observer = new ResizeObserver(() => {
-            if (element.offsetWidth > 0 && element.offsetHeight > 0) {
-                observer.disconnect();
-                resolve();
-            }
-        });
-
-        observer.observe(element);
-    });
 }
