@@ -97,7 +97,9 @@ export class KanbanComponent extends HTMLElement {
             template,
             inflation: this.#inflateSwimLaneHandler,
             direction: "horizontal",
-            created_callback: this.#swimLaneCreatedHandle
+            callbacks: {
+                createdCallback: this.#swimLaneCreatedHandle
+            }
         })
 
         this.dispatchEvent(new CustomEvent("change-settings", {

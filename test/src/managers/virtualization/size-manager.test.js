@@ -17,7 +17,7 @@ describe("size manager tests", () => {
     });
 
     it ("initialized", async () => {
-        assertEquals(instance.contentHeight, 3200);
+        assertEquals(instance.contentSize, 3200);
         assertEquals(instance.pageItemCount, 16);
     });
 

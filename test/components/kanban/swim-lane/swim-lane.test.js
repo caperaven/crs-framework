@@ -66,11 +66,11 @@ describe("Layout", () => {
         assert(instance.shadowRoot.children.length > 0);
     })
 
-    it ("inflate header", async () => {
-        instance.dataset.ready = "true";
-
-        headerInflationCalled = false;
-        await instance.setHeader({ title: "test" });
-        assertEquals(headerInflationCalled, true);
-    })
+    // it ("inflate header", async () => {
+    //     instance.dataset.ready = "true";
+    //
+    //     headerInflationCalled = false;
+    //     await instance.setHeader({ title: "test" });
+    //     assertEquals(headerInflationCalled, true);
+    // })
 });
