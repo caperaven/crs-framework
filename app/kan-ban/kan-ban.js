@@ -8,12 +8,12 @@ export default class KanBan extends crsbinding.classes.ViewBase {
     async preLoad() {
         this.#data = [];
 
-        for (let i = 0; i < 100; i++) {
+        for (let i = 0; i < 1000; i++) {
             this.#data.push({
                 header: {
                     title: `User ${i}`,
                 },
-                records: generateRecords(1000, i * 100, i * 100)
+                records: generateRecords(10000, i * 100, i * 100)
             })
         }
     }

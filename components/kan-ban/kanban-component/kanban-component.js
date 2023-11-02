@@ -95,6 +95,12 @@ export class KanbanComponent extends HTMLElement {
             name: this.#cardRecordName
         });
 
+        for (const manager in this.#dataManagerNames) {
+            await crs.call("data_manager", "unregister", {
+                manager
+            })
+        }
+
         this.#cardHeaderName = null;
         this.#cardRecordName = null;
         this.#swimLaneCreatedHandle = null;
@@ -196,6 +202,8 @@ export class KanbanComponent extends HTMLElement {
             return requestAnimationFrame(this.#animateScrollEndHandler);
         }
 
+        // this is the code that updates the data managers with the new records.
+        // and also refreshes the virtualization on the currently visible elements.
         this.#scrolling = false;
         this.#lastEndScrollTime = null;
         await this.#updatePageDataManagers();
@@ -258,7 +266,7 @@ export class KanbanComponent extends HTMLElement {
     /**
      * @method setSwimLaneDataManagers - on the data managers, update their records
      * with those now visible after the scroll.
-     * @param newRecords
+     * @param newRecords {array} - data for the kanban that determines the swim lanes
      * @returns {Promise<void>}
      */
     async #setSwimLaneDataManagers(newRecords) {
