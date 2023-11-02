@@ -22,6 +22,22 @@ export class VirtualizationManager {
     #dataManagerChangeHandler = this.#dataManagerChange.bind(this);
     #callbacks = null;
 
+    get pageItemCount() {
+        return this.#sizeManager.pageItemCount;
+    }
+
+    get scrollPos() {
+        return this.#scrollPos;
+    }
+
+    get virtualSize() {
+        return this.#virtualSize;
+    }
+
+    get rowMap() {
+        return this.#rowMap;
+    }
+
     /**
      * @constructor
      * @param element {HTMLElement} - The element to enable virtualization on.
@@ -44,7 +60,12 @@ export class VirtualizationManager {
     /**
      * @method dispose - clean up memory.
      */
-    dispose() {
+    async dispose() {
+        await crs.call("data_manager", "remove_change", {
+            manager: this.#dataManager,
+            callback: this.#dataManagerChangeHandler
+        })
+
         for (const key of Object.keys(this.#rowMap)) {
             this.#rowMap[key] = null;
         }
@@ -129,11 +150,11 @@ export class VirtualizationManager {
     #createItems(count) {
         const fragment = document.createDocumentFragment();
 
-        if (count < this.#sizeManager.pageItemCount) {
+        if (count < this.pageItemCount) {
             return this.#createExactItems(count)
         }
 
-        let childCount = this.#sizeManager.pageItemCount + (this.#virtualSize * 2);
+        let childCount = this.pageItemCount + (this.#virtualSize * 2);
 
         // half of virtualize elements at the top and half at the bottom.
         for (let i = -this.#virtualSize; i < childCount - this.#virtualSize; i++) {
@@ -220,6 +241,10 @@ export class VirtualizationManager {
             // instead you need to reset from the top down again
             //await this.#onSyncPage(topIndex);
             this.#syncPage = true;
+        }
+
+        if (this.#callbacks.onScrollStart != null) {
+            await this.#callbacks.onScrollStart();
         }
     }
 
@@ -309,6 +334,10 @@ export class VirtualizationManager {
         }
 
         this.#scrollPos = scrollPos;
+
+        if (this.#callbacks.onScrollEnd != null) {
+            await this.#callbacks.onScrollEnd();
+        }
     }
 
     /**
@@ -342,7 +371,9 @@ export class VirtualizationManager {
         this.#topIndex = topIndex;
         this.#bottomIndex = topIndex + count - 1;
 
-
+        if (this.#callbacks.onPerformSync != null) {
+            await this.#callbacks.onPerformSync();
+        }
     }
 
     async #dataManagerChange(change) {
@@ -406,7 +437,7 @@ export class VirtualizationManager {
         const containerSize = this.#direction == "vertical" ? this.#element.offsetHeight : this.#element.offsetWidth;
 
         this.#sizeManager = new SizeManager(this.#itemSize, 0, containerSize);
-        this.#virtualSize = Math.floor(this.#sizeManager.pageItemCount / 2);
+        this.#virtualSize = Math.floor(this.pageItemCount / 2);
 
         this.#scrollManager = new ScrollManager(
             this.#element,
@@ -419,7 +450,7 @@ export class VirtualizationManager {
 
         await crs.call("data_manager", "on_change", {
             manager: this.#dataManager,
-            callback: this.#dataManagerChangeHandler.bind(this)
+            callback: this.#dataManagerChangeHandler
         })
 
         this.#element.style.position = "relative";

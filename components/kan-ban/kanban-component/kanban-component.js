@@ -5,11 +5,40 @@ import "./../swim-lane/swim-lane.js";
 
 export class KanbanComponent extends HTMLElement {
 
+    #ul;
     #cardHeaderName;
     #cardRecordName;
     #swimLaneCreatedHandle = this.#swimLaneCreated.bind(this);
+    #startScrollHandle = this.#startScroll.bind(this);
+    #endScrollHandle = this.#endScroll.bind(this);
+    #performSyncHandle = this.#performSync.bind(this);
     #inflateSwimLaneHandler = this.#inflateSwimLane.bind(this);
+    #animateScrollEndHandler = this.#animateScrollEnd.bind(this);
     #itemSize;
+    #scrolling = false;
+    #lastEndScrollTime = null;
+    #dataManagerNames = [];
+    #currentElements = [];
+
+    get pageItemCount() {
+        return this.#ul.__virtualizationManager.pageItemCount;
+    }
+
+    get scrollPos() {
+        return this.#ul.__virtualizationManager.scrollPos;
+    }
+
+    get virtualSize() {
+        return this.#ul.__virtualizationManager.virtualSize;
+    }
+
+    get rowMap() {
+        return this.#ul.__virtualizationManager.rowMap;
+    }
+
+    get itemSize() {
+        return this.#itemSize;
+    }
 
     constructor() {
         super();
@@ -69,8 +98,17 @@ export class KanbanComponent extends HTMLElement {
         this.#cardHeaderName = null;
         this.#cardRecordName = null;
         this.#swimLaneCreatedHandle = null;
+        this.#startScrollHandle = null;
+        this.#endScrollHandle = null;
+        this.#performSyncHandle = null;
         this.#inflateSwimLaneHandler = null;
         this.#itemSize = null;
+        this.#scrolling = null;
+        this.#lastEndScrollTime = null;
+        this.#animateScrollEndHandler = null;
+        this.#ul = null;
+        this.#dataManagerNames = null;
+        this.#currentElements = null;
     }
 
     async #dataManagerChange(change) {
@@ -87,18 +125,21 @@ export class KanbanComponent extends HTMLElement {
 
         this.#itemSize = Number(this.dataset.itemSize || 160);
 
-        const ul = this.shadowRoot.querySelector(".swim-lanes-container");
+        this.#ul = this.shadowRoot.querySelector(".swim-lanes-container");
         const template = this.shadowRoot.querySelector("#swimlane-template");
 
         await crs.call("virtualization", "enable", {
-            element: ul,
+            element: this.#ul,
             manager: this.dataset.manager,
             itemSize: this.#itemSize,
             template,
             inflation: this.#inflateSwimLaneHandler,
             direction: "horizontal",
             callbacks: {
-                createdCallback: this.#swimLaneCreatedHandle
+                createdCallback: this.#swimLaneCreatedHandle,
+                onScrollStart: this.#startScrollHandle,
+                onScrollEnd: this.#endScrollHandle,
+                onPerformSync: this.#performSyncHandle
             }
         })
 
@@ -119,10 +160,67 @@ export class KanbanComponent extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #swimLaneCreated(element) {
-        element.firstElementChild.dataset.manager = this.dataset.manager;
         element.firstElementChild.dataset.headerCard = this.#cardHeaderName;
         element.firstElementChild.dataset.recordCard = this.#cardRecordName;
         element.firstElementChild.dataset.cardSize = this.#itemSize;
+    }
+
+    /**
+     * @method startScroll - the virtualization said we are staring to scroll so clean up and suspend actions until we end
+     * @param args
+     */
+    async #startScroll() {
+        this.#scrolling = true;
+
+        await this.#clearSwimLaneDataManagers();
+
+        // if this.#lastEndScrollTime is null it means we have not yet started the scroll timer.
+        // start the scroll timer so that we only fire the scroll end if we have delayed enough.
+        if (this.#lastEndScrollTime == null) {
+            this.#lastEndScrollTime = performance.now();
+            await this.#animateScrollEndHandler();
+        }
+    }
+
+    /**
+     * @method animateScrollEnd - the virtualization said we are done scrolling so, we can resume actions
+     * The #endScroll set the time on when last the endScroll was fired.
+     * If 200ms has gone by since the last endScroll it means that we have actually stopped scrolling.
+     * At that point of time lets go make some updates to the UI.
+     * @returns {Promise<number>}
+     */
+    async #animateScrollEnd() {
+        const now = performance.now();
+
+        if (now - this.#lastEndScrollTime < 100) {
+            return requestAnimationFrame(this.#animateScrollEndHandler);
+        }
+
+        this.#scrolling = false;
+        this.#lastEndScrollTime = null;
+        await this.#updatePageDataManagers();
+        await this.#performSyncPage();
+    }
+
+    /**
+     * @method endScroll - the virtualization said we are done scrolling so, we can resume actions
+     * This might fire too often for kanban requirements so, we have a timer to see when we have actually stopped.
+     * See #animateScrollEnd
+     * @param args
+     */
+    async #endScroll() {
+        this.#lastEndScrollTime = performance.now();
+    }
+
+    /**
+     * @method performSync - virtualization said we are performing a batch sync operation so refresh the page.
+     * @param args
+     */
+    async #performSync() {
+        // when skipping pages on the virtualization this is called to sync the page.
+        // if we are still busy scrolling ignore this as we don't want to undergo the cost.
+        if (this.#scrolling = true) return;
+        await this.#performSyncPage();
     }
 
     /**
@@ -132,8 +230,9 @@ export class KanbanComponent extends HTMLElement {
      * @param data
      * @returns {Promise<void>}
      */
-    async #inflateSwimLane(element, data) {
+    async #inflateSwimLane(element, data, index) {
         await element.firstElementChild.setHeader(data.header);
+        element.dataset.index = index;
     }
 
     /**
@@ -143,7 +242,125 @@ export class KanbanComponent extends HTMLElement {
      * @returns {Promise<void>}
      */
     async refresh(changes) {
-        console.log(changes);
+        // get the records to work with
+        const records = await crs.call("data_manager", "get_page", {
+            manager: this.dataset.manager,
+            page: 1,
+            size: this.pageItemCount
+        });
+
+        if (records.length === 0) return;
+
+        await this.#setSwimLaneDataManagers(records);
+        await this.#performSyncPage();
+    }
+
+    /**
+     * @method setSwimLaneDataManagers - on the data managers, update their records
+     * with those now visible after the scroll.
+     * @param newRecords
+     * @returns {Promise<void>}
+     */
+    async #setSwimLaneDataManagers(newRecords) {
+        // if we have not yet created the data managers, create them now.
+        if (this.#dataManagerNames.length === 0) {
+            await this.#createSwimLaneDataManagers();
+        }
+
+        // update the data managers with the new records.
+        for (let i = 0; i < newRecords.length; i++) {
+            const manager = this.#dataManagerNames[i];
+            const records = newRecords[i].records;
+
+            await crs.call("data_manager", "set_records", {
+                manager, records
+            })
+        }
+    }
+
+    /**
+     * @method createSwimLaneDataManagers - create the data managers for the swim lanes.
+     * We are only creating as many data managers as we can see on screen.
+     * @returns {Promise<void>}
+     */
+    async #createSwimLaneDataManagers() {
+        for (let i = 0; i < this.pageItemCount; i++) {
+            const name = `${this.id}_swimlane_${i}`;
+            this.#dataManagerNames.push(name);
+
+            await crs.call("data_manager", "register", {
+                manager: name,
+                type: "memory"
+            })
+        }
+    }
+
+    async #updatePageDataManagers() {
+        const topIndex = Math.floor(this.scrollPos / this.itemSize);
+        const bottomIndex = topIndex + this.pageItemCount;
+
+        // get records between top index and bottom index
+        const records = await crs.call("data_manager", "get_batch", {
+            manager: this.dataset.manager,
+            from: topIndex,
+            to: bottomIndex,
+        });
+
+        for (let i = 0; i < records.length; i++) {
+            const manager = this.#dataManagerNames[i];
+            const lane_records = records[i].records;
+
+            await crs.call("data_manager", "set_records", {
+                manager, records: lane_records
+            });
+        }
+    }
+
+    /**
+     * @method performSyncPage - perform a sync on the page.
+     * This is the counterpart of what the virtualization has.
+     * In short, look at what elements are on the page and update their content.
+     * @returns {Promise<void>}
+     */
+    async #performSyncPage() {
+        const topIndex = Math.floor(this.scrollPos / this.itemSize);
+        const bottomIndex = topIndex + this.pageItemCount;
+
+        let nameIndex = 0;
+
+        for (let i = topIndex; i < bottomIndex; i++) {
+            const element = this.rowMap[i];
+            const manager = this.#dataManagerNames[nameIndex++];
+
+            const swimlane = element.firstElementChild;
+            await this.#enableSwimLaneVirtualization(swimlane, manager);
+        }
+    }
+
+    async #enableSwimLaneVirtualization(swimLane, manager) {
+        this.#currentElements.push(swimLane);
+        swimLane.dataset.manager = manager;
+
+        await crs.call("component", "on_ready", {
+            element: swimLane,
+            caller: this,
+            callback: async () => {
+                await swimLane.enableVirtualization();
+                await crs.call("data_manager", "refresh", { manager });
+            }
+        });
+    }
+
+    async #clearSwimLaneDataManagers() {
+        for (const element of this.#currentElements) {
+            await element.disableVirtualization();
+        }
+
+        this.#currentElements.length = 0;
+
+        for (const manager of this.#dataManagerNames) {
+            await crs.call("data_manager", "clear", { manager });
+        }
     }
 }
 

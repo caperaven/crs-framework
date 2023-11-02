@@ -22,12 +22,12 @@ export class InflationManager {
      */
     async inflate(element, index) {
         const data = await crs.call("data_manager", "get", {manager: this.#manager, index: index});
-        await this.call(element, data);
+        await this.call(element, data, index);
     }
 
-    async call(element, data) {
+    async call(element, data, index) {
         if (data != null) {
-            await this.#inflationFn(element, data);
+            await this.#inflationFn(element, data, index);
         }
     }
 }

@@ -41,7 +41,7 @@ export class VirtualizationActions {
         if (element == null) return;
 
         if (element.__virtualizationManager != null) {
-            element.__virtualizationManager.dispose();
+            await element.__virtualizationManager.dispose();
             delete element.__virtualizationManager;
         }
     }
