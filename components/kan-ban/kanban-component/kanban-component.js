@@ -95,11 +95,7 @@ export class KanbanComponent extends HTMLElement {
             name: this.#cardRecordName
         });
 
-        for (const manager in this.#dataManagerNames) {
-            await crs.call("data_manager", "unregister", {
-                manager
-            })
-        }
+        await this.#disposeSwimLaneDataManagers();
 
         this.#cardHeaderName = null;
         this.#cardRecordName = null;
@@ -244,26 +240,6 @@ export class KanbanComponent extends HTMLElement {
     }
 
     /**
-     * @method - refresh - call this to refresh the component
-     * This is typically called when the data manager has changes on the data.
-     * @param changes
-     * @returns {Promise<void>}
-     */
-    async refresh(changes) {
-        // get the records to work with
-        const records = await crs.call("data_manager", "get_page", {
-            manager: this.dataset.manager,
-            page: 1,
-            size: this.pageItemCount
-        });
-
-        if (records.length === 0) return;
-
-        await this.#setSwimLaneDataManagers(records);
-        await this.#performSyncPage();
-    }
-
-    /**
      * @method setSwimLaneDataManagers - on the data managers, update their records
      * with those now visible after the scroll.
      * @param newRecords {array} - data for the kanban that determines the swim lanes
@@ -331,8 +307,17 @@ export class KanbanComponent extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #performSyncPage() {
-        const topIndex = Math.floor(this.scrollPos / this.itemSize);
-        const bottomIndex = topIndex + this.pageItemCount;
+        const recordCount = await crs.call("data_manager", "record_count", { manager: this.dataset.manager });
+
+        if (recordCount === 0) return;
+
+        let topIndex = 0;
+        let bottomIndex = recordCount;
+
+        if (recordCount > this.pageItemCount) {
+            topIndex = Math.floor(this.scrollPos / this.itemSize);
+            bottomIndex = topIndex + this.pageItemCount;
+        }
 
         let nameIndex = 0;
 
@@ -369,6 +354,38 @@ export class KanbanComponent extends HTMLElement {
         for (const manager of this.#dataManagerNames) {
             await crs.call("data_manager", "clear", { manager });
         }
+    }
+
+    async #disposeSwimLaneDataManagers() {
+        for (const manager in this.#dataManagerNames) {
+            await crs.call("data_manager", "unregister", {
+                manager
+            })
+        }
+
+        this.#dataManagerNames.length = 0;
+    }
+
+    /**
+     * @method - refresh - call this to refresh the component
+     * This is typically called when the data manager has changes on the data.
+     * @param changes
+     * @returns {Promise<void>}
+     */
+    async refresh(changes) {
+        await this.#disposeSwimLaneDataManagers();
+
+        // get the records to work with
+        const records = await crs.call("data_manager", "get_page", {
+            manager: this.dataset.manager,
+            page: 1,
+            size: this.pageItemCount
+        });
+
+        if (records.length === 0) return;
+
+        await this.#setSwimLaneDataManagers(records);
+        await this.#performSyncPage();
     }
 }
 

@@ -38,6 +38,10 @@ export class VirtualizationManager {
         return this.#rowMap;
     }
 
+    get recordCount() {
+        return this.#recordCount;
+    }
+
     /**
      * @constructor
      * @param element {HTMLElement} - The element to enable virtualization on.
