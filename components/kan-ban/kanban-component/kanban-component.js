@@ -25,8 +25,8 @@ export class KanbanComponent extends HTMLElement {
         return this.#ul.__virtualizationManager.pageItemCount;
     }
 
-    get scrollPos() {
-        return this.#ul.__virtualizationManager.scrollPos;
+    get virtualSize() {
+        return this.#ul.__virtualizationManager.virtualSize;
     }
 
     get topIndex() {
@@ -207,7 +207,6 @@ export class KanbanComponent extends HTMLElement {
         // and also refreshes the virtualization on the currently visible elements.
         this.#scrolling = false;
         this.#lastEndScrollTime = null;
-        await this.#updatePageDataManagers();
         await this.#performSyncPage();
     }
 
@@ -273,7 +272,10 @@ export class KanbanComponent extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #createSwimLaneDataManagers(dataLength) {
-        const size = dataLength < this.pageItemCount ? dataLength : this.pageItemCount;
+        // on the pageItemCount we add 2 to the size.
+        // this is because we need a bit of a buffer when you have partially visible items.
+        // so we cater for one in the front and one in the back.
+        const size = dataLength < this.pageItemCount ? dataLength : this.pageItemCount + 2;
 
         for (let i = 0; i < size; i++) {
             const name = `${this.id}_swimlane_${i}`;
@@ -286,13 +288,7 @@ export class KanbanComponent extends HTMLElement {
         }
     }
 
-    async #updatePageDataManagers() {
-        // const topIndex = Math.floor(this.scrollPos / this.itemSize);
-        // const bottomIndex = topIndex + this.pageItemCount;
-
-        const topIndex = this.topIndex;
-        const bottomIndex = this.bottomIndex;
-
+    async #updatePageDataManagers(topIndex, bottomIndex) {
         // get records between top index and bottom index
         const records = await crs.call("data_manager", "get_batch", {
             manager: this.dataset.manager,
@@ -300,7 +296,7 @@ export class KanbanComponent extends HTMLElement {
             to: bottomIndex,
         });
 
-        for (let i = 0; i < records.length; i++) {
+        for (let i = 0; i < this.#dataManagerNames.length; i++) {
             const manager = this.#dataManagerNames[i];
             const lane_records = records[i].records;
 
@@ -326,32 +322,19 @@ export class KanbanComponent extends HTMLElement {
 
         if (recordCount === 0) return;
 
-        // let topIndex = 0;
-        // let bottomIndex = recordCount;
-        //
-        // if (recordCount > this.pageItemCount) {
-        //     topIndex = Math.floor(this.scrollPos / this.itemSize);
-        //     bottomIndex = topIndex + this.pageItemCount;
-        // }
+        let topIndex = this.topIndex == 0 ? 0 : this.topIndex + this.virtualSize;
+        let bottomIndex = topIndex + this.#dataManagerNames.length;
 
-        const topIndex = this.topIndex;
-        const bottomIndex = this.bottomIndex + 1;
+        await this.#updatePageDataManagers(topIndex, bottomIndex);
 
         let nameIndex = 0;
 
-        for (let i = topIndex; i < bottomIndex; i++) {
-            // ignore front buffer elements
-            if (i < 0) continue;
+        // console.log(topIndex, bottomIndex, this.virtualSize);
 
+        for (let i = topIndex; i < bottomIndex; i++) {
             const element = this.rowMap[i];
             const manager = this.#dataManagerNames[nameIndex];
             nameIndex += 1;
-
-            // if the manager is null it means we have hit the back buffer elements.
-            // in that case stop processing because we don't have data manages for that.
-            if (manager == null) {
-                break;
-            }
 
             const swimlane = element.firstElementChild;
             await this.#enableSwimLaneVirtualization(swimlane, manager);
@@ -417,9 +400,7 @@ export class KanbanComponent extends HTMLElement {
         await this.#setSwimLaneDataManagers(records);
         this.#refreshing = false;
 
-        if (records.length < this.pageItemCount) {
-            await this.#performSyncPage();
-        }
+        await this.#performSyncPage();
     }
 }
 

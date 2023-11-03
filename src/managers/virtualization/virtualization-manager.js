@@ -138,6 +138,7 @@ export class VirtualizationManager {
         this.#element.append(fragment);
         this.#initializeRowMap(0);
         this.#fitsOnScreen = true;
+        this.#virtualSize = 0;
     }
 
     #createElement() {
@@ -166,6 +167,10 @@ export class VirtualizationManager {
             return this.#createExactItems(count)
         }
 
+        // we have to set this here again because if we had exact items the value was set to 0.
+        // with a new batch of data we need to reset this.
+        // this only applies to scenarios where you had a exact number and a batch that is greater.
+        this.#virtualSize = Math.floor(this.pageItemCount / 2);
         let childCount = this.pageItemCount + (this.#virtualSize * 2);
 
         // half of virtualize elements at the top and half at the bottom.
