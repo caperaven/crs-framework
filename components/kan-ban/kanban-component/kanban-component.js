@@ -183,6 +183,7 @@ export class KanbanComponent extends HTMLElement {
 
         // if this.#lastEndScrollTime is null it means we have not yet started the scroll timer.
         // start the scroll timer so that we only fire the scroll end if we have delayed enough.
+
         if (this.#lastEndScrollTime == null) {
             this.#lastEndScrollTime = performance.now();
             await this.#animateScrollEndHandler();
@@ -385,7 +386,9 @@ export class KanbanComponent extends HTMLElement {
      */
     async refresh(changes) {
         this.#scrolling = false;
+        this.#lastEndScrollTime = null;
         this.#refreshing = true;
+
 
         await this.#disposeSwimLaneDataManagers();
 
