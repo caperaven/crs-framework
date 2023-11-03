@@ -1,0 +1,13 @@
+.card {
+    display: flex;
+    flex-direction: row;
+    padding: var(--padding);
+    height: 8rem;
+    width: 85%;
+    border: var(--border);
+    border-radius: 4px;
+}
+
+.card .code {
+    flex: 1;
+}
