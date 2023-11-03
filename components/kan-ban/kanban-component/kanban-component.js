@@ -19,6 +19,7 @@ export class KanbanComponent extends HTMLElement {
     #lastEndScrollTime = null;
     #dataManagerNames = [];
     #currentElements = [];
+    #refreshing = false;
 
     get pageItemCount() {
         return this.#ul.__virtualizationManager.pageItemCount;
@@ -28,8 +29,12 @@ export class KanbanComponent extends HTMLElement {
         return this.#ul.__virtualizationManager.scrollPos;
     }
 
-    get virtualSize() {
-        return this.#ul.__virtualizationManager.virtualSize;
+    get topIndex() {
+        return this.#ul.__virtualizationManager.topIndex;
+    }
+
+    get bottomIndex() {
+        return this.#ul.__virtualizationManager.bottomIndex;
     }
 
     get rowMap() {
@@ -223,7 +228,7 @@ export class KanbanComponent extends HTMLElement {
     async #performSync() {
         // when skipping pages on the virtualization this is called to sync the page.
         // if we are still busy scrolling ignore this as we don't want to undergo the cost.
-        if (this.#scrolling = true) return;
+        if (this.#scrolling == true) return;
         await this.#performSyncPage();
     }
 
@@ -248,7 +253,7 @@ export class KanbanComponent extends HTMLElement {
     async #setSwimLaneDataManagers(newRecords) {
         // if we have not yet created the data managers, create them now.
         if (this.#dataManagerNames.length === 0) {
-            await this.#createSwimLaneDataManagers();
+            await this.#createSwimLaneDataManagers(newRecords.length);
         }
 
         // update the data managers with the new records.
@@ -267,8 +272,10 @@ export class KanbanComponent extends HTMLElement {
      * We are only creating as many data managers as we can see on screen.
      * @returns {Promise<void>}
      */
-    async #createSwimLaneDataManagers() {
-        for (let i = 0; i < this.pageItemCount; i++) {
+    async #createSwimLaneDataManagers(dataLength) {
+        const size = dataLength < this.pageItemCount ? dataLength : this.pageItemCount;
+
+        for (let i = 0; i < size; i++) {
             const name = `${this.id}_swimlane_${i}`;
             this.#dataManagerNames.push(name);
 
@@ -280,8 +287,11 @@ export class KanbanComponent extends HTMLElement {
     }
 
     async #updatePageDataManagers() {
-        const topIndex = Math.floor(this.scrollPos / this.itemSize);
-        const bottomIndex = topIndex + this.pageItemCount;
+        // const topIndex = Math.floor(this.scrollPos / this.itemSize);
+        // const bottomIndex = topIndex + this.pageItemCount;
+
+        const topIndex = this.topIndex;
+        const bottomIndex = this.bottomIndex;
 
         // get records between top index and bottom index
         const records = await crs.call("data_manager", "get_batch", {
@@ -307,23 +317,41 @@ export class KanbanComponent extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #performSyncPage() {
+        // ignore this when the virtualization requests it if we are in the middle of a refresh.
+        // this can cause timing issues as we are still busy processing new data for the refresh.
+        // the refresh will then call this once it is done.
+        if (this.#refreshing == true) return;
+
         const recordCount = await crs.call("data_manager", "record_count", { manager: this.dataset.manager });
 
         if (recordCount === 0) return;
 
-        let topIndex = 0;
-        let bottomIndex = recordCount;
+        // let topIndex = 0;
+        // let bottomIndex = recordCount;
+        //
+        // if (recordCount > this.pageItemCount) {
+        //     topIndex = Math.floor(this.scrollPos / this.itemSize);
+        //     bottomIndex = topIndex + this.pageItemCount;
+        // }
 
-        if (recordCount > this.pageItemCount) {
-            topIndex = Math.floor(this.scrollPos / this.itemSize);
-            bottomIndex = topIndex + this.pageItemCount;
-        }
+        const topIndex = this.topIndex;
+        const bottomIndex = this.bottomIndex + 1;
 
         let nameIndex = 0;
 
         for (let i = topIndex; i < bottomIndex; i++) {
+            // ignore front buffer elements
+            if (i < 0) continue;
+
             const element = this.rowMap[i];
-            const manager = this.#dataManagerNames[nameIndex++];
+            const manager = this.#dataManagerNames[nameIndex];
+            nameIndex += 1;
+
+            // if the manager is null it means we have hit the back buffer elements.
+            // in that case stop processing because we don't have data manages for that.
+            if (manager == null) {
+                break;
+            }
 
             const swimlane = element.firstElementChild;
             await this.#enableSwimLaneVirtualization(swimlane, manager);
@@ -357,7 +385,7 @@ export class KanbanComponent extends HTMLElement {
     }
 
     async #disposeSwimLaneDataManagers() {
-        for (const manager in this.#dataManagerNames) {
+        for (const manager of this.#dataManagerNames) {
             await crs.call("data_manager", "unregister", {
                 manager
             })
@@ -373,9 +401,11 @@ export class KanbanComponent extends HTMLElement {
      * @returns {Promise<void>}
      */
     async refresh(changes) {
+        this.#scrolling = false;
+        this.#refreshing = true;
+
         await this.#disposeSwimLaneDataManagers();
 
-        // get the records to work with
         const records = await crs.call("data_manager", "get_page", {
             manager: this.dataset.manager,
             page: 1,
@@ -385,7 +415,11 @@ export class KanbanComponent extends HTMLElement {
         if (records.length === 0) return;
 
         await this.#setSwimLaneDataManagers(records);
-        await this.#performSyncPage();
+        this.#refreshing = false;
+
+        if (records.length < this.pageItemCount) {
+            await this.#performSyncPage();
+        }
     }
 }
 

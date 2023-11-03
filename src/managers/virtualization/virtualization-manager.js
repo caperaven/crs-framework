@@ -42,6 +42,14 @@ export class VirtualizationManager {
         return this.#recordCount;
     }
 
+    get topIndex() {
+        return this.#topIndex;
+    }
+
+    get bottomIndex() {
+        return this.#bottomIndex;
+    }
+
     /**
      * @constructor
      * @param element {HTMLElement} - The element to enable virtualization on.
@@ -416,6 +424,10 @@ export class VirtualizationManager {
         }
         else {
             await this.#scrollManager.scrollToTop();
+
+            if (this.#callbacks.onPerformSync != null) {
+                await this.#callbacks.onPerformSync();
+            }
         }
     }
 
