@@ -18,7 +18,10 @@ Feature: keyboard-navigation-actions
 
     Example: enable keyboard navigation
       ```js
-      await crs.call("keyboard-navigation-actions", "enable", { element: ul, multi_select: true });
+      await crs.call("keyboard-navigation-actions", "enable", {
+        element: ul,
+        multi_select: true
+      });
       ```
   Scenario: disable keyboard navigation
     Given I am on the "list" page
@@ -118,3 +121,11 @@ Feature: keyboard-navigation-actions
     Given multi selection is enabled
     And any navigation or selection action is performed
     Then leave the selection as is just update the focused item
+
+  Rule: discern between next cell or expand - collapse does the same thing
+    Given we have a focused item
+      And the right key is pressed
+      Then if the item has a aria-expanded attribute
+      Then expand the item
+      But if the item does not have a aria-expanded attribute
+      Then go to the next cell
