@@ -48,8 +48,8 @@ Feature: keyboard-navigation-actions
       | --------------- | ---------------------------------- | ----------------------- | ------------- | ------------ |
       | focus           | focus list / item id               | none / id               | none          | none         |
       | activate        | perform activate action            | id                      | enter         | dblclick     |
-      | gotoNext        | go to next item                    | none / id               | down          | none         |
-      | gotoPrevious    | go to previous item                | none / id               | up            | none         |
+      | gotoNext        | go to next item / row              | none / id               | down          | none         |
+      | gotoPrevious    | go to previous item / row          | none / id               | up            | none         |
       | gotoFirst       | go to first item                   | none                    | home          | none         |
       | gotoLast        | go to last item                    | none                    | end           | none         |
       | select          | select item                        | id                      | space         | click        |
@@ -61,6 +61,8 @@ Feature: keyboard-navigation-actions
       | clearSelection  | clear selection                    | none                    | none          | none         |
       | expand          | expand item                        | id                      | right         | dblclick     |
       | collapse        | collapse item                      | id                      | left          | dblclick     |
+      | gotoNextCell    | to to the cell on the right        | id                      | right         | none         |
+      | gotoPreviousCell| to to the cell on the left         | id                      | left          | none         |
       | expandAll       | expand all items                   | none                    | ctr + right   | none         |
       | collapseAll     | collapse all items                 | none                    | ctr + left    | none         |
       | groupSelect     | select from this item to that item | from id / to id         | shift + down  | shift click  |
