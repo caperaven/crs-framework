@@ -1,5 +1,11 @@
 Feature: keyboard-navigation-actions
   # this is a process api module that can be enabled and disabled on any list related element
+  # this would be used on
+  # 1. kanban to navigate between swimlanes and cards
+  # 2. list to navigate between items
+  # 3. hierarchical list to navigate between items and expand and collapse items
+  # 4. tree view to navigate between items and expand and collapse items
+  # 5. grid / table to navigate between rows and cells
 
   Background:
     Given I am on the "list" page
@@ -38,7 +44,7 @@ Feature: keyboard-navigation-actions
     Given I am on the "list" page
     And I enable keyboard navigation
     When I perform keyboard actions using process api
-    Then I should be able to navigate and select items using keyboard
+    Then I should be able to navigate and select items using the process api instead of the keyboard
 
     Example: perform keyboard actions using process api
       ```js
@@ -72,6 +78,7 @@ Feature: keyboard-navigation-actions
 
     Scenario: use the focus action
       Given I have keyboard navigation enabled
+      And The component auto selects first item
       And I used the focus action
       Then The first item in the list should be focused
       And The event observer should deal with scrolling to the focused item
@@ -129,3 +136,31 @@ Feature: keyboard-navigation-actions
       Then expand the item
       But if the item does not have a aria-expanded attribute
       Then go to the next cell
+
+
+@acceptance_criteria
+  # -- can navigate between items using the keyboard
+  # -- can navigate between cells using the process api
+  # -- can select items using the keyboard
+  # -- can select items using the process api
+  # -- can expand and collapse items using the keyboard if applicable
+  # -- can expand and collapse items using the process api if applicable
+  # -- can select multiple items using the keyboard
+  # -- can select multiple items using the process api
+  # -- activate / execute a selected item using the keyboard
+  # -- activate / execute a selected item using the process api
+  # -- can select all items using the keyboard
+  # -- can select all items using the process api
+  # -- can deselect all items using the keyboard
+  # -- can deselect all items using the process api
+  # -- can toggle all items using the keyboard
+  # -- can toggle all items using the process api
+  # -- can clear selection using the keyboard
+  # -- can clear selection using the process api
+  # -- can expand all items using the keyboard
+  # -- can expand all items using the process api
+  # -- can collapse all items using the keyboard
+  # -- can collapse all items using the process api
+  # -- can select a range of items using the keyboard and mouse
+  # -- can select a range of items using the process api
+
