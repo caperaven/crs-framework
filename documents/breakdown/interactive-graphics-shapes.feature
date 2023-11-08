@@ -426,3 +426,63 @@ Feature: Advanced Image Widget Repository for Drag and Drop
     Then the size change should be reverted
     When I perform a redo action
     Then the size change should be reapplied
+
+Feature: Widget - entity association
+
+  Scenario: Associate a widget with an entity
+    Given we have a widget that we want to associate with a entity
+    When assigning a entity to an widget
+    And using that widget in a drawing
+    Then the identity would be registered on the widget
+    And when interacting with that widget, the entity is updated
+
+  Scenario: Associate a widget with a process
+    Given we have a widget that we want to associate with a process
+    When assigning a process to an widget
+    Then the process execution details are attached to the widget
+    And when interacting with that widget, the process is executed
+
+  Scenario: Associating a record with a glyph
+    Given we have a glyph that we want to associate with a record
+    When assigning a record to a glyph
+    Then the record is associated with the glyph
+    And when interacting with that glyph, the record is displayed
+
+Feature: custom process drawing tools
+
+  Scenario:
+    Given we have a process that we want to execute
+    Then we can create a new custom tool that inherits from a existing tool
+    When using that drawing tool the process is executed
+
+    Example: we create a work order marker tool
+      When we draw on the canvas
+      And the action is completed
+      Then a work order is created by opening a work order edit screen
+      But if the work order creation is cancelled, the drawing is removed from the canvas
+
+Feature: export graphic
+
+  Scenario:
+    Given we have a graphic that we want to export
+    When exporting the graphic
+    Then the graphic is saved to that machine to a png file
+
+
+Feature: updating glyphs based on data changes
+
+  Scenario: update associated glyphs on load
+    Given we have a glyph that is associated with a record
+    When the record is loaded
+    Then the glyph is updated to reflect the record data
+
+  Scenario: updating associated glyphs
+    Given we have a glyph that is associated with a record
+    When the record is updated
+    Then the glyph is updated to reflect the changes
+
+  Scenario: updating glyphs with update process
+    Given we have a glyph that is associated with a record
+    And we have registered the glphy with a update process
+    When the record is updated
+    Then the glyph is updated to reflect the changes

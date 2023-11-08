@@ -67,6 +67,7 @@ Feature: keyboard-navigation-actions
       | selectAll       | select all items                   | none                    | ctr + a       | none         |
       | deselectAll     | deselect all items                 | none                    | ctr + a       | none         |
       | toggleAll       | toggle all items                   | none                    | ctr + a       | none         |
+      | groupSelect     | select from this item to that item | from id / to id         | shift + down  | shift click  |
       | clearSelection  | clear selection                    | none                    | none          | none         |
       | expand          | expand item                        | id                      | right         | dblclick     |
       | collapse        | collapse item                      | id                      | left          | dblclick     |
@@ -74,7 +75,6 @@ Feature: keyboard-navigation-actions
       | gotoPreviousCell| to to the cell on the left         | id                      | left          | none         |
       | expandAll       | expand all items                   | none                    | ctr + right   | none         |
       | collapseAll     | collapse all items                 | none                    | ctr + left    | none         |
-      | groupSelect     | select from this item to that item | from id / to id         | shift + down  | shift click  |
 
     Scenario: use the focus action
       Given I have keyboard navigation enabled
