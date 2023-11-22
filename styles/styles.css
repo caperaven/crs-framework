@@ -43,3 +43,7 @@
 i {
     font-style: normal;
 }
+
+[hidden = "true"] {
+    display: none;
+}

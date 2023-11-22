@@ -13,16 +13,42 @@
         align-items: center;
     }
 
-    #Left {
+    #Left, #Left-1 {
         background: var(--blue-s2);
     }
 
-    #Center {
+    #Left-1,#toolbar {
+        justify-content: right;
+        align-items: normal;
+    }
+
+    #Center, #Center-1 {
         background: var(--blue-s1);
     }
 
-    #Right {
+    #Right, #Right-1 {
         background: var(--blue);
+    }
+
+    #my-container {
+        margin-top: 2rem;
+    }
+
+    #toolbar {
+        width: 100%;
+        height: 100%;
+        padding: 0.5rem;
+    }
+    #show-button, #hide-button {
+        background: var(--blue-s1);
+        border: var(--border);
+        border-radius: 0.5rem;
+        margin: 0.5rem;
+        font-family: crsfrw;
+    }
+
+    #show-button {
+        font-size: 1rem;
     }
 
 </style>
@@ -30,4 +56,16 @@
     <div id="Left">Left</div>
     <div id="Center">Center</div>
     <div id="Right">Right</div>
+</layout-container>
+
+
+<layout-container id="my-container" data-columns="1fr 1fr 1fr" data-rows="1fr" change.setValue="columnState = $event.detail">
+    <div id ='toolbar' hidden.if="columnState != 'custom' ? true">
+        <button id="show-button" click.post="setColumnState['#my-container'](parameters: {state='default'})">launch</button>
+    </div>
+    <div id="Left-1" hidden.if="columnState == 'custom' ? true">
+        <button id="hide-button" click.post="setColumnState[#my-container](parameters: {state='custom', value='5rem 2fr 1fr'})">first-page</button>
+    </div>
+    <div id="Center-1">Center</div>
+    <div id="Right-1">Right</div>
 </layout-container>

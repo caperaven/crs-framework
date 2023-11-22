@@ -1,16 +1,13 @@
 export default class LayoutContainer extends HTMLElement {
-    #columnState = {
-        default: this.dataset.columns
-    }
 
     async connectedCallback() {
         await this.#renderGrid();
     }
 
-    async disconnectedCallback() {
-        this.#columnState = null;
-    }
-
+    /**
+     * @method #renderGrid - renders the grid based on the data-columns and data-rows attributes
+     * @return {Promise<void>}
+     */
     async #renderGrid() {
         const columns = this.dataset.columns;
         const rows = this.dataset.rows;
@@ -24,20 +21,28 @@ export default class LayoutContainer extends HTMLElement {
         await this.#drawGrid(columns, rows);
     }
 
+    /**
+     * @method #setColumnState - sets the column state based on the state and value passed in
+     * @param parameters {Object} - {state: "default" || "custom", value: "0 2fr 1fr"}  is the value of the columns
+     * @return {Promise<void>}
+     */
     async #setColumnState(parameters) {
         const state = parameters?.state;
-        const value = parameters?.value;
+        const value = parameters?.value || this.dataset.columns;
 
         if (value == null && state == null) return;
 
-        let columns;
-        (state === "default") ? columns = this.#columnState.default : columns = value;
+        await this.#drawGrid(value, this.dataset.rows);
 
-        await this.#drawGrid(columns, this.dataset.rows);
-
-        dispatchEvent(new CustomEvent("change", {detail: state}));
+        this.dispatchEvent(new CustomEvent("change", {detail: state}));
     }
 
+    /**
+     * @method #drawGrid - draws the grid based on the columns and rows passed in
+     * @param columns {String} - it is the value of the columns
+     * @param rows {String} - it is the value of the rows
+     * @return {Promise<void>}
+     */
     async #drawGrid(columns, rows) {
         if (columns == null && rows == null) return;
 
@@ -52,8 +57,13 @@ export default class LayoutContainer extends HTMLElement {
         });
     }
 
+    /**
+     * @method onMessage - listens for the setColumnState message and calls the #setColumnState method
+     * @param args {Object} - it is the object that is passed in from the postMessage
+     * @return {Promise<void>}
+     */
     async onMessage(args) {
-        if (args.message === "setColumnState") {
+        if (args.message === "setColumnState" || args.key === "setColumnState") {
             await this.#setColumnState(args.parameters);
         }
     }
