@@ -70,12 +70,12 @@
     <div id="Right-1">Right</div>
 </layout-container>
 
-<layout-container id="my-rows" data-columns="1fr 1fr" data-rows="1fr 1fr" change.setValue="columnState = $event.detail">
-    <div id ='sidebar-1' hidden.if="columnState != 'custom' ? true">
+<layout-container id="my-rows" data-columns="1fr 1fr" data-rows="1fr 1fr" change.setValue="state = $event.detail">
+    <div id ='sidebar-1' hidden.if="state != 'custom' ? true">
         <button id="show-row-button" click.post="setState['#my-rows'](parameters: {state='default'})">launch</button>
     </div>
 
-    <div id="Left-2" hidden.if="columnState == 'custom' ? true">
+    <div id="Left-2" hidden.if="state == 'custom' ? true">
         <button id="hide-row-button" click.post="setState[#my-rows](parameters: {state='custom',columns='1fr 1fr 1fr 1fr', rows='1fr'})">minimize-widget</button>
     </div>
     <div id="Center-2">Center</div>
