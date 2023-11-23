@@ -87,10 +87,10 @@ describe("Layout", () => {
             instance.dataset.columns = " 1fr 1fr 1fr";
             instance.dataset.rows = "1fr"
             const args = {
-                message: "setColumnState",
+                key: "setState",
                 parameters: {
                     state: "custom",
-                    value: "0 2fr 1fr"
+                    columns: "0 2fr 1fr"
                 }
             }
 
@@ -109,9 +109,9 @@ describe("Layout", () => {
             const expectedValue = "1fr 1fr 1fr";
             instance.dataset.columns = "1fr 1fr 1fr";
             instance.dataset.rows = "1fr"
-
+            instance.style.gridTemplateColumns = "0 2fr 1fr"
             const args = {
-                message: "setColumnState",
+                key: "setState",
                 parameters: {
                     state: "default"
                 }
@@ -131,10 +131,10 @@ describe("Layout", () => {
             instance.dataset.columns = "1fr 1fr 1fr";
             instance.dataset.rows = "1fr"
             const args = {
-                message: "setColumnState",
+                key: "setState",
                 parameters: {
                     state: "custom",
-                    value: null
+                    columns: null
                 }
             }
 
@@ -152,10 +152,10 @@ describe("Layout", () => {
             instance.dataset.columns = "1fr 1fr 1fr";
             instance.dataset.rows = "1fr"
             const args = {
-                message: "setColumnState",
+                key: "setState",
                 parameters: {
                     state: null,
-                    value: null
+                    columns: null
                 }
             }
 
@@ -166,6 +166,71 @@ describe("Layout", () => {
 
             //Assert
             assertEquals(styles.gridTemplateColumns, expectedValue);
+        });
+
+        it("should hide the first row of the 2 row grid", async () => {
+            //Arrange
+            const expectedRowValue = "1fr";
+            instance.dataset.columns = "1fr 1fr 1fr";
+            instance.dataset.rows = "1fr 1fr"
+            const args = {
+                key: "setState",
+                parameters: {
+                    state: "custom",
+                    rows: "1fr"
+                }
+            }
+
+            //Act
+            await instance.connectedCallback();
+            await instance.onMessage(args);
+            const styles = instance.style;
+
+            //Assert
+            assertEquals(styles.gridTemplateRows, expectedRowValue);
+        });
+
+        it("should show the first row of the 2 row grid where the first row in the grid is hidden", async () => {
+            const expectedRowValue = "1fr 1fr";
+            instance.dataset.columns = "1fr 1fr 1fr";
+            instance.dataset.rows = "1fr 1fr"
+            instance.style.gridTemplateRows = "1fr"
+            const args = {
+                key: "setState",
+                parameters: {
+                    state: "default"
+                }
+            }
+
+            //Act
+            await instance.connectedCallback();
+            await instance.onMessage(args);
+            const styles = instance.style;
+
+            //Assert
+            assertEquals(styles.gridTemplateRows, expectedRowValue);
+        });
+
+        it ("should not fail if invalid row values are passed or if row value are null", async () => {
+            //Arrange
+            const expectedRowValue = "1fr 1fr";
+            instance.dataset.columns = "1fr 1fr 1fr";
+            instance.dataset.rows = "1fr 1fr"
+            const args = {
+                key: "setState",
+                parameters: {
+                    state: "custom",
+                    rows: null
+                }
+            }
+
+            //Act
+            await instance.connectedCallback();
+            await instance.onMessage(args);
+            const styles = instance.style;
+
+            //Assert
+            assertEquals(styles.gridTemplateRows, expectedRowValue);
         });
     });
 });

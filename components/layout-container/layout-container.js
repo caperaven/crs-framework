@@ -26,13 +26,14 @@ export default class LayoutContainer extends HTMLElement {
      * @param parameters {Object} - {state: "default" || "custom", value: "0 2fr 1fr"}  is the value of the columns
      * @return {Promise<void>}
      */
-    async #setColumnState(parameters) {
-        const state = parameters?.state;
-        const value = parameters?.value || this.dataset.columns;
+    async #setState(parameters = {}) {
+        const state = parameters.state || "default";
+        const columns = parameters.columns || this.dataset.columns;
+        const rows = parameters.rows || this.dataset.rows;
 
-        if (value == null && state == null) return;
+        if (columns == null || rows == null) return;
 
-        await this.#drawGrid(value, this.dataset.rows);
+        await this.#drawGrid(columns, rows);
 
         this.dispatchEvent(new CustomEvent("change", {detail: state}));
     }
@@ -63,8 +64,8 @@ export default class LayoutContainer extends HTMLElement {
      * @return {Promise<void>}
      */
     async onMessage(args) {
-        if (args.message === "setColumnState" || args.key === "setColumnState") {
-            await this.#setColumnState(args.parameters);
+        if (args.key === "setState") {
+            await this.#setState(args.parameters);
         }
     }
 }

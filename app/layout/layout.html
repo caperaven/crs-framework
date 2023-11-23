@@ -13,33 +13,33 @@
         align-items: center;
     }
 
-    #Left, #Left-1 {
+    #Left, #Left-1, #Left-2 {
         background: var(--blue-s2);
     }
 
-    #Left-1, #sidebar {
+    #Left-1, #sidebar, #sidebar-1 {
         justify-content: right;
         align-items: normal;
     }
 
-    #Center, #Center-1 {
+    #Center, #Center-1, #Center-2 {
         background: var(--blue-s1);
     }
 
-    #Right, #Right-1 {
+    #Right, #Right-1, #Right-2 {
         background: var(--blue);
     }
 
-    #my-container {
+    #my-container, #my-rows {
         margin-top: 2rem;
     }
 
-    #sidebar {
+    #sidebar, #sidebar-1 {
         width: 100%;
         height: 100%;
         padding: 0.5rem;
     }
-    #show-button, #hide-button {
+    #show-button, #hide-button, #show-row-button, #hide-row-button {
         background: var(--blue-s1);
         border: var(--border);
         border-radius: 0.5rem;
@@ -47,7 +47,7 @@
         font-family: crsfrw;
     }
 
-    #show-button {
+    #show-button, #show-row-button {
         font-size: 1rem;
     }
 
@@ -61,11 +61,24 @@
 
 <layout-container id="my-container" data-columns="1fr 1fr 1fr" data-rows="1fr" change.setValue="columnState = $event.detail">
     <div id ='sidebar' hidden.if="columnState != 'custom' ? true">
-        <button id="show-button" click.post="setColumnState['#my-container'](parameters: {state='default'})">launch</button>
+        <button id="show-button" click.post="setState['#my-container'](parameters: {state='default'})">launch</button>
     </div>
     <div id="Left-1" hidden.if="columnState == 'custom' ? true">
-        <button id="hide-button" click.post="setColumnState[#my-container](parameters: {state='custom', value='5rem 2fr 1fr'})">first-page</button>
+        <button id="hide-button" click.post="setState[#my-container](parameters: {state='custom', columns='5rem 2fr 1fr'})">first-page</button>
     </div>
     <div id="Center-1">Center</div>
     <div id="Right-1">Right</div>
+</layout-container>
+
+<layout-container id="my-rows" data-columns="1fr 1fr" data-rows="1fr 1fr" change.setValue="columnState = $event.detail">
+    <div id ='sidebar-1' hidden.if="columnState != 'custom' ? true">
+        <button id="show-row-button" click.post="setState['#my-rows'](parameters: {state='default'})">launch</button>
+    </div>
+
+    <div id="Left-2" hidden.if="columnState == 'custom' ? true">
+        <button id="hide-row-button" click.post="setState[#my-rows](parameters: {state='custom',columns='1fr 1fr 1fr 1fr', rows='1fr'})">first-page</button>
+    </div>
+    <div id="Center-2">Center</div>
+    <div id="Right-2">Right</div>
+    <div id="Next-2">Next</div>
 </layout-container>
