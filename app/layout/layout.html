@@ -47,7 +47,7 @@
         font-family: crsfrw;
     }
 
-    #show-button, #show-row-button {
+    #show-button, #show-row-button, #hide-button, #hide-row-button {
         font-size: 1rem;
     }
 
@@ -64,7 +64,7 @@
         <button id="show-button" click.post="setState['#my-container'](parameters: {state='default'})">launch</button>
     </div>
     <div id="Left-1" hidden.if="columnState == 'custom' ? true">
-        <button id="hide-button" click.post="setState[#my-container](parameters: {state='custom', columns='5rem 2fr 1fr'})">first-page</button>
+        <button id="hide-button" click.post="setState[#my-container](parameters: {state='custom', columns='5rem 2fr 1fr'})">minimize-widget</button>
     </div>
     <div id="Center-1">Center</div>
     <div id="Right-1">Right</div>
@@ -76,7 +76,7 @@
     </div>
 
     <div id="Left-2" hidden.if="columnState == 'custom' ? true">
-        <button id="hide-row-button" click.post="setState[#my-rows](parameters: {state='custom',columns='1fr 1fr 1fr 1fr', rows='1fr'})">first-page</button>
+        <button id="hide-row-button" click.post="setState[#my-rows](parameters: {state='custom',columns='1fr 1fr 1fr 1fr', rows='1fr'})">minimize-widget</button>
     </div>
     <div id="Center-2">Center</div>
     <div id="Right-2">Right</div>
