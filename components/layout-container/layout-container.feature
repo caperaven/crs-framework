@@ -47,7 +47,7 @@ Feature: layout-container - HTMLElement
           </layout-container>
       """
 
-  Scenario: Create a four column and two row layout layout and show or hide the first column based on the click of a button
+  Scenario: Create a four column and two row layout layout and show or hide the second row based on the click of a button
     Given I have a layout-component with four columns and two rows
     When I click on show/hide button a post message event fires which is picked up by the layout-container
     Then the setState property should be set to custom
