@@ -19,18 +19,52 @@ Feature: layout-container - HTMLElement
     And The component should have a data-rows value of "1fr 1fr"
     Example
       """
-        <layout-container data-column="1fr 1fr 1fr 1fr" data-rows="1fr 1fr"></layout-container>
+        <layout-container data-column="1fr 1fr 1fr 1fr" data-rows="1fr 1fr">
+              <div id="Left">Left</div>
+              <div id="Center">Center</div>
+              <div id="Right">Right</div>
+        </layout-container>
       """
 
   Scenario: Create a three column layout and show or hide the first column based on the click of a button
     Given I have a layout-component with three columns and one row
     When I click on show/hide button a post message event fires which is picked up by the layout-container
-    Then The first columnState should be set to custom
-    And The first column should be hidden
-    And The second and third column should be visible, where the second column is twice the width of the third column
-    And The component should dispatch an event with the new state.
+    Then the setState property should be set to custom
+    And the first column should be hidden
+    And the second and third column should be visible, where the second column is twice the width of the third column
+    And the component should dispatch an event with the new state.
     Example
       """
-          <layout-container id="lc-assets" data-columns="1fr 2fr" change.setValue="columnState = $event.detail">
+          <layout-container id="lc-assets" data-columns="1fr 1fr 1fr" data-rows="1fr" change.setValue="state = $event.detail">
+             <div id ='sidebar' hidden.if="state != 'custom' ? true">
+                <button id="show-button" click.post="setState['#my-container'](parameters: {state='default'})">launch</button>
+             </div>
+             <div id="Left-1" hidden.if="state == 'custom' ? true">
+                <button id="hide-button" click.post="setState[#my-container](parameters: {state='custom', columns='5rem 2fr 1fr'})">minimize-widget</button>
+             </div>
+             <div id="Center-1">Center</div>
+             <div id="Right-1">Right</div>
+          </layout-container>
+      """
+
+  Scenario: Create a four column and two row layout layout and show or hide the first column based on the click of a button
+    Given I have a layout-component with four columns and two rows
+    When I click on show/hide button a post message event fires which is picked up by the layout-container
+    Then the setState property should be set to custom
+    And the second row should be removed
+    And all columns are visible in the first row
+    And the component should dispatch an event with the new state.
+  Example
+      """
+          <layout-container id="lc-assets" data-columns="1fr 1fr" data-rows="1fr 1fr"  change.setValue= state = $event.detail">
+              <div id ='sidebar-1' hidden.if="state != 'custom' ? true">
+                  <button id="show-row-button" click.post="setState['#my-rows'](parameters: {state='default'})">launch</button>
+              </div>
+              <div id="Left-2" hidden.if="state == 'custom' ? true">
+                  <button id="hide-row-button" click.post="setState[#my-rows](parameters: {state='custom',columns='1fr 1fr 1fr 1fr', rows='1fr'})">minimize-widget</button>
+              </div>
+              <div id="Center-2">Center</div>
+              <div id="Right-2">Right</div>
+              <div id="Next-2">Next</div>
           </layout-container>
       """
