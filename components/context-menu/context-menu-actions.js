@@ -104,6 +104,10 @@ export class ContextMenuActions {
             await this.close();
         }
 
+        if (target != null) {
+            target.dataset.active = true;
+        }
+
         const icon_font_family = await crs.process.getValue(step.args.icon_font_family, context, process, item);
         const height = await crs.process.getValue(step.args.height, context, process, item);
 
@@ -118,14 +122,34 @@ export class ContextMenuActions {
 
         document.body.appendChild(instance);
 
+
+        let callbackFn = null;
         if (callback != null) {
-            const fn = (event) => {
-                instance.removeEventListener("change", fn);
+            callbackFn = (event) => {
                 callback(event);
             }
 
-            instance.addEventListener("change", fn);
+            instance.addEventListener("change", callbackFn);
         }
+
+        const closeFn = async () => {
+            // When closing the context menu we need to remove the event listener for the close event.
+            instance.removeEventListener("close", closeFn);
+
+            if (target != null) {
+                // We need to remove the active attribute from the target element if it exists.
+                delete target.dataset.active;
+            }
+
+            if (callbackFn != null) {
+                // We need to remove the event listener for the change event if it exists.
+                // We do this on the close as we can't be sure the change event will fire.
+                // The user can click away from the context menu.
+                instance.removeEventListener("change", callbackFn);
+            }
+        }
+
+        instance.addEventListener("close", closeFn);
 
         globalThis.contextMenu = instance;
     }
@@ -137,6 +161,8 @@ export class ContextMenuActions {
      */
     static async close() {
         if (globalThis.contextMenu == null) return;
+
+        globalThis.contextMenu.dispatchEvent(new CustomEvent("close"));
 
         globalThis.contextMenu.parentElement.removeChild(globalThis.contextMenu);
         delete globalThis.contextMenu;
