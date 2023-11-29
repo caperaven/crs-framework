@@ -1,4 +1,5 @@
 import "./src/managers/data-manager/data-manager-actions.js";
+import "./components/macro-recorder/macro-recorder-actions.js";
 
 export default class IndexViewModel extends crsbinding.classes.ViewBase {
     async connectedCallback() {

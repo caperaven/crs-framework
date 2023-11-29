@@ -178,6 +178,11 @@
             "title": "data-manager-idb",
             "hash": "#data-manager-idb",
             "view": "data-manager-idb"
+        },
+        {
+            "title": "percentage bar",
+            "hash": "percentage-bar",
+            "view": "percentage-bar"
         }
     ]
 }
