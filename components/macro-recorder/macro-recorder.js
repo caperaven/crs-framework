@@ -1,4 +1,4 @@
-import { inputStep, clickStep } from "./steps.js";
+import { inputStep, clickStep, process } from "./steps.js";
 import { getQuery } from "./query.js";
 
 const inputElements = ["input", "textarea", "select"];
@@ -10,11 +10,12 @@ const RecorderState = Object.freeze({
 })
 
 export class MacroRecorder extends HTMLElement {
-    #currentStep       = null;
-    #steps            = [];
-    #clickTimer        = null;
-    #state          = RecorderState.IDLE;
-    #buttons             = {};
+    #currentStep= null;
+    #steps= [];
+    #clickTimer= null;
+    #state= RecorderState.IDLE;
+    #buttons= {};
+    #cache= {};
 
     #globalClickHandler     = this.#globalClick.bind(this);
     #globalDblClickHandler  = this.#globalDblClick.bind(this);
@@ -180,34 +181,36 @@ export class MacroRecorder extends HTMLElement {
 
     async #globalFocusIn(event) {
         const path = event.composedPath();
+        const tagName = path[0].tagName.toLowerCase();
 
-        if (path[0].tagName === "INPUT") {
-            // check for type value operations
-            this.#currentStep = structuredClone(inputStep);
-            this.#currentStep.args.query = getQuery(path);
-            this.#currentStep.cache = { value: path[0].value };
-            document.addEventListener("focusout", this.#globalFocusOutHandler, { capture: true, passive: true });
-        }
+        if (inputElements.includes(tagName) === false) return;
+
+        const target = path[0];
+        this.#cache[target] = target.value;
+        document.addEventListener("focusout", this.#globalFocusOutHandler, { capture: true, passive: true });
     }
 
     async #globalFocusOut(event) {
         const target = event.composedPath()[0];
-
         document.removeEventListener("focusout", this.#globalFocusOutHandler, { capture: true, passive: true });
-        if (this.#currentStep == null) return;
 
-        const value = target.value;
-        if (value !== this.#currentStep.cache.value) {
-            delete this.#currentStep.cache;
-            this.#currentStep.args.value = value;
+        if (this.#cache[target] != null) {
+            const oldValue = this.#cache[target];
+            const newValue = target.value;
+            delete this.#cache[target];
 
-            await this.#addToStack(this.#currentStep);
+            if (oldValue !== newValue) {
+                const step = structuredClone(inputStep);
+                step.args.query = getQuery(event.composedPath());
+                step.args.value = newValue;
+
+                await this.#addToStack(step);
+            }
         }
     }
 
     async #addToStack(step) {
         this.#steps.push(structuredClone(step));
-        this.#currentStep = null;
     }
 
     async listening() {
@@ -217,6 +220,27 @@ export class MacroRecorder extends HTMLElement {
     async stopListening() {
         await this.#disableGlobalEvents();
         console.log(this.#steps);
+    }
+
+    async saveToProcess(name) {
+        const instance = structuredClone(process);
+        instance.id = name;
+
+        console.log(this.#steps);
+
+        for (let i = 0; i < this.#steps.length; i++) {
+            const name = `step_${i}`;
+            const nextName = `step_${i + 1}`;
+
+            const step = this.#steps[i];
+            instance.main.steps[name] = step;
+
+            if (i < this.#steps.length - 1) {
+                step.next_step = nextName;
+            }
+        }
+
+        return instance;
     }
 }
 

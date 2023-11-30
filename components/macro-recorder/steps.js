@@ -14,3 +14,13 @@ export const clickStep = {
         "query": ""
     }
 }
+
+export const process = {
+    "id": "",
+
+    "main": {
+        "steps": {
+
+        }
+    }
+}
