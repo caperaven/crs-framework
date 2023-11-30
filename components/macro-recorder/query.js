@@ -16,6 +16,12 @@ function getLeafQuery(path, query) {
     else if (target.dataset.id != null) {
         query.push(`[data-id="${target.dataset.id}"]`);
     }
+    else if (target.getAttribute("aria-label") != null) {
+        query.push(`[aria-label="${target.getAttribute("aria-label")}"]`);
+    }
+    else if (target.getAttribute("title") != null) {
+        query.push(`[aria-labelledby="${target.getAttribute("title")}"]`);
+    }
     else if (Object.keys(target.dataset).length > 0) {
         const keys = Object.keys(target.dataset);
         const values = Object.values(target.dataset);
@@ -23,12 +29,6 @@ function getLeafQuery(path, query) {
         for (let i = 0; i < keys.length; i++) {
             query.push(`[data-${keys[i]}="${values[i]}"]`);
         }
-    }
-    else if (target.getAttribute("aria-label") != null) {
-        query.push(`[aria-label="${target.getAttribute("aria-label")}"]`);
-    }
-    else if (target.getAttribute("title") != null) {
-        query.push(`[aria-labelledby="${target.getAttribute("title")}"]`);
     }
     else {
         query.push(target.tagName.toLowerCase());

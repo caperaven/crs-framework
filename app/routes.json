@@ -16,6 +16,11 @@
             "view": "icons"
         },
         {
+            "title": "Macro recorder",
+            "hash": "#macro-recorder",
+            "view": "macro-recorder"
+        },
+        {
             "title": "Swim Lane",
             "hash": "#swim-lane",
             "view": "swim-lane"
