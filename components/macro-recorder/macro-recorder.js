@@ -1,5 +1,6 @@
 import { inputStep, clickStep, process } from "./steps.js";
 import { getQuery } from "./query.js";
+import { composedPath } from "./composed-path.js";
 
 const inputElements = ["input", "textarea", "select"];
 
@@ -10,8 +11,8 @@ const RecorderState = Object.freeze({
 })
 
 export class MacroRecorder extends HTMLElement {
-    #currentStep= null;
     #steps= [];
+    #pickLayer = null;
     #clickTimer= null;
     #state= RecorderState.IDLE;
     #buttons= {};
@@ -23,6 +24,8 @@ export class MacroRecorder extends HTMLElement {
     #globalKeyUpHandler     = this.#globalKeyUp.bind(this);
     #globalFocusInHandler   = this.#globalFocusIn.bind(this);
     #globalFocusOutHandler  = this.#globalFocusOut.bind(this);
+    #animationLayerClickHandler = this.#animationLayerClick.bind(this);
+    #animationLayerKeyUpHandler = this.#animationLayerKeyUp.bind(this);
     #clickHandler           = this.#click.bind(this);
 
     constructor() {
@@ -58,10 +61,22 @@ export class MacroRecorder extends HTMLElement {
         await this.#disableGlobalEvents();
         this.shadowRoot.removeEventListener("click", this.#clickHandler);
         this.#buttons = null;
+        this.#state = null;
+        this.#clickTimer = null;
+        this.#steps = null;
+        this.#pickLayer = null;
     }
 
     async #setState(newState) {
         await this.#disableGlobalEvents();
+
+        // if we were in a picking state, then remove the animation layer
+        if (this.#state === RecorderState.PICKING) {
+            this.#pickLayer.removeEventListener("click", this.#animationLayerClickHandler, { capture: true, passive: true });
+            this.#pickLayer.removeEventListener("keyup", this.#animationLayerKeyUpHandler, { capture: true, passive: true });
+            this.#pickLayer = await crs.call("dom_interactive", "remove_animation_layer");
+        }
+
 
         for (const element of Object.values(this.#buttons)) {
             element.style.color = "black";
@@ -70,11 +85,15 @@ export class MacroRecorder extends HTMLElement {
 
         this.#state = newState;
 
+        // if the new state is a picking state then create the animation layer and add interaction to it.
         if (this.#state === RecorderState.PICKING) {
             this.#buttons["macro-pick"].style.color = "red";
             this.#buttons["macro-pick"].style.fontWeight = "bold";
-            document.addEventListener("click", this.#globalClickHandler, { capture: true, passive: true });
-            document.addEventListener("keyup", this.#globalKeyUpHandler, { capture: true, passive: true });
+
+            this.#pickLayer = await crs.call("dom_interactive", "get_animation_layer");
+            this.#pickLayer.addEventListener("click", this.#animationLayerClickHandler, { capture: true, passive: true });
+            this.#pickLayer.addEventListener("keyup", this.#animationLayerKeyUpHandler, { capture: true, passive: true });
+            this.#pickLayer.style.pointerEvents = "auto";
         }
 
         if (this.#state === RecorderState.RECORDING) {
@@ -120,16 +139,30 @@ export class MacroRecorder extends HTMLElement {
         await this.#setState(RecorderState.PICKING);
     }
 
+    async #animationLayerClick(event) {
+        this.#pickLayer.style.pointerEvents = "none";
+
+        try {
+            const elementAtPoint = document.elementFromPoint(event.clientX, event.clientY);
+            const path = composedPath(elementAtPoint);
+            const query = getQuery(path);
+            await crs.call("system", "copy_to_clipboard", { source: query })
+        }
+        finally {
+            this.#pickLayer.style.pointerEvents = "auto";
+            await this.#setState(RecorderState.IDLE);
+        }
+    }
+
+    async #animationLayerKeyUp(event) {
+        if (event.key === "Escape") {
+            await this.#setState(RecorderState.IDLE);
+        }
+    }
+
     async #globalClick(event) {
         const path = event.composedPath();
         if (path.includes(this)) return;
-
-        if (this.#state === RecorderState.PICKING) {
-            const query = getQuery(path);
-            await crs.call("system", "copy_to_clipboard", { source: query })
-            await this.#setState(RecorderState.IDLE);
-            return;
-        }
 
         clearTimeout(this.#clickTimer);
         this.#clickTimer = setTimeout(async () => {
@@ -161,11 +194,6 @@ export class MacroRecorder extends HTMLElement {
 
     async #globalKeyUp(event) {
         const path = event.composedPath();
-
-        if (this.#state !== RecorderState.PICKING && event.key === "Escape") {
-            await this.#setState(RecorderState.IDLE);
-            return;
-        }
 
         if (inputElements.includes(path[0].tagName.toLowerCase()) === true) return;
 
@@ -213,15 +241,6 @@ export class MacroRecorder extends HTMLElement {
         this.#steps.push(structuredClone(step));
     }
 
-    async listening() {
-        await this.#enableGlobalEvents();
-    }
-
-    async stopListening() {
-        await this.#disableGlobalEvents();
-        console.log(this.#steps);
-    }
-
     async saveToProcess(name) {
         const instance = structuredClone(process);
         instance.id = name;
@@ -229,8 +248,12 @@ export class MacroRecorder extends HTMLElement {
         console.log(this.#steps);
 
         for (let i = 0; i < this.#steps.length; i++) {
-            const name = `step_${i}`;
+            let name = `step_${i}`;
             const nextName = `step_${i + 1}`;
+
+            if (name === "step_0") {
+                name = "start";
+            }
 
             const step = this.#steps[i];
             instance.main.steps[name] = step;
