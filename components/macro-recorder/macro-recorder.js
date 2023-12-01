@@ -1,13 +1,15 @@
 import { inputStep, clickStep, process } from "./steps.js";
 import { getQuery } from "./query.js";
 import { composedPath } from "./composed-path.js";
+import { getElementStatus } from "./get-element-status.js";
 
 const inputElements = ["input", "textarea", "select"];
 
 const RecorderState = Object.freeze({
     IDLE        : 0,
     RECORDING   : 1,
-    PICKING     : 2
+    PICKING     : 2,
+    GET_STATUS  : 3
 })
 
 export class MacroRecorder extends HTMLElement {
@@ -71,12 +73,11 @@ export class MacroRecorder extends HTMLElement {
         await this.#disableGlobalEvents();
 
         // if we were in a picking state, then remove the animation layer
-        if (this.#state === RecorderState.PICKING) {
+        if (this.#state === RecorderState.PICKING || this.#state === RecorderState.GET_STATUS) {
             this.#pickLayer.removeEventListener("click", this.#animationLayerClickHandler, { capture: true, passive: true });
             this.#pickLayer.removeEventListener("keyup", this.#animationLayerKeyUpHandler, { capture: true, passive: true });
             this.#pickLayer = await crs.call("dom_interactive", "remove_animation_layer");
         }
-
 
         for (const element of Object.values(this.#buttons)) {
             element.style.color = "black";
@@ -86,7 +87,7 @@ export class MacroRecorder extends HTMLElement {
         this.#state = newState;
 
         // if the new state is a picking state then create the animation layer and add interaction to it.
-        if (this.#state === RecorderState.PICKING) {
+        if (this.#state === RecorderState.PICKING || this.#state === RecorderState.GET_STATUS) {
             this.#buttons["macro-pick"].style.color = "red";
             this.#buttons["macro-pick"].style.fontWeight = "bold";
 
@@ -139,6 +140,10 @@ export class MacroRecorder extends HTMLElement {
         await this.#setState(RecorderState.PICKING);
     }
 
+    async "macro-status"() {
+        await this.#setState(RecorderState.GET_STATUS);
+    }
+
     async #animationLayerClick(event) {
         this.#pickLayer.style.pointerEvents = "none";
 
@@ -146,7 +151,14 @@ export class MacroRecorder extends HTMLElement {
             const elementAtPoint = document.elementFromPoint(event.clientX, event.clientY);
             const path = composedPath(elementAtPoint);
             const query = getQuery(path);
-            await crs.call("system", "copy_to_clipboard", { source: query })
+
+            if (this.#state === RecorderState.PICKING) {
+                await crs.call("system", "copy_to_clipboard", { source: query });
+            }
+            else if (this.#state === RecorderState.GET_STATUS) {
+                const result = getElementStatus(query, elementAtPoint);
+                await crs.call("system", "copy_to_clipboard", { source: result });
+            }
         }
         finally {
             this.#pickLayer.style.pointerEvents = "auto";
@@ -197,14 +209,15 @@ export class MacroRecorder extends HTMLElement {
 
         if (inputElements.includes(path[0].tagName.toLowerCase()) === true) return;
 
-        const ctrlDown = event.ctrlKey || event.metaKey;
-        const shiftDown = event.shiftKey;
-        const altDown = event.altKey;
-        const key = event.key.toLowerCase();
-        const query = getQuery(path);
-
-
-        console.log(ctrlDown, shiftDown, altDown, key);
+        // const ctrlDown = event.ctrlKey || event.metaKey;
+        // const shiftDown = event.shiftKey;
+        // const altDown = event.altKey;
+        // const key = event.key.toLowerCase();
+        // const query = getQuery(path);
+        //
+        //
+        // console.log(ctrlDown, shiftDown, altDown, key);
+        // todo: add key press to support
     }
 
     async #globalFocusIn(event) {
