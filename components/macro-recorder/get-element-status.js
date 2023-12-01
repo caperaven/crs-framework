@@ -22,7 +22,7 @@ export function getElementStatus(query, element) {
     getClasses(element, result.args);
 
     if (element.innerText.length > 0) {
-        result.args.textContent = element.innerText;
+        result.args.text_content = element.innerText;
     }
 
     return result;

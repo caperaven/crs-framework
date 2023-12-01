@@ -20,7 +20,14 @@ export const process = {
 
     "main": {
         "steps": {
-
+            "start": {
+                "type": "perform",
+                "action": "navigate",
+                "args": {
+                    "url": "${state.server}"
+                },
+                "next_step": "step_0"
+            }
         }
     }
 }

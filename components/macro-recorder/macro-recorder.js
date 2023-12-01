@@ -161,10 +161,12 @@ export class MacroRecorder extends HTMLElement {
 
             if (this.#state === RecorderState.PICKING) {
                 await crs.call("system", "copy_to_clipboard", { source: query });
+                console.log(query);
             }
             else if (this.#state === RecorderState.GET_STATUS) {
                 const result = getElementStatus(query, elementAtPoint);
                 await crs.call("system", "copy_to_clipboard", { source: result });
+                console.log(result);
             }
         }
         finally {
@@ -265,15 +267,11 @@ export class MacroRecorder extends HTMLElement {
         const instance = structuredClone(process);
         instance.id = name;
 
-        console.log(this.#steps);
+        instance.main.steps.start.args.url = window.location.href;
 
         for (let i = 0; i < this.#steps.length; i++) {
             let name = `step_${i}`;
             const nextName = `step_${i + 1}`;
-
-            if (name === "step_0") {
-                name = "start";
-            }
 
             const step = this.#steps[i];
             instance.main.steps[name] = step;

@@ -12,9 +12,9 @@ export class MacroRecorderActions {
     }
 
     static async save_process(step, context, process, item) {
+        const name = await crs.process.getValue(step.args.name);
         const instance = document.querySelector("macro-recorder");
-        const processName = await crs.call("system", "prompt", { title: "Save process", label: "Process name" });
-        return await instance.saveToProcess(processName);
+        return await instance.saveToProcess(name);
     }
 }
 
