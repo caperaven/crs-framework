@@ -10,3 +10,4 @@ yarn-error.log
 dist/
 /custom-bundles/code-mirror-bundle/node_modules/
 /custom-bundles/code-mirror-bundle/package-lock.json
+deno.lock
