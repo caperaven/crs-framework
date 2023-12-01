@@ -56,6 +56,7 @@ export class MacroRecorder extends HTMLElement {
             this.#buttons["macro-stop"] = this.shadowRoot.querySelector('[data-action="macro-stop"]');
             this.#buttons["macro-clear"] = this.shadowRoot.querySelector('[data-action="macro-clear"]');
             this.#buttons["macro-pick"] = this.shadowRoot.querySelector('[data-action="macro-pick"]');
+            this.#buttons["macro-status"] = this.shadowRoot.querySelector('[data-action="macro-status"]');
         })
     }
 
@@ -88,8 +89,14 @@ export class MacroRecorder extends HTMLElement {
 
         // if the new state is a picking state then create the animation layer and add interaction to it.
         if (this.#state === RecorderState.PICKING || this.#state === RecorderState.GET_STATUS) {
-            this.#buttons["macro-pick"].style.color = "red";
-            this.#buttons["macro-pick"].style.fontWeight = "bold";
+            if (this.#state === RecorderState.GET_STATUS) {
+                this.#buttons["macro-status"].style.color = "red";
+                this.#buttons["macro-status"].style.fontWeight = "bold";
+            }
+            else {
+                this.#buttons["macro-pick"].style.color = "red";
+                this.#buttons["macro-pick"].style.fontWeight = "bold";
+            }
 
             this.#pickLayer = await crs.call("dom_interactive", "get_animation_layer");
             this.#pickLayer.addEventListener("click", this.#animationLayerClickHandler, { capture: true, passive: true });
