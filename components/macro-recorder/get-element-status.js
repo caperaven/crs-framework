@@ -9,16 +9,20 @@ const PropertiesLookup = Object.freeze({
 
 export function getElementStatus(query, element) {
     const result = {
-        query
+        "type": "assert",
+        "action": "members",
+        "args": {
+            query
+        }
     }
 
-    getStyles(element, result);
-    getAttributes(element, result);
-    getProperties(element, result);
-    getClasses(element, result);
+    getStyles(element, result.args);
+    getAttributes(element, result.args);
+    getProperties(element, result.args);
+    getClasses(element, result.args);
 
     if (element.innerText.length > 0) {
-        result.textContent = element.innerText;
+        result.args.textContent = element.innerText;
     }
 
     return result;

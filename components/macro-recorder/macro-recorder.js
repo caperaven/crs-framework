@@ -20,15 +20,15 @@ export class MacroRecorder extends HTMLElement {
     #buttons= {};
     #cache= {};
 
-    #globalClickHandler     = this.#globalClick.bind(this);
-    #globalDblClickHandler  = this.#globalDblClick.bind(this);
-    #globalKeyDownHandler   = this.#globalKeyDown.bind(this);
-    #globalKeyUpHandler     = this.#globalKeyUp.bind(this);
-    #globalFocusInHandler   = this.#globalFocusIn.bind(this);
-    #globalFocusOutHandler  = this.#globalFocusOut.bind(this);
+    #globalClickHandler         = this.#globalClick.bind(this);
+    #globalDblClickHandler      = this.#globalDblClick.bind(this);
+    #globalKeyDownHandler       = this.#globalKeyDown.bind(this);
+    #globalKeyUpHandler         = this.#globalKeyUp.bind(this);
+    #globalFocusInHandler       = this.#globalFocusIn.bind(this);
+    #globalFocusOutHandler      = this.#globalFocusOut.bind(this);
     #animationLayerClickHandler = this.#animationLayerClick.bind(this);
     #animationLayerKeyUpHandler = this.#animationLayerKeyUp.bind(this);
-    #clickHandler           = this.#click.bind(this);
+    #clickHandler               = this.#click.bind(this);
 
     constructor() {
         super();
