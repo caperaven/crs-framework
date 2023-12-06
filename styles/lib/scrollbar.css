@@ -1,14 +1,19 @@
-.scrollbar::-webkit-scrollbar-track {
-    padding: 0.25rem 0;
-    background-color: transparent;
+.narrow-scrollbar::-webkit-scrollbar {
+    width: 0.875rem;
 }
 
-.scrollbar::-webkit-scrollbar {
-    width: 0.25rem;
-}
-
-.scrollbar-webkit-scrollbar-thumb {
+.narrow-scrollbar::-webkit-scrollbar-thumb {
     border-radius: 1rem;
-    box-shadow: inset 0 0 5px var(--grey-s1);
-    background-color: transparent;
+    background-color: var(--grey-s2);
+    border: 0.25rem solid var(--window);
+}
+
+.narrow-scrollbar::-webkit-scrollbar-track {
+    background: var(--window);
+}
+
+/*Firefox*/
+.narrow-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: var(--grey-s2) var(--window); 
 }

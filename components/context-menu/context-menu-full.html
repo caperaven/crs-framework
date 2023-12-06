@@ -1,4 +1,5 @@
 <style>
+    @import "/styles/lib/scrollbar.css";
     :host {
         --icon-font: "";
         --height: 100%;
@@ -86,21 +87,6 @@
         display: none !important;
     }
 
-    ul::-webkit-scrollbar-track {
-        padding: 0.25rem 0;
-        background-color: transparent;
-    }
-
-    ul::-webkit-scrollbar {
-        width: 0.25rem;
-    }
-
-    ul::-webkit-scrollbar-thumb {
-        border-radius: 1rem;
-        box-shadow: inset 0 0 5px var(--grey-s1);
-        background-color: transparent;
-    }
-
     filter-header {
         --close-display: inline-block;
     }
@@ -166,5 +152,5 @@
         <button id="btnBack" ref="btnBack">chevron-left</button>
         <filter-header for="ul"></filter-header>
     </div>
-    <ul ref="container" role="menu" tabindex="0" class="scrollbar"></ul>
+    <ul ref="container" role="menu" tabindex="0" class="narrow-scrollbar"></ul>
 </div>
