@@ -44,14 +44,18 @@ export class AvailableSelected extends HTMLElement {
         await this.load();
     }
 
-    async load() {
-        requestAnimationFrame(async () => {
+    load() {
+        return new Promise((resolve) => {
             this.shadowRoot.addEventListener("click", this.#clickHandler);
             this.#tablist = this.shadowRoot.querySelector("tab-list");
             this.#currentView = "selected";
-            await crsbinding.translations.parseElement(this);
-            await crs.call("component", "notify_ready", {element: this});
-        })
+
+            requestAnimationFrame(async () => {
+                await crsbinding.translations.parseElement(this);
+                await crs.call("component", "notify_ready", {element: this});
+                resolve();
+            });
+        });
     }
 
     async disconnectedCallback() {
