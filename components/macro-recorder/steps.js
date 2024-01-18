@@ -15,6 +15,17 @@ export const clickStep = {
     }
 }
 
+export const dragStep = {
+    "type": "perform",
+    "action": "drag",
+    "args": {
+        "query": "",
+        "target": "",
+        "x": 0,
+        "y": 0
+    }
+}
+
 export const process = {
     "id": "",
 

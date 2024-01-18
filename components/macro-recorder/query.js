@@ -8,9 +8,17 @@ export function getQuery(path) {
 }
 
 function getLeafQuery(path, query) {
-    const target = path[0];
+    let target = null;
 
-    if (target.id?.trim() > 0) {
+    if (path instanceof HTMLElement) {
+        // in some cases we want to pass an actual element that we captured earlier in the process.
+        target = path;
+    }
+    else {
+        target = path[0];
+    }
+
+    if (target.id?.trim().length > 0) {
         query.push(`#${target.id}`);
     }
     else if (target.dataset.id != null) {

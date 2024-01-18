@@ -1,7 +1,9 @@
-import { inputStep, clickStep, process } from "./steps.js";
+import {inputStep, clickStep, process, dragStep} from "./steps.js";
 import { getQuery } from "./query.js";
 import { composedPath } from "./composed-path.js";
 import { getElementStatus } from "./get-element-status.js";
+import "./../../components/text-editor/text-editor.js";
+import "./../../components/dialog/dialog-actions.js";
 
 const inputElements = ["input", "textarea", "select"];
 
@@ -19,9 +21,14 @@ export class MacroRecorder extends HTMLElement {
     #state= RecorderState.IDLE;
     #buttons= {};
     #cache= {};
+    #startPoint;
+    #currentElement;
+    #suppressClick = false;
 
     #globalClickHandler         = this.#globalClick.bind(this);
     #globalDblClickHandler      = this.#globalDblClick.bind(this);
+    #globalMouseDownHandler     = this.#globalMouseDown.bind(this);
+    #globalMouseUpHandler       = this.#globalMouseUp.bind(this);
     #globalKeyDownHandler       = this.#globalKeyDown.bind(this);
     #globalKeyUpHandler         = this.#globalKeyUp.bind(this);
     #globalFocusInHandler       = this.#globalFocusIn.bind(this);
@@ -57,6 +64,7 @@ export class MacroRecorder extends HTMLElement {
             this.#buttons["macro-clear"] = this.shadowRoot.querySelector('[data-action="macro-clear"]');
             this.#buttons["macro-pick"] = this.shadowRoot.querySelector('[data-action="macro-pick"]');
             this.#buttons["macro-status"] = this.shadowRoot.querySelector('[data-action="macro-status"]');
+            this.#buttons["macro-show"] = this.shadowRoot.querySelector('[data-action="macro-show"]');
         })
     }
 
@@ -117,6 +125,7 @@ export class MacroRecorder extends HTMLElement {
         document.addEventListener("keydown", this.#globalKeyDownHandler, { capture: true, passive: true });
         document.addEventListener("keyup", this.#globalKeyUpHandler, { capture: true, passive: true });
         document.addEventListener("focusin", this.#globalFocusInHandler, { capture: true, passive: true });
+        document.addEventListener("mousedown", this.#globalMouseDownHandler, { capture: true, passive: true });
     }
 
     async #disableGlobalEvents() {
@@ -125,6 +134,7 @@ export class MacroRecorder extends HTMLElement {
         document.removeEventListener("keydown", this.#globalKeyDownHandler);
         document.removeEventListener("keyup", this.#globalKeyUpHandler);
         document.removeEventListener("focusin", this.#globalFocusInHandler);
+        document.removeEventListener("mousedown", this.#globalMouseDownHandler);
     }
 
     async #click(event) {
@@ -149,6 +159,18 @@ export class MacroRecorder extends HTMLElement {
 
     async "macro-status"() {
         await this.#setState(RecorderState.GET_STATUS);
+    }
+
+    async "macro-show"() {
+        await this.#setState(RecorderState.IDLE);
+        const result = await this.saveToProcess("undefined");
+
+        const editor = document.createElement("text-editor");
+        editor.setAttribute("data-language", "json");
+        editor.value = JSON.stringify(result, null, 4);
+
+        const tab = window.open("about:blank");
+        tab.document.body.appendChild(editor);
     }
 
     async #animationLayerClick(event) {
@@ -182,6 +204,11 @@ export class MacroRecorder extends HTMLElement {
     }
 
     async #globalClick(event) {
+        if (this.#suppressClick === true) {
+            this.#suppressClick = false;
+            return;
+        }
+
         const path = event.composedPath();
         if (path.includes(this)) return;
 
@@ -206,6 +233,41 @@ export class MacroRecorder extends HTMLElement {
         step.action = "double_click";
 
         await this.#addToStack(step);
+    }
+
+    async #globalMouseDown(event) {
+        this.#currentElement = event.composedPath()[0];
+        document.addEventListener("mouseup", this.#globalMouseUpHandler, { capture: true, passive: true });
+        this.#startPoint = { x: event.clientX, y: event.clientY };
+    }
+
+    async #globalMouseUp(event) {
+        document.removeEventListener("mouseup", this.#globalMouseUpHandler, { capture: true, passive: true });
+
+        const xOffset = Math.abs(event.clientX - this.#startPoint.x);
+        const yOffset = Math.abs(event.clientY - this.#startPoint.y);
+
+        if (xOffset > 10 || yOffset > 10) {
+            this.#suppressClick = true;
+            this.#currentElement.style.pointerEvents = "none";
+            const target = document.elementFromPoint(event.clientX, event.clientY);
+            this.#currentElement.style.pointerEvents = "auto";
+
+            const targetRect = target.getBoundingClientRect();
+            const targetX = event.clientX - targetRect.x;
+            const targetY = event.clientY - targetRect.y;
+
+            const step = structuredClone(dragStep);
+            step.args.query = getQuery(this.#currentElement);
+            step.args.target = getQuery(target);
+            step.args.x = targetX;
+            step.args.y = targetY;
+
+            await this.#addToStack(step);
+            console.log(step)
+        }
+
+        this.#currentElement = null;
     }
 
     async #globalKeyDown(event) {
