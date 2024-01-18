@@ -17,7 +17,7 @@ export const clickStep = {
 
 export const dragStep = {
     "type": "perform",
-    "action": "drag",
+    "action": "drag_and_drop",
     "args": {
         "query": "",
         "target": "",
