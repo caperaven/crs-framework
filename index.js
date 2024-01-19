@@ -16,10 +16,10 @@ import "./src/index.js";
 import {HTMLParser} from "./packages/crs-schema/html/crs-html-parser.js";
 import "/src/binding-extensions/markdown-template.js";
 import "/src/binding-extensions/schema-template.js";
-import ("./packages/crs-process-api/action-systems/data-processing-actions.js");
-import ("./packages/crs-process-api/action-systems/schema-actions.js")
-import ("./components/busy-ui/busy-ui-actions.js");
-import ("./components/options-toolbar/options-toolbar.js");
+import "./packages/crs-process-api/action-systems/data-processing-actions.js";
+import "./packages/crs-process-api/action-systems/schema-actions.js";
+import "./components/busy-ui/busy-ui-actions.js";
+import "./components/options-toolbar/options-toolbar.js";
 import "/packages/crs-process-api/components/view-loader/view-loader.js";
 
 await initialize("/packages/crs-process-api");

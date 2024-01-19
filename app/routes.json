@@ -18,6 +18,11 @@
             "view": "icons"
         },
         {
+            "title": "Macro recorder",
+            "hash": "#macro-recorder",
+            "view": "macro-recorder"
+        },
+        {
             "title": "Cell Editing",
             "view": "cell-editing"
         },
