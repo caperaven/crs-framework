@@ -19,25 +19,26 @@ export default class VirtualizationViewModel extends crs.classes.BindableElement
 
         const itemTemplate = this.shadowRoot.querySelector("#item-template");
 
-        const data = await crs.call("test_data", "get", {
-            fields: {
-                code: "string:auto",
-                quantity: "int:1:100"
-            },
-            count: 5000
-        });
-
         await crs.call("data_manager", "register", {
             manager: "my_data",
             id_field: "id",
             type: "memory",
-            records: data
+            records: []
         })
 
         await crs.call("virtualization", "enable", {
             element: this.ul,
             manager: "my_data",
             itemSize: 32,
+            template: itemTemplate,
+            inflation: this.#inflationFn
+        });
+
+        await crs.call("virtualization", "enable", {
+            element: this.hul,
+            direction: "horizontal",
+            manager: "my_data",
+            itemSize: 160,
             template: itemTemplate,
             inflation: this.#inflationFn
         });
@@ -49,6 +50,10 @@ export default class VirtualizationViewModel extends crs.classes.BindableElement
             virtualized_element: this.ul,
             manager: "my_data"
         });
+    }
+
+    async preLoad() {
+        this.setProperty("recordCount", 5);
     }
 
     async disconnectedCallback() {
@@ -68,5 +73,36 @@ export default class VirtualizationViewModel extends crs.classes.BindableElement
 
     debug() {
         this.ul.__virtualizationManager.debug();
+    }
+
+    async refresh() {
+        const count = this.getProperty("recordCount");
+        const data = await crs.call("test_data", "get", {
+            fields: {
+                code: "string:auto",
+                quantity: "int:1:100"
+            },
+            count: count
+        });
+
+        await crs.call("data_manager", "set_records", {
+            manager: "my_data",
+            records: data
+        })
+    }
+
+    async add() {
+        const data = await crs.call("test_data", "get", {
+            fields: {
+                code: "string:auto",
+                quantity: "int:1:100"
+            },
+            count: 5
+        });
+
+        await crs.call("data_manager", "append", {
+            manager: "my_data",
+            records: data
+        })
     }
 }

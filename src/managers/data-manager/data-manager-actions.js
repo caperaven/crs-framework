@@ -253,6 +253,78 @@ class DataManagerActions {
     }
 
     /**
+     * @method clear - Clear the records of the data manager
+     * @param step {object} - The step that contains the action to perform
+     * @param context {object} - The context of the process
+     * @param process {object} - The process
+     * @param item {object} - Current item in a process loop
+     *
+     * @param step.args.manager {string} - The name of the data manager. You will use this when performing operations on the data manager.
+     * @returns {Promise<void>}
+     *
+     * @example <caption>javascript example</caption>
+     * await crs.call("data_manager", "clear" {
+     *    manager: "my_data_manager",
+     * })
+     *
+     * @example <caption>json example</caption>
+     * {
+     *    "type": "data_manager",
+     *    "action": "clear",
+     *    "args": {
+     *        "manager": "my_data_manager",
+     *    }
+     * }
+     */
+    static async clear(step, context, process, item) {
+        const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return;
+
+        const dataManager = globalThis.dataManagers[manager];
+        await dataManager.setRecords([]);
+        await dataManager.notifyChanges({
+            action: CHANGE_TYPES.refresh,
+            count: dataManager.count
+        })
+    }
+
+    /**
+     * @method refresh - Refresh data manager, notifying the UI that the data has changed.
+     * @param step {object} - The step that contains the action to perform
+     * @param context {object} - The context of the process
+     * @param process {object} - The process
+     * @param item {object} - Current item in a process loop
+     *
+     * @param step.args.manager {string} - The name of the data manager. You will use this when performing operations on the data manager.
+     * @returns {Promise<void>}
+     *
+     * @example <caption>javascript example</caption>
+     * await crs.call("data_manager", "refresh" {
+     *    manager: "my_data_manager",
+     * })
+     *
+     * @example <caption>json example</caption>
+     * {
+     *    "type": "data_manager",
+     *    "action": "refresh",
+     *    "args": {
+     *        "manager": "my_data_manager",
+     *    }
+     * }
+     */
+    static async refresh(step, context, process, item) {
+        const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return;
+
+        const dataManager = globalThis.dataManagers[manager];
+
+        await dataManager.notifyChanges({
+            action: CHANGE_TYPES.refresh,
+            count: dataManager.count
+        })
+    }
+
+    /**
      * @method append - Append records to a data manager
      * @param step {object} - The step that contains the action to perform
      * @param context {object} - The context of the process

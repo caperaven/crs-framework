@@ -1,0 +1,32 @@
+<link rel="stylesheet" href="/app/swim-lane/swim-lane.css">
+<h2>${title}</h2>
+
+<template data-type="header-card" id="staff_header_template">
+    <h2></h2>
+</template>
+
+<template data-type="record-card" id="staff_record_template">
+    <div class="card">
+        <link rel="stylesheet" href="/app/swim-lane/card.css">
+        <div class="code"></div>
+        <div class="value"></div>
+    </div>
+</template>
+
+<swim-lane
+    data-manager="swimLaneDataManager",
+    data-header-card = "headerCard",
+    data-record-card = "recordCard",
+    data-allow-drag = "false",
+    data-allow-drop = "false",
+    data-card-size = "60">
+</swim-lane>
+
+<div class="toolbar">
+    <input value.bind="recordCount">
+    <button click.call="refresh">Refresh</button>
+    <button click.call="update">Update</button>
+    <button click.call="insert(2000, 5)">Insert Id 2000</button>
+    <button click.call="insert(3000, 100)">Insert Id 3000</button>
+    <button click.call="delete">Delete</button>
+</div>

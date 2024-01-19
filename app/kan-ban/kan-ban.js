@@ -39,50 +39,48 @@ export default class KanBanViewModel extends crs.classes.BindableElement {
         const template = this.shadowRoot.querySelector("#tplSimple");
         crs.binding.inflation.manager.register("simple", template);
 
+import "./../../components/kan-ban/kanban-component/kanban-component.js";
+import "./../../src/actions/virtualization-actions.js";
+import "./../../packages/crs-process-api/action-systems/component-actions.js";
+
+export default class KanBan extends crsbinding.classes.ViewBase {
+    async load() {
+        const kanban = this.element.querySelector("kanban-component");
+        await crs.call("component", "on_loading", {
+            element: kanban,
+            callback: async () => {
+                await crs.call("data_manager", "register", { manager: "kanbanDataManager", type: "memory" });
+                await kanban.initialize();
+            }
+        });
         super.load();
     }
 
-    async addColumn() {
-        await crs.call("grid_columns", "add_columns", {
-            element: this.kanban,
-            columns: [
-                { id: 1001, width: 200, title: "Awaiting Approval", field: "status", statusId: 0, status: "awaiting approval" },
-                { id: 1002, width: 200, title: "In Progress", field: "status", statusId: 1, status: "in progress" },
-                { id: 1003, width: 200, title: "Closed", field: "status", statusId: 2, status: "closed" }
-            ]
-        })
+    async refresh(quantity) {
+        const data = [];
+
+        for (let i = 0; i < Number(quantity); i++) {
+            data.push({
+                header: {
+                    title: `User ${i}`,
+                },
+                records: generateRecords(100, i * 100, i * 100)
+            })
+        }
+
+        await crs.call("data_manager", "set_records", { manager: "kanbanDataManager", records: data });
+    }
+}
+
+function generateRecords(count, start, startValue) {
+    const result = [];
+
+    for (let i = 0; i < count; i++) {
+        result.push({
+            "code": `Record ${start + i}`,
+            "value": startValue + i
+        });
     }
 
-    async refresh() {
-        await crs.call("data_manager", "set_records", {
-            manager: "kanban_data",
-            records: records
-        })
-    }
-
-    async add() {
-        await crs.call("data_manager", "append", {
-            manager: "kanban_data",
-            records: [
-                { id: 1005, code: "Code F", statusId: 0, status:"awaiting approval" }
-            ]
-        })
-    }
-
-    async remove() {
-        await crs.call("data_manager", "remove", {
-            manager: "kanban_data",
-            ids: [1005, 1001]
-        })
-    }
-
-    async update() {
-        await crs.call("data_manager", "update", {
-            manager: "kanban_data",
-            id: 1002,
-            changes: {
-                code: "Hello World"
-            }
-        })
-    }
+    return result;
 }

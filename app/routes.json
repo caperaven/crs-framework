@@ -23,7 +23,18 @@
         },
         {
             "title": "Overflow Bar",
+            "hash": "overflow-bar",
             "view": "overflow-bar"
+        },
+        {
+            "title": "Macro recorder",
+            "hash": "#macro-recorder",
+            "view": "macro-recorder"
+        },
+        {
+            "title": "Swim Lane",
+            "hash": "#swim-lane",
+            "view": "swim-lane"
         },
         {
             "title": "Entity-details",
@@ -155,6 +166,11 @@
             "title": "data-manager-idb",
             "hash": "#data-manager-idb",
             "view": "data-manager-idb"
+        },
+        {
+            "title": "percentage bar",
+            "hash": "percentage-bar",
+            "view": "percentage-bar"
         }
     ]
 }

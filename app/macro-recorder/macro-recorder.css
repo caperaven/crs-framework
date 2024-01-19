@@ -1,0 +1,7 @@
+.draggable {
+    width: 100px;
+    height: 100px;
+    background: red;
+    cursor: pointer;
+    position: absolute;
+}

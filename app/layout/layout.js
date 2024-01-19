@@ -10,11 +10,4 @@ export default class LayoutViewModel extends crs.classes.BindableElement {
         return true;
     }
 
-    async connectedCallback() {
-        await super.connectedCallback();
-    }
-
-    async disconnectedCallback() {
-        await super.disconnectedCallback();
-    }
 }

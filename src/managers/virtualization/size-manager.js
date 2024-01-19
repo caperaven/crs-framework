@@ -2,7 +2,7 @@ export class SizeManager {
     #itemSize;
     #itemCount;
     #containerSize;
-    #contentHeight;
+    #contentSize;
     #pageItemCount;
     #batchSize;
 
@@ -27,12 +27,12 @@ export class SizeManager {
     }
 
     /**
-     * @property contentHeight - The height of all the content together.
+     * @property contentSize - The height of all the content together.
      * This is used in determining how big the scrollbar should be.
      * @returns {*}
      */
-    get contentHeight() {
-        return this.#contentHeight;
+    get contentSize() {
+        return this.#contentSize;
     }
 
     /**
@@ -55,7 +55,7 @@ export class SizeManager {
         this.#itemCount = itemCount;
         this.#containerSize = containerSize;
 
-        this.#contentHeight = this.#itemSize * this.#itemCount;
+        this.#contentSize = this.#itemSize * this.#itemCount;
         this.#pageItemCount = Math.ceil(containerSize / this.#itemSize);
         this.#batchSize = Math.floor(this.#pageItemCount / 2);
     }
@@ -67,9 +67,14 @@ export class SizeManager {
         this.#itemSize = null;
         this.#itemCount = null;
         this.#containerSize = null;
-        this.#contentHeight = null;
+        this.#contentSize = null;
         this.#pageItemCount = null;
         this.#batchSize = null;
+    }
+
+    setItemCount(itemCount) {
+        this.#itemCount = itemCount;
+        this.#contentSize = this.#itemSize * this.#itemCount;
     }
 
     /**
