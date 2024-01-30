@@ -65,7 +65,7 @@ describe ("calendar tests", async () => {
         //Arrange
         const dispatchStub = stub(instance, "dispatchEvent", (event) => {
             assertEquals(instance.getAttribute("data-start"), "2024-01-05");
-            assertEquals(event.detail.date, "2024-01-05T00:00:00.000");
+            assertEquals(event.detail.date, "2024-01-05");
         });
 
         const target = document.createElement("div");
