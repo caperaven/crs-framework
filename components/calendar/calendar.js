@@ -91,13 +91,23 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     async attributeChangedCallback(name, oldValue, newValue) {
         if (newValue == null) return;
 
-        const date = new Date(newValue);
+        const date = this.#getUTCDate(newValue);
         this.#month = date.getMonth();
         this.#year = date.getFullYear();
         await this.#setMonthProperty();
         await this.#setYearProperty();
 
         (newValue !== oldValue) && await this.#defaultVisualSelection();
+    }
+
+    /**
+     * Will take in any date and return a UTC representation
+     * @param date
+     * @returns {Date} - UTC Date
+     */
+    #getUTCDate(date) {
+        const nonUTCDate = new Date(date);
+        return new Date(nonUTCDate.getUTCFullYear(), nonUTCDate.getUTCMonth(), nonUTCDate.getUTCDate(), nonUTCDate.getUTCHours(), nonUTCDate.getUTCMinutes(), nonUTCDate.getUTCSeconds());
     }
 
     /**
@@ -337,7 +347,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     async #get_element(data) {
         if (data == null) return;
 
-        const date = new Date(`${data}T00:00:00.000`);
+        const date = this.#getUTCDate(data);
         const year = date.getFullYear();
         const month = date.getMonth();
         const day = date.getDate();
