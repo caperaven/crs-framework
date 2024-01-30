@@ -232,7 +232,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
 
         await this.#setDataStart(target);
         await this.#trackFocus(target);
-        this.dispatchEvent(new CustomEvent("date-selected", {detail: {date: this.dataset.start}, bubbles: true}));
+        this.dispatchEvent(new CustomEvent("date-selected", {detail: {date: `${this.dataset.start}T00:00:00.000`}, bubbles: true}));
         await this.#setSelection(target);
         await this.#setFocus();
     }
@@ -337,7 +337,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
     async #get_element(data) {
         if (data == null) return;
 
-        const date = new Date(data);
+        const date = new Date(`${data}T00:00:00.000`);
         const year = date.getFullYear();
         const month = date.getMonth();
         const day = date.getDate();
