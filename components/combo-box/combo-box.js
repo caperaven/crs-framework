@@ -210,7 +210,7 @@ class ComboBox extends crs.classes.BindableElement {
     }
 
     async #highlightNext() {
-        await this.#showOptions();
+        await this.showOptions();
 
         const currentHighlighted = this.#ul.querySelector(".highlighted");
         if (currentHighlighted == null) {
@@ -231,7 +231,7 @@ class ComboBox extends crs.classes.BindableElement {
     }
 
     async #highlightPrevious() {
-        await this.#showOptions();
+        await this.showOptions();
 
         const currentHighlighted = this.#ul.querySelector(".highlighted");
         if (currentHighlighted == null) {
@@ -251,10 +251,11 @@ class ComboBox extends crs.classes.BindableElement {
         }
     }
 
-    async #showOptions(isVisible = true) {
-        if (isVisible === true) {
+    async showOptions(isVisible = true) {
+        if (Boolean(isVisible) === true) {
             this.#isOpen = true;
             if (this.#ul.classList.contains("hide") === true) {
+                await this.#setAriaSelected();
                 return this.#ul.classList.remove("hide");
             }
         }
@@ -263,6 +264,21 @@ class ComboBox extends crs.classes.BindableElement {
             if (this.#ul.classList.contains("hide") === false) {
                 return this.#ul.classList.add("hide");
             }
+        }
+    }
+
+    async #setAriaSelected() {
+        const value = this.getProperty("value");
+        const selected = this.#ul.querySelector("[aria-selected]");
+
+        if (selected != null) {
+            selected.removeAttribute("aria-selected");
+        }
+
+        const new_selected = this.#ul.querySelector(`[value="${value}"]`);
+
+        if (new_selected != null) {
+            new_selected.setAttribute("aria-selected", "true");
         }
     }
 
@@ -285,7 +301,7 @@ class ComboBox extends crs.classes.BindableElement {
 
             this.shadowRoot.dispatchEvent(new CustomEvent("change", {detail: { componentProperty: "value" }, composed: true}));
 
-            await this.#showOptions(false);
+            await this.showOptions(false);
 
             if (this.#options != null) {
                 for (const option of this.#options) {
@@ -314,7 +330,7 @@ class ComboBox extends crs.classes.BindableElement {
                 return await this.#selectCurrent();
             }
             else {
-                return await this.#showOptions(true);
+                return await this.showOptions(true);
             }
         }
 
@@ -335,7 +351,7 @@ class ComboBox extends crs.classes.BindableElement {
             }
         }
 
-        await this.#showOptions();
+        await this.showOptions();
     }
 
     async clear() {
