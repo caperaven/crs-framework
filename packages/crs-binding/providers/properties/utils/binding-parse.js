@@ -5,22 +5,25 @@ async function bindingParse(attr, context, provider) {
   let path = attr.value;
   crs.binding.utils.markElement(element, context);
   element.removeAttribute(attr.name);
-  element.setAttribute("data-field", path);
-  const uuid = element["__uuid"];
-  let intent = crs.binding.eventStore.getIntent("change", uuid);
-  if (intent == null) {
-    intent = {
-      provider,
-      value: {},
-      dataDef: null
-    };
+  if (property == "value") {
+    element.setAttribute("data-field", path);
   }
-  intent.value[path] = property;
+  const uuid = element["__uuid"];
   const event = "change";
-  crs.binding.eventStore.register(event, uuid, intent);
+  const intentCollection = crs.binding.eventStore.getIntent(event, uuid);
+  const intent = {
+    provider,
+    value: { [path]: property },
+    dataDef: null
+  };
+  if (intentCollection != null) {
+    intentCollection.push(intent);
+  } else {
+    crs.binding.eventStore.register(event, uuid, intent);
+  }
   crs.binding.data.setCallback(element["__uuid"], context.bid, [path], provider);
   element.__events ||= [];
-  element.__events.push("change");
+  element.__events.push(event);
 }
 export {
   bindingParse

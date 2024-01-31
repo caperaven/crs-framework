@@ -21,8 +21,9 @@ var init_dom_collection_manager = __esm({
         const fragment = document.createDocumentFragment();
         for (const item of items) {
           const instance = details.template.content.cloneNode(true);
-          details.fn(instance, item);
-          fragment.appendChild(instance);
+          const element2 = instance.firstElementChild;
+          details.fn(element2, item);
+          fragment.appendChild(element2);
         }
         element.appendChild(fragment);
       }
@@ -287,7 +288,11 @@ async function parseElement(element, context, options) {
     return;
   }
   if (element.children?.length > 0) {
-    return await crs.binding.parsers.parseElements(element.children, context, options);
+    await crs.binding.parsers.parseElements(element.children, context, options);
+    if (element.parseCompleted != null) {
+      await element.parseCompleted(context);
+    }
+    return;
   }
   for (const provider of crs.binding.providers.textProviders) {
     await provider.parseElement(element, context, ctxName);
@@ -1353,7 +1358,20 @@ var EventStore = class {
   getIntent(event2, uuid) {
     return this.#store[event2]?.[uuid];
   }
-  register(event2, uuid, intent, isCollection = true) {
+  getBindingField(event2, uuid, componentProperty) {
+    const intent = this.getIntent(event2, uuid);
+    if (intent == null)
+      return null;
+    for (const intentItem of intent) {
+      const intentValue = intentItem.value;
+      for (const key of Object.keys(intentValue)) {
+        const value = intentValue[key];
+        if (value === componentProperty)
+          return key;
+      }
+    }
+  }
+  register(event2, uuid, intent) {
     const element = crs.binding.elements[uuid];
     const root = element.getRootNode();
     if (event2 === "change" && element instanceof HTMLInputElement && root instanceof ShadowRoot && root.host.registerEvent != null) {
@@ -1366,12 +1384,8 @@ var EventStore = class {
       });
       this.#store[event2] = {};
     }
-    if (isCollection) {
-      this.#store[event2][uuid] ||= [];
-      this.#store[event2][uuid].push(intent);
-      return;
-    }
-    this.#store[event2][uuid] = intent;
+    this.#store[event2][uuid] ||= [];
+    this.#store[event2][uuid].push(intent);
   }
   clear(uuid) {
     const element = crs.binding.elements[uuid];
@@ -1591,6 +1605,9 @@ Object.defineProperty(globalThis.crs.binding, "$global", {
   writable: false
 });
 await crs.binding.providers.addTextProvider("$root/providers/text/text.js");
+String.prototype.capitalize = function() {
+  return this.charAt(0).toUpperCase() + this.slice(1);
+};
 /**
  * @file crs-binding.js - This is the main file of the binding engine.
  * All the core features are defined here and exported to the global scope.

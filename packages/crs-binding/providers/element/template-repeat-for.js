@@ -7,6 +7,7 @@ class TemplateRepeatForProvider {
     element.parentElement["__path"] = forExpParts[2];
     element.parentElement["__repeat_container"] = true;
     element.parentElement.removeChild(element);
+    element.innerHTML = cleanHtml(element.innerHTML);
     const fn = await crs.binding.expression.inflationFactory(element, forExpParts[0]);
     crs.binding.inflation.store.add(uuid, element, fn);
     crs.binding.data.setCallback(uuid, context.bid, [forExpParts[2]], "template[for]");
@@ -28,6 +29,15 @@ class TemplateRepeatForProvider {
     element.innerHTML = "";
     element.appendChild(fragment);
   }
+}
+function cleanHtml(html) {
+  const firstIndex = html.indexOf("<");
+  const lastIndex = html.lastIndexOf(">");
+  if (firstIndex !== -1 && lastIndex !== -1) {
+    const cleanedString = html.substring(firstIndex, lastIndex + 1);
+    return cleanedString;
+  }
+  return html;
 }
 export {
   TemplateRepeatForProvider as default

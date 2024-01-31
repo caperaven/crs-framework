@@ -7,10 +7,12 @@
 </combo-box>
 
 <div>Using Template</div>
-<combo-box>
+<button click.call="populate">Populate</button>
+<combo-box items.bind="model.products.data" value.bind="selected2">
     <template>
         <option value.attr="value">${text}</option>
     </template>
 </combo-box>
+
 
 <div>Selected: ${selected1} ${selected2}</div>

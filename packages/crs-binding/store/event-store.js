@@ -50,7 +50,20 @@ class EventStore {
   getIntent(event2, uuid) {
     return this.#store[event2]?.[uuid];
   }
-  register(event2, uuid, intent, isCollection = true) {
+  getBindingField(event2, uuid, componentProperty) {
+    const intent = this.getIntent(event2, uuid);
+    if (intent == null)
+      return null;
+    for (const intentItem of intent) {
+      const intentValue = intentItem.value;
+      for (const key of Object.keys(intentValue)) {
+        const value = intentValue[key];
+        if (value === componentProperty)
+          return key;
+      }
+    }
+  }
+  register(event2, uuid, intent) {
     const element = crs.binding.elements[uuid];
     const root = element.getRootNode();
     if (event2 === "change" && element instanceof HTMLInputElement && root instanceof ShadowRoot && root.host.registerEvent != null) {
@@ -63,12 +76,8 @@ class EventStore {
       });
       this.#store[event2] = {};
     }
-    if (isCollection) {
-      this.#store[event2][uuid] ||= [];
-      this.#store[event2][uuid].push(intent);
-      return;
-    }
-    this.#store[event2][uuid] = intent;
+    this.#store[event2][uuid] ||= [];
+    this.#store[event2][uuid].push(intent);
   }
   clear(uuid) {
     const element = crs.binding.elements[uuid];

@@ -25,8 +25,12 @@ class StaticInflationManager {
     }
   }
   async #parseAttributes(element, context) {
-    for (const attribute of element.attributes) {
+    const attributes = Array.from(element.attributes);
+    for (const attribute of attributes) {
       await this.#parseAttribute(attribute, context);
+      if (attribute.name.indexOf(".") > -1) {
+        element.removeAttribute(attribute.name);
+      }
     }
   }
   async #parseAttribute(attribute, context) {
@@ -77,8 +81,9 @@ class StaticInflationManager {
   }
   async #attributeAttr(attribute, context) {
     const name = attribute.name.replace(".attr", "");
-    const code = crs.binding.expression.sanitize(attribute.value).expression;
-    const fn = new Function("context", ["return ", "`", code, "`"].join(""));
+    const sanitized = await crs.binding.expression.sanitize(attribute.value);
+    const code = sanitized.expression;
+    const fn = new Function("context", ["return ", code].join(""));
     const value = fn(context);
     attribute.ownerElement.setAttribute(name, value);
   }

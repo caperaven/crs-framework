@@ -8,8 +8,8 @@ class OneWayProvider {
   async parse(attr, context) {
     await bindingParse(attr, context, ".one-way");
   }
-  async update(uuid, ...properties) {
-    await bindingUpdate(uuid, this.#store, ...properties);
+  async update(uuid) {
+    await bindingUpdate(uuid, this.#store);
   }
   async clear(uuid) {
     delete this.#store[uuid];

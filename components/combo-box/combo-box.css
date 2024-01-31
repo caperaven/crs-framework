@@ -49,6 +49,7 @@ ul {
     padding: var(--padding);
     max-height: 300px;
     overflow: auto;
+    user-select: none;
 }
 
 ul:before {
@@ -62,10 +63,17 @@ ul:before {
     z-index: -1;
 }
 
+option.highlighted {
+    background: var(--blue-s2);
+    border-color: var(--blue-s1);
+}
+
 option {
     padding: var(--padding);
     cursor:  pointer;
     border-radius: var(--radius);
+    border: var(--border);
+    border-color: transparent;
 }
 
 option:hover {

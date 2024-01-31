@@ -1,4 +1,4 @@
-async function bindingUpdate(uuid, ...properties) {
+async function bindingUpdate(uuid) {
   const element = crs.binding.elements[uuid];
   if (element == null)
     return;
@@ -6,16 +6,14 @@ async function bindingUpdate(uuid, ...properties) {
   intent ||= crs.binding.eventStore.getIntent("component-change", uuid);
   if (Array.isArray(intent)) {
     for (const i of intent) {
-      await applyProperty(element, i, ...properties);
+      await applyProperty(element, i);
     }
     return;
   }
-  await applyProperty(element, intent, ...properties);
+  await applyProperty(element, intent);
 }
-async function applyProperty(element, intent, ...properties) {
-  if (properties.length === 0) {
-    properties = Object.keys(intent.value);
-  }
+async function applyProperty(element, intent) {
+  const properties = Object.keys(intent.value);
   for (const property of properties) {
     const targetProperty = intent.value[property];
     if (targetProperty == null)

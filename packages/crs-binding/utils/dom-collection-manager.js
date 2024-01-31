@@ -7,8 +7,9 @@ class DomCollection {
     const fragment = document.createDocumentFragment();
     for (const item of items) {
       const instance = details.template.content.cloneNode(true);
-      details.fn(instance, item);
-      fragment.appendChild(instance);
+      const element2 = instance.firstElementChild;
+      details.fn(element2, item);
+      fragment.appendChild(element2);
     }
     element.appendChild(fragment);
   }

@@ -18,7 +18,11 @@ async function parseElement(element, context, options) {
     return;
   }
   if (element.children?.length > 0) {
-    return await crs.binding.parsers.parseElements(element.children, context, options);
+    await crs.binding.parsers.parseElements(element.children, context, options);
+    if (element.parseCompleted != null) {
+      await element.parseCompleted(context);
+    }
+    return;
   }
   for (const provider of crs.binding.providers.textProviders) {
     await provider.parseElement(element, context, ctxName);
