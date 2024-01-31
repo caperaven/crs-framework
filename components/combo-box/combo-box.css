@@ -64,7 +64,6 @@ ul {
     width: 100%;
     box-shadow: var(--drop-shadow);
     border-radius: var(--radius);
-    padding: var(--padding);
     max-height: 300px;
     overflow: auto;
     user-select: none;
@@ -104,5 +103,32 @@ option.hidden {
 
 option[aria-selected] {
     background: var(--blue-s2);
-    border-color: var(--blue);
+    position: relative;
+}
+
+option[aria-selected]:before {
+    content: "";
+    background: var(--blue);
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0.25rem;
+    height: 100%;
+}
+
+option[aria-selected]:after {
+    content: "check";
+    font-family: crsfrw;
+    color: var(--blue);
+    display: block;
+    position: absolute;
+    top: 25%;
+    right: 0;
+    width: 1.5rem;
+    height: 100%;
+}
+
+option[aria-selected].highlighted,  option[aria-selected]:hover{
+    background: var(--grey-s3);
 }
