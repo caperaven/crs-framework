@@ -15,3 +15,41 @@
 
 
 <div>Selected: ${selected1} ${selected2}</div>
+
+
+
+<h3>Old select behaviours</h3>
+
+
+
+<fieldset>
+    <legend>Default behaviour</legend>
+    <label for="cars">Default</label>
+    <select id="cars" name="cars">
+        <option value="volvo">Volvo</option>
+        <option value="saab">Saab</option>
+        <option value="mercedes">Mercedes</option>
+        <option value="audi" selected>Audi</option>
+    </select>
+</fieldset>
+
+<fieldset>
+    <legend>Empty text and allow select</legend>
+    <label for="pets">Pets</label>
+    <select id="pets" name="pets">
+        <option value selected>None</option>
+        <option value="cat">Cat</option>
+        <option value="dog">Dog</option>
+    </select>
+</fieldset>
+
+<fieldset>
+    <legend>Empty text, but don't allow empty text</legend>
+    <label for="gender">Gender</label>
+    <select id="gender" name="gender">
+        <option value selected disabled>Please select your gender</option>
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+    </select>
+</fieldset>
+
