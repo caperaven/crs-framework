@@ -1,14 +1,17 @@
+<link rel="stylesheet" href="./../../styles/lib/input.css">
+
 <template id="tplDefaultItem">
     <option value.attr="value">${text}</option>
 </template>
 
-<header>
+<header keyup.call="search">
     <input
         id="search"
         type="search"
         value.bind="searchText"
-        keyup.call="search"
     />
+
+    <button id="btnClear" click.call="clear" hidden.if="value == null">clear</button>
 
     <button
         id="btnDropdown"

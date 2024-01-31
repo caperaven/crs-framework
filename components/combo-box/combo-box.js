@@ -54,6 +54,8 @@ class ComboBox extends crs.classes.BindableElement {
     }
 
     set value(newValue) {
+        if (newValue === "") newValue = null;
+
         this.setProperty("value", newValue);
 
         if (this.#busy != true  ) {
@@ -90,10 +92,12 @@ class ComboBox extends crs.classes.BindableElement {
     load() {
         return new Promise(resolve => {
             requestAnimationFrame(async () => {
+                this.setAttribute("tabindex", "0");
                 this.setAttribute("aria-expanded", "false");
                 // 1. if no template was loaded you are working with
                 // data that will flow in from the outside so use the default template in the component
                 this.#template ||= this.shadowRoot.querySelector("#tplDefaultItem");
+                this.#template.remove();
                 this.#ul = this.shadowRoot.querySelector("ul");
 
                 // 2. build the options from the items if they exist
@@ -104,6 +108,10 @@ class ComboBox extends crs.classes.BindableElement {
                 this.#busy = false;
                 const value = this.getProperty("value");
                 this.#setTextFromValue(value);
+
+                if (this.hasAttribute("required") === true) {
+                    this.shadowRoot.querySelector("input").setAttribute("required", "required");
+                }
 
                 // this is already called in the base class so we don't want to call it again.
                 // await crs.call("component", "notify_ready", { element: this });
@@ -272,7 +280,7 @@ class ComboBox extends crs.classes.BindableElement {
 
             if (selected.nodeName !== "OPTION") return;
 
-            this.value = selected.value;
+            await this.setProperty("value", selected.value);
             await this.setProperty("searchText", selected.textContent);
 
             this.shadowRoot.dispatchEvent(new CustomEvent("change", {detail: { componentProperty: "value" }, composed: true}));
@@ -310,6 +318,10 @@ class ComboBox extends crs.classes.BindableElement {
             }
         }
 
+        if (event.key === "Escape") {
+            // JHR: cancel the lookup if open.
+        }
+
         this.#options ||= Array.from(this.shadowRoot.querySelectorAll("option"));
 
         const input = event.composedPath()[0];
@@ -324,6 +336,14 @@ class ComboBox extends crs.classes.BindableElement {
         }
 
         await this.#showOptions();
+    }
+
+    async clear() {
+        const input = this.shadowRoot.querySelector("input");
+        input.value = "";
+
+        await this.setProperty("value", null);
+        this.shadowRoot.dispatchEvent(new CustomEvent("change", {detail: { componentProperty: "value" }, composed: true}));
     }
 }
 

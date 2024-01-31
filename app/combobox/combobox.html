@@ -1,6 +1,5 @@
-
 <div>Using Options</div>
-<combo-box value.bind="selected1">
+<combo-box value.bind="selected1" required>
     <option value="test_1">Test 1</option>
     <option value="test_2">Test 2</option>
     <option value="test_3">Test 3</option>
@@ -8,7 +7,7 @@
 
 <div>Using Template</div>
 <button click.call="populate">Populate</button>
-<combo-box items.bind="model.products.data" value.bind="selected2">
+<combo-box items.bind="model.products.data" value.bind="selected2" data-nullmessage="You must select a value">
     <template>
         <option value.attr="value">${text}</option>
     </template>
