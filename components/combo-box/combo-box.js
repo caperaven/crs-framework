@@ -386,6 +386,20 @@ class ComboBox extends crs.classes.BindableElement {
         await this.setProperty("value", null);
         this.shadowRoot.dispatchEvent(new CustomEvent("change", {detail: { componentProperty: "value" }, composed: true}));
     }
+
+    async valueChanged(value) {
+        const button = this.shadowRoot.querySelector("#btnClear");
+        button.setAttribute("hidden", "hidden");
+
+        value = (value ?? "").toString().trim();
+
+        const hasValue = value.length > 0;
+        const isDefault = value === this.dataset.default;
+
+        if (hasValue === true && isDefault === false    ) {
+            button.removeAttribute("hidden");
+        }
+    }
 }
 
 customElements.define('combo-box', ComboBox)
