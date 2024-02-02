@@ -29,6 +29,7 @@ class ComboBox extends crs.classes.BindableElement {
     #options;
     #ul;
     #isOpen = false;
+    #required = false;
 
     get html() {
         return import.meta.url.replace(".js", ".html");
@@ -58,7 +59,7 @@ class ComboBox extends crs.classes.BindableElement {
 
         this.setProperty("value", newValue);
 
-        if (this.#busy != true  ) {
+        if (this.#busy !== true) {
             this.#setTextFromValue(newValue);
         }
     }
@@ -94,6 +95,8 @@ class ComboBox extends crs.classes.BindableElement {
             requestAnimationFrame(async () => {
                 this.setAttribute("tabindex", "0");
                 this.setAttribute("aria-expanded", "false");
+                this.dataset.default ||= "";
+
                 // 1. if no template was loaded you are working with
                 // data that will flow in from the outside so use the default template in the component
                 this.#template ||= this.shadowRoot.querySelector("#tplDefaultItem");
@@ -109,8 +112,13 @@ class ComboBox extends crs.classes.BindableElement {
                 const value = this.getProperty("value");
                 this.#setTextFromValue(value);
 
-                if (this.hasAttribute("required") === true) {
-                    this.shadowRoot.querySelector("input").setAttribute("required", "required");
+                this.#required = this.hasAttribute("required");
+
+                const input = this.shadowRoot.querySelector("input");
+                input.placeholder = this.getAttribute("placeholder") ?? "";
+
+                if (this.#required === true) {
+                    input.setAttribute("required", "required");
                 }
 
                 // this is already called in the base class so we don't want to call it again.
@@ -126,21 +134,25 @@ class ComboBox extends crs.classes.BindableElement {
         this.#items = null;
         this.#options = null;
         this.#busy = null;
+        this.#required = false;
 
         super.disconnectedCallback();
     }
 
+    /**
+     * @method #setTextFromValue - sets the text from the value by looking at the text content of the options
+     * @param value
+     */
     #setTextFromValue(value) {
         if (this.#busy === LOADING) return;
 
-        if (value == null) {
-            value = "";
+        // There is no value check for default values and use that if required
+        if ((value ?? "").toString().trim().length === 0) {
+            const defaultOption = this.#ul.querySelector(`option[value='${this.dataset.default}']`);
+            this.select(null, defaultOption).catch(error => console.error(error));
         }
 
-        if ((value.toString() ?? "").trim().length == 0) {
-            return this.setProperty("searchText", "");
-        }
-
+        // There is a value so use that to set the text
         const options = Array.from(this.shadowRoot.querySelectorAll("option"));
         const selected = options.find(option => option.value == value);
 
@@ -161,7 +173,7 @@ class ComboBox extends crs.classes.BindableElement {
             this.#items = Array.from(options).map(option => {
                 return {
                     value: option.value,
-                    text: option.innerText
+                    text: option.textContent
                 }
             })
         }
@@ -189,6 +201,8 @@ class ComboBox extends crs.classes.BindableElement {
         const ul = this.shadowRoot.querySelector("ul");
         ul.innerHTML = "";
         ul.appendChild(fragment);
+
+        this.#setTextFromValue(this.value);
     }
 
     async #buildItemsFromTemplate(fragment) {
@@ -205,6 +219,11 @@ class ComboBox extends crs.classes.BindableElement {
             const option = document.createElement("option");
             option.value = item.value;
             option.innerText = item.text;
+
+            if (item.disabled === true) {
+                option.setAttribute("disabled", "disabled");
+            }
+
             fragment.appendChild(option);
         }
     }
@@ -290,11 +309,18 @@ class ComboBox extends crs.classes.BindableElement {
     }
 
     async select(event, highlighted) {
+        // There is no selection as it has been cleared.
+        if (event == null && highlighted == null) {
+            await this.setProperty("value", null);
+            await this.setProperty("searchText", "");
+            return;
+        }
+
         this.#busy = true;
         try {
             const selected = highlighted || event.composedPath()[0];
 
-            if (selected.nodeName !== "OPTION") return;
+            if (selected.nodeName !== "OPTION" || selected.value == null) return;
 
             await this.setProperty("value", selected.value);
             await this.setProperty("searchText", selected.textContent);
@@ -355,8 +381,7 @@ class ComboBox extends crs.classes.BindableElement {
     }
 
     async clear() {
-        const input = this.shadowRoot.querySelector("input");
-        input.value = "";
+        this.value = "";
 
         await this.setProperty("value", null);
         this.shadowRoot.dispatchEvent(new CustomEvent("change", {detail: { componentProperty: "value" }, composed: true}));

@@ -92,7 +92,7 @@ option {
     border-color: transparent;
 }
 
-option:hover {
+option:hover:not([disabled]) {
     background: var(--grey-s3);
     border: var(--border);
 }
@@ -131,4 +131,9 @@ option[aria-selected]:after {
 
 option[aria-selected].highlighted,  option[aria-selected]:hover{
     background: var(--grey-s3);
+}
+
+option.disabled {
+    pointer-events: none;
+    color: var(--grey);
 }

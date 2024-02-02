@@ -24,4 +24,16 @@
 
   @Scenario: Standard combobox that is option
     Given We do no have a value
-    Then Select the first option as the selected option
+    And We do not have a placeholder
+    Then Show ""
+
+    Given We have a placeholder
+      And the value is not define or is ""
+      Then Show the placeholder value
+
+  @Scenario: Select item in combobox
+    Given We have a value
+      When The items are set
+      Then build the options
+      Then select the option that has the relevant value
+      And show the text of that option in the edit

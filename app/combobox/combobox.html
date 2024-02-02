@@ -1,55 +1,35 @@
-<div>Using Options</div>
-<combo-box value.bind="selected1" required>
+<h2>Use disabled node</h2>
+<combo-box value.bind="selected1" required placeholder="Please select a value">
     <option value="test_1">Test 1</option>
     <option value="test_2">Test 2</option>
     <option value="test_3">Test 3</option>
 </combo-box>
+<div>Selected1: ${selected1}</div>
 
-<div>Using Template</div>
+<h2>Allow empty with None</h2>
+<combo-box value.bind="selected2" data-default="">
+    <option value="">None</option>
+    <option value="option_1">Option 1</option>
+    <option value="option_2">Option 2</option>
+    <option value="option_3">Option 3</option>
+</combo-box>
+<div>Selected2: ${selected2}</div>
+
+<h2>Auto select first</h2>
+<combo-box value.bind="selected3" data-default="option_3">
+    <option value="option_1">Option 1</option>
+    <option value="option_2">Option 2</option>
+    <option value="option_3">Option 3</option>
+</combo-box>
+<div>Selected3: ${selected3}</div>
+
+<h2>Populate using items from outside</h2>
 <button click.call="populate">Populate</button>
-<combo-box items.bind="model.products.data" value.bind="selected2" data-nullmessage="You must select a value">
+<combo-box items.bind="model.products.data" value.bind="selected4" data-default="item2">
     <template>
         <option value.attr="value">${text}</option>
     </template>
 </combo-box>
+<div>Selected4: ${selected4}</div>
 
-
-<div>Selected: ${selected1} ${selected2}</div>
-
-
-
-<h3>Old select behaviours</h3>
-
-
-
-<fieldset>
-    <legend>Default behaviour</legend>
-    <label for="cars">Default</label>
-    <select id="cars" name="cars">
-        <option value="volvo">Volvo</option>
-        <option value="saab">Saab</option>
-        <option value="mercedes">Mercedes</option>
-        <option value="audi" selected>Audi</option>
-    </select>
-</fieldset>
-
-<fieldset>
-    <legend>Empty text and allow select</legend>
-    <label for="pets">Pets</label>
-    <select id="pets" name="pets">
-        <option value selected>None</option>
-        <option value="cat">Cat</option>
-        <option value="dog">Dog</option>
-    </select>
-</fieldset>
-
-<fieldset>
-    <legend>Empty text, but don't allow empty text</legend>
-    <label for="gender">Gender</label>
-    <select id="gender" name="gender">
-        <option value selected disabled>Please select your gender</option>
-        <option value="male">Male</option>
-        <option value="female">Female</option>
-    </select>
-</fieldset>
 
