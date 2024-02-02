@@ -29,7 +29,6 @@ class ComboBox extends crs.classes.BindableElement {
     #options;
     #ul;
     #isOpen = false;
-    #required = false;
 
     get html() {
         return import.meta.url.replace(".js", ".html");
@@ -112,12 +111,10 @@ class ComboBox extends crs.classes.BindableElement {
                 const value = this.getProperty("value");
                 this.#setTextFromValue(value);
 
-                this.#required = this.hasAttribute("required");
-
                 const input = this.shadowRoot.querySelector("input");
                 input.placeholder = this.getAttribute("placeholder") ?? "";
 
-                if (this.#required === true) {
+                if (this.hasAttribute("required") === true) {
                     input.setAttribute("required", "required");
                 }
 
@@ -134,7 +131,6 @@ class ComboBox extends crs.classes.BindableElement {
         this.#items = null;
         this.#options = null;
         this.#busy = null;
-        this.#required = false;
 
         super.disconnectedCallback();
     }
