@@ -597,7 +597,7 @@ var BindingData = class {
   }
   async removeCallback(bid, property, callback) {
     const obj = this.#callbacks[bid];
-    if (obj[property] == null)
+    if (obj?.[property] == null)
       return;
     obj[property].delete(callback);
   }
@@ -1358,17 +1358,12 @@ var EventStore = class {
   getIntent(event2, uuid) {
     return this.#store[event2]?.[uuid];
   }
-  getBindingField(event2, uuid, componentProperty) {
-    const intent = this.getIntent(event2, uuid);
-    if (intent == null)
-      return null;
-    for (const intentItem of intent) {
-      const intentValue = intentItem.value;
-      for (const key of Object.keys(intentValue)) {
-        const value = intentValue[key];
-        if (value === componentProperty)
-          return key;
-      }
+  getBindingField(event2, intent, componentProperty) {
+    const intentValue = intent.value;
+    for (const key of Object.keys(intentValue)) {
+      const value = intentValue[key];
+      if (value === componentProperty)
+        return key;
     }
   }
   register(event2, uuid, intent) {

@@ -256,7 +256,7 @@ class BindingData {
   }
   async removeCallback(bid, property, callback) {
     const obj = this.#callbacks[bid];
-    if (obj[property] == null)
+    if (obj?.[property] == null)
       return;
     obj[property].delete(callback);
   }
