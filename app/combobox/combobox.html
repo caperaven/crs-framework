@@ -27,7 +27,7 @@
 <button click.call="populate">Populate</button>
 <combo-box items.bind="model.products.data" value.bind="selected4" data-default="item2">
     <template>
-        <option value.attr="value">${text}</option>
+        <li data-value.attr="value">${text}</li>
     </template>
 </combo-box>
 <div>Selected4: ${selected4}</div>

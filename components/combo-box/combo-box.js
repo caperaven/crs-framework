@@ -4,10 +4,10 @@ const LOADING = "loading";
  * @class ComboBox - combobox component with custom features.
  *
  * @example <caption>html usage</caption>
- * <combo-box>
- *     <option value="1">Option 1</option>
- *     <option value="2">Option 2</option>
- *     <option value="3">Option 3</option>
+ * <combo-box>®
+ *     <li value="1">Option 1</li>
+ *     <li value="2">li 2</li>
+ *     <li value="3">li 3</li>
  * </combo-box>
  *
  * @example <caption>html usage with items property</caption>
@@ -148,13 +148,13 @@ class ComboBox extends crs.classes.BindableElement {
 
         // There is no value check for default values and use that if required
         if ((value ?? "").toString().trim().length === 0) {
-            const defaultOption = this.#ul.querySelector(`option[value='${this.dataset.default}']`);
+            const defaultOption = this.#ul.querySelector(`li[data-value='${this.dataset.default}']`);
             this.select(null, defaultOption).catch(error => console.error(error));
         }
 
         // There is a value so use that to set the text
-        const options = Array.from(this.shadowRoot.querySelectorAll("option"));
-        const selected = options.find(option => option.value == value);
+        const options = Array.from(this.shadowRoot.querySelectorAll("li"));
+        const selected = options.find(option => option.dataset.value == value);
 
         if (selected != null) {
             this.setProperty("searchText", selected.textContent);
@@ -216,9 +216,9 @@ class ComboBox extends crs.classes.BindableElement {
 
     async #buildItemsManually(fragment) {
         for (const item of this.#items) {
-            const option = document.createElement("option");
-            option.value = item.value;
-            option.innerText = item.text;
+            const option = document.createElement("li");
+            option.dataset.value = item.value;
+            option.textContent = item.text;
 
             if (item.disabled === true) {
                 option.setAttribute("disabled", "disabled");
@@ -303,7 +303,7 @@ class ComboBox extends crs.classes.BindableElement {
             selected.removeAttribute("aria-selected");
         }
 
-        const new_selected = this.#ul.querySelector(`[value="${value}"]`);
+        const new_selected = this.#ul.querySelector(`[data-value="${value}"]`);
 
         if (new_selected != null) {
             new_selected.setAttribute("aria-selected", "true");
@@ -329,9 +329,9 @@ class ComboBox extends crs.classes.BindableElement {
         try {
             const selected = highlighted || event.composedPath()[0];
 
-            if (selected.nodeName !== "OPTION" || selected.value == null) return;
+            if (selected.nodeName !== "LI" || selected.dataset.value == null) return;
 
-            await this.setProperty("value", selected.value);
+            await this.setProperty("value", selected.dataset.value);
             await this.setProperty("searchText", selected.textContent);
 
             this.shadowRoot.dispatchEvent(new CustomEvent("change", {detail: { componentProperty: "value" }, composed: true}));
@@ -377,7 +377,7 @@ class ComboBox extends crs.classes.BindableElement {
             }
         }
 
-        this.#options ||= Array.from(this.shadowRoot.querySelectorAll("option"));
+        this.#options ||= Array.from(this.shadowRoot.querySelectorAll("li"));
 
         const input = event.composedPath()[0];
         const value = input.value;
@@ -394,9 +394,9 @@ class ComboBox extends crs.classes.BindableElement {
         }
 
         // highlight the first visible item
-        this.#highlighted = this.#ul.querySelector("option:not(.hidden)");
+        this.#highlighted = this.#ul.querySelector("li:not(.hidden)");
         this.#highlighted.classList.add("highlighted");
-
+ß
         await this.showOptions();
     }
 

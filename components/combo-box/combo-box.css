@@ -80,11 +80,11 @@ ul:before {
     z-index: -1;
 }
 
-option.highlighted {
+li.highlighted {
     background: var(--grey-s3);
 }
 
-option {
+li {
     padding: var(--padding);
     cursor:  pointer;
     border-radius: var(--radius);
@@ -92,21 +92,21 @@ option {
     border-color: transparent;
 }
 
-option:hover:not([disabled]) {
+li:hover:not([disabled]) {
     background: var(--grey-s3);
     border: var(--border);
 }
 
-option.hidden {
+li.hidden {
     display: none;
 }
 
-option[aria-selected] {
+li[aria-selected] {
     background: var(--blue-s2);
     position: relative;
 }
 
-option[aria-selected]:before {
+li[aria-selected]:before {
     content: "";
     background: var(--blue);
     display: block;
@@ -117,7 +117,7 @@ option[aria-selected]:before {
     height: 100%;
 }
 
-option[aria-selected]:after {
+li[aria-selected]:after {
     content: "check";
     font-family: crsfrw;
     color: var(--blue);
@@ -129,11 +129,11 @@ option[aria-selected]:after {
     height: 100%;
 }
 
-option[aria-selected].highlighted,  option[aria-selected]:hover{
+li[aria-selected].highlighted,  li[aria-selected]:hover{
     background: var(--grey-s3);
 }
 
-option.disabled {
+li.disabled {
     pointer-events: none;
     color: var(--grey);
 }

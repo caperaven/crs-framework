@@ -15,6 +15,7 @@ export default class ComboboxViewModel extends crs.classes.BindableElement {
 
     async preLoad() {
         await this.setProperty("selected1", "test_2");
+        await this.setProperty("selected4", "item3")
     }
 
     async populate() {
