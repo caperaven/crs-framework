@@ -29,6 +29,8 @@ class ComboBox extends crs.classes.BindableElement {
     #options;
     #ul;
     #isOpen = false;
+    #highlighted;
+    #currentValue = null;
 
     get html() {
         return import.meta.url.replace(".js", ".html");
@@ -131,6 +133,8 @@ class ComboBox extends crs.classes.BindableElement {
         this.#items = null;
         this.#options = null;
         this.#busy = null;
+        this.#highlighted = null;
+        this.#currentValue = null;
 
         super.disconnectedCallback();
     }
@@ -225,48 +229,56 @@ class ComboBox extends crs.classes.BindableElement {
     }
 
     async #highlightNext() {
-        await this.showOptions();
+        requestAnimationFrame(async () => {
+            await this.showOptions();
 
-        const currentHighlighted = this.#ul.querySelector(".highlighted");
-        if (currentHighlighted == null) {
-            return this.#ul.firstElementChild.classList.add("highlighted");
-        }
+            this.#highlighted = this.#ul.querySelector(".highlighted");
+            if (this.#highlighted == null) {
+                this.#highlighted = this.#ul.firstElementChild;
+                return this.#highlighted?.classList.add("highlighted");
+            }
 
-        let next = currentHighlighted.nextElementSibling;
-        if (next == null) {
-            next = this.#ul.firstElementChild;
-        }
+            let next = this.#highlighted.nextElementSibling;
+            if (next == null) {
+                next = this.#ul.firstElementChild;
+            }
 
-        currentHighlighted.classList.remove("highlighted");
-        next.classList.add("highlighted");
+            this.#highlighted.classList.remove("highlighted");
+            next.classList.add("highlighted");
+            this.#highlighted = next;
 
-        if (next.classList.contains("hidden") === true) {
-            return await this.#highlightNext();
-        }
+            if (next.classList.contains("hidden") === true) {
+                return await this.#highlightNext();
+            }
+        });
     }
 
     async #highlightPrevious() {
-        await this.showOptions();
+        requestAnimationFrame(async () => {
+            await this.showOptions();
 
-        const currentHighlighted = this.#ul.querySelector(".highlighted");
-        if (currentHighlighted == null) {
-            return this.#ul.lastElementChild.classList.add("highlighted");
-        }
+            const currentHighlighted = this.#ul.querySelector(".highlighted");
+            if (currentHighlighted == null) {
+                return this.#ul.lastElementChild.classList.add("highlighted");
+            }
 
-        let next = currentHighlighted.previousElementSibling;
-        if (next == null) {
-            next = this.#ul.lastElementChild;
-        }
+            let next = currentHighlighted.previousElementSibling;
+            if (next == null) {
+                next = this.#ul.lastElementChild;
+            }
 
-        currentHighlighted.classList.remove("highlighted");
-        next.classList.add("highlighted");
+            currentHighlighted.classList.remove("highlighted");
+            next.classList.add("highlighted");
 
-        if (next.classList.contains("hidden") === true) {
-            return await this.#highlightPrevious();
-        }
+            if (next.classList.contains("hidden") === true) {
+                return await this.#highlightPrevious();
+            }
+        })
     }
 
     async showOptions(isVisible = true) {
+        this.#currentValue = this.value;
+
         if (Boolean(isVisible) === true) {
             this.#isOpen = true;
             if (this.#ul.classList.contains("hide") === true) {
@@ -275,6 +287,7 @@ class ComboBox extends crs.classes.BindableElement {
             }
         }
         else {
+            this.#currentValue = null;
             this.#isOpen = false;
             if (this.#ul.classList.contains("hide") === false) {
                 return this.#ul.classList.add("hide");
@@ -358,12 +371,19 @@ class ComboBox extends crs.classes.BindableElement {
 
         if (event.key === "Escape") {
             // JHR: cancel the lookup if open.
+            if (this.#isOpen === true) {
+                this.value = this.#currentValue;
+                return await this.showOptions(false);
+            }
         }
 
         this.#options ||= Array.from(this.shadowRoot.querySelectorAll("option"));
 
         const input = event.composedPath()[0];
         const value = input.value;
+
+        // remove the current highlighted item
+        this.#highlighted?.classList.remove("highlighted");
 
         for (const option of this.#options) {
             option.classList.add("hidden");
@@ -372,6 +392,10 @@ class ComboBox extends crs.classes.BindableElement {
                 option.classList.remove("hidden");
             }
         }
+
+        // highlight the first visible item
+        this.#highlighted = this.#ul.querySelector("option:not(.hidden)");
+        this.#highlighted.classList.add("highlighted");
 
         await this.showOptions();
     }
