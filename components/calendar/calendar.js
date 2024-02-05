@@ -107,6 +107,7 @@ export default class Calendar extends crsbinding.classes.BindableElement {
      */
     #getUTCDate(date) {
         const nonUTCDate = new Date(date);
+        //NOTE KR: tested the performance of the below approach vs calling the toISOString() method and the below approach is faster
         return new Date(nonUTCDate.getUTCFullYear(), nonUTCDate.getUTCMonth(), nonUTCDate.getUTCDate(), nonUTCDate.getUTCHours(), nonUTCDate.getUTCMinutes(), nonUTCDate.getUTCSeconds());
     }
 
