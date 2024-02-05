@@ -61,19 +61,47 @@ describe ("calendar tests", async () => {
         assertEquals(instance != null, true);
     });
 
-    it("selectedDate should dispatch the correct date format", async () => {
+    it("selectedDate should dispatch the correct date format using timezone set to Mexico City", async () => {
         //Arrange
+        const initialMexicanTime = new Date("2024-01-05T00:00:00.000").toLocaleString("en-US", {timeZone: "America/Mexico_City"});
+        instance.setAttribute("data-start", initialMexicanTime);
+
         const dispatchStub = stub(instance, "dispatchEvent", (event) => {
-            assertEquals(instance.getAttribute("data-start"), "2024-01-05");
-            assertEquals(event.detail.date, "2024-01-05");
+            assertEquals(instance.getAttribute("data-start"), "2024-01-09");
+            assertEquals(event.detail.date, "2024-01-09");
         });
 
         const target = document.createElement("div");
         target.setAttribute("role", "cell");
-        target.dataset.year = "2024";
-        target.dataset.month = "0";
-        target.dataset.day = "5";
-        instance.dataset.start = "2024-01-05";
+
+        const updatedMexicanTime =  new Date(new Date("2024-01-10T00:00:00.000").toLocaleString("en-US", {timeZone: "America/Mexico_City"}));
+        target.dataset.year = updatedMexicanTime.getFullYear();
+        target.dataset.month = updatedMexicanTime.getMonth();
+        target.dataset.day = updatedMexicanTime.getDate();
+        instance.dataset.start = updatedMexicanTime.toISOString().split('T')[0];
+
+        //Act
+        instance.selectedDate(null, target);
+    })
+
+    it("selectedDate should dispatch the correct date format using timezone set to Tokyo", async () => {
+        //Arrange
+        const initialTokyoTime = new Date("2024-01-05T00:00:00.000").toLocaleString("en-US", {timeZone: "Asia/Tokyo"});
+        instance.setAttribute("data-start", initialTokyoTime);
+
+        const dispatchStub = stub(instance, "dispatchEvent", (event) => {
+            assertEquals(instance.getAttribute("data-start"), "2024-01-10");
+            assertEquals(event.detail.date, "2024-01-10");
+        });
+
+        const target = document.createElement("div");
+        target.setAttribute("role", "cell");
+
+        const updatedTokyoTime = new Date(new Date("2024-01-10T00:00:00.000").toLocaleString("en-US", {timeZone: "Asia/Tokyo"}));
+        target.dataset.year = updatedTokyoTime.getFullYear();
+        target.dataset.month = updatedTokyoTime.getMonth();
+        target.dataset.day = updatedTokyoTime.getDate();
+        instance.dataset.start = updatedTokyoTime.toISOString().split('T')[0];
 
         //Act
         instance.selectedDate(null, target);
