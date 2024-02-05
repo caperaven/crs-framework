@@ -1,25 +1,25 @@
 <h2>Use disabled node</h2>
 <combo-box value.bind="selected1" required placeholder="Please select a value">
-    <option value="test_1">Test 1</option>
-    <option value="test_2">Test 2</option>
-    <option value="test_3">Test 3</option>
+    <li data-value="test_1">Test 1</li>
+    <li data-value="test_2">Test 2</li>
+    <li data-value="test_3">Test 3</li>
 </combo-box>
 <div>Selected1: ${selected1}</div>
 
 <h2>Allow empty with None</h2>
 <combo-box value.bind="selected2" data-default="">
-    <option value="">None</option>
-    <option value="option_1">Option 1</option>
-    <option value="option_2">Option 2</option>
-    <option value="option_3">Option 3</option>
+    <li data-value="">None</li>
+    <li data-value="option_1">Option 1</li>
+    <li data-value="option_2">Option 2</li>
+    <li data-value="option_3">Option 3</li>
 </combo-box>
 <div>Selected2: ${selected2}</div>
 
 <h2>Auto select first</h2>
 <combo-box value.bind="selected3" data-default="option_3">
-    <option value="option_1">Option 1</option>
-    <option value="option_2">Option 2</option>
-    <option value="option_3">Option 3</option>
+    <li data-value="option_1">Option 1</li>
+    <li data-value="option_2">Option 2</li>
+    <li data-value="option_3">Option 3</li>
 </combo-box>
 <div>Selected3: ${selected3}</div>
 

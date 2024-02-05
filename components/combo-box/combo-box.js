@@ -167,12 +167,12 @@ class ComboBox extends crs.classes.BindableElement {
      * @returns {Promise<void>}
      */
     async #loadItemsFromDom() {
-        const options = this.querySelectorAll("option");
+        const options = this.querySelectorAll("li");
 
         if (options.length > 0) {
             this.#items = Array.from(options).map(option => {
                 return {
-                    value: option.value,
+                    value: option.dataset.value,
                     text: option.textContent
                 }
             })
