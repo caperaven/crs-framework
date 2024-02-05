@@ -1,4 +1,4 @@
-import {afterEach, beforeEach, beforeAll, describe, it} from "https://deno.land/std@0.157.0/testing/bdd.ts";
+import {afterEach, beforeEach, afterAll, beforeAll, describe, it} from "https://deno.land/std@0.157.0/testing/bdd.ts";
 import {assertEquals} from "https://deno.land/std@0.149.0/testing/asserts.ts";
 import {init} from "./../../../test/mockups/init.js";
 import {stub} from "https://deno.land/std@0.157.0/testing/mock.ts";
@@ -45,6 +45,12 @@ beforeAll(async () => {
             "november": "November",
             "december": "December",
         }
+    });
+});
+
+afterAll(async () => {
+    await crs.call("translations", "delete", {
+        context: "calendar"
     });
 });
 
