@@ -94,6 +94,11 @@ class ComboBox extends crs.classes.BindableElement {
     load() {
         return new Promise(resolve => {
             requestAnimationFrame(async () => {
+                const input_link = document.createElement("link");
+                input_link.rel = "stylesheet";
+                input_link.href = new URL("./../../styles/lib/input.css", import.meta.url);
+                this.shadowRoot.appendChild(input_link);
+
                 this.setAttribute("tabindex", "0");
                 this.setAttribute("aria-expanded", "false");
                 this.dataset.default ||= "";
