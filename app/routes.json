@@ -155,6 +155,11 @@
             "view": "data-table"
         },
         {
+            "title": "URL-Input",
+            "hash": "#url-input",
+            "view": "url-input"
+        },
+        {
             "title": "page-toolbar",
             "hash": "#page-toolbar",
             "view": "page-toolbar"

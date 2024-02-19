@@ -1,0 +1,63 @@
+<style>
+    @import "/styles/lib/buttons.css";
+
+    :host {
+        --custom-border: 0.0625rem solid var(--grey-s2);
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    #url-input-container {
+        display: flex;
+        height: 2.5rem;
+        border-radius: var(--radius);
+    }
+
+    #url-input, #launch-url {
+        border: var(--custom-border);
+        margin: 0;
+        box-sizing: border-box;
+    }
+
+    #url-input {
+        width: 100%;
+        border-right: transparent;
+        border-radius: var(--radius) 0 0 var(--radius);
+    }
+
+    #url-input:focus {
+        outline: none;
+    }
+
+    #url-input-label:focus {
+        outline: none;
+        border: none;
+        box-sizing: border-box;
+    }
+
+    #url-input-label {
+        font-family: 'SourceSansPro';
+        font-size: 14px;
+        line-height: 18px;
+    }
+
+    #launch-url {
+        width: 2.5rem;
+        margin: 0;
+        border-left: var(--custom-border);
+        border-radius: 0 var(--radius) var(--radius) 0;
+    }
+
+    .invalid-url {
+        border: 1px solid var(--red) !important;
+        border-right: inherit;
+        background-color: var(--red-s3);
+    }
+</style>
+
+<label id="url-input-label" for="url-input"></label>
+<div id="url-input-container">
+    <input type="url" id="url-input" name="url-input"/>
+    <button class="icon" id="launch-url" disabled="true">launch</button>
+</div>
