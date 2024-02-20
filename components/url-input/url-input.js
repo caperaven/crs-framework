@@ -33,7 +33,8 @@ export class UrlInput extends HTMLElement {
         return new Promise(async (resolve) => {
             this.#urlInput = this.shadowRoot.querySelector("#url-input");
             const urlInputLabel = this.shadowRoot.querySelector("#url-input-label");
-            urlInputLabel.textContent = this.dataset.title;
+            urlInputLabel.textContent = this.dataset?.title;
+            this.#urlInput.placeholder = this.dataset?.placeholder || "";
             await this.#enableEvents();
             resolve();
         });
@@ -70,16 +71,17 @@ export class UrlInput extends HTMLElement {
 
     async #launchURL() {
         const validUrl = await this.#validateURL(this.#urlInputValue);
-        if (validUrl === false) return;
+        if (validUrl === null) return;
 
         window.open(validUrl, "_blank");
     }
 
     async #validateURL(url) {
         try {
-            url = url.startsWith("www.") && ("https://" + url);
+            if (url.startsWith("www.")) {
+                url = "http://" + url;
+            }
             return new URL(url);
-
         } catch (error) {
             this.#urlInput.classList.add("invalid-url");
             throw error;

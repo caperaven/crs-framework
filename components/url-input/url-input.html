@@ -16,8 +16,6 @@
 
     #url-input, #launch-url {
         border: var(--custom-border);
-        margin: 0;
-        box-sizing: border-box;
     }
 
     #url-input {
@@ -38,8 +36,12 @@
 
     #url-input-label {
         font-family: 'SourceSansPro';
-        font-size: 14px;
-        line-height: 18px;
+        font-size: 0.875rem;
+        line-height: 1.125rem;
+    }
+
+    #url-input-label:focus {
+        border: none !important;
     }
 
     #launch-url {
@@ -50,7 +52,7 @@
     }
 
     .invalid-url {
-        border: 1px solid var(--red) !important;
+        border: 0.0625rem solid var(--red) !important;
         border-right: inherit;
         background-color: var(--red-s3);
     }
