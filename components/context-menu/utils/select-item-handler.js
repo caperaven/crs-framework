@@ -20,7 +20,7 @@ export async function handleSelection(event, options, component, filterHeader) {
     }
 
     component.dataset.value = option.id;
-    component.dispatchEvent(new CustomEvent("change", {detail: option.id}));
+    component.dispatchEvent(new CustomEvent("change", {detail: option}));
 
     await crs.call("context_menu", "close");
 }
