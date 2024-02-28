@@ -30,11 +30,11 @@ import {get_file_name} from "./../../packages/crs-process-api/action-systems/fil
  *
  *
  */
-export class FileUploader extends crsbinding.classes.BindableElement {
+export class FileUploader extends HTMLElement {
     //TODO: Add ability to rename teh file after it has been uploaded
-    //TODO: Need to manage the enabling and disabling of the drop zone
 
     #input;
+    #file;
     #fileNameLabel;
     #fileSizeLabel;
     #dragTarget;
@@ -52,22 +52,54 @@ export class FileUploader extends crsbinding.classes.BindableElement {
         "UPLOADED": "uploaded"
     })
 
-    get shadowDom() {
-        return true;
-    }
-
     get html() {
         return import.meta.url.replace(".js", ".html");
     }
 
-    async connectedCallback() {
-        await super.connectedCallback();
+    static get observedAttributes() {
+        return ["data-file-name", "data-file-size", "data-file-type"];
+    }
 
+    constructor() {
+        super();
+        this.attachShadow({mode: "open"});
+    }
+
+    async connectedCallback() {
+        this.shadowRoot.innerHTML = await fetch(this.html).then(result => result.text());
+        await this.load();
+    }
+
+    async disconnectedCallback() {
+        if (this.dataset.dragTarget != null) {
+            await this.#disableDropZone();
+        }
+        this.removeEventListener("click", this.#clickHandler);
+        this.#input?.removeEventListener("change", this.#uploadHandler);
+        this.#dragTarget?.removeEventListener("dragover", this.#dragOverHandler);
+        this.#dragTarget?.removeEventListener("dragleave", this.#dragLeaveHandler)
+
+        this.#input = null;
+        this.#dragTarget = null;
+        this.#highlightActive = null;
+        this.#dropBounds = null;
+        this.#clickHandler = null;
+        this.#dragOverHandler = null;
+        this.#dragLeaveHandler = null;
+        this.#onDropHandler = null;
+        this.#fileNameLabel = null;
+        this.#fileSizeLabel = null;
+        this.#uploadHandler = null;
+
+        this.#states = null;
+    }
+
+    async load() {
         requestAnimationFrame(async () => {
-            this.registerEvent(this, "click", this.#clickHandler);
+            this.addEventListener("click", this.#clickHandler);
 
             this.#input = this.shadowRoot.querySelector("#inp-upload");
-            this.registerEvent(this.#input, "change", this.#uploadHandler);
+            this.#input.addEventListener("change", this.#uploadHandler);
 
             if (this.dataset.fileName == null && this.dataset.fileSize == null && this.dataset.fileType == null) {
                 this.dataset.state = this.#states.UPLOAD;
@@ -82,31 +114,13 @@ export class FileUploader extends crsbinding.classes.BindableElement {
         });
     }
 
-    async disconnectedCallback() {
-        if (this.dataset.dragTarget != null) {
-            await this.#disableDropZone();
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (name === "data-file-name" || name === "data-file-size" || name === "data-file-type") {
+            this.#updateLabels();
+            if (this.dataset.fileName != null && this.dataset.fileSize != null && this.dataset.fileType != null) {
+                this.dataset.state = this.#states.UPLOADED;
+            }
         }
-        this.unregisterEvent(this, "click", this.#clickHandler);
-        this.unregisterEvent(this.#input, "change", this.#uploadHandler);
-        this.unregisterEvent(this.#dragTarget, "dragover", this.#dragOverHandler);
-        this.unregisterEvent(this.#dragTarget, "dragleave", this.#dragLeaveHandler)
-
-        this.#input = null;
-        this.#dragTarget = null;
-        this.#highlightActive = null;
-        this.#dropBounds = null;
-        this.#clickHandler = null;
-        this.#dragOverHandler = null;
-        this.#dragLeaveHandler = null;
-        this.#onDropHandler = null;
-        this.#fileNameLabel = null;
-        this.#fileSizeLabel = null;
-        this.#uploadHandler = null;
-
-
-        this.#states = null;
-
-        await super.disconnectedCallback();
     }
 
     /**
@@ -161,6 +175,17 @@ export class FileUploader extends crsbinding.classes.BindableElement {
          */
     }
 
+    async download() {
+        this.dispatchEvent(new CustomEvent("download_file", {detail: {
+            element: this,
+            file: this.#file
+        }}));
+    }
+
+    async delete(event) {
+
+    }
+
     /**
      * Enable the drop zone for the file to be dragged and dropped onto
      * @returns {Promise<void>}
@@ -171,8 +196,8 @@ export class FileUploader extends crsbinding.classes.BindableElement {
             handler: this.#onDropHandler
         })
 
-        this.registerEvent(this.#dragTarget, "dragover", this.#dragOverHandler);
-        this.registerEvent(this.#dragTarget, "dragleave", this.#dragLeaveHandler)
+        this.#dragTarget.addEventListener("dragover", this.#dragOverHandler);
+        this.#dragTarget.addEventListener("dragleave", this.#dragLeaveHandler)
     }
 
     /**
@@ -241,7 +266,8 @@ export class FileUploader extends crsbinding.classes.BindableElement {
      */
     async #uploadFile(file) {
         console.log("uploading file", file);
-        this.dispatchEvent(new CustomEvent("change", {detail: {element: this, file: file, action: this.#states.UPLOAD}}));
+        this.#file = file;
+        this.dispatchEvent(new CustomEvent("change", {detail: {element: this, file: this.#file, action: this.#states.UPLOAD}}));
 
         this.dataset.state = this.#states.UPLOADING;
 
@@ -253,7 +279,7 @@ export class FileUploader extends crsbinding.classes.BindableElement {
     }
 
     /**
-     * Util function to convert a file size into a human readable format
+     * Util function to convert a file size into a human-readable format
      * @param size
      * @returns {string}
      */
@@ -280,7 +306,14 @@ export class FileUploader extends crsbinding.classes.BindableElement {
         this.#fileNameLabel = this.#fileNameLabel || this.shadowRoot.querySelector("#lbl-file-name");
         this.#fileSizeLabel = this.#fileSizeLabel || this.shadowRoot.querySelector("#lbl-file-size");
 
-        this.#fileNameLabel.innerText = `${this.dataset.fileName}.${this.dataset.fileType}`;
+        let fileName;
+        if (this.dataset.fileType?.includes(".")) {
+            fileName = `${this.dataset.fileName}${this.dataset.fileType}`
+        } else {
+            `${this.dataset.fileName}.${this.dataset.fileType}`
+        }
+
+        this.#fileNameLabel.innerText = fileName;
         this.#fileSizeLabel.innerText = this.#fileToSize(this.dataset.fileSize);
     }
 
