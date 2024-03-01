@@ -43,8 +43,8 @@ export class FileUploader extends HTMLElement {
     #clickHandler = this.click.bind(this);
     #dragOverHandler = this.#dragOver.bind(this);
     #dragLeaveHandler = this.#dragLeave.bind(this);
-    #onDropHandler = this.#onDrop.bind(this);
-    #uploadHandler = this.upload.bind(this);
+    #uploadHandler = this.#upload.bind(this);
+    #dragEventHandler = this.#dragEvent.bind(this);
 
     #states = Object.freeze({
         "UPLOAD": "upload",
@@ -86,7 +86,6 @@ export class FileUploader extends HTMLElement {
         this.#clickHandler = null;
         this.#dragOverHandler = null;
         this.#dragLeaveHandler = null;
-        this.#onDropHandler = null;
         this.#fileNameLabel = null;
         this.#fileSizeLabel = null;
         this.#uploadHandler = null;
@@ -117,9 +116,6 @@ export class FileUploader extends HTMLElement {
     attributeChangedCallback(name, oldValue, newValue) {
         if (name === "data-file-name" || name === "data-file-size" || name === "data-file-type") {
             this.#updateLabels();
-            if (this.dataset.fileName != null && this.dataset.fileSize != null && this.dataset.fileType != null) {
-                this.dataset.state = this.#states.UPLOADED;
-            }
         }
     }
 
@@ -137,7 +133,7 @@ export class FileUploader extends HTMLElement {
         }
     }
 
-    async upload(event) {
+    async #upload(event) {
         const file = this.#input.files[0];
         const fileDetails = await get_file_name(file.name);
 
@@ -154,25 +150,21 @@ export class FileUploader extends HTMLElement {
         this.dataset.state = this.#states.UPLOADED;
     }
 
-    async replace() {
-        //TODO: show warning dialog with message: "Are you sure you want to replace the file? All historic data will still remain."
-
-        const result = await crs.call("files", "load", {
-            dialog: true,
-        });
-
-        await this.#uploadFile(result[0]);
-    }
-
     async cancel(event) {
-        this.dataset.state = this.#states.UPLOAD;
-        this.dispatchEvent(new CustomEvent("change", {detail: {element: this, file: null, action: "cancel"}}));
+        //if uploading for the first time and we hit cancel then we reset back to the upload state
+        //if we are replacing a file and we hit cancel then we reset back to the uploaded state
 
-        /*
-            TODO KR: What happens when a file was already uploaded, we replace it, and then cancel the upload?
-            OK will need to pick up the cancel event, there will most likely be some file ID associated with the component
-            that can be used to retrieve the original associated file and then hand that back to the component via the file-uploader-actions system
-         */
+
+
+
+
+        this.#input.value = null;
+        this.dataset.state = this.#states.UPLOAD;
+
+        this.dispatchEvent(new CustomEvent("cancel_upload", {detail: {
+            element: this,
+            file: null
+        }}));
     }
 
     async download() {
@@ -182,8 +174,33 @@ export class FileUploader extends HTMLElement {
         }}));
     }
 
-    async delete(event) {
+    async replace() {
+        //TODO: show warning dialog with message: "Are you sure you want to replace the file? All historic data will still remain."
+        //If yes, will carry through with replace, otherwise not
+        this.dispatchEvent(new CustomEvent("replace_file", {detail: {
+            element: this,
+            file: this.#file
+        }}));
 
+
+        const result = await crs.call("files", "load", {
+            dialog: true,
+        });
+
+        await this.#uploadFile(result[0]);
+    }
+
+    async delete(event) {
+        //TODO: show warning dialog with message: "By deleting the file, the file and associated metadata will also be lost. Are you sure you want to proceed?"
+        //If yes, will carry through with delete and update the component accordingly, otherwise not
+
+        this.dispatchEvent(new CustomEvent("delete_file", {detail: {
+            element: this,
+            file: this.#file
+        }}));
+
+        this.#input.value = null;
+        this.dataset.state = this.#states.UPLOAD;
     }
 
     /**
@@ -193,11 +210,22 @@ export class FileUploader extends HTMLElement {
     async #enableDropZone() {
         await crs.call("files", "enable_dropzone", {
             element: this.#dragTarget,
-            handler: this.#onDropHandler
+            callback: this.#dragEventHandler
         })
+    }
 
-        this.#dragTarget.addEventListener("dragover", this.#dragOverHandler);
-        this.#dragTarget.addEventListener("dragleave", this.#dragLeaveHandler)
+    async #dragEvent(args) {
+        if (args.action === "dragOver") {
+            await this.#dragOver(args.event);
+        }
+
+        if (args.action === "dragLeave") {
+            await this.#dragLeave(args.event);
+        }
+
+        if (args.action === "drop") {
+            await this.#onDrop(args.results);
+        }
     }
 
     /**
@@ -267,7 +295,11 @@ export class FileUploader extends HTMLElement {
     async #uploadFile(file) {
         console.log("uploading file", file);
         this.#file = file;
-        this.dispatchEvent(new CustomEvent("change", {detail: {element: this, file: this.#file, action: this.#states.UPLOAD}}));
+        // this.dispatchEvent(new CustomEvent("change", {detail: {element: this, file: this.#file, action: this.#states.UPLOAD}}));
+        this.dispatchEvent(new CustomEvent("upload_file", {detail: {
+            element: this,
+            file: this.#file
+        }}));
 
         this.dataset.state = this.#states.UPLOADING;
 
@@ -306,23 +338,25 @@ export class FileUploader extends HTMLElement {
         this.#fileNameLabel = this.#fileNameLabel || this.shadowRoot.querySelector("#lbl-file-name");
         this.#fileSizeLabel = this.#fileSizeLabel || this.shadowRoot.querySelector("#lbl-file-size");
 
-        let fileName;
-        if (this.dataset.fileType?.includes(".")) {
-            fileName = `${this.dataset.fileName}${this.dataset.fileType}`
-        } else {
-            `${this.dataset.fileName}.${this.dataset.fileType}`
-        }
+        if ( this.#fileNameLabel == null || this.#fileSizeLabel == null) return;
 
-        this.#fileNameLabel.innerText = fileName;
+        this.#fileNameLabel.innerText = this.#getFileName(this.dataset.fileName, this.dataset.fileType);
         this.#fileSizeLabel.innerText = this.#fileToSize(this.dataset.fileSize);
     }
 
-    setState(args) {
-        if (args.state == null) return;
-        this.dataset.state = args.state;
-        this.dataset.fileName = args.fileName;
-
+    #getFileName(fileName, fileType) {
+        if (fileType?.includes(".")) {
+            return `${fileName}${fileType}`
+        } else {
+            return `${fileName}.${fileType}`
+        }
     }
+
+    // setState(args) {
+    //     if (args.state == null) return;
+    //     this.dataset.state = args.state;
+    //     this.dataset.fileName = args.fileName;
+    // }
 }
 
 
