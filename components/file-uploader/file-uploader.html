@@ -76,27 +76,21 @@
         font-size: 1rem;
     }
 
-    :host([data-state="upload"]) #lbl-file-name,
-    :host([data-state="upload"]) #lbl-file-size,
-    :host([data-state="upload"]) #icon-status,
-    :host([data-state="upload"]) #actions {
-        display: none;
-    }
-
-    :host([data-state="uploading"]) #btn-upload,
-    :host([data-state="uploading"]) #lbl-default,
-    :host([data-state="uploading"]) #btn-download,
-    :host([data-state="uploading"]) #btn-replace,
-    :host([data-state="uploading"]) #btn-delete {
-        display: none;
-    }
-
     :host([data-state="uploading"]) #icon-attach-file:before,
     :host([data-state="uploading"]) #lbl-file-name,
     :host([data-state="uploading"]) #lbl-file-size {
         color: var(--grey-s1);
     }
 
+    :host([data-state="upload"]) #lbl-file-name,
+    :host([data-state="upload"]) #lbl-file-size,
+    :host([data-state="upload"]) #icon-status,
+    :host([data-state="upload"]) #actions,
+    :host([data-state="uploading"]) #btn-upload,
+    :host([data-state="uploading"]) #lbl-default,
+    :host([data-state="uploading"]) #btn-download,
+    :host([data-state="uploading"]) #btn-replace,
+    :host([data-state="uploading"]) #btn-delete,
     :host([data-state="uploaded"]) #btn-upload,
     :host([data-state="uploaded"]) #lbl-default,
     :host([data-state="uploaded"]) #icon-status,
