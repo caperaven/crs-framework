@@ -42,25 +42,47 @@ export default class FileUploaderViewModel extends crsbinding.classes.ViewBase {
         await super.disconnectedCallback();
     }
 
+    async #upload(event) {
+        console.log("file upload started");
+        this.#file = event.detail.file;
+
+        if (this.#timeoutId == null) {
+            debugger;
+            this.#timeoutId = setTimeout(() => {
+                this.#fileUploaded();
+            }, 3000);
+        }
+    }
+
+    async #replace(event) {
+        console.log("replacing file", event.detail.file);
+        this.#file = event.detail.file;
+
+        await crs.call("file_uploader", "replace_file", {
+            element: this.#workingExample,
+            file: this.#file,
+            file_name: this.#file.name,
+            file_extension: this.#file.ext
+        });
+
+        if (this.#timeoutId == null) {
+            debugger;
+            this.#timeoutId = setTimeout(() => {
+                this.#fileUploaded();
+            }, 3000);
+        }
+    }
+
     async #fileUploaded() {
-        console.log("file uploaded")
+        console.log("file uploaded", this.#file);
 
         clearTimeout(this.#timeoutId);
         this.#timeoutId = null;
 
         //call upon the api function to alert the input the file has been uploaded
-        await crs.call("file_uploader_actions", "file_uploaded", {
+        await crs.call("file_uploader", "file_uploaded", {
             element: this.#workingExample
         });
-    }
-
-    async #upload() {
-        if (this.#timeoutId == null) {
-            debugger;
-            this.#timeoutId = setTimeout(() => {
-                this.#fileUploaded(event);
-            }, 5000);
-        }
     }
 
     async #cancel() {
@@ -70,15 +92,20 @@ export default class FileUploaderViewModel extends crsbinding.classes.ViewBase {
         console.log("file upload cancelled")
     }
 
-    async #download() {
-        console.log("file downloaded")
+    async #download(event) {
+        console.log("downloading file", "\nevent.detail.file:", event.detail.file, "\nfile on view:", this.#file);
     }
 
-    async #replace() {
-        console.log("replacing file")
-    }
+    async #delete(event) {
+        console.log("deleting file");
+        const fileOnView = this.#file;
 
-    async #delete() {
-        console.log("deleting file")
+        await crs.call("file_uploader", "file_deleted", {
+            element: this.#workingExample
+        });
+        this.#file = null;
+
+        console.log("file deleted", "\nevent.detail.file:", event.detail.file, "\nfile on view:", fileOnView);
+
     }
 }
