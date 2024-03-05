@@ -166,7 +166,7 @@ export class FileUploader extends HTMLElement {
         const file = this.#input.files[0];
         const fileDetails = await get_file_name(file.name);
 
-        await this.#upload({
+        await this.upload({
             name: fileDetails.name,
             ext: fileDetails.ext,
             type: file.type,
@@ -274,28 +274,12 @@ export class FileUploader extends HTMLElement {
 
         if (this.file == null) {
             if (event.length > 0) {
-                await this.#upload(event[0]);
+                await this.upload(event[0]);
             }
         }
         else {
             await this.replace(event);
         }
-    }
-
-    /**
-     * Upload action - initiates the upload process and updates associated properties and child elements accordingly
-     * @param file {Object} - the file to be uploaded
-     * @returns {Promise<void>}
-     */
-    async #upload(file) {
-        this.file = file;
-        this.dispatchEvent(new CustomEvent("upload_file", {detail: {
-            element: this,
-            file: this.file
-        }}));
-
-        this.updateDatasetProperties(this.#states.UPLOADING, this.file.name, this.file.ext, this.file.size);
-        this.updateLabels();
     }
 
     /**
@@ -326,19 +310,27 @@ export class FileUploader extends HTMLElement {
      * @returns {string}
      */
     #getFileName(fileName, fileType) {
-        if (fileType?.includes(".")) {
+        if (fileType?.charAt(0) === ".") {
             return `${fileName}${fileType}`
         } else {
             return `${fileName}.${fileType}`
         }
     }
 
-    async uploaded(file) {
-        this.dataset.state = this.#states.UPLOADED;
+    /**
+     * Upload action - initiates the upload process and updates associated properties and child elements accordingly
+     * @param file {Object} - the file to be uploaded
+     * @returns {Promise<void>}
+     */
+    async upload(file) {
+        this.file = file;
+        this.dispatchEvent(new CustomEvent("upload_file", {detail: {
+                element: this,
+                file: this.file
+            }}));
 
-        if (file != null) {
-            this.file = file;
-        }
+        this.updateDatasetProperties(this.#states.UPLOADING, this.file.name, this.file.ext, this.file.size);
+        this.updateLabels();
     }
 
     async replace(event) {
@@ -356,6 +348,14 @@ export class FileUploader extends HTMLElement {
                 element: this,
                 file: this.file
             }}));
+    }
+
+    async uploaded(file) {
+        this.dataset.state = this.#states.UPLOADED;
+
+        if (file != null) {
+            this.file = file;
+        }
     }
 
     async delete(event) {
@@ -404,7 +404,6 @@ export class FileUploader extends HTMLElement {
         this.#fileNameLabel.innerText = this.#getFileName(this.dataset.fileName, this.dataset.fileType);
         this.#fileSizeLabel.innerText = this.#fileToSize(this.dataset.fileSize);
     }
-
 }
 
 

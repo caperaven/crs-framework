@@ -8,8 +8,7 @@
  * - replace_file: request to the component to replace the current file associated to the component, providing a new file, file name, and file extension.
  * - file_replaced: calls upon the uploaded function on the element to notify the component the file has been replaced
  * - upload_file:
- * - download_file
- * - set_file_info:
+ * - download_file:
  */
 export class FileUploaderActions {
     static async perform(step, context, process, item) {
@@ -124,15 +123,22 @@ export class FileUploaderActions {
     }
 
     static async upload_file(step, context, process, item) {
+        const element = await crs.dom.get_element(step, context, process, item);
+        const file = await crs.process.getValue(step.args.file, context, process, item);
 
+        file != null && await element.upload(file);
     }
 
     static async download_file(step, context, process, item) {
+        const element = await crs.dom.get_element(step, context, process, item);
 
+        element.file != null && await element.download();
     }
 
-    static async set_file_info(step, context, process, item) {
+    static async delete_file(step, context, process, item) {
+        const element = await crs.dom.get_element(step, context, process, item);
 
+        await element.delete();
     }
 }
 
