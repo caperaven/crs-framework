@@ -106,3 +106,6 @@ Feature: Side Panel Header
     @mobile
     # Mobile close button specs.
     # Same as desktop.
+
+
+# ToDo : AW - Plan out attributes, properties, and methods for the side menu.
