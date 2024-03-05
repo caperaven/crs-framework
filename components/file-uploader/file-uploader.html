@@ -1,5 +1,20 @@
 <style>
     :host {
+        --alt-fg: #FFFFFF;
+        --grey: #272C37;
+        --grey-s1: #757575;
+        --grey-s2: #DADADA;
+        --grey-s3: #F4F4F4;
+        --grey-s4: #F4F6F8;
+        --blue: #0276C2;
+        --red: #E00000;
+
+        --input-height: 2rem;
+        --margin: 0.5rem;
+        --half-radius: 0.5rem;
+        --border-width: 1px;
+        --border: var(--border-width) solid var(--grey-s2);
+
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -59,7 +74,7 @@
     #icon-status,
     :host([data-state="uploaded"]) #lbl-file-size,
     :host([data-state="uploading"]) #lbl-file-size {
-        height: 2rem;
+        height: var(--input-height);
         width: 2rem;
         border: none;
         background: transparent;
@@ -67,6 +82,7 @@
 
     button.icon {
         cursor: pointer;
+        border-radius: var(--half-radius);
     }
 
     button[data-action="delete"] {
@@ -81,14 +97,15 @@
         border-radius: var(--half-radius);
         padding: 0.75rem;
         box-sizing: border-box;
-        height: 2rem;
+        height: var(--input-height);
         min-width: 6.625rem;
-        margin: 0 0.5rem 0 0;
+        margin: 0 var(--margin) 0 0;
         font-weight: bold;
         background-color: var(--grey-s4);
         font-size: 0.875rem;
     }
 
+    button.icon:hover,
     label#btn-upload:hover,
     :host([data-state="upload"]) #action-drop-down:hover{
         background-color: var(--grey-s2);
@@ -129,6 +146,11 @@
     :host([data-state="uploaded"]) #lbl-file-size,
     :host([data-state="uploading"]) #lbl-file-size {
         margin: var(--margin);
+    }
+
+    button.icon:active {
+        color: var(--alt-fg);
+        background-color: var(--blue);
     }
 
 
