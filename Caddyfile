@@ -2,7 +2,7 @@
     admin off
 }
 
-localhost:5000 {
+localhost {
     header {
         Cache-Control "no-cache, no-store, must-revalidate"
     }
