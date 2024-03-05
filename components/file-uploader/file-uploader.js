@@ -120,6 +120,8 @@ export class FileUploader extends HTMLElement {
             this.#input = this.shadowRoot.querySelector("#inp-upload");
             this.#input.addEventListener("change", this.#changeHandler);
 
+            this.dataset.isMobile = await crs.call("system", "is_mobile", {});
+
             if (this.dataset.fileName == null && this.dataset.fileSize == null && this.dataset.fileType == null && this.dataset.state == null) {
                 this.dataset.state = this.#states.UPLOAD;
             } else {
@@ -405,6 +407,33 @@ export class FileUploader extends HTMLElement {
         this.#fileSizeLabel.innerText = this.#fileToSize(this.dataset.fileSize);
     }
 
+    /**
+     * @method showActions - shows the actions dialog
+     * @param event {Event} - the event that has been triggered
+     * @return {Promise<void>}
+     */
+    async showActions(event) {
+        const instance = this.shadowRoot.querySelector("#dialog-content").content.cloneNode(true);
+
+        await crs.call("dialog", "show", {
+            title: "My Title",
+            main: instance,
+            target: event.target,
+            position: "bottom",
+            anchor: "right",
+            margin: 0.5,
+            parent: "main",
+            min_width: "2.5rem",
+            show_header: false,
+            auto_close: true,
+            callback: async (args) => {
+                const element = args.event?.composedPath()[0];
+                if(element?.dataset.action == null && this[element?.dataset.action] == null) return;
+                await this[element.dataset.action](event);
+                dialog?.close();
+            }
+        });
+    }
 }
 
 

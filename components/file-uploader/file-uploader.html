@@ -2,6 +2,11 @@
     :host {
         display: flex;
         flex-direction: row;
+        align-items: center;
+        width: 100%;
+        height: 3rem;
+        background: var(--grey-s3);
+        border-radius: var(--half-radius);
     }
 
     :host * {
@@ -19,9 +24,9 @@
         flex-direction: row;
     }
 
+    button.icon,
     span.icon:before,
-    label.icon:before,
-    button.icon {
+    label.icon:before{
         font-family: crsfrw;
         font-size: 1.25rem;
         font-weight: 500;
@@ -29,6 +34,8 @@
 
     span#icon-attach-file:before {
         content: 'attach-file';
+        width: 1.25rem;
+        height: 1.25rem;
     }
 
     span#icon-status:before {
@@ -36,9 +43,34 @@
         color: var(--blue);
     }
 
-    button.icon {
+    span#actions,
+    #icon-status,
+    label#btn-upload,
+    span#icon-attach-file:before,
+    :host([data-state="uploading"]) #lbl-file-size,
+    :host([data-state="uploaded"]) #lbl-file-size,
+    :host([data-state="uploaded"]) span#actions {
         display: flex;
         align-items: center;
+        justify-content: center;
+    }
+
+    button.icon,
+    #icon-status,
+    :host([data-state="uploaded"]) #lbl-file-size,
+    :host([data-state="uploading"]) #lbl-file-size {
+        height: 2rem;
+        width: 2rem;
+        border: none;
+        background: transparent;
+    }
+
+    button.icon {
+        cursor: pointer;
+    }
+
+    button[data-action="delete"] {
+        color: var(--red);
     }
 
     label#btn-upload {
@@ -46,20 +78,19 @@
         cursor: pointer;
         border: var(--border);
         border-color: var(--grey);
-        border-radius: var(--radius);
+        border-radius: var(--half-radius);
         padding: 0.75rem;
         box-sizing: border-box;
-        height: 2.5rem;
-        min-width: 2rem;
-        margin: 0 0.313rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        height: 2rem;
+        min-width: 6.625rem;
+        margin: 0 0.5rem 0 0;
         font-weight: bold;
-        background-color: var(--alt-fg);
+        background-color: var(--grey-s4);
+        font-size: 0.875rem;
     }
 
-    label#btn-upload:hover {
+    label#btn-upload:hover,
+    :host([data-state="upload"]) #action-drop-down:hover{
         background-color: var(--grey-s2);
         outline: none;
     }
@@ -76,12 +107,33 @@
         font-size: 1rem;
     }
 
+
+    #lbl-default,
+    span#icon-attach-file:before,
     :host([data-state="uploading"]) #icon-attach-file:before,
     :host([data-state="uploading"]) #lbl-file-name,
-    :host([data-state="uploading"]) #lbl-file-size {
+    :host([data-state="uploading"]) #lbl-file-size,
+    :host([data-state="uploaded"]) #lbl-file-size {
         color: var(--grey-s1);
     }
 
+    :host([data-state="uploading"]) #lbl-file-name,
+    :host([data-state="uploaded"]) #lbl-file-name {
+        margin-right: auto;
+    }
+
+    button.icon,
+    #icon-status,
+    span#icon-status:before,
+    span#icon-attach-file:before,
+    :host([data-state="uploaded"]) #lbl-file-size,
+    :host([data-state="uploading"]) #lbl-file-size {
+        margin: var(--margin);
+    }
+
+
+    :host([data-mobile="false"]) [role="toolbar"],
+    :host([data-state="upload"]) #action-drop-down,
     :host([data-state="upload"]) #lbl-file-name,
     :host([data-state="upload"]) #lbl-file-size,
     :host([data-state="upload"]) #icon-status,
@@ -91,10 +143,24 @@
     :host([data-state="uploading"]) #btn-download,
     :host([data-state="uploading"]) #btn-replace,
     :host([data-state="uploading"]) #btn-delete,
+    :host([data-state="uploading"]) #action-drop-down,
     :host([data-state="uploaded"]) #btn-upload,
     :host([data-state="uploaded"]) #lbl-default,
-    :host([data-state="uploaded"]) #icon-status {
+    :host([data-state="uploaded"]) #icon-status,
+    :host([data-state="uploaded"]) #btn-cancel,
+    :host([data-mobile="false"]) [role="toolbar"],
+    :host([data-state="upload"][data-is-mobile="true"]) #lbl-default,
+    :host([data-state="uploaded"][data-is-mobile="false"]) [role="toolbar"],
+    :host([data-state="uploaded"][data-is-mobile="true"]) #actions
+    {
         display: none;
+    }
+
+    :host([data-state="uploaded"]) #action-drop-down{
+        width: 2rem;
+        height: 2rem;
+        border-radius: var(--half-radius);
+        margin-left:auto;
     }
 </style>
 
@@ -114,9 +180,19 @@
     <button class="icon" id="btn-delete" data-action="delete">delete-outline</button>
 </span>
 
+<span role="toolbar">
+    <button id="action-drop-down" class="icon" data-action="showActions">kabab-vert</button>
+</span>
+
 <template id="drop-template">
     <div>
         <span id="insert-photo"></span>
         <h2>Drop file here</h2>
     </div>
+</template>
+
+<template id="dialog-content">
+    <button class="transparent" data-action="replace">Replace</button>
+    <button class="transparent" data-action="download">Download</button>
+    <button class="transparent" data-action="delete">Delete</button>
 </template>
