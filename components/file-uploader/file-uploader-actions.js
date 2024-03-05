@@ -52,7 +52,7 @@ export class FileUploaderActions {
      * @returns {Promise<void>}
      */
     static async file_uploaded(step, context, process, item) {
-        const element = await crs.dom.get_element(step.args.element, context, process, item);
+        const element = await crs.dom.get_element(step, context, process, item);
 
         await element.uploaded();
     }
