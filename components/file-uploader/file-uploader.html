@@ -93,8 +93,7 @@
     :host([data-state="uploading"]) #btn-delete,
     :host([data-state="uploaded"]) #btn-upload,
     :host([data-state="uploaded"]) #lbl-default,
-    :host([data-state="uploaded"]) #icon-status,
-    :host([data-state="uploaded"]) #btn-cancel {
+    :host([data-state="uploaded"]) #icon-status {
         display: none;
     }
 </style>
@@ -110,7 +109,6 @@
 
 <span id="icon-status" class="icon"></span>
 <span id="actions">
-    <button class="icon" id="btn-cancel" data-action="cancel">close</button>
     <button class="icon" id="btn-replace" data-action="replace">swap-horiz</button>
     <button class="icon" id="btn-download" data-action="download">download</button>
     <button class="icon" id="btn-delete" data-action="delete">delete-outline</button>

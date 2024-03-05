@@ -5,7 +5,6 @@ export default class FileUploaderViewModel extends crsbinding.classes.ViewBase {
     #workingExample;
     #downloadHandler = this.#download.bind(this);
     #replaceHandler = this.#replace.bind(this);
-    #cancelHandler = this.#cancel.bind(this);
     #deleteHandler = this.#delete.bind(this);
     #uploadHandler = this.#upload.bind(this);
     #timeoutId;
@@ -15,7 +14,6 @@ export default class FileUploaderViewModel extends crsbinding.classes.ViewBase {
         await super.connectedCallback();
         this.#workingExample = document.querySelector("#working-example");
         this.#workingExample.addEventListener("download_file", this.#downloadHandler);
-        this.#workingExample.addEventListener("cancel_upload", this.#cancelHandler);
         this.#workingExample.addEventListener("replace_file", this.#replaceHandler);
         this.#workingExample.addEventListener("delete_file", this.#deleteHandler);
         this.#workingExample.addEventListener("upload_file", this.#uploadHandler);
@@ -23,13 +21,11 @@ export default class FileUploaderViewModel extends crsbinding.classes.ViewBase {
 
     async disconnectedCallback() {
         this.#workingExample.removeEventListener("download_file", this.#downloadHandler);
-        this.#workingExample.removeEventListener("cancel_upload", this.#cancelHandler);
         this.#workingExample.removeEventListener("replace_file", this.#replaceHandler);
         this.#workingExample.removeEventListener("delete_file", this.#deleteHandler);
         this.#workingExample.removeEventListener("upload_file", this.#uploadHandler);
 
         this.#downloadHandler = null;
-        this.#cancelHandler = null;
         this.#replaceHandler = null;
         this.#deleteHandler = null;
         this.#uploadHandler = null;
@@ -69,7 +65,7 @@ export default class FileUploaderViewModel extends crsbinding.classes.ViewBase {
             debugger;
             this.#timeoutId = setTimeout(() => {
                 this.#fileUploaded();
-            }, 3000);
+            }, 2500);
         }
     }
 
@@ -83,13 +79,6 @@ export default class FileUploaderViewModel extends crsbinding.classes.ViewBase {
         await crs.call("file_uploader", "file_uploaded", {
             element: this.#workingExample
         });
-    }
-
-    async #cancel() {
-        clearTimeout(this.#timeoutId);
-        this.#timeoutId = null;
-
-        console.log("file upload cancelled")
     }
 
     async #download(event) {

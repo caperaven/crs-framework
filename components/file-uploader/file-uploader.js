@@ -4,7 +4,7 @@ import {get_file_name} from "./../../packages/crs-process-api/action-systems/fil
  * @class FileUploader - Responsible for uploading a file to the server
  *
  * State Management:
- * Initially the component is in the upload state.When no file is associated with the input,
+ * Initially the component is in the upload state. When no file is associated with the input,
  * the component will display a button to upload a file.
  * If a drag target has been specified via the data-drag-target attribute,
  * the component will allow the user to drag and drop a file onto the drag target.
@@ -13,8 +13,7 @@ import {get_file_name} from "./../../packages/crs-process-api/action-systems/fil
  * the component will display the file name, size of the file, and a button to remove the file,
  * and moves into the uploading state.
  * When the file is being uploaded to the server, the component will display an in-progress icon
- * giving an indication the file is being uploaded. If the user would like to cancel the uploading process
- * they can click the cancel button.
+ * giving an indication the file is being uploaded.
  *
  * If there is a file that has been uploaded and is associated with the input, then the component will display the file name,
  * size of the file, a button to download the file, and a button to remove the file, and remains in the uploaded state.
@@ -36,13 +35,12 @@ import {get_file_name} from "./../../packages/crs-process-api/action-systems/fil
  * Events:
  * click - When the user clicks a child element of the component, the click event will be picked up via the clickHandler.
  *         Based on the data-action attribute of the child element, the corresponding action will be called.
- *         data-actions supported: cancel, delete, download, replace
+ *         data-actions supported: delete, download, replace
  * change - When the user clicks on the btn-upload label, the input[type='file'] element will be triggered to open the file dialog
  *          This process is managed by the changeHandler
  * upload_file - When a file has been selected to be uploaded, the upload_file event will be emitted with the file
  *               and the component as the detail
  * replace_file - When the user chooses to replace a file, the replace_file event will be emitted with the new file selected
- * cancel_upload - If the user chooses to cancel the uploading of a file, the cancel_upload event will be emitted
  * download_file - If the user chooses to download the file, the download_file event will be emitted with the file
  *                 and the component as the detail
  *
@@ -370,20 +368,6 @@ export class FileUploader extends HTMLElement {
     async deleted() {
         this.#input.value = null;
         this.dataset.state = this.#states.UPLOAD;
-    }
-
-    async cancel(event) {
-        //if uploading for the first time and we hit cancel then we reset back to the upload state
-        //if we are replacing a file and we hit cancel then we reset back to the uploaded state
-
-
-        this.#input.value = null;
-        this.dataset.state = this.#states.UPLOAD;
-
-        this.dispatchEvent(new CustomEvent("cancel_upload", {detail: {
-                element: this,
-                file: null
-            }}));
     }
 
     async download() {
