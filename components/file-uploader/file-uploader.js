@@ -133,27 +133,6 @@ export class FileUploader extends HTMLElement {
         }
 
         await crs.call("component", "notify_ready", { element: this });
-
-        // return new Promise(async (resolve) => {
-        //     requestAnimationFrame(async () => {
-        //         this.shadowRoot.attributes = [];
-        //         await crsbinding.translations.parseElement(this.shadowRoot);
-        //
-        //         this.addEventListener("click", this.#clickHandler);
-        //
-        //         this.#input = this.shadowRoot.querySelector("#inp-upload");
-        //         this.#input.addEventListener("change", this.#changeHandler);
-        //
-        //         this.dataset.isMobile = await crs.call("system", "is_mobile", {});
-        //         if (this.dataset.isMobile === "true") {
-        //             const element = this.shadowRoot.querySelector("#actions");
-        //             element.innerHTML = `<button id="action-drop-down" class="icon" data-action="showActions">kabab-vert</button>`
-        //         }
-        //
-        //         await crs.call("component", "notify_ready", { element: this });
-        //         resolve();
-        //     });
-        // })
     }
 
     async initialize(fileName, fileExtension, fileSize, dragTarget, context) {
