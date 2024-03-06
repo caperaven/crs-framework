@@ -6,7 +6,7 @@ import {get_file_name} from "./../../packages/crs-process-api/action-systems/fil
  * State Management:
  * Initially the component is in the upload state. When no file is associated with the input,
  * the component will display a button to upload a file.
- * If a drag target has been specified via the data-drag-target attribute,
+ * If a drag target has been specified via the initialise function,
  * the component will allow the user to drag and drop a file onto the drag target.
  *
  * Once a file has either been dragged and dropped, or selected to be uploaded,
@@ -47,7 +47,6 @@ import {get_file_name} from "./../../packages/crs-process-api/action-systems/fil
  *
  * Attributes:
  * data-state - The current state of the element (upload, uploading, uploaded)
- * data-drag-target - The element that will become the drop target for the file to be dragged and dropped onto
  * data-file-name - The name of the file associated with the input
  * data-file-size - The size of the file associated with the input
  * data-file-type - The type(extension) of the file associated with the input
@@ -60,7 +59,7 @@ export class FileUploader extends HTMLElement {
     #input;
     #dropBounds;
     #dragTarget;
-    #fileNameLabel;
+    #mainLabel;
     #fileSizeLabel;
     #highlightActive;
     #clickHandler = this.#click.bind(this);
@@ -77,8 +76,8 @@ export class FileUploader extends HTMLElement {
         return import.meta.url.replace(".js", ".html");
     }
 
-    static get observedAttributes() {
-        return ["data-file-name", "data-file-size", "data-file-type", "dataset-state"];
+    get file() {
+        return this.#input.files[0];
     }
 
     constructor() {
@@ -88,20 +87,21 @@ export class FileUploader extends HTMLElement {
 
     async connectedCallback() {
         this.shadowRoot.innerHTML = await fetch(this.html).then(result => result.text());
+        await crsbinding.translations.add(globalThis.translations.fileUploader, "fileUploader");
         await this.load();
     }
 
     async disconnectedCallback() {
-        if (this.dataset.dragTarget != null) {
+        if (this.#dragTarget != null) {
             await this.#disableDropZone();
+            this.#dragTarget = null;
         }
         this.removeEventListener("click", this.#clickHandler);
         this.#input?.removeEventListener("change", this.#changeHandler);
 
         this.#input = null;
         this.#dropBounds = null;
-        this.#dragTarget = null;
-        this.#fileNameLabel = null;
+        this.#mainLabel = null;
         this.#fileSizeLabel = null;
         this.#highlightActive = null;
         this.#clickHandler = null;
@@ -109,39 +109,62 @@ export class FileUploader extends HTMLElement {
         this.#dragEventHandler = null;
 
         this.#states = null;
-
-        this.file = null;
     }
 
     async load() {
-        requestAnimationFrame(async () => {
-            this.addEventListener("click", this.#clickHandler);
+        this.shadowRoot.attributes = [];
+        await crsbinding.translations.parseElement(this.shadowRoot);
 
-            this.#input = this.shadowRoot.querySelector("#inp-upload");
-            this.#input.addEventListener("change", this.#changeHandler);
+        this.addEventListener("click", this.#clickHandler);
 
-            this.dataset.isMobile = await crs.call("system", "is_mobile", {});
+        this.#input = this.shadowRoot.querySelector("#inp-upload");
+        this.#input.addEventListener("change", this.#changeHandler);
 
-            if (this.dataset.fileName == null && this.dataset.fileSize == null && this.dataset.fileType == null && this.dataset.state == null) {
-                this.dataset.state = this.#states.UPLOAD;
-            } else {
-                this.updateLabels();
-            }
-
-            if (this.dataset.dragTarget != null) {
-                this.#dragTarget = document.querySelector(this.dataset.dragTarget);
-                this.#dragTarget && await this.#enableDropZone();
-            }
-        });
-    }
-
-    attributeChangedCallback(name, oldValue, newValue) {
-        if (name === "data-file-name" || name === "data-file-size" || name === "data-file-type") {
-            this.updateLabels();
+        this.dataset.isMobile = await crs.call("system", "is_mobile", {});
+        if (this.dataset.isMobile === "true") {
+            const element = this.shadowRoot.querySelector("#actions");
+            element.innerHTML = `<button id="action-drop-down" class="icon" data-action="showActions">kabab-vert</button>`
         }
 
-        if (name === "data-state") {
-            this.dataset.state = newValue;
+        await crs.call("component", "notify_ready", { element: this });
+
+        // return new Promise(async (resolve) => {
+        //     requestAnimationFrame(async () => {
+        //         this.shadowRoot.attributes = [];
+        //         await crsbinding.translations.parseElement(this.shadowRoot);
+        //
+        //         this.addEventListener("click", this.#clickHandler);
+        //
+        //         this.#input = this.shadowRoot.querySelector("#inp-upload");
+        //         this.#input.addEventListener("change", this.#changeHandler);
+        //
+        //         this.dataset.isMobile = await crs.call("system", "is_mobile", {});
+        //         if (this.dataset.isMobile === "true") {
+        //             const element = this.shadowRoot.querySelector("#actions");
+        //             element.innerHTML = `<button id="action-drop-down" class="icon" data-action="showActions">kabab-vert</button>`
+        //         }
+        //
+        //         await crs.call("component", "notify_ready", { element: this });
+        //         resolve();
+        //     });
+        // })
+    }
+
+    async initialize(fileName, fileExtension, fileSize, dragTarget, context) {
+        this.dataset.fileName = fileName || this.dataset.fileName;
+        this.dataset.fileType = fileExtension || this.dataset.fileType;
+        this.dataset.fileSize = fileSize || this.dataset.fileSize;
+
+        if (fileName != null) {
+            this.dataset.state = this.#states.UPLOADED;
+            await this.updateLabels();
+        } else {
+            this.dataset.state = this.#states.UPLOAD;
+        }
+
+        if (dragTarget != null) {
+            this.#dragTarget = context.querySelector(dragTarget);
+            this.#dragTarget && await this.#enableDropZone();
         }
     }
 
@@ -165,7 +188,7 @@ export class FileUploader extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #change() {
-        const file = this.#input.files[0];
+        const file = this.file;
         const fileDetails = await get_file_name(file.name);
 
         await this.upload({
@@ -182,9 +205,13 @@ export class FileUploader extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #enableDropZone() {
+        const dropTemplate = this.shadowRoot.querySelector("#drop-template");
+
         await crs.call("files", "enable_dropzone", {
             element: this.#dragTarget,
-            callback: this.#dragEventHandler
+            callback: this.#dragEventHandler,
+            drop_template: dropTemplate,
+            drop_classes: ["drop-area"]
         })
     }
 
@@ -196,16 +223,6 @@ export class FileUploader extends HTMLElement {
         await crs.call("files", "disable_dropzone", {
             element: this.#dragTarget
         });
-        await this.#removeAnimationLayer();
-    }
-
-    /**
-     * Removes the animation layer from the drop zone and sets the highlightActive flag to false
-     * @returns {Promise<void>}
-     */
-    async #removeAnimationLayer() {
-        await crs.call("dom_interactive", "remove_animation_layer");
-        this.#highlightActive = false;
     }
 
     /**
@@ -218,48 +235,9 @@ export class FileUploader extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #processDragEvent(args) {
-        if (args.action === "dragOver") {
-            await this.#dragOver();
-        }
-
-        if (args.action === "dragLeave") {
-            await this.#dragLeave(args.event);
-        }
-
         if (args.action === "drop") {
             await this.#onDrop(args.results);
         }
-    }
-
-    /**
-     * Drag over event handler - handles the drag over event on the drag target
-     * If the drag target is dragged over, the drop target will be highlighted
-     * @returns {Promise<void>}
-     */
-    async #dragOver(){
-        if (this.#highlightActive !== true) {
-            const dropTemplate = this.shadowRoot.querySelector("#drop-template");
-            await crs.call("dom_interactive", "highlight", {
-                target: this.#dragTarget,
-                template: dropTemplate,
-                classes:  ["drop-area"]
-            });
-            this.#highlightActive = true;
-            this.#dropBounds = this.#dragTarget.getBoundingClientRect();
-        }
-    }
-
-    /**
-     * Drag leave event handler - handles the drag leave event on the drag target
-     * If the drag target is dragged over and then dragged out, the drop target will be un-highlighted
-     * @param event {Event} - the drag leave event
-     * @returns {Promise<void>}
-     */
-    async #dragLeave(event) {
-        if (event.x >= this.#dropBounds.left && event.x <= this.#dropBounds.right &&
-            event.y >= this.#dropBounds.top && event.y <= this.#dropBounds.bottom) return;
-
-        await this.#removeAnimationLayer();
     }
 
     /**
@@ -272,8 +250,6 @@ export class FileUploader extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #onDrop(event) {
-        await this.#removeAnimationLayer();
-
         if (this.file == null) {
             if (event.length > 0) {
                 await this.upload(event[0]);
@@ -325,46 +301,40 @@ export class FileUploader extends HTMLElement {
      * @returns {Promise<void>}
      */
     async upload(file) {
-        this.file = file;
         this.dispatchEvent(new CustomEvent("upload_file", {detail: {
                 element: this,
-                file: this.file
+                file: file
             }}));
 
-        this.updateDatasetProperties(this.#states.UPLOADING, this.file.name, this.file.ext, this.file.size);
-        this.updateLabels();
+        this.updateDatasetProperties(this.#states.UPLOADING, file.name, file.ext, file.size);
+        await this.updateLabels();
     }
 
     async replace(event) {
+        let file;
         if (event.type != null && event.type === "click") {
+            //on clicking the replace button
             const result = await crs.call("files", "load", {
                 dialog: true,
             });
-            this.file = result[0];
+            file = result[0];
         }
         else if (Array.isArray(event)) {
-            this.file = event[0];
+            //on drag and drop
+            file = event[0];
         }
 
         this.dispatchEvent(new CustomEvent("replace_file", {detail: {
                 element: this,
-                file: this.file
+                file: file
             }}));
     }
 
-    async uploaded(file) {
+    async uploaded() {
         this.dataset.state = this.#states.UPLOADED;
-        if (this.dataset.isMobile === "true") {
-            const element = this.shadowRoot.querySelector("#actions");
-            element.innerHTML = `<button id="action-drop-down" class="icon" data-action="showActions">kabab-vert</button>`
-        }
-
-        if (file != null) {
-            this.file = file;
-        }
     }
 
-    async delete(event) {
+    async delete() {
         this.dispatchEvent(new CustomEvent("delete_file", {detail: {
                 element: this,
                 file: this.file
@@ -374,6 +344,8 @@ export class FileUploader extends HTMLElement {
     async deleted() {
         this.#input.value = null;
         this.dataset.state = this.#states.UPLOAD;
+
+        await this.updateLabels();
     }
 
     async download() {
@@ -401,14 +373,17 @@ export class FileUploader extends HTMLElement {
     /**
      * Updates the file name and size labels
      */
-    updateLabels() {
-        this.#fileNameLabel = this.#fileNameLabel || this.shadowRoot.querySelector("#lbl-file-name");
+    async updateLabels() {
+        this.#mainLabel = this.#mainLabel || this.shadowRoot.querySelector("#lbl-main");
         this.#fileSizeLabel = this.#fileSizeLabel || this.shadowRoot.querySelector("#lbl-file-size");
 
-        if ( this.#fileNameLabel == null || this.#fileSizeLabel == null) return;
-
-        this.#fileNameLabel.innerText = this.#getFileName(this.dataset.fileName, this.dataset.fileType);
-        this.#fileSizeLabel.innerText = this.#fileToSize(this.dataset.fileSize);
+        if (this.dataset.state === this.#states.UPLOAD) {
+            this.#mainLabel.innerText = await crsbinding.translations.get("fileUploader.dragDrop");
+            this.#fileSizeLabel.innerText = "";
+        } else {
+            this.#mainLabel.innerText = this.#getFileName(this.dataset.fileName, this.dataset.fileType);
+            this.#fileSizeLabel.innerText = this.#fileToSize(this.dataset.fileSize);
+        }
     }
 
     /**
@@ -418,9 +393,11 @@ export class FileUploader extends HTMLElement {
      */
     async showActions(event) {
         const instance = this.shadowRoot.querySelector("#dialog-content").content.cloneNode(true);
+        instance.attributes = [];
+
+        await crsbinding.translations.parseElement(instance);
 
         await crs.call("dialog", "show", {
-            title: "My Title",
             main: instance,
             target: event.target,
             position: "bottom",

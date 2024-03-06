@@ -2,17 +2,42 @@
  * @class FileUploaderActions - class to interface with the file-uploader component
  *
  * Features:
+ * - initialize: initializes the file-uploader component with the specified file name, file extension, file size, and drag target.
  * - get_file: retrieves the file off the file-uploader component, and sets it to a target if specified.
  * - file_uploaded: calls upon the uploaded function on the element to notify the component the file has been uploaded
  * - file_deleted: calls upon the deleted function on the element to notify the component the file has been deleted
- * - replace_file: request to the component to replace the current file associated to the component, providing a new file, file name, and file extension.
+ * - uploading_file: alert the component the provided file is being uploaded, and updates the file name, file extension, and size properties on the element if specified.
  * - file_replaced: calls upon the uploaded function on the element to notify the component the file has been replaced
- * - upload_file:
- * - download_file:
  */
 export class FileUploaderActions {
     static async perform(step, context, process, item) {
         await this[step.action](step, context, process, item);
+    }
+
+    /**
+     * @function initialize - initializes the file-uploader component with the specified file name, file extension, file size, and drag target.
+     *
+     * @param step {Object} - The step object in the process.
+     * @param context {Object} - The context of the current process.
+     * @param process {Object} - The currently running process.
+     * @param item {Object} - The item object if we are using a loop
+     *
+     * @param step.args.element {String || HTMLElement} - The element to get the file from.
+     * @param step.args.file_name {String} - The name of the file to initialize the component with.
+     * @param step.args.file_extension {String} - The extension of the file to initialize the component with.
+     * @param step.args.file_size {Number} - The size of the file to initialize the component with.
+     * @param step.args.drag_target {String} - The target to set the file to.
+     *
+     * @returns {Promise<void>}
+     */
+    static async initialize(step, context, process, item) {
+        const element = await crs.dom.get_element(step, context, process, item);
+        const fileName = await crs.process.getValue(step.args.file_name, context, process, item);
+        const fileExtension = await crs.process.getValue(step.args.file_extension, context, process, item);
+        const fileSize = await crs.process.getValue(step.args.file_size, context, process, item);
+        const dragTarget = await crs.process.getValue(step.args.drag_target, context, process, item) || null;
+
+        element.initialize(fileName, fileExtension, fileSize, dragTarget, context);
     }
 
     /**
@@ -72,7 +97,7 @@ export class FileUploaderActions {
     static async file_deleted(step, context, process, item) {
         const element = await crs.dom.get_element(step, context, process, item);
 
-        await element?.deleted();
+        await element.deleted();
     }
 
     /**
@@ -91,14 +116,13 @@ export class FileUploaderActions {
      *
      * @returns {Promise<void>}
      */
-    static async replace_file(step, context, process, item) {
+    static async uploading_file(step, context, process, item) {
         const element = await crs.dom.get_element(step, context, process, item);
         const fileName = await crs.process.getValue(step.args.file_name, context, process, item) || element.dataset.fileName;
         const fileExtension = await crs.process.getValue(step.args.file_extension, context, process, item) || element.dataset.fileType;
+        const file = await crs.process.getValue(step.args.file, context, process, item);
 
-        element.file = await crs.process.getValue(step.args.file, context, process, item);
-
-        await element.updateDatasetProperties("uploading", fileName, fileExtension, element.file.size);
+        await element.updateDatasetProperties("uploading", fileName, fileExtension, file.size);
         await element.updateLabels();
     }
 
@@ -117,29 +141,9 @@ export class FileUploaderActions {
      */
     static async file_replaced(step, context, process, item) {
         const element = await crs.dom.get_element(step, context, process, item);
-        const file = await crs.process.getValue(step.args.file, context, process, item);
 
-        await element.uploaded(file);
-    }
-
-    static async upload_file(step, context, process, item) {
-        const element = await crs.dom.get_element(step, context, process, item);
-        const file = await crs.process.getValue(step.args.file, context, process, item);
-
-        file != null && await element.upload(file);
-    }
-
-    static async download_file(step, context, process, item) {
-        const element = await crs.dom.get_element(step, context, process, item);
-
-        element.file != null && await element.download();
-    }
-
-    static async delete_file(step, context, process, item) {
-        const element = await crs.dom.get_element(step, context, process, item);
-
-        await element.delete();
+        await element.uploaded();
     }
 }
 
-crs.intent.file_uploader = FileUploaderActions;
+crs.intent.file_uploader_component = FileUploaderActions;

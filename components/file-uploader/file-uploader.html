@@ -1,22 +1,8 @@
 <style>
+    @import "/styles/lib/buttons.css";
+
     :host {
-        --alt-fg: #FFFFFF;
-        --grey: #272C37;
-        --grey-s1: #757575;
-        --grey-s2: #DADADA;
-        --grey-s3: #F4F4F4;
-        --grey-s4: #F4F6F8;
-        --blue: #0276C2;
-        --red: #E00000;
-
-        --input-height: 2rem;
-        --margin: 0.5rem;
-        --half-radius: 0.5rem;
-        --border-width: 1px;
-        --border: var(--border-width) solid var(--grey-s2);
-
         display: flex;
-        flex-direction: row;
         align-items: center;
         width: 100%;
         height: 3rem;
@@ -24,8 +10,16 @@
         border-radius: var(--half-radius);
     }
 
-    :host * {
-        box-sizing: border-box;
+    .flexed {
+        display: flex;
+    }
+
+    .justified {
+        justify-content: center;
+    }
+
+    .aligned {
+        align-items: center;
     }
 
     input {
@@ -34,12 +28,6 @@
         height: 0;
     }
 
-    span#actions {
-        display: flex;
-        flex-direction: row;
-    }
-
-    button.icon,
     span.icon:before,
     label.icon:before{
         font-family: crsfrw;
@@ -56,33 +44,6 @@
     span#icon-status:before {
         content: 'timelapse';
         color: var(--blue);
-    }
-
-    span#actions,
-    #icon-status,
-    label#btn-upload,
-    span#icon-attach-file:before,
-    :host([data-state="uploading"]) #lbl-file-size,
-    :host([data-state="uploaded"]) #lbl-file-size,
-    :host([data-state="uploaded"]) span#actions {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    button.icon,
-    #icon-status,
-    :host([data-state="uploaded"]) #lbl-file-size,
-    :host([data-state="uploading"]) #lbl-file-size {
-        height: var(--input-height);
-        width: 2rem;
-        border: none;
-        background: transparent;
-    }
-
-    button.icon {
-        cursor: pointer;
-        border-radius: var(--half-radius);
     }
 
     button[data-action="delete"] {
@@ -105,7 +66,6 @@
         font-size: 0.875rem;
     }
 
-    button.icon:hover,
     label#btn-upload:hover{
         background-color: var(--grey-s2);
         outline: none;
@@ -123,70 +83,62 @@
         font-size: 1rem;
     }
 
-    #lbl-default,
-    span#icon-attach-file:before,
-    :host([data-state="uploading"]) #icon-attach-file:before,
-    :host([data-state="uploading"]) #lbl-file-name,
-    :host([data-state="uploading"]) #lbl-file-size,
-    :host([data-state="uploaded"]) #lbl-file-size {
-        color: var(--grey-s1);
-    }
-
-    :host([data-state="uploading"]) #lbl-file-name,
-    :host([data-state="uploaded"]) #lbl-file-name {
+    #lbl-main {
         margin-right: auto;
     }
 
-    button.icon,
+    :host([data-state="uploading"]) #icon-attach-file:before {
+        color: var(--grey-s1);
+    }
+
+    #lbl-file-size {
+        color: var(--grey-s1);
+    }
+
     #icon-status,
-    span#icon-status:before,
-    span#icon-attach-file:before,
-    :host([data-state="uploaded"]) #lbl-file-size,
-    :host([data-state="uploading"]) #lbl-file-size {
+    #icon-attach-file {
         margin: var(--margin);
     }
 
-    button.icon:active {
-        color: var(--alt-fg);
-        background-color: var(--blue);
+    :host([data-state="upload"]) .grey-upload {
+        color: var(--grey-s1);
     }
 
-    :host([data-state="upload"]) #lbl-file-name,
-    :host([data-state="upload"]) #lbl-file-size,
-    :host([data-state="upload"]) #icon-status,
-    :host([data-state="upload"]) #actions,
-    :host([data-state="uploading"]) #btn-upload,
-    :host([data-state="uploading"]) #lbl-default,
-    :host([data-state="uploading"]) #btn-download,
-    :host([data-state="uploading"]) #btn-replace,
-    :host([data-state="uploading"]) #btn-delete,
-    :host([data-state="uploaded"]) #btn-upload,
-    :host([data-state="uploaded"]) #lbl-default,
-    :host([data-state="uploaded"]) #icon-status,
-    :host([data-state="upload"][data-is-mobile="true"]) #lbl-default,
-    :host([data-state="uploading"][data-is-mobile="true"]) #actions
-    {
+    :host([data-state="uploading"]) .grey-uploading {
+        color: var(--grey-s1);
+    }
+
+    :host([data-state="uploaded"]) .grey-uploaded {
+        color: var(--grey-s1);
+    }
+
+    :host([data-state="upload"]) .upload-hidden {
         display: none;
     }
 
-    :host([data-state="uploaded"][data-is-mobile="true"]) #action{
-        width: 2rem;
-        height: 2rem;
-        border-radius: var(--half-radius);
+    :host([data-state="uploading"]) .uploading-hidden {
+        display: none;
+    }
+
+    :host([data-state="uploaded"]) .uploaded-hidden {
+        display: none;
     }
 </style>
 
 <span id="icon-attach-file" class="icon"></span>
 
-<label id="btn-upload" for="inp-upload" class="icon">Upload File</label>
-<input id="inp-upload" type="file">
+<span class="flexed aligned uploading-hidden uploaded-hidden">
+    <label id="btn-upload" for="inp-upload" class="icon flexed aligned justified">&{fileUploader.upload}</label>
+    <input id="inp-upload" type="file">
+</span>
 
-<label id="lbl-default">Or drag and drop a file here</label>
-<label id="lbl-file-name">File Name</label>
-<label id="lbl-file-size">File Size</label>
+<label id="lbl-main" class="grey-upload grey-uploading">&{fileUploader.dragDrop}</label>
 
-<span id="icon-status" class="icon"></span>
-<span id="actions">
+<label id="lbl-file-size" class="flexed aligned justified upload-hidden">&{fileUploader.fileSize}</label>
+
+<span id="icon-status" class="icon flexed aligned justified upload-hidden uploaded-hidden"></span>
+
+<span id="actions" class="flexed upload-hidden uploading-hidden">
     <button class="icon" id="btn-replace" data-action="replace">swap-horiz</button>
     <button class="icon" id="btn-download" data-action="download">download</button>
     <button class="icon" id="btn-delete" data-action="delete">delete-outline</button>
@@ -198,9 +150,8 @@
         <h2>Drop file here</h2>
     </div>
 </template>
-
 <template id="dialog-content">
-    <button class="transparent" data-action="replace">Replace</button>
-    <button class="transparent" data-action="download">Download</button>
-    <button class="transparent" data-action="delete">Delete</button>
+    <button class="transparent" data-action="replace">&{fileUploader.replace}</button>
+    <button class="transparent" data-action="download">&{fileUploader.download}</button>
+    <button class="transparent" data-action="delete">&{fileUploader.delete}</button>
 </template>

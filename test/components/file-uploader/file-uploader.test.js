@@ -5,7 +5,7 @@ import {stub} from "https://deno.land/std@0.157.0/testing/mock.ts";
 
 
 await init();
-let instance, inputLabelMock, inputMock, fileNameLabelMock, fileSizeLabelMock;
+let instance, inputLabelMock, inputMock, mainLabelMock, fileSizeLabelMock, dispatchStub
 
 async function createInstance() {
     instance = document.createElement("file-uploader");
@@ -17,12 +17,10 @@ async function createInstance() {
     inputLabelMock.setAttribute("for", "inp-upload");
     inputMock.id = "inp-upload";
 
-    const defaultLabelMock = document.createElement("label");
-    fileNameLabelMock = document.createElement("label");
+    mainLabelMock = document.createElement("label");
     fileSizeLabelMock = document.createElement("label");
 
-    defaultLabelMock.id = "lbl-default";
-    fileNameLabelMock.id = "lbl-file-name";
+    mainLabelMock.id = "lbl-main";
     fileSizeLabelMock.id = "lbl-file-size";
 
     const replaceButtonMock = document.createElement("button");
@@ -39,31 +37,52 @@ async function createInstance() {
 
     instance.shadowRoot.appendChild(inputLabelMock);
     instance.shadowRoot.appendChild(inputMock);
-    instance.shadowRoot.appendChild(defaultLabelMock);
-    instance.shadowRoot.appendChild(fileNameLabelMock);
+    instance.shadowRoot.appendChild(mainLabelMock);
     instance.shadowRoot.appendChild(fileSizeLabelMock);
     instance.shadowRoot.appendChild(replaceButtonMock);
     instance.shadowRoot.appendChild(downloadButtonMock);
     instance.shadowRoot.appendChild(deleteButtonMock);
 }
 
+async function initInstance(fileName, fileSize, fileType) {
+    await crs.call("file_uploader_component", "initialize", {
+        element: instance,
+        file_name: fileName,
+        file_extension: fileType,
+        file_size: fileSize
+    });
+}
+
 beforeAll(async () => {
     await import("../../../components/file-uploader/file-uploader.js")
     await import("../../../components/file-uploader/file-uploader-actions.js");
+
+    globalThis.translations ||= {};
+    globalThis.translations.fileUploader = {
+        "upload": "Upload File",
+        "dragDrop": "Or drag and drop a file here",
+        "fileSize": "File Size",
+        "replace": "Replace",
+        "download": "Download",
+        "delete": "Delete"
+    }
 })
 
 describe ("file-uploader initialisation tests", async () => {
     beforeEach(async () => {
         await createInstance();
+        dispatchStub = stub(instance, "dispatchEvent", (event) => {});
     })
 
     afterEach(async () => {
         await instance.disconnectedCallback();
+        dispatchStub.restore();
     })
 
     it ("initializes file-uploader component in the correct 'upload' state", async () => {
         //act
         await instance.connectedCallback();
+        await initInstance()
 
         //assert
         assertEquals(instance != null, true);
@@ -73,22 +92,20 @@ describe ("file-uploader initialisation tests", async () => {
     });
 
     it ("initializes file-uploader component with correct labels set", async () => {
-        //arrange
-        instance.dataset.fileName = 'test_file';
-        instance.dataset.fileSize = '3000';
-        instance.dataset.fileType = 'pdf';
-        instance.dataset.state = 'uploaded';
-
         //act
         await instance.connectedCallback();
+        await initInstance('test_file',3000, 'pdf')
 
         //assert
         assertEquals(instance != null, true);
         assertEquals(instance.dataset.state, "uploaded");
+        assertEquals(instance.dataset.fileName, "test_file");
+        assertEquals(instance.dataset.fileSize, 3000);
+        assertEquals(instance.dataset.fileType, "pdf");
         assertEquals(instance.__events.length, 1);
         assertEquals(inputMock.__events.length, 1);
 
-        assertEquals(fileNameLabelMock.innerText, "test_file.pdf");
+        assertEquals(mainLabelMock.innerText, "test_file.pdf");
         assertEquals(fileSizeLabelMock.innerText, "3Kb");
     });
 });
@@ -96,54 +113,19 @@ describe ("file-uploader initialisation tests", async () => {
 describe ("file-uploader updating attributes and properties", async () => {
     beforeEach(async () => {
         await createInstance();
-        await instance.connectedCallback()
+        dispatchStub = stub(instance, "dispatchEvent", (event) => {});
 
-        instance.dataset.fileName = 'test_file';
-        instance.dataset.fileSize = '3000';
-        instance.dataset.fileType = 'pdf';
-        instance.dataset.state = 'uploaded';
+        await instance.connectedCallback()
     })
 
     afterEach(async () => {
         await instance.disconnectedCallback();
-    })
-
-    it ("changing the data-file-name attribute calls the updateLabels function", async () => {
-        //arrange
-        instance.dataset.fileName = 'new_file_name';
-
-        //act
-        instance.setAttribute("data-file-name", "new_file_name");
-
-        //assert
-        assertEquals(fileNameLabelMock.innerText, "new_file_name.pdf");
-    })
-
-    it ("changing the data-file-type attribute calls the updateLabels function", async () => {
-        //arrange
-        instance.dataset.fileType = 'docx';
-
-        //act
-        instance.setAttribute("data-file-type", "docx");
-
-        //assert
-        assertEquals(fileNameLabelMock.innerText, "test_file.docx");
-    })
-
-    it ("changing the data-file-size attribute calls the updateLabels function", async () => {
-        //arrange
-        instance.dataset.fileSize = '5000';
-
-        //act
-        instance.setAttribute("data-file-size", "5000");
-
-        //assert
-        assertEquals(fileSizeLabelMock.innerText, "5Kb");
+        dispatchStub.restore();
     })
 
     it ("updating labels sets the correct file size to 1Kb", async () => {
         //arrange
-        instance.dataset.fileSize = '1000';
+        await initInstance('test_file', 1000, 'pdf');
 
         //act
         await instance.updateLabels();
@@ -154,7 +136,7 @@ describe ("file-uploader updating attributes and properties", async () => {
 
     it ("updating labels sets the correct file size to 1.00Mb", async () => {
         //arrange
-        instance.dataset.fileSize = '1048576';
+        await initInstance('test_file', 1048576, 'pdf');
 
         //act
         await instance.updateLabels();
@@ -165,7 +147,7 @@ describe ("file-uploader updating attributes and properties", async () => {
 
     it ("updating labels sets the correct file size to 1.00Gb", async () => {
         //arrange
-        instance.dataset.fileSize = '1073741824';
+        await initInstance('test_file', 1073741824, 'pdf');
 
         //act
         await instance.updateLabels();
@@ -176,7 +158,7 @@ describe ("file-uploader updating attributes and properties", async () => {
 
     it ("updating labels sets the correct file size to 1.00Tb", async () => {
         //arrange
-        instance.dataset.fileSize = '1099511627776';
+        await initInstance('test_file', 1099511627776, 'pdf');
 
         //act
         await instance.updateLabels();
@@ -187,46 +169,44 @@ describe ("file-uploader updating attributes and properties", async () => {
 
     it ("updating labels sets the correct file name to another_test_file.pdf when fileType does not start with a .", async () => {
         //arrange
-        instance.dataset.fileName = 'another_test_file';
-        instance.dataset.fileType = 'pdf';
+        await initInstance('another_test_file', 1000, 'pdf');
 
         //act
         await instance.updateLabels();
 
         //assert
-        assertEquals(fileNameLabelMock.innerText, "another_test_file.pdf");
+        assertEquals(mainLabelMock.innerText, "another_test_file.pdf");
     })
 
     it ("updating labels sets the correct file name to another_test_file.pdf when fileType does start with a .", async () => {
         //arrange
-        instance.dataset.fileName = 'another_test_file';
-        instance.dataset.fileType = '.pdf';
+        await initInstance('another_test_file', 1000, '.pdf');
 
         //act
         await instance.updateLabels();
 
         //assert
-        assertEquals(fileNameLabelMock.innerText, "another_test_file.pdf");
+        assertEquals(mainLabelMock.innerText, "another_test_file.pdf");
     })
 
     it ("updating labels sets the correct file name to another_test_file.pdf.txt when fileType does start with a . but ends with .txt", async () => {
         //arrange
-        instance.dataset.fileName = 'another_test_file';
-        instance.dataset.fileType = 'pdf.txt';
+        await initInstance('another_test_file', 1000, 'pdf.txt');
 
         //act
         await instance.updateLabels();
 
         //assert
-        assertEquals(fileNameLabelMock.innerText, "another_test_file.pdf.txt");
+        assertEquals(mainLabelMock.innerText, "another_test_file.pdf.txt");
     })
 });
 
 describe ("file-uploader events", async () => {
-    let file, dispatchStub;
+    let file;
 
     beforeEach(async () => {
         await createInstance();
+        dispatchStub = stub(instance, "dispatchEvent", (event) => {});
         await instance.connectedCallback();
         file = {
             name: "test_file.pdf",
@@ -243,6 +223,7 @@ describe ("file-uploader events", async () => {
     it ("change event dispatched on the input uploads the file", async () => {
         //arrange
         inputMock.files = [file];
+        await dispatchStub.restore();
         dispatchStub = stub(instance, "dispatchEvent", (event) => {
             assertEquals(event.type, "upload_file");
             assertEquals(event.detail.file.name, "test_file");
@@ -261,23 +242,20 @@ describe ("file-uploader events", async () => {
         assertEquals(instance.dataset.fileName, "test_file");
         assertEquals(instance.dataset.fileType, "pdf");
         assertEquals(instance.dataset.fileSize, "3000");
-        assertEquals(fileNameLabelMock.innerText, "test_file.pdf");
+        assertEquals(mainLabelMock.innerText, "test_file.pdf");
         assertEquals(fileSizeLabelMock.innerText, "3Kb");
     })
 
     it ("clicking the replace button dispatches the replace_file event", async () => {
         //arrange
-        instance.file = file;
         const event = {
             composedPath: () => {
                 return [instance.shadowRoot.querySelector("#btn-replace")];
             }
         }
+        await dispatchStub.restore();
         dispatchStub = stub(instance, "dispatchEvent", (event) => {
             assertEquals(event.type, "replace_file");
-            assertEquals(event.detail.file.name, "test_file.pdf");
-            assertEquals(event.detail.file.type, "application/pdf");
-            assertEquals(event.detail.file.size, "3000");
         });
 
         //act
@@ -289,12 +267,13 @@ describe ("file-uploader events", async () => {
 
     it ("clicking the download button dispatches the download_file event", async () => {
         //arrange
-        instance.file = file;
+        inputMock.files = [file];
         const event = {
             composedPath: () => {
                 return [instance.shadowRoot.querySelector("#btn-download")];
             }
         }
+        await dispatchStub.restore();
         dispatchStub = stub(instance, "dispatchEvent", (event) => {
             assertEquals(event.type, "download_file");
             assertEquals(event.detail.file.name, "test_file.pdf");
@@ -311,12 +290,13 @@ describe ("file-uploader events", async () => {
 
     it ("clicking the delete button dispatches the delete_file event", async () => {
         //arrange
-        instance.file = file;
+        inputMock.files = [file];
         const event = {
             composedPath: () => {
                 return [instance.shadowRoot.querySelector("#btn-delete")];
             }
         }
+        await dispatchStub.restore();
         dispatchStub = stub(instance, "dispatchEvent", (event) => {
             assertEquals(event.type, "delete_file");
             assertEquals(event.detail.file.name, "test_file.pdf");
@@ -335,19 +315,21 @@ describe ("file-uploader events", async () => {
 describe ("file-uploader-actions tests", async () => {
     beforeEach(async () => {
         await createInstance();
+        dispatchStub = stub(instance, "dispatchEvent", (event) => {});
         await instance.connectedCallback();
     })
 
     afterEach(async () => {
         await instance.disconnectedCallback();
+        await dispatchStub.restore();
     })
 
     it ("get_file - returns the file associated with the element", async () => {
         //arrange
-        instance.file = "test_file";
+        inputMock.files = ["test_file"];
 
         //act
-        const file = await crs.call("file_uploader", "get_file", {element: instance})
+        const file = await crs.call("file_uploader_component", "get_file", {element: instance})
 
         //assert
         assertEquals(file, "test_file");
@@ -358,7 +340,7 @@ describe ("file-uploader-actions tests", async () => {
         instance.dataset.state = "uploading";
 
         //act
-        await crs.call("file_uploader", "file_uploaded", {element: instance});
+        await crs.call("file_uploader_component", "file_uploaded", {element: instance});
 
         //assert
         assertEquals(instance.dataset.state, "uploaded");
@@ -366,27 +348,24 @@ describe ("file-uploader-actions tests", async () => {
 
     it ("file_deleted - calls upon the file-uploader's deleted() to update the state and input value", async () => {
         //arrange
-        instance.dataset.state = "uploaded";
-        inputMock.value = "test_file";
+        await initInstance('test_file', 1000, 'pdf');
+        inputMock.value = ["test_file"];
 
         //act
-        await crs.call("file_uploader", "file_deleted", {element: instance});
+        await crs.call("file_uploader_component", "file_deleted", {element: instance});
 
         //assert
         assertEquals(instance.dataset.state, "upload");
         assertEquals(inputMock.value, null);
     })
 
-    it ("replace_file - updates the file-uploader component with the new file's details", async () => {
+    it ("uploading_file - updates the file-uploader component with the new file's details", async () => {
         //arrange
-        instance.file = "test_file";
-        instance.dataset.state = "uploaded";
-        instance.dataset.fileName = "test_file";
-        instance.dataset.fileSize = "3000";
-        instance.dataset.fileType = "pdf";
+        inputMock.value = ["test_file"];
+        await initInstance('test_file', 3000, 'pdf');
 
         //act
-        await crs.call("file_uploader", "replace_file", {
+        await crs.call("file_uploader_component", "uploading_file", {
             element: instance,
             file: {
                 name: "new_file",
@@ -402,23 +381,21 @@ describe ("file-uploader-actions tests", async () => {
         assertEquals(instance.dataset.fileName, "new_file");
         assertEquals(instance.dataset.fileType, "docx");
         assertEquals(instance.dataset.fileSize, "5120");
-        assertEquals(fileNameLabelMock.innerText, "new_file.docx");
+        assertEquals(mainLabelMock.innerText, "new_file.docx");
         assertEquals(fileSizeLabelMock.innerText, "5Kb");
     })
 
     it ("file_replaced - calls upon the file-uploader's uploaded() to update the state and file", async () => {
         //arrange
-        instance.file = "test_file";
         instance.dataset.state = "uploading";
 
         //act
-        await crs.call("file_uploader", "file_replaced", {
+        await crs.call("file_uploader_component", "file_replaced", {
             element: instance,
             file: "new_file"
         });
 
         //assert
-        assertEquals(instance.file, "new_file");
         assertEquals(instance.dataset.state, "uploaded");
     })
 });
