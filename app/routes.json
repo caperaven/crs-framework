@@ -116,6 +116,11 @@
             "view": "file-system"
         },
         {
+            "title": "File Uploader",
+            "hash": "#file-uploader",
+            "view": "file-uploader"
+        },
+        {
             "title": "Toast Notifications",
             "hash": "#toast-notification",
             "view": "toast-notification"

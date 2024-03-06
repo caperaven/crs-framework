@@ -47,7 +47,8 @@ html {
     --double-border-width: 2px;
     --input-height: 2rem;
     --input-width: 15rem;
-    --radius: 4px;
+    --radius: 0.25rem;
+    --half-radius: 0.5rem;
     --margin: 0.5rem;
     --padding: 0.5rem;
     --half-padding: 0.25rem;
