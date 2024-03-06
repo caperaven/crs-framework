@@ -248,6 +248,7 @@ describe ("file-uploader events", async () => {
 
     it ("clicking the replace button dispatches the replace_file event", async () => {
         //arrange
+        instance.file = "some_file";
         const event = {
             composedPath: () => {
                 return [instance.shadowRoot.querySelector("#btn-replace")];

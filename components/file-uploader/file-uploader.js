@@ -56,6 +56,7 @@ import {get_file_name} from "./../../packages/crs-process-api/action-systems/fil
  */
 export class FileUploader extends HTMLElement {
 
+    #file;
     #input;
     #dropBounds;
     #dragTarget;
@@ -77,7 +78,11 @@ export class FileUploader extends HTMLElement {
     }
 
     get file() {
-        return this.#input.files[0];
+        return this.#file || this.#input.files[0];
+    }
+
+    set file(newValue) {
+        this.#file = newValue
     }
 
     constructor() {
@@ -99,6 +104,7 @@ export class FileUploader extends HTMLElement {
         this.removeEventListener("click", this.#clickHandler);
         this.#input?.removeEventListener("change", this.#changeHandler);
 
+        this.#file = null;
         this.#input = null;
         this.#dropBounds = null;
         this.#mainLabel = null;
@@ -151,9 +157,9 @@ export class FileUploader extends HTMLElement {
     }
 
     async initialize(fileName, fileExtension, fileSize, dragTarget, context) {
-        this.dataset.fileName = fileName || this.dataset.fileName;
-        this.dataset.fileType = fileExtension || this.dataset.fileType;
-        this.dataset.fileSize = fileSize || this.dataset.fileSize;
+        this.dataset.fileName = fileName || this.dataset.fileName || "";
+        this.dataset.fileType = fileExtension || this.dataset.fileType || "";
+        this.dataset.fileSize = fileSize || this.dataset.fileSize || "";
 
         if (fileName != null) {
             this.dataset.state = this.#states.UPLOADED;
@@ -250,7 +256,7 @@ export class FileUploader extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #onDrop(event) {
-        if (this.file == null) {
+        if (this.dataset.fileName == null || this.dataset.fileName === "") {
             if (event.length > 0) {
                 await this.upload(event[0]);
             }
@@ -301,6 +307,7 @@ export class FileUploader extends HTMLElement {
      * @returns {Promise<void>}
      */
     async upload(file) {
+        this.file = file;
         this.dispatchEvent(new CustomEvent("upload_file", {detail: {
                 element: this,
                 file: file
@@ -311,27 +318,27 @@ export class FileUploader extends HTMLElement {
     }
 
     async replace(event) {
-        let file;
         if (event.type != null && event.type === "click") {
             //on clicking the replace button
             const result = await crs.call("files", "load", {
                 dialog: true,
             });
-            file = result[0];
+            this.file = result[0];
         }
         else if (Array.isArray(event)) {
             //on drag and drop
-            file = event[0];
+            this.file = event[0];
         }
 
         this.dispatchEvent(new CustomEvent("replace_file", {detail: {
                 element: this,
-                file: file
+                file: this.file
             }}));
     }
 
     async uploaded() {
         this.dataset.state = this.#states.UPLOADED;
+        this.file = null;
     }
 
     async delete() {
@@ -343,7 +350,11 @@ export class FileUploader extends HTMLElement {
 
     async deleted() {
         this.#input.value = null;
+        this.file = null;
         this.dataset.state = this.#states.UPLOAD;
+        this.dataset.fileName = "";
+        this.dataset.fileType = "";
+        this.dataset.fileSize = "";
 
         await this.updateLabels();
     }
