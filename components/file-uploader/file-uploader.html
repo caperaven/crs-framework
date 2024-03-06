@@ -106,8 +106,7 @@
     }
 
     button.icon:hover,
-    label#btn-upload:hover,
-    :host([data-state="upload"]) #action-drop-down:hover{
+    label#btn-upload:hover{
         background-color: var(--grey-s2);
         outline: none;
     }
@@ -123,7 +122,6 @@
         margin-right: 0.25rem;
         font-size: 1rem;
     }
-
 
     #lbl-default,
     span#icon-attach-file:before,
@@ -153,9 +151,6 @@
         background-color: var(--blue);
     }
 
-
-    :host([data-mobile="false"]) [role="toolbar"],
-    :host([data-state="upload"]) #action-drop-down,
     :host([data-state="upload"]) #lbl-file-name,
     :host([data-state="upload"]) #lbl-file-size,
     :host([data-state="upload"]) #icon-status,
@@ -165,23 +160,19 @@
     :host([data-state="uploading"]) #btn-download,
     :host([data-state="uploading"]) #btn-replace,
     :host([data-state="uploading"]) #btn-delete,
-    :host([data-state="uploading"]) #action-drop-down,
     :host([data-state="uploaded"]) #btn-upload,
     :host([data-state="uploaded"]) #lbl-default,
     :host([data-state="uploaded"]) #icon-status,
-    :host([data-mobile="false"]) [role="toolbar"],
     :host([data-state="upload"][data-is-mobile="true"]) #lbl-default,
-    :host([data-state="uploaded"][data-is-mobile="false"]) [role="toolbar"],
-    :host([data-state="uploaded"][data-is-mobile="true"]) #actions
+    :host([data-state="uploading"][data-is-mobile="true"]) #actions
     {
         display: none;
     }
 
-    :host([data-state="uploaded"]) #action-drop-down{
+    :host([data-state="uploaded"][data-is-mobile="true"]) #action{
         width: 2rem;
         height: 2rem;
         border-radius: var(--half-radius);
-        margin-left:auto;
     }
 </style>
 
@@ -199,10 +190,6 @@
     <button class="icon" id="btn-replace" data-action="replace">swap-horiz</button>
     <button class="icon" id="btn-download" data-action="download">download</button>
     <button class="icon" id="btn-delete" data-action="delete">delete-outline</button>
-</span>
-
-<span role="toolbar">
-    <button id="action-drop-down" class="icon" data-action="showActions">kabab-vert</button>
 </span>
 
 <template id="drop-template">

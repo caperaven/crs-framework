@@ -354,6 +354,10 @@ export class FileUploader extends HTMLElement {
 
     async uploaded(file) {
         this.dataset.state = this.#states.UPLOADED;
+        if (this.dataset.isMobile === "true") {
+            const element = this.shadowRoot.querySelector("#actions");
+            element.innerHTML = `<button id="action-drop-down" class="icon" data-action="showActions">kabab-vert</button>`
+        }
 
         if (file != null) {
             this.file = file;
