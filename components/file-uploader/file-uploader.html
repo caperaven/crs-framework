@@ -153,7 +153,22 @@
     </div>
 </template>
 <template id="dialog-content">
-    <button class="transparent" data-action="replace">&{fileUploader.replace}</button>
-    <button class="transparent" data-action="download">&{fileUploader.download}</button>
-    <button class="transparent" data-action="delete">&{fileUploader.delete}</button>
+    <style>
+        .file-uploader-mobile-buttons {
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+        }
+
+        .file-uploader-mobile-buttons button {
+            width: 100%;
+            justify-content: left;
+            padding: 0.75rem 0.75rem 0.75rem 0;
+        }
+    </style>
+    <section class="file-uploader-mobile-buttons">
+        <button class="transparent" data-action="replace">&{fileUploader.replace}</button>
+        <button class="transparent" data-action="download">&{fileUploader.download}</button>
+        <button class="transparent" data-action="delete">&{fileUploader.delete}</button>
+    </section>
 </template>
