@@ -1,3 +1,65 @@
-:host{
+:host {
+    display: flex;
+    float: right;
+    position: relative;
+    width: fit-content;
+}
+
+:host #side-menu {
+    display:flex;
+    height: inherit;
+}
+
+:host #side-menu-actions-panel{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+    border: 2px solid silver;
+    border-radius: 5px;
+    height: 100%;
+    width: 3rem;
+    position: relative;
+}
+
+#side-menu-actions-panel [role="button"]{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    margin-bottom: 1rem;
+    cursor: crosshair;
     border: 1px solid silver;
+}
+
+#side-menu-actions-panel [role="button"]:hover{
+    font-size: 1.5rem;
+    background: #0276c2;
+    color: white;
+}
+
+#side-menu-actions-panel [role="button"]:active{
+    background: #76C422;
+    color: #2F3545;
+}
+
+#side-menu-content-panel {
+    display: flex;
+    top: 0;
+    left: 50px;
+    width: 300px;
+    height: 100%;
+    background: dodgerblue;
+    border: 2px solid #2F3545;
+    border-radius: 5px;
+    position: absolute;
+    transition: left 0.3s ease-in-out, opacity 0.5s ease-in-out;  /* Smooth transition for the left property */
+    opacity: 0;
+}
+
+#side-menu-content-panel.slide-out{
+    background: lightskyblue;
+    left: -300px;
+    opacity: 1;
 }

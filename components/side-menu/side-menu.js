@@ -19,6 +19,8 @@ import {loadHTML} from "./../../src/load-resources.js";
  * <side-menu></side-menu>
  */
 export class SideMenu extends HTMLElement {
+    #clickHandler = this.#click.bind(this);
+
     /**
      * @constructor
      */
@@ -45,7 +47,9 @@ export class SideMenu extends HTMLElement {
         return new Promise(resolve => {
             requestAnimationFrame(async () => {
                 // load resources
+                this.shadowRoot.addEventListener("click", this.#clickHandler);
 
+                this.sideMenuContentPanel = this.shadowRoot.querySelector('#side-menu-content-panel');
             });
         })
     }
@@ -56,6 +60,32 @@ export class SideMenu extends HTMLElement {
      */
     async disconnectedCallback() {
         // dispose of resources
+        this.shadowRoot.removeEventListener("click", this.#clickHandler);
+        this.#clickHandler = null;
+        this.sideMenuContentPanel = null;
+    }
+
+    /**
+     * @method click- click event handler for the side menu.
+     * @returns {Promise<void>}
+     */
+    async #click(event) {
+        console.log("click", event.composedPath()[0]);
+        let target = event.composedPath()[0];
+        if (target.tagName === 'DIV' && target.getAttribute('role') === 'button') {
+            console.log('Clicked on a div with role button');
+            await this.openSideMenu();
+        }
+    }
+
+    // ToDo: AW - Think about having a toggleOpen method that toggles the open state of the side menu
+    /**
+     * @method openSideMenu - opens the side menu
+     * @return {Promise<void>}
+     */
+    async openSideMenu() {
+        console.log('Opening the side menu');
+        this.sideMenuContentPanel.classList.toggle("slide-out")
     }
 }
 

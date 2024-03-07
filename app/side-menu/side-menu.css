@@ -1,3 +1,21 @@
-side-menu h3{
-    color: #0276c2;
+h2#main-header{
+    display: flex;
+    background: #0098E0;
+    color: white;
+}
+
+div#dashboard {
+    display: flex;
+    height: 700px;
+    width: 1150px;
+    border: 2px inset silver;
+    padding: 1rem;
+    position: relative;
+    margin-left: 1rem;
+    justify-content: right;
+}
+
+side-menu {
+    display: flex;
+    float: right;
 }
