@@ -32,7 +32,7 @@ export default class FileUploaderViewModel extends crsbinding.classes.ViewBase {
     async connectedCallback() {
         await super.connectedCallback();
 
-        this.#workingExample = document.querySelector("#working-example");
+        this.#workingExample = document.querySelector("#working-example-component");
         this.#workingExample.addEventListener("ready", this.#readyHandler);
         this.#workingExample.addEventListener("download_file", this.#downloadHandler);
         this.#workingExample.addEventListener("replace_file", this.#replaceHandler);
@@ -78,22 +78,22 @@ export default class FileUploaderViewModel extends crsbinding.classes.ViewBase {
     }
 
     async #initialiseComponent(event) {
-        if (event.target.id === "working-example") {
+        if (event.target.id === "working-example-component") {
             await crs.call("file_uploader_component", "initialize", {
-                element: this.#workingExample,
+                parent_element: "#working-example",
                 drag_target: "#target",
             }, this.element);
         }
 
         if (event.target.id === "upload") {
             await crs.call("file_uploader_component", "initialize", {
-                element: this.#uploadExample,
+                parent_element: "#upload-component"
             });
         }
 
         if (event.target.id === "uploading") {
             await crs.call("file_uploader_component", "initialize", {
-                element: this.#uploadingExample,
+                parent_element: "#uploading-component",
                 file_name: "uploading",
                 file_extension: "txt",
                 file_size: 1000
@@ -103,7 +103,7 @@ export default class FileUploaderViewModel extends crsbinding.classes.ViewBase {
 
         if (event.target.id === "uploaded") {
             await crs.call("file_uploader_component", "initialize", {
-                element: this.#uploadedExample,
+                parent_element: "#uploaded-component",
                 file_name: "uploaded",
                 file_extension: "pdf",
                 file_size: 5000
@@ -127,7 +127,7 @@ export default class FileUploaderViewModel extends crsbinding.classes.ViewBase {
         this.#file = event.detail.file;
 
         await crs.call("file_uploader_component", "uploading_file", {
-            element: this.#workingExample,
+            parent_element: "#working-example",
             file: this.#file,
             file_name: this.#file.name,
             file_extension: this.#file.ext
@@ -148,7 +148,7 @@ export default class FileUploaderViewModel extends crsbinding.classes.ViewBase {
 
         //call upon the api function to alert the input the file has been uploaded
         await crs.call("file_uploader_component", "file_uploaded", {
-            element: this.#workingExample
+            parent_element: "#working-example",
         });
     }
 
@@ -161,7 +161,7 @@ export default class FileUploaderViewModel extends crsbinding.classes.ViewBase {
         const fileOnView = this.#file;
 
         await crs.call("file_uploader_component", "file_deleted", {
-            element: this.#workingExample
+            parent_element: "#working-example",
         });
         this.#file = null;
 
