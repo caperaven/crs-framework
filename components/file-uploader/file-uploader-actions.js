@@ -31,7 +31,8 @@ export class FileUploaderActions {
      * @returns {Promise<void>}
      */
     static async initialize(step, context, process, item) {
-        const element = await crs.dom.get_element(step, context, process, item);
+        const element = await getElement(step, context, process, item);
+
         const fileName = await crs.process.getValue(step.args.file_name, context, process, item);
         const fileExtension = await crs.process.getValue(step.args.file_extension, context, process, item);
         const fileSize = await crs.process.getValue(step.args.file_size, context, process, item);
@@ -54,7 +55,7 @@ export class FileUploaderActions {
      * @returns {Promise<*>}
      */
     static async get_file(step, context, process, item) {
-        const element = await crs.dom.get_element(step, context, process, item);
+        const element = await getElement(step, context, process, item);
         const file = element?.file;
 
         if (step.args.target != null) {
@@ -77,7 +78,7 @@ export class FileUploaderActions {
      * @returns {Promise<void>}
      */
     static async file_uploaded(step, context, process, item) {
-        const element = await crs.dom.get_element(step, context, process, item);
+        const element = await getElement(step, context, process, item);
 
         await element.uploaded();
     }
@@ -95,7 +96,7 @@ export class FileUploaderActions {
      * @returns {Promise<void>}
      */
     static async file_deleted(step, context, process, item) {
-        const element = await crs.dom.get_element(step, context, process, item);
+        const element = await getElement(step, context, process, item);
 
         await element.deleted();
     }
@@ -117,7 +118,7 @@ export class FileUploaderActions {
      * @returns {Promise<void>}
      */
     static async uploading_file(step, context, process, item) {
-        const element = await crs.dom.get_element(step, context, process, item);
+        const element = await getElement(step, context, process, item);
         const fileName = await crs.process.getValue(step.args.file_name, context, process, item) || element.dataset.fileName;
         const fileExtension = await crs.process.getValue(step.args.file_extension, context, process, item) || element.dataset.fileType;
         const file = await crs.process.getValue(step.args.file, context, process, item);
@@ -140,10 +141,26 @@ export class FileUploaderActions {
      * @returns {Promise<void>}
      */
     static async file_replaced(step, context, process, item) {
-        const element = await crs.dom.get_element(step, context, process, item);
+        const element = await getElement(step, context, process, item);
 
         await element.uploaded();
     }
 }
 
 crs.intent.file_uploader_component = FileUploaderActions;
+
+/**
+ * Ensures we return the correct element based on the parent element provided
+ * @param step {Object} - The step object from the process definition
+ * @param context {Object} - The context of the current process.
+ * @param process {Object} - The process object that is currently running.
+ * @param item {Object} - The item that is being processed.
+ *
+ * @param step.args.parent_element {String || HTMLElement} - The parent element to use to find the file-uploader component.
+ * @returns {Promise<*>}
+ */
+async function getElement(step, context, process, item) {
+    step.args.element =  await crs.process.getValue(step.args.parent_element, context, process, item);
+    const parentElement = await crs.dom.get_element(step, context, process, item);
+    return parentElement.querySelector("file-uploader");
+}

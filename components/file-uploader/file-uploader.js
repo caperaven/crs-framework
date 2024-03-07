@@ -118,6 +118,7 @@ export class FileUploader extends HTMLElement {
     }
 
     async load() {
+        this.dataset.state = this.#states.UPLOAD;
         this.shadowRoot.attributes = [];
         await crsbinding.translations.parseElement(this.shadowRoot);
 
@@ -136,16 +137,18 @@ export class FileUploader extends HTMLElement {
     }
 
     async initialize(fileName, fileExtension, fileSize, dragTarget, context) {
-        this.dataset.fileName = fileName || this.dataset.fileName || "";
-        this.dataset.fileType = fileExtension || this.dataset.fileType || "";
-        this.dataset.fileSize = fileSize || this.dataset.fileSize || "";
+        this.dataset.fileName = fileName || "";
+        this.dataset.fileType = fileExtension || "";
+        this.dataset.fileSize = fileSize || "";
 
         if (fileName != null) {
             this.dataset.state = this.#states.UPLOADED;
-            await this.updateLabels();
         } else {
             this.dataset.state = this.#states.UPLOAD;
+            this.file = null;
         }
+
+        await this.updateLabels();
 
         if (dragTarget != null) {
             this.#dragTarget = context.querySelector(dragTarget);

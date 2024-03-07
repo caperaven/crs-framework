@@ -5,9 +5,10 @@ import {stub} from "https://deno.land/std@0.157.0/testing/mock.ts";
 
 
 await init();
-let instance, inputLabelMock, inputMock, mainLabelMock, fileSizeLabelMock, dispatchStub
+let parentElement, instance, inputLabelMock, inputMock, mainLabelMock, fileSizeLabelMock, dispatchStub
 
 async function createInstance() {
+    parentElement = document.createElement("div");
     instance = document.createElement("file-uploader");
 
     inputLabelMock = document.createElement("label");
@@ -42,11 +43,12 @@ async function createInstance() {
     instance.shadowRoot.appendChild(replaceButtonMock);
     instance.shadowRoot.appendChild(downloadButtonMock);
     instance.shadowRoot.appendChild(deleteButtonMock);
+    parentElement.appendChild(instance);
 }
 
 async function initInstance(fileName, fileSize, fileType) {
     await crs.call("file_uploader_component", "initialize", {
-        element: instance,
+        parent_element: parentElement,
         file_name: fileName,
         file_extension: fileType,
         file_size: fileSize
@@ -330,7 +332,7 @@ describe ("file-uploader-actions tests", async () => {
         inputMock.files = ["test_file"];
 
         //act
-        const file = await crs.call("file_uploader_component", "get_file", {element: instance})
+        const file = await crs.call("file_uploader_component", "get_file", {parent_element: parentElement})
 
         //assert
         assertEquals(file, "test_file");
@@ -341,7 +343,7 @@ describe ("file-uploader-actions tests", async () => {
         instance.dataset.state = "uploading";
 
         //act
-        await crs.call("file_uploader_component", "file_uploaded", {element: instance});
+        await crs.call("file_uploader_component", "file_uploaded", {parent_element: parentElement});
 
         //assert
         assertEquals(instance.dataset.state, "uploaded");
@@ -353,7 +355,7 @@ describe ("file-uploader-actions tests", async () => {
         inputMock.value = ["test_file"];
 
         //act
-        await crs.call("file_uploader_component", "file_deleted", {element: instance});
+        await crs.call("file_uploader_component", "file_deleted", {parent_element: parentElement});
 
         //assert
         assertEquals(instance.dataset.state, "upload");
@@ -367,7 +369,7 @@ describe ("file-uploader-actions tests", async () => {
 
         //act
         await crs.call("file_uploader_component", "uploading_file", {
-            element: instance,
+            parent_element: parentElement,
             file: {
                 name: "new_file",
                 type: "docx",
@@ -392,7 +394,7 @@ describe ("file-uploader-actions tests", async () => {
 
         //act
         await crs.call("file_uploader_component", "file_replaced", {
-            element: instance,
+            parent_element: parentElement,
             file: "new_file"
         });
 
