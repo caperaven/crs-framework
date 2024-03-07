@@ -141,9 +141,9 @@
 <span id="icon-status" class="icon flexed aligned justified upload-hidden uploaded-hidden"></span>
 
 <span id="actions" class="flexed upload-hidden uploading-hidden">
-    <button class="icon" id="btn-replace" data-action="replace">swap-horiz</button>
-    <button class="icon" id="btn-download" data-action="download">download</button>
-    <button class="icon" id="btn-delete" data-action="delete">delete-outline</button>
+    <button class="icon" id="btn-replace" data-action="replace" aria-label="&{fileUploader.replace}">swap-horiz</button>
+    <button class="icon" id="btn-download" data-action="download" aria-label="&{fileUploader.download}">download</button>
+    <button class="icon" id="btn-delete" data-action="delete" aria-label="&{fileUploader.delete}">delete-outline</button>
 </span>
 
 <template id="drop-template">
@@ -167,8 +167,8 @@
         }
     </style>
     <section class="file-uploader-mobile-buttons">
-        <button class="transparent" data-action="replace">&{fileUploader.replace}</button>
-        <button class="transparent" data-action="download">&{fileUploader.download}</button>
-        <button class="transparent" data-action="delete">&{fileUploader.delete}</button>
+        <button class="transparent" data-action="replace" aria-label="&{fileUploader.replace}">&{fileUploader.replace}</button>
+        <button class="transparent" data-action="download" aria-label="&{fileUploader.download}">&{fileUploader.download}</button>
+        <button class="transparent" data-action="delete" aria-label="&{fileUploader.delete}">&{fileUploader.delete}</button>
     </section>
 </template>
