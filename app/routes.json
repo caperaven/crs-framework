@@ -176,6 +176,11 @@
             "title": "percentage bar",
             "hash": "percentage-bar",
             "view": "percentage-bar"
+        },
+        {
+            "title": "side-menu",
+            "view": "side-menu",
+            "hash": "#side-menu"
         }
     ]
 }
