@@ -33,12 +33,13 @@ class ContextMenu extends crsbinding.classes.BindableElement {
 
     async connectedCallback() {
         await super.connectedCallback();
-        await this.load();
+        await this.init();
     }
 
-    async load() {
+    async init() {
         return new Promise(async (resolve) => {
             requestAnimationFrame(async () => {
+                console.log("testing")
                 this.shadowRoot.addEventListener("click", this.#clickHandler);
                 const ul = this.shadowRoot.querySelector(".popup");
 
