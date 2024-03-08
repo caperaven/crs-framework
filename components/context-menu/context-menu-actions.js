@@ -99,6 +99,7 @@ export class ContextMenuActions {
         const margin = await crs.process.getValue(step.args.margin, context, process, item);
         const callback = await crs.process.getValue(step.args.callback, context, process, item);
         const templates = await crs.process.getValue(step.args.templates, context, process, item);
+        const filtering = await crs.process.getValue(step.args.filtering, context, process, item) ?? true;
 
         if (globalThis.contextMenu != null) {
             await this.close();
@@ -114,7 +115,7 @@ export class ContextMenuActions {
         const instance = document.createElement("context-menu");
         instance.setOptions({
             options, templates, point, target, at,
-            anchor, context, margin, height,
+            anchor, context, margin, height, filtering,
             style: {
                 "--icon-font": icon_font_family
             }
