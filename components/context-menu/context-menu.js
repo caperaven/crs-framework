@@ -19,6 +19,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     #item;
     #margin;
     #templates;
+    #filtering;
     #filterCloseHandler = this.#filterClose.bind(this);
     #filterHeader;
     #isHierarchical = false;
@@ -71,7 +72,11 @@ class ContextMenu extends crsbinding.classes.BindableElement {
                 }
 
                 this.#filterHeader = this.shadowRoot.querySelector("filter-header");
-                this.#filterHeader.addEventListener("close", this.#filterCloseHandler);
+                if (this.#filtering !== false) {
+                    this.#filterHeader.addEventListener("close", this.#filterCloseHandler);
+                } else {
+                    this.#filterHeader && this.#filterHeader.parentElement.removeChild(this.#filterHeader);
+                }
 
                 await crs.call("component", "notify_ready", {element: this});
                 resolve();
@@ -84,9 +89,13 @@ class ContextMenu extends crsbinding.classes.BindableElement {
             element: this.popup
         });
 
-        this.#filterHeader.removeEventListener("close", this.#filterCloseHandler);
+        if (this.#filtering !== false) {
+            this.#filterHeader.removeEventListener("close", this.#filterCloseHandler);
+        }
+
         this.shadowRoot.removeEventListener("click", this.#clickHandler);
 
+        this.#filtering = null;
         this.#filterHeader = null;
         this.#filterCloseHandler = null;
         this.#clickHandler = null;
@@ -131,6 +140,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
      * @param [args.item] {Object} - The item to pass to the process when an option is selected. used to execute a process with the menu item.
      * @param [args.margin] {Number} - The margin to use when positioning the context menu.
      * @param [args.templates] {Object} - The templates to use when rendering the context menu.
+     * @param [args.filtering] {Object} - When set to false, disables filtering on the options and the rendering of the filter header.
      * @param [args.height] {String} - The default height of the context menu.
      * @param [args.style] {Object} - The style to apply to the context menu.
      *
@@ -154,6 +164,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         this.#item = args.item;
         this.#margin = args.margin;
         this.#templates = args.templates;
+        this.#filtering = args.filtering ?? true;
 
         if (typeof args.height == "number") {
             args.height = `${args.height}px`
@@ -165,6 +176,10 @@ class ContextMenu extends crsbinding.classes.BindableElement {
             for (const key of Object.keys(args.style)) {
                 this.style.setProperty(key, args.style[key]);
             }
+        }
+
+        if (this.#filtering === false) {
+            this.dataset.filtering = "false";
         }
     }
 }
