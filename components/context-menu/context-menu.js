@@ -74,7 +74,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
                 if (this.#filtering !== false) {
                     this.#filterHeader.addEventListener("close", this.#filterCloseHandler);
                 } else {
-                    this.#filterHeader && this.#filterHeader.parentElement.removeChild(this.#filterHeader);
+                    this.#filterHeader.parentElement.removeChild(this.#filterHeader);
                 }
 
                 await crs.call("component", "notify_ready", {element: this});
@@ -175,10 +175,6 @@ class ContextMenu extends crsbinding.classes.BindableElement {
             for (const key of Object.keys(args.style)) {
                 this.style.setProperty(key, args.style[key]);
             }
-        }
-
-        if (this.#filtering === false) {
-            this.dataset.filtering = "false";
         }
     }
 }

@@ -3,8 +3,6 @@
     :host {
         --icon-font: "";
         --height: max-content;
-        --border-radius: 0.5rem;
-        --half-margin: calc(var(--padding) / 2);
 
         display: block;
         position: fixed;
@@ -31,13 +29,13 @@
         height: var(--height);
         min-width: 12.5rem;
         min-height: 2.5rem;
-        border-radius: var(--border-radius);
+        border-radius: 0.5rem;
         display: grid;
         grid-template-rows: auto 1fr;
     }
 
     #btnClose {
-        border-radius: 0 var(--border-radius) 0 0;
+        border-radius: 0 0.5rem 0 0;
     }
 
     ul {
