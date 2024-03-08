@@ -3,6 +3,7 @@
     :host {
         --icon-font: "";
         --height: max-content;
+        --border-radius: 0.5rem;
 
         display: block;
         position: fixed;
@@ -13,10 +14,6 @@
         background: transparent;
         z-index: 999999;
         user-select: none;
-    }
-
-    :host([data-filtering="false"]) filter-header {
-        display: none;
     }
 
     .back {
@@ -33,9 +30,13 @@
         height: var(--height);
         min-width: 200px;
         min-height: 2.5rem;
-        border-radius: var(--radius);
+        border-radius: var(--border-radius);
         display: grid;
         grid-template-rows: auto 1fr;
+    }
+
+    #btnClose {
+        border-radius: 0 var(--border-radius) 0 0;
     }
 
     ul {
