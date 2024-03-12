@@ -35,7 +35,7 @@ export class SideMenu extends HTMLElement {
      */
     async connectedCallback() {
         this.shadowRoot.innerHTML = await loadHTML(import.meta.url);
-        await this.load();
+        await this.#load();
         await crs.call("component", "notify_ready", { element: this });
     }
 
@@ -43,7 +43,7 @@ export class SideMenu extends HTMLElement {
      * @method load - load resources and attach event listeners
      * @returns {Promise<unknown>}
      */
-    load() {
+    async #load() {
         return new Promise(resolve => {
             requestAnimationFrame(async () => {
                 // load resources

@@ -1,14 +1,56 @@
+<!--<div id="side-menu">-->
+<!--    <div id="side-menu-actions-panel">-->
+<!--        <div role="button">H</div>-->
+<!--        <div role="button">E</div>-->
+<!--        <div role="button">L</div>-->
+<!--        <div role="button">L</div>-->
+<!--        <div role="button">O</div>-->
+<!--    </div>-->
+
+<!--    <div id="side-menu-content-panel">-->
+<!--        <div id="side-menu-header"></div>-->
+<!--        <div id="side-menu-content"></div>-->
+<!--    </div>-->
+<!--</div>-->
+
+
 <div id="side-menu">
-    <div id="side-menu-actions-panel">
-        <div role="button">H</div>
-        <div role="button">E</div>
-        <div role="button">L</div>
-        <div role="button">L</div>
-        <div role="button">O</div>
-    </div>
+    <ul id="side-menu-actions-panel" role="menubar">
+        <li role="menuitem" aria-haspopup="true" aria-controls="content1" class="icon">stacked-line-chart
+            <div id="content1" class="menu-content" aria-hidden="true">
+                <!-- Content for stacked-line-chart -->
+            </div>
+        </li>
+        <li role="menuitem" aria-haspopup="true" aria-controls="content2" class="icon">all
+            <div id="content2" class="menu-content" aria-hidden="true">
+                <!-- Content for all -->
+            </div>
+        </li>
+        <li role="menuitem" aria-haspopup="true" aria-controls="content3" class="icon">colour-picker
+            <div id="content3" class="menu-content" aria-hidden="true">
+                <!-- Content for colour-picker -->
+            </div>
+        </li>
+        <li role="menuitem" aria-haspopup="true" aria-controls="content4" class="icon">format-size
+            <div id="content4" class="menu-content" aria-hidden="true">
+                <!-- Content for format-size -->
+            </div>
+        </li>
+        <li role="menuitem" aria-haspopup="true" aria-controls="content5" class="icon">kanban
+            <div id="content5" class="menu-content" aria-hidden="true">
+                <!-- Content for kanban -->
+            </div>
+        </li>
+    </ul>
+
 
     <div id="side-menu-content-panel">
-        <div id="side-menu-header"></div>
-        <div id="side-menu-content"></div>
+        <div class="menu-content" aria-hidden="true">
+            <!-- Content for Button 1 -->
+        </div>
+        <div class="menu-content" aria-hidden="true">
+            <!-- Content for Button 2 -->
+        </div>
+        <!-- Add more content panels as needed -->
     </div>
 </div>
