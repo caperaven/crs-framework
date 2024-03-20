@@ -55,8 +55,8 @@ export default class EntityDetails extends HTMLElement {
         const css = `<link rel="stylesheet" href="${import.meta.url.replace(".js", ".css")}">`;
         const html = await fetch(import.meta.url.replace(".js", ".html")).then(result => result.text());
         this.shadowRoot.innerHTML = `${css}${html}`;
-        await crsbinding.translations.add( globalThis.translations.entityDetails, "entityDetails");
-        await crsbinding.translations.parseElement(this.shadowRoot.querySelector("header"));
+        await crs.binding.translations.add( globalThis.translations.entityDetails, "entityDetails");
+        await crs.binding.translations.parseElement(this.shadowRoot.querySelector("header"));
         requestAnimationFrame(() => this.init())
     }
 
@@ -77,7 +77,7 @@ export default class EntityDetails extends HTMLElement {
     async disconnectedCallback() {
         this.removeEventListener("click", this.#clickHandler);
         this.addEventListener("dblclick", this.#dblclickHandler);
-        await crsbinding.translations.delete("entityDetails");
+        await crs.binding.translations.delete("entityDetails");
 
         this.#sortDirection = null;
         this.#clickHandler = null;

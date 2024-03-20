@@ -3,7 +3,7 @@ import "./../../src/managers/data-manager/data-manager-actions.js";
 import "./../../components/kan-ban/cards-manager/cards-manager-actions.js";
 import "./../../src/actions/virtualization-actions.js";
 
-export default class Welcome extends crsbinding.classes.ViewBase {
+export default class Welcome extends crs.binding.classes.ViewBase {
 
     async preLoad() {
         this.setProperty("recordCount", 1000);

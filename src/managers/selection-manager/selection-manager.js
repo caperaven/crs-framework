@@ -50,8 +50,9 @@ export class SelectionManager {
         if (triggeredElement == null) return;
 
         if (triggeredElement.matches(this.#masterQuery)) {
-            const checked = triggeredElement.getAttribute(this.#masterAttribute) === "true";
-            this.#setChildrenStates(checked);
+            const checkedState = triggeredElement.getAttribute(this.#masterAttribute);
+            if (checkedState === "mixed") return;
+            this.#setChildrenStates(checkedState === "true")
         }
 
         if (triggeredElement.matches(this.#itemQuery)) {
@@ -101,18 +102,27 @@ export class SelectionManager {
 
         const master = this.#containerElement.querySelector(this.#masterQuery);
 
-        let allChecked;
+        let checkCount = 0;
         for (const dependent of dependents) {
             const checked = dependent.getAttribute(this.#itemAttribute) === "true";
-            if ((allChecked === false && checked === true) || (allChecked === true && checked === false)) {
-                this.#setMasterState("mixed", master);
-                return;
+
+            if(checked) {
+                checkCount++;
             }
 
-            allChecked = checked;
+         }
+
+        if (checkCount === 0) {
+            this.#setMasterState(false, master);
         }
 
-        this.#setMasterState(allChecked, master);
+        if (checkCount === dependents.length) {
+            this.#setMasterState(true, master);
+        }
+
+        if (checkCount > 0 && checkCount < dependents.length) {
+            this.#setMasterState("mixed", master);
+        }
     }
 
     /**

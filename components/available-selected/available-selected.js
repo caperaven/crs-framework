@@ -51,7 +51,7 @@ export class AvailableSelected extends HTMLElement {
             this.#currentView = "selected";
 
             requestAnimationFrame(async () => {
-                await crsbinding.translations.parseElement(this);
+                await crs.binding.translations.parseElement(this);
                 await crs.call("component", "notify_ready", {element: this});
                 resolve();
             });

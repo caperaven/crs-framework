@@ -1,7 +1,7 @@
 import "./../../components/entity-details/entity-details.js";
 import "./../../packages/crs-process-api/action-systems/no-content-actions.js"
 
-export default class EntityDetails extends crsbinding.classes.ViewBase {
+export default class EntityDetails extends crs.binding.classes.ViewBase {
     #details;
     #getEntitiesHandler = this.#getEntities.bind(this);
     #getEntityItemsHandler = this.#getEntityItems.bind(this);
@@ -36,7 +36,7 @@ export default class EntityDetails extends crsbinding.classes.ViewBase {
     }
 
     async load() {
-        await crsbinding.translations.add({
+        await crs.binding.translations.add({
             collapseAll: "Collapse All",
         }, "entityDetails");
 
@@ -68,7 +68,7 @@ export default class EntityDetails extends crsbinding.classes.ViewBase {
             {entityType: "Entity 5", title: "Entity 5", entityIds: [13, 14, 15]},
         ]
 
-        await crsbinding.events.emitter.postMessage("entity-details", { action: "addEntities", data: this.#entities })
+        await crs.binding.events.emitter.postMessage("entity-details", { action: "addEntities", data: this.#entities })
     }
 
     async #getEntityItems(event) {
@@ -111,7 +111,7 @@ export default class EntityDetails extends crsbinding.classes.ViewBase {
 
         const timeout = setTimeout(async () => {
             clearTimeout(timeout);
-            await crsbinding.events.emitter.postMessage("entity-details", { action: "addEntityItems", entityType: entityType, data: data })
+            await crs.binding.events.emitter.postMessage("entity-details", { action: "addEntityItems", entityType: entityType, data: data })
         }, 2000);
 
     }
