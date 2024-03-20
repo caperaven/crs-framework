@@ -4,10 +4,10 @@ const LOADING = "loading";
  * @class ComboBox - combobox component with custom features.
  *
  * @example <caption>html usage</caption>
- * <combo-box>
- *     <option value="1">Option 1</option>
- *     <option value="2">Option 2</option>
- *     <option value="3">Option 3</option>
+ * <combo-box>®
+ *     <li value="1">Option 1</li>
+ *     <li value="2">li 2</li>
+ *     <li value="3">li 3</li>
  * </combo-box>
  *
  * @example <caption>html usage with items property</caption>
@@ -29,6 +29,8 @@ class ComboBox extends crs.classes.BindableElement {
     #options;
     #ul;
     #isOpen = false;
+    #highlighted;
+    #currentValue = null;
 
     get html() {
         return import.meta.url.replace(".js", ".html");
@@ -58,7 +60,7 @@ class ComboBox extends crs.classes.BindableElement {
 
         this.setProperty("value", newValue);
 
-        if (this.#busy != true  ) {
+        if (this.#busy !== true) {
             this.#setTextFromValue(newValue);
         }
     }
@@ -92,8 +94,15 @@ class ComboBox extends crs.classes.BindableElement {
     load() {
         return new Promise(resolve => {
             requestAnimationFrame(async () => {
+                const input_link = document.createElement("link");
+                input_link.rel = "stylesheet";
+                input_link.href = new URL("./../../styles/lib/input.css", import.meta.url);
+                this.shadowRoot.appendChild(input_link);
+
                 this.setAttribute("tabindex", "0");
                 this.setAttribute("aria-expanded", "false");
+                this.dataset.default ||= "";
+
                 // 1. if no template was loaded you are working with
                 // data that will flow in from the outside so use the default template in the component
                 this.#template ||= this.shadowRoot.querySelector("#tplDefaultItem");
@@ -109,8 +118,11 @@ class ComboBox extends crs.classes.BindableElement {
                 const value = this.getProperty("value");
                 this.#setTextFromValue(value);
 
+                const input = this.shadowRoot.querySelector("input");
+                input.placeholder = this.getAttribute("placeholder") ?? "";
+
                 if (this.hasAttribute("required") === true) {
-                    this.shadowRoot.querySelector("input").setAttribute("required", "required");
+                    input.setAttribute("required", "required");
                 }
 
                 // this is already called in the base class so we don't want to call it again.
@@ -126,23 +138,28 @@ class ComboBox extends crs.classes.BindableElement {
         this.#items = null;
         this.#options = null;
         this.#busy = null;
+        this.#highlighted = null;
+        this.#currentValue = null;
 
         super.disconnectedCallback();
     }
 
+    /**
+     * @method #setTextFromValue - sets the text from the value by looking at the text content of the options
+     * @param value
+     */
     #setTextFromValue(value) {
         if (this.#busy === LOADING) return;
 
-        if (value == null) {
-            value = "";
+        // There is no value check for default values and use that if required
+        if ((value ?? "").toString().trim().length === 0) {
+            const defaultOption = this.#ul.querySelector(`li[data-value='${this.dataset.default}']`);
+            this.select(null, defaultOption).catch(error => console.error(error));
         }
 
-        if ((value.toString() ?? "").trim().length == 0) {
-            return this.setProperty("searchText", "");
-        }
-
-        const options = Array.from(this.shadowRoot.querySelectorAll("option"));
-        const selected = options.find(option => option.value == value);
+        // There is a value so use that to set the text
+        const options = Array.from(this.shadowRoot.querySelectorAll("li"));
+        const selected = options.find(option => option.dataset.value == value);
 
         if (selected != null) {
             this.setProperty("searchText", selected.textContent);
@@ -155,13 +172,13 @@ class ComboBox extends crs.classes.BindableElement {
      * @returns {Promise<void>}
      */
     async #loadItemsFromDom() {
-        const options = this.querySelectorAll("option");
+        const options = this.querySelectorAll("li");
 
         if (options.length > 0) {
             this.#items = Array.from(options).map(option => {
                 return {
-                    value: option.value,
-                    text: option.innerText
+                    value: option.dataset.value,
+                    text: option.textContent
                 }
             })
         }
@@ -189,6 +206,8 @@ class ComboBox extends crs.classes.BindableElement {
         const ul = this.shadowRoot.querySelector("ul");
         ul.innerHTML = "";
         ul.appendChild(fragment);
+
+        this.#setTextFromValue(this.value);
     }
 
     async #buildItemsFromTemplate(fragment) {
@@ -202,56 +221,69 @@ class ComboBox extends crs.classes.BindableElement {
 
     async #buildItemsManually(fragment) {
         for (const item of this.#items) {
-            const option = document.createElement("option");
-            option.value = item.value;
-            option.innerText = item.text;
+            const option = document.createElement("li");
+            option.dataset.value = item.value;
+            option.textContent = item.text;
+
+            if (item.disabled === true) {
+                option.setAttribute("disabled", "disabled");
+            }
+
             fragment.appendChild(option);
         }
     }
 
     async #highlightNext() {
-        await this.showOptions();
+        requestAnimationFrame(async () => {
+            await this.showOptions();
 
-        const currentHighlighted = this.#ul.querySelector(".highlighted");
-        if (currentHighlighted == null) {
-            return this.#ul.firstElementChild.classList.add("highlighted");
-        }
+            this.#highlighted = this.#ul.querySelector(".highlighted");
+            if (this.#highlighted == null) {
+                this.#highlighted = this.#ul.firstElementChild;
+                return this.#highlighted?.classList.add("highlighted");
+            }
 
-        let next = currentHighlighted.nextElementSibling;
-        if (next == null) {
-            next = this.#ul.firstElementChild;
-        }
+            let next = this.#highlighted.nextElementSibling;
+            if (next == null) {
+                next = this.#ul.firstElementChild;
+            }
 
-        currentHighlighted.classList.remove("highlighted");
-        next.classList.add("highlighted");
+            this.#highlighted.classList.remove("highlighted");
+            next.classList.add("highlighted");
+            this.#highlighted = next;
 
-        if (next.classList.contains("hidden") === true) {
-            return await this.#highlightNext();
-        }
+            if (next.classList.contains("hidden") === true) {
+                return await this.#highlightNext();
+            }
+        });
     }
 
     async #highlightPrevious() {
-        await this.showOptions();
+        requestAnimationFrame(async () => {
+            await this.showOptions();
 
-        const currentHighlighted = this.#ul.querySelector(".highlighted");
-        if (currentHighlighted == null) {
-            return this.#ul.lastElementChild.classList.add("highlighted");
-        }
+            const currentHighlighted = this.#ul.querySelector(".highlighted");
+            if (currentHighlighted == null) {
+                return this.#ul.lastElementChild.classList.add("highlighted");
+            }
 
-        let next = currentHighlighted.previousElementSibling;
-        if (next == null) {
-            next = this.#ul.lastElementChild;
-        }
+            let next = currentHighlighted.previousElementSibling;
+            if (next == null) {
+                next = this.#ul.lastElementChild;
+            }
 
-        currentHighlighted.classList.remove("highlighted");
-        next.classList.add("highlighted");
+            currentHighlighted.classList.remove("highlighted");
+            next.classList.add("highlighted");
 
-        if (next.classList.contains("hidden") === true) {
-            return await this.#highlightPrevious();
-        }
+            if (next.classList.contains("hidden") === true) {
+                return await this.#highlightPrevious();
+            }
+        })
     }
 
     async showOptions(isVisible = true) {
+        this.#currentValue = this.value;
+
         if (Boolean(isVisible) === true) {
             this.#isOpen = true;
             if (this.#ul.classList.contains("hide") === true) {
@@ -260,6 +292,7 @@ class ComboBox extends crs.classes.BindableElement {
             }
         }
         else {
+            this.#currentValue = null;
             this.#isOpen = false;
             if (this.#ul.classList.contains("hide") === false) {
                 return this.#ul.classList.add("hide");
@@ -275,7 +308,7 @@ class ComboBox extends crs.classes.BindableElement {
             selected.removeAttribute("aria-selected");
         }
 
-        const new_selected = this.#ul.querySelector(`[value="${value}"]`);
+        const new_selected = this.#ul.querySelector(`[data-value="${value}"]`);
 
         if (new_selected != null) {
             new_selected.setAttribute("aria-selected", "true");
@@ -290,13 +323,20 @@ class ComboBox extends crs.classes.BindableElement {
     }
 
     async select(event, highlighted) {
+        // There is no selection as it has been cleared.
+        if (event == null && highlighted == null) {
+            await this.setProperty("value", null);
+            await this.setProperty("searchText", "");
+            return;
+        }
+
         this.#busy = true;
         try {
             const selected = highlighted || event.composedPath()[0];
 
-            if (selected.nodeName !== "OPTION") return;
+            if (selected.nodeName !== "LI" || selected.dataset.value == null) return;
 
-            await this.setProperty("value", selected.value);
+            await this.setProperty("value", selected.dataset.value);
             await this.setProperty("searchText", selected.textContent);
 
             this.shadowRoot.dispatchEvent(new CustomEvent("change", {detail: { componentProperty: "value" }, composed: true}));
@@ -336,12 +376,19 @@ class ComboBox extends crs.classes.BindableElement {
 
         if (event.key === "Escape") {
             // JHR: cancel the lookup if open.
+            if (this.#isOpen === true) {
+                this.value = this.#currentValue;
+                return await this.showOptions(false);
+            }
         }
 
-        this.#options ||= Array.from(this.shadowRoot.querySelectorAll("option"));
+        this.#options ||= Array.from(this.shadowRoot.querySelectorAll("li"));
 
         const input = event.composedPath()[0];
         const value = input.value;
+
+        // remove the current highlighted item
+        this.#highlighted?.classList.remove("highlighted");
 
         for (const option of this.#options) {
             option.classList.add("hidden");
@@ -351,15 +398,32 @@ class ComboBox extends crs.classes.BindableElement {
             }
         }
 
+        // highlight the first visible item
+        this.#highlighted = this.#ul.querySelector("li:not(.hidden)");
+        this.#highlighted.classList.add("highlighted");
+ß
         await this.showOptions();
     }
 
     async clear() {
-        const input = this.shadowRoot.querySelector("input");
-        input.value = "";
+        this.value = "";
 
         await this.setProperty("value", null);
         this.shadowRoot.dispatchEvent(new CustomEvent("change", {detail: { componentProperty: "value" }, composed: true}));
+    }
+
+    async valueChanged(value) {
+        const button = this.shadowRoot.querySelector("#btnClear");
+        button.setAttribute("hidden", "hidden");
+
+        value = (value ?? "").toString().trim();
+
+        const hasValue = value.length > 0;
+        const isDefault = value === this.dataset.default;
+
+        if (hasValue === true && isDefault === false    ) {
+            button.removeAttribute("hidden");
+        }
     }
 }
 
