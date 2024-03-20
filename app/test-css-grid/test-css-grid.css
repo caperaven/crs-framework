@@ -1,0 +1,28 @@
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+#sla-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.area {
+    padding: 20px;
+    text-align: center;
+}
+
+.area-1 {
+    background-color: #ff9999;
+}
+
+.area-2 {
+    background-color: #99ff99;
+}
+
+.area-3 {
+    background-color: #9999ff;
+}
