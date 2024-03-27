@@ -193,6 +193,11 @@
             "title": "percentage bar",
             "hash": "percentage-bar",
             "view": "percentage-bar"
+        },
+        {
+            "title": "map",
+            "hash": "#map",
+            "view": "map"
         }
     ]
 }
