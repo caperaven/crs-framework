@@ -13,7 +13,7 @@ export class SlaVisualizationActions {
 
     static async initialize(step, context, process, item) {
         const data = await crs.process.getValue(step.args.data, context, process, item);
-        const element = null; // get the element
+        const element = await crs.dom.get_element(step.args.element, context, process, item);
 
         // create everything from this point forward.
         await create_sla_grid(data, element);

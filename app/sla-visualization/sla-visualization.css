@@ -1,0 +1,13 @@
+#sla-visualization {
+    height: 50vh;
+    width: 50vh;
+    border: var(--border);
+}
+
+.grid-column {
+    border: 1px solid black;
+}
+
+.grid-row {
+    border: 1px solid red;
+}

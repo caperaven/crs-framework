@@ -22,6 +22,7 @@ export default class SlaVisualization extends crs.classes.BindableElement {
 
     async initialize() {
         await crs.call("sla_visualization", "initialize", {
+            element: this.shadowRoot.querySelector("#sla-visualization"),
             data: data
         })
     }
