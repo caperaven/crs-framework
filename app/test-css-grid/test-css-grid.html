@@ -1,11 +1,26 @@
-<div class="grid-container">
-    <div class="area area-1">Area 1</div>
-    <div class="area area-2">Area 2</div>
-    <div class="area area-3">Area 3</div>
-</div>
+<!--<div class="grid-container">-->
+<!--    <div class="area area-1">Area 1</div>-->
+<!--    <div class="area area-2">Area 2</div>-->
+<!--    <div class="area area-3">Area 3</div>-->
+<!--</div>-->
+
+<input type="text" name="sla-remover" id="sla-id-input">
+<button id="remove-sla-1">Remove SLA</button>
 
 <div id="sla-container">
-    <sla-measurement data-progress="25"></sla-measurement>
-    <sla-measurement data-progress="50"></sla-measurement>
-    <sla-measurement data-progress="75"></sla-measurement>
+    <sla-measurement id="mes-1" data-duration="7:00" data-status="active"></sla-measurement>
+    <sla-measurement id="mes-2" data-duration="14:00" data-status="active"></sla-measurement>
+    <sla-measurement id="mes-3" data-duration="21:00" data-status="active"></sla-measurement>
+    <sla-measurement id="mes-4" data-duration="28:00" data-status="active"></sla-measurement>
+    <sla-measurement id="mes-5" data-duration="34:00" data-status="inactive"></sla-measurement>
 </div>
+
+<button id="sla-update-1" >Update Progress</button>
+<button id="sla-randomize-1">Randomize Progress</button>
+
+<hr>
+
+<div id="sla-container2"></div>
+<button id="create-sla-1">Create New SLA's</button>
+<button id="sla-update-2">Update Progress</button>
+<hr>

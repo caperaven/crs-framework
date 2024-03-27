@@ -4,10 +4,11 @@
     gap: 10px;
 }
 
-#sla-container {
+#sla-container, #sla-container2 {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
+    margin: 4rem 0;
 }
 
 .area {
