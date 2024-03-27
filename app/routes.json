@@ -181,6 +181,11 @@
             "title": "test-css-grid",
             "view": "test-css-grid",
             "hash": "#test-css-grid"
+        },
+        {
+            "title": "sla-visualization",
+            "view": "sla-visualization",
+            "hash": "#sla-visualization"
         }
     ]
 }
