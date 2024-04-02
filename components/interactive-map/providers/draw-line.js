@@ -23,10 +23,13 @@ export default class DrawLine {
         if(this.#line != null) {
             this.#line.remove();
         }
+        this.#startPoint = null;
+        this.#mouseMoveHandler = null;
+        this.#clickHandler = null;
     }
 
     async #click(event) {
-        if(this.#line != null) {
+        if (this.#line != null) {
             // If the line is already drawn, remove it from the map.
             this.#line = null;
             this.#map.off("mousemove", this.#mouseMoveHandler);

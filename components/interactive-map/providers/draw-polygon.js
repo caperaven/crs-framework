@@ -28,13 +28,17 @@ export default class DrawPolygon {
         if(this.#polygon != null) {
             this.#polygon.remove();
         }
+        this.#polygonCoordinates = null;
+        this.#clickHandler = null;
+        this.#contextMenuHandler = null;
+        this.#mouseMoveHandler = null;
     }
 
     async #click(event) {
         this.#polygonCoordinates.push([event.latlng.lat, event.latlng.lng]);
         if(this.#polygon == null) {
-            this.#polygon = L.polygon(this.#polygonCoordinates, {color: 'red'}).addTo(this.#map);
-            this.#polygon.type = "polygon";
+            this.#polygon = await crs.call("interactive_map", "add_polygon", {coordinates: this.#polygonCoordinates, element: this.#map});
+
             this.#map.on("mousemove", this.#mouseMoveHandler);
         }
         else {

@@ -5,6 +5,7 @@
 export default class SelectProvider {
     #map;
     #selectionProvider;
+    #clickHandler;
 
     constructor() {
         this.#selectionProvider = null;
@@ -12,11 +13,12 @@ export default class SelectProvider {
 
     async initialize(map) {
         this.#map = map;
-        this.#map.on("click", this.onClick.bind(this));
+        this.#clickHandler = this.onClick.bind(this)
+        this.#map.on("click", this.#clickHandler);
     }
 
     async dispose() {
-        this.#map.off("click", this.onClick.bind(this));
+        this.#map.off("click", this.#clickHandler);
         this.#map = null;
         this.#selectionProvider?.dispose();
         this.#selectionProvider = null;

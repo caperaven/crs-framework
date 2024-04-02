@@ -37,8 +37,7 @@ export default class DrawRectangle {
 
         this.#map.on("mousemove", this.#mouseMoveHandler);
         this.#startPoint = event.latlng;
-        this.#rectangle = L.rectangle([[this.#startPoint.lat, this.#startPoint.lng], [this.#startPoint.lat, this.#startPoint.lng]], {color: 'red'}).addTo(this.#map);
-        this.#rectangle.type = "rectangle";
+        this.#rectangle = await crs.call("interactive_map", "add_rectangle", {coordinates: [[this.#startPoint.lat, this.#startPoint.lng], [this.#startPoint.lat, this.#startPoint.lng]], element: this.#map});
     }
 
     async #mouseMove(event) {

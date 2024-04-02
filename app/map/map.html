@@ -23,10 +23,20 @@
         height: 600px;
     }
 
+    .flex {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
 </style>
 
 <div class="container">
     <div class="toolbar">
+        <select value.bind="map">
+            <option value="#openstreetmap">Open Street Map</option>
+            <option value="#floorplan">Floorplan</option>
+        </select>
         <button class="icon" click.setvalue="mode = 'select'" disabled.if="mode =='select'? true">pointer</button>
         <button class="icon" click.setvalue="mode = 'draw-line'" disabled.if="mode =='draw-line'? true">minimize</button>
         <button class="icon" click.setvalue="mode = 'draw-polygon'" disabled.if="mode =='draw-polygon'? true">show-chart</button>
@@ -34,7 +44,9 @@
         <button class="icon" click.setvalue="mode = 'draw-circle'" disabled.if="mode =='draw-circle'? true">radio-button-unchecked</button>
     </div>
 
-    <interactive-map id="myMap"></interactive-map>
-
+    <div class="flex vertical">
+        <interactive-map data-provider="openstreetmap" id="openstreetmap"></interactive-map>
+        <interactive-map data-provider="image" data-image-url="app/map/floorplan.jpg"  id="floorplan"></interactive-map>
+    </div>
 </div>
 

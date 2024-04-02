@@ -37,11 +37,11 @@ export default class SelectRectangleProvider {
         corners.forEach(corner => {
             const customIcon = L.divIcon({
                 className: 'marker',
-                html: "<div class='icon'>radio-button-unchecked</div>",
+                html: "<div class='handle'></div>",
                 iconSize: [32, 32], // Size of the icon
                 iconAnchor: [16, 16] // Point of the icon which will correspond to marker's location
             });
-            const marker = L.marker(corner, {icon: customIcon, draggable: true }).addTo(this.#map);
+            const marker = L.marker(corner, {icon: customIcon, draggable: true}).addTo(this.#map);
             marker.on("drag", this.#markerDragHandler);
             this.#markers.push(marker);
         });
@@ -73,24 +73,17 @@ export default class SelectRectangleProvider {
         let markerLatLng = marker.getLatLng();
         let oppositeMarkerLatLng = this.#markers[oppositeIndex].getLatLng();
 
-        // Check if the marker has moved past the opposite marker
-        if ((index % 2 === 0 && markerLatLng.lat > oppositeMarkerLatLng.lat) ||
-            (index % 2 === 1 && markerLatLng.lng < oppositeMarkerLatLng.lng)) {
-            // Swap the markers
-            [markerLatLng, oppositeMarkerLatLng] = [oppositeMarkerLatLng, markerLatLng];
-        }
-
         const newBounds = L.latLngBounds(markerLatLng, oppositeMarkerLatLng);
 
         // Update the rectangle's bounds
         this.#rectangle.setBounds(newBounds);
 
         // Update the positions of the other markers
-        this.#updateMarkers(newBounds);
+        this.#updateMarkers(newBounds, index);
 
     }
 
-    #updateMarkers(bounds) {
+    #updateMarkers(bounds, draggedMarkerIndex) {
         const corners = [
             bounds.getNorthWest(),
             bounds.getNorthEast(),

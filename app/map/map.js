@@ -2,15 +2,20 @@ import "./../../components/interactive-map/interactive-map-actions.js";
 
 export default class Map extends crsbinding.classes.ViewBase {
 
-    async modeChanged(mode) {
+    preLoad() {
+        this.setProperty("map", "#openstreetmap");
+    }
 
+    async mapChanged(mode) {
+        this.setProperty("mode", "none");
+    }
+
+    async modeChanged(mode) {
         await crs.call("interactive_map", "set_mode", {
-            element: "#myMap",
+            element: this.getProperty("map"),
             mode: mode
         });
     }
-
-
 
     addPolygon() {
         const polygonGeoJSON = {

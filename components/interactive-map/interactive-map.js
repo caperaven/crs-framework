@@ -46,21 +46,30 @@ export class InteractiveMap extends HTMLElement {
     initLeaflet() {
         const mapDiv = this.shadowRoot.querySelector("#map");
 
-        // Initialize Leaflet map
-        this.#map = L.map(mapDiv, {
-            renderer: L.svg()
-        })
-
-        // Set the view to start with
-        this.#map.setView([38.910, -77.034], 13);
-
 
         // Add a tile layer
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors',
+        if (this.dataset.provider === "openstreetmap") {
+            // Initialize Leaflet map
+            this.#map = L.map(mapDiv, {})
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors',
+            }).addTo(this.#map);
 
+            // Set the view to start with
+            this.#map.setView([38.910, -77.034], 13);
 
-        }).addTo(this.#map);
+        }
+
+        if (this.dataset.provider === "image") {
+            // Initialize Leaflet map
+            this.#map = L.map(mapDiv, {
+                crs: L.CRS.Simple,
+                minZoom: -5
+            })
+            const bounds = [[0,0], [1406,2300]];
+            L.imageOverlay(this.dataset.imageUrl, bounds).addTo(this.#map);
+            this.#map.fitBounds(bounds);
+        }
     }
 
     addToMap(geoJson, drawingOptions) {
