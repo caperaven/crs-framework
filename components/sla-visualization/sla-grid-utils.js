@@ -29,37 +29,6 @@ export async function create_sla_grid(data, slaVisualization) {
     createRowElements(element, data.statuses);
     createSlaLayers(element, data.sla);
 
-    // applyRegions(element, regions);
-
-    //
-    //
-
-
-    // NB: Loop backwards because the end of the data is at the top
-    // ["A", "B", "C", "D"]
-    // results to
-    // D
-    // C
-    // B
-    // A
-    // create css grid and add the status labels (REVIEW)
-
-    // // ** create status text
-    // for (const status of data.statuses) {
-    //     const cell_name = `cl_statues_${status.id}` // use this for region name
-    // }
-    //
-    // data.statuses.prepend({id: -1})    // add a dummy status at the top of the list
-    // data.statuses.append({id: -1})          // add a dummy status at the bottom of the list
-    //
-    // // ** create row indicators
-    // for (let i = 0; i < numberOfRows; i++) {
-    //     const div = document.createElement("div")
-    //     div.dataset.status = data.statuses[i].id;
-    //     // add div to UI and set the right row and column css values
-    //     // span the div across all columns
-    // }
-
     // 2. create sla text elements and place on grid
 
     // 3. create sla layer and place on grid
@@ -237,26 +206,3 @@ function applyCssColumns(element, numberOfColumns) {
 function applyCssRows(element, numberOfRows) {
     crs.call("cssgrid", "set_rows", {element: element, rows: `repeat(${numberOfRows}, 1fr)`});
 }
-
-//
-// /**
-//  * @method populateGridCells - populates the grid cells with the relevant data
-//  * @param element {HTMLElement} - the sla visualization element
-//  * @param data {Object} - the sla data object
-//  * @param numberOfRows {Number} - the number of rows
-//  * @param numberOfColumns {Number} - the number of columns
-//  * @returns {void}
-//  */
-//
-// function populateGridCells(element, data, numberOfRows, numberOfColumns) {
-//
-//     const totalCells = numberOfRows * numberOfColumns;
-//
-//     // Loop to create and append cells
-//     for (let i = 0; i < totalCells; i++) {
-//         const cell = document.createElement('div');
-//         cell.classList.add('grid-cell');
-//         cell.textContent = `Cell ${i + 1}`;
-//         element.appendChild(cell);
-//     }
-// }

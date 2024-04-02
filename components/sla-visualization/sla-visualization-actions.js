@@ -16,6 +16,7 @@ export class SlaVisualizationActions {
         const element = await crs.dom.get_element(step.args.element, context, process, item);
 
         // create everything from this point forward.
+        // calls into sla-grid-utils.js
         await create_sla_grid(data, element);
 
         /**

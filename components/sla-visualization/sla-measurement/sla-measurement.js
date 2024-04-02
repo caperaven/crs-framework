@@ -3,10 +3,6 @@ import { loadHTML } from "../../../src/load-resources.js";
 export class SlaMeasurement extends crs.classes.BindableElement {
     #clickHandler = this.#click.bind(this);
 
-    static get observedAttributes() {
-        return ['data-progress']; // Watch for changes in data-progress attribute
-    }
-
     constructor() {
         super();
         this.attachShadow({ mode: "open" });
@@ -35,10 +31,7 @@ export class SlaMeasurement extends crs.classes.BindableElement {
     }
 
     async #click(event) {
-        // const target = event.composedPath()[0];
-        // if (target.id === 'show-progress') {
-        //     await this.updateProgress();
-        // }
+        console.log("click event", event);
     }
 
     async updateProgress() {

@@ -17,12 +17,12 @@ export default class SlaVisualization extends crs.classes.BindableElement {
     }
 
     async disconnectedCallback() {
-
+        await super.disconnectedCallback();
     }
 
     async initialize() {
         await crs.call("sla_visualization", "initialize", {
-            element: this,
+            element: this.shadowRoot.querySelector("sla-visualization"),
             data: data
         })
     }
