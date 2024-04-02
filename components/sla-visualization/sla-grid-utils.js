@@ -1,4 +1,5 @@
 import "../../packages/crs-process-api/action-systems/css-grid-actions.js";
+
 /**
  * 1. create css grid for SLA visualization
  * 2. create css grid for SLA layer including areas
@@ -16,28 +17,23 @@ export async function create_sla_grid(data, slaVisualization) {
     // 1.1 the status cell area name = cl_status_${statusId} e.g. cl_status_1001 and cl_status_1002
 
     const element = slaVisualization
-
     const numberOfRows = data.statuses.length + 2;
-
     const numberOfColumns = data.sla.length + 1;
-
-    const regions = [];
 
     createInitialGrid(element, numberOfRows, numberOfColumns);
 
-    // applyCssRows(element, numberOfRows);
-    //
-    // applyCssColumns(element, data.sla.length);
-    //
-    // createStatusRegions(element, data.statuses, regions);
-    //
-    // createSlaRegions(element, data.sla, regions);
-    //
+    // Generate the grid template array
+    element.style.gridTemplate = generateGridTemplateArray(data.statuses, data.sla).join('\n');
+
+    createStatusLabels(element, data.statuses);
+    createRowElements(element, data.statuses);
+    createSlaLayers(element, data.sla);
+
     // applyRegions(element, regions);
+
     //
-    // createStatusLabels(element, data.statuses);
     //
-    // createSlaLayers(element, data.sla);
+
 
     // NB: Loop backwards because the end of the data is at the top
     // ["A", "B", "C", "D"]
@@ -80,28 +76,7 @@ export async function create_sla_grid(data, slaVisualization) {
  */
 
 function createInitialGrid(element, numberOfRows, numberOfColumns) {
-    // const grid = element
     crs.call("cssgrid", "init", {element: element, id: "sla-grid"});
-    element.style.display = "grid";
-
-    applyCssRows(element, numberOfRows);
-    applyCssColumns(element, numberOfColumns);
-
-    // Create rows and columns as elements
-    for (let i = 0; i < numberOfRows; i++) {
-        const row = document.createElement('div');
-        row.classList.add('grid-row');
-        element.appendChild(row);
-        // for (let j = 0; j < numberOfColumns; j++) {
-        //     const column = document.createElement('div');
-        //     column.classList.add('grid-column');
-        //     row.appendChild(column);
-        // }
-    }
-
-    console.log(element);
-    console.log("grid created");
-
 }
 
 
@@ -112,12 +87,39 @@ function createInitialGrid(element, numberOfRows, numberOfColumns) {
  */
 
 function createStatusLabels(element, statuses) {
-    // const statusLabels = element.shadowRoot.querySelector("#status-labels");
-    // for (const status of statuses) {
-    //     const label = document.createElement("div");
-    //     label.textContent = status.name;
-    //     statusLabels.appendChild(label);
-    // }
+    // based on the status object, create the status labels for each status object
+    // the status label should be a div with the class status-label and the area set to the relevant status area
+    // the area should be set to the relevant status area
+    // the status label should be appended to the sla visualization element and display in the correct status-area
+
+    const statusBackground = document.createElement("div");
+    statusBackground.classList.add("status-background");
+    element.shadowRoot.appendChild(statusBackground);
+
+    for(const item of statuses) {
+        const statusLabel = document.createElement("div");
+        statusLabel.id = `status_${item.id}`;
+        statusLabel.classList.add("status-label");
+        statusLabel.style.gridArea = `status_${item.id}`;
+        statusLabel.textContent = item.name;
+        element.shadowRoot.appendChild(statusLabel);
+    }
+
+
+
+}
+
+function createRowElements(element, statuses) {
+    let index = 1;
+
+    for (let status of statuses) {
+        const div = document.createElement("div");
+        div.dataset.status = status.id;
+        div.style.gridRow = index;
+        div.classList.add("status-row");
+        element.shadowRoot.appendChild(div);
+        index++;
+    }
 }
 
 /**
@@ -126,14 +128,23 @@ function createStatusLabels(element, statuses) {
  * @param sla {[Object]} - the array of sla objects
  */
 
-function createSlaLayers(element, sla) {
-    // const slaLayer = element.shadowRoot.querySelector("#sla-layer");
-    // for (const item of sla) {
-    //     const layer = document.createElement("div");
-    //     layer.id = item.id;
-    //     layer.textContent = item.code;
-    //     slaLayer.appendChild(layer);
-    // }
+function createSlaLayers(element, slaCollection) {
+    // based on the sla object, create the sla layers for each sla object
+    // the sla layer should be a div with the class sla-layer and the area set to the relevant sla area
+    // the area should be set to the relevant sla area
+    // the sla layer should be appended to the sla visualization element and display in the correct sla-area
+
+    for(const sla of slaCollection) {
+        const slaLayer = document.createElement("div");
+        slaLayer.id = `sla_${sla.id}`;
+        slaLayer.classList.add("sla-layer");
+        slaLayer.style.gridArea = `sla_${sla.id}`;
+        slaLayer.textContent = sla.code;
+        element.shadowRoot.appendChild(slaLayer);
+    }
+
+    // NB!!!!!
+    // The Sla will be created via the process api.
 }
 
 /**
@@ -143,10 +154,7 @@ function createSlaLayers(element, sla) {
  */
 
 function applyRegions(element, regions) {
-    // const grid = element.shadowRoot.querySelector("#sla-grid");
-    // for (const region of regions) {
-    //     grid.style.gridTemplateAreas = region.area;
-    // }
+
 }
 
 /**
@@ -156,13 +164,7 @@ function applyRegions(element, regions) {
  * @param regions {[Object]} - the array of regions
  */
 
-function createSlaRegions(element, sla, regions) {
-    // for (const item of sla) {
-    //     const region = {
-    //         area: `cl_sla_${item.id}`
-    //     }
-    //     regions.push(region);
-    // }
+function createSlaRegions(sla) {
 }
 
 /**
@@ -172,14 +174,48 @@ function createSlaRegions(element, sla, regions) {
  * @param regions {[Object]} - the array of regions
  */
 
-function createStatusRegions(element, statuses, regions) {
-    // for (const status of statuses) {
-    //     const region = {
-    //         area: `cl_status_${status.id}`
-    //     }
-    //     regions.push(region);
-    // }
+function createStatusRegions(statuses) {
 }
+
+// Function to generate the grid template string
+/**
+ * Generate the grid template array
+ * @param dataStatuses {[Object]} - the array of status objects
+ * @param dataSla {[Object]} - the array of sla objects
+ * @returns {[string]} - the generated grid template array
+ */
+function generateGridTemplateArray(dataStatuses, dataSla) {
+    dataStatuses.unshift({id: -1});
+    dataStatuses.push({id: -1});
+
+    // Create the grid template array
+    // Loop through the statuses and sla to create the grid template array
+    // For example : '". status_1 status_2 status_3" 2rem'
+    const reversedStatuses = [...dataStatuses].reverse();
+
+    const gridTemplateArray = reversedStatuses.map(status => {
+        let row = status.id === -1 ? "." : `status_${status.id}`;
+        let slaArray = dataSla.map(sla => ` sla_${sla.id}`);
+        // add the row height
+        // the row and slaArray are joined together to form the row with "" around it
+
+        let rowHeight = " 1fr";
+
+        return `"${row + slaArray.join('')}"${rowHeight}`;
+    });
+
+    let columnWidth = dataSla.map(sla => "auto").join(' ');
+    // add the column width for the status column at the beginning of the string
+
+    columnWidth = `/ auto ${columnWidth}`;
+
+    // add the column width to the end of the grid template array
+    gridTemplateArray.push(columnWidth);
+
+
+    return gridTemplateArray;
+}
+
 
 /**
  * Apply the css columns to the element
@@ -189,7 +225,6 @@ function createStatusRegions(element, statuses, regions) {
 
 function applyCssColumns(element, numberOfColumns) {
     // element.style.gridTemplateColumns = `repeat(${numberOfColumns}, 1fr)`;
-
     crs.call("cssgrid", "set_columns", {element: element, columns: `repeat(${numberOfColumns}, 1fr)`});
 }
 
@@ -200,7 +235,28 @@ function applyCssColumns(element, numberOfColumns) {
  */
 
 function applyCssRows(element, numberOfRows) {
-    // element.style.gridTemplateRows = `repeat(${numberOfRows}, 1fr)`;
-
     crs.call("cssgrid", "set_rows", {element: element, rows: `repeat(${numberOfRows}, 1fr)`});
 }
+
+//
+// /**
+//  * @method populateGridCells - populates the grid cells with the relevant data
+//  * @param element {HTMLElement} - the sla visualization element
+//  * @param data {Object} - the sla data object
+//  * @param numberOfRows {Number} - the number of rows
+//  * @param numberOfColumns {Number} - the number of columns
+//  * @returns {void}
+//  */
+//
+// function populateGridCells(element, data, numberOfRows, numberOfColumns) {
+//
+//     const totalCells = numberOfRows * numberOfColumns;
+//
+//     // Loop to create and append cells
+//     for (let i = 0; i < totalCells; i++) {
+//         const cell = document.createElement('div');
+//         cell.classList.add('grid-cell');
+//         cell.textContent = `Cell ${i + 1}`;
+//         element.appendChild(cell);
+//     }
+// }

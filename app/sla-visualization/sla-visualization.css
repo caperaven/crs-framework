@@ -1,13 +1,37 @@
-#sla-visualization {
-    height: 50vh;
-    width: 50vh;
+:host {
+    height: 500px;
+    width: 500px;
     border: var(--border);
+    overflow: auto;
 }
 
-.grid-column {
-    border: 1px solid black;
+button {
+    position: absolute;
+    bottom: -2rem;
 }
 
-.grid-row {
-    border: 1px solid red;
+.status-label {
+    position: sticky;
+    left: 0;
+}
+
+.sla-layer {
+    background: transparent;
+    width: 100%;
+    border: var(--border);
+    margin: 0.5rem;
+    min-width: 200px;
+}
+
+.status-row {
+    border-bottom: var(--border);
+    grid-column: 2 / -1;
+}
+
+.status-background {
+    grid-column: 1;
+    grid-row: 1 / -1;
+    background: var(--window);
+    position: sticky;
+    left: 0;
 }
