@@ -163,13 +163,9 @@ function generateGridTemplateArray(dataStatuses, dataSla) {
     const reversedStatuses = [...dataStatuses].reverse();
 
     const gridTemplateArray = reversedStatuses.map(status => {
+        let rowHeight = "1fr";
         let row = status.id === -1 ? "." : `status_${status.id}`;
         let slaArray = dataSla.map(sla => ` sla_${sla.id}`);
-        // add the row height
-        // the row and slaArray are joined together to form the row with "" around it
-
-        let rowHeight = " 1fr";
-
         return `"${row + slaArray.join('')}"${rowHeight}`;
     });
 

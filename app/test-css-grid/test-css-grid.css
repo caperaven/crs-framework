@@ -11,19 +11,38 @@
     margin: 4rem 0;
 }
 
-.area {
-    padding: 20px;
-    text-align: center;
+#sla-layer-grid {
+    position: relative;
+    display: grid;
+    height: 400px;
+    width: 400px;
+    border: 1px solid black;
+    padding: 0.5rem;
+    grid-template-columns: auto auto auto auto;
+    grid-template-rows: repeat(10, 1fr);
+    grid-template-areas:
+        "status sla_1001 sla_1002 sla_1003"
+        "status sla_1001 sla_1002 sla_1003"
+        "status sla_1001 sla_1002 sla_1003"
+        "status sla_1001 sla_1002 sla_1003"
+        "status sla_1001 sla_1002 sla_1003"
+        "status sla_1001 sla_1002 sla_1003"
+        "status sla_1001 sla_1002 sla_1003"
+        "status sla_1001 sla_1002 sla_1003"
+        "status sla_1001 sla_1002 sla_1003"
+        "status sla_1001 sla_1002 sla_1003";
 }
 
-.area-1 {
-    background-color: #ff9999;
+/* Define grid areas for specific elements */
+
+#sla_1001 {
+    grid-area: sla_1001;
 }
 
-.area-2 {
-    background-color: #99ff99;
+#sla_1002 {
+    grid-area: sla_1002;
 }
 
-.area-3 {
-    background-color: #9999ff;
+#sla_1003 {
+    grid-area: sla_1003;
 }

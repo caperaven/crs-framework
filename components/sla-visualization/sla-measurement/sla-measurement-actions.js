@@ -11,7 +11,7 @@ export class SlaMeasurementActions {
     }
 
     /**
-     * @method create - Creates the sla measurement component
+     * @method createAll - Creates the sla measurement component
      * @param step {Object} - The step object in a process
      * @param context {Object} - The context object
      * @param process {Object} - The process object
@@ -20,18 +20,27 @@ export class SlaMeasurementActions {
      * @param data {[Object]} - The array of objects where each object contains the data for the component
      */
 
-    static async create(step, context, process, item, parent, data) {
-        const parentContainer = await crs.dom.get_element(step.args.parent, context, process, item);
-        const slaData = await crs.process.getValue(step.args.data, context, process, item);
+    static async create_all(step, context, process, item, parent, data) {
+        const parentElement = await crs.dom.get_element(step.args.parent, context, process, item);
+        const measurementData = await crs.process.getValue(step.args.data, context, process, item);
 
-        for (const item of slaData) {
-            const element = document.createElement("sla-measurement");
-            element.id = item.id;
-            element.setAttribute("data-progress", item.measurements[0].progress);
-            element.setAttribute("data-status", item.measurements[0].status);
-            element.setAttribute("data-duration", item.measurements[0].duration);
-            parentContainer.appendChild(element);
+        for (const measurement of measurementData) {
+            const me = document.createElement("div")
+            me.style.background = "blue";
+            me.style.gridArea = `m_${measurement.id}`;
+            parentElement.shadowRoot.appendChild(me);
         }
+
+
+        // for (const measurement of measurementData) {
+        //     const element = document.createElement("sla-measurement");
+        //     element.id = measurement.id;
+        //     element.setAttribute("data-progress", measurement.progress);
+        //     element.setAttribute("data-status", measurement.status);
+        //     element.setAttribute("data-duration", measurement.duration);
+        //     element.style.gridArea = `m_${measurement.id}`;
+        //     parentElement.appendChild(element);
+        // }
     }
 
     /**

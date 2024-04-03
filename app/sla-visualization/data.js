@@ -53,47 +53,33 @@ export const data = {
             "measurements": [
                 {
                     "id": "1001",
-                    "code": "measurement1",
+                    "code": "measurement 1",
                     "description": "something",
-                    "start_status": "awaiting approval",
-                    "end_status": "awaiting labour",
+                    "start_status": 1,
+                    "end_status": 3,
                     "progress": 25,
                     "status": "active",
                     "duration": "27:00"
-                }
-            ]
-        },
-        {
-            "id": "1002",
-            "code": "SLA-2",
-            "description": "something",
-            "measurements": [
+                },
+                {
+                    "id": "1002",
+                    "code": "measurement 2",
+                    "description": "something",
+                    "start_status": 3,
+                    "end_status": 6,
+                    "progress": 25,
+                    "status": "active",
+                    "duration": "10:00"
+                },
                 {
                     "id": "1003",
-                    "code": "measurement1",
+                    "code": "measurement 3",
                     "description": "something",
-                    "start_status": "awaiting approval",
-                    "end_status": "awaiting labour",
-                    "progress": 50,
+                    "start_status": 7,
+                    "end_status": 10,
+                    "progress": 25,
                     "status": "active",
-                    "duration": "27:00"
-                }
-            ]
-        },
-        {
-            "id": "1003",
-            "code": "SLA-3",
-            "description": "something",
-            "measurements": [
-                {
-                    "id": "1003",
-                    "code": "measurement1",
-                    "description": "something",
-                    "start_status": "awaiting approval",
-                    "end_status": "awaiting labour",
-                    "progress": 75,
-                    "status": "active",
-                    "duration": "27:00"
+                    "duration": "50:00"
                 }
             ]
         }

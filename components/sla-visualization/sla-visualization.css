@@ -1,23 +1,13 @@
 :host {
-    height: 500px;
-    width: 500px;
+    height: 100%;
+    width: 100%;
     border: var(--border);
     overflow: auto;
 }
 
-
-
 .status-label {
     position: sticky;
     left: 0;
-}
-
-.sla-layer {
-    background: transparent;
-    width: 100%;
-    border: var(--border);
-    margin: 0.5rem;
-    min-width: 200px;
 }
 
 .status-row {

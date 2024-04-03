@@ -1,4 +1,5 @@
-button {
-    position: absolute;
-    bottom: -2rem;
+div {
+    height: 600px;
+    width: 800px;
+    border: var(--border);
 }

@@ -1,6 +1,8 @@
 import "./../../components/sla-visualization/sla-measurement/sla-measurement.js";
 import "./../../components/sla-visualization/sla-measurement/sla-measurement-actions.js";
-import {myData1, myData2} from "./data.js";
+import "./../../components/sla-visualization/sla-layer/sla-layer.js";
+import "./../../components/sla-visualization/sla-layer/sla-layer-actions.js";
+import {myData1, myData2, myData3} from "./data.js";
 
 export default class TestCssGrid extends crs.classes.BindableElement {
     #clickHandler = this.#click.bind(this);
@@ -43,6 +45,9 @@ export default class TestCssGrid extends crs.classes.BindableElement {
         else if (target.id === 'sla-update-2') {
             await this.updateProgress(event, myData1);
         }
+        else if (target.id === "create-sla-layer") {
+            await this.createSlaLayer(event, this.slaParent, myData3);
+        }
     }
 
     async updateProgress(event, data) {
@@ -84,6 +89,14 @@ export default class TestCssGrid extends crs.classes.BindableElement {
         await crs.call("sla_measurement", "remove_sla", {
             element: this,
             id: slaElement.toString()
+        });
+    }
+
+    async createSlaLayer(event, parent, data) {
+        const slaLayerParent = this.shadowRoot.querySelector("#sla-layer-grid");
+        await crs.call("sla_layer", "create_all_sla", {
+            parent: slaLayerParent,
+            data: data
         });
     }
 }
