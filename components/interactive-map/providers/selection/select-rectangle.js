@@ -15,7 +15,7 @@ export default class SelectRectangleProvider {
         this.#rectangle = rectangle;
         this.#markers = [];
 
-        this.#createMarkers();
+        await this.#createMarkers();
     }
 
     async dispose() {

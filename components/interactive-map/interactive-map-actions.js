@@ -26,6 +26,8 @@ export class InteractiveMapActions {
 
     static async add_point(step, context, process, item) {
         const instance = await crs.dom.get_element(step, context, process, item);
+        const coordinates = await crs.process.getValue(step.args.coordinates, context, process, item);
+        const marker = L.marker(coordinates).addTo(instance.map);
     }
 
     static async add_polygon(step, context, process, item) {
