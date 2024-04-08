@@ -54,12 +54,36 @@ export class InteractiveMapActions {
         return polygon;
     }
 
+    static async add_polyline(step, context, process, item) {
+        const map = await getMap(step, context, process, item);
+        const coordinates = await crs.process.getValue(step.args.coordinates, context, process, item);
+
+        const polygon = L.polyline(coordinates, {color: 'red'}).addTo(map);
+        polygon.type = "polyline";
+        return polygon;
+    }
+
     static async add_rectangle(step, context, process, item) {
         const map = await getMap(step, context, process, item);
         const coordinates = await crs.process.getValue(step.args.coordinates, context, process, item);
         const rectangle = L.rectangle(coordinates, {color: 'blue'}).addTo(map);
         rectangle.type = "rectangle";
         return rectangle;
+    }
+
+    static async add_drag_handle(step, context, process, item) {
+        const map = await getMap(step, context, process, item);
+        const coordinates = await crs.process.getValue(step.args.coordinates, context, process, item);
+        const options = await crs.process.getValue(step.args.options || {}, context, process, item);
+
+        const customIcon = L.divIcon({
+            className: 'marker',
+            html: "<div class='handle'></div>",
+            iconSize: [16, 16], // Size of the icon
+            iconAnchor: [8, 8] // Point of the icon which will correspond to marker's location
+        });
+        const marker = L.marker(coordinates, {icon: customIcon, draggable: true, ...options}).addTo(map);
+        return marker;
     }
 }
 
