@@ -29,16 +29,9 @@ export class InteractiveMap extends HTMLElement {
     async load() {
         return new Promise(resolve => {
             requestAnimationFrame(async () => {
-                // Dynamically load Leaflet script
-                const leafletScript = document.createElement('script');
-                leafletScript.src = "/packages/leaflet/leaflet.js";
-                leafletScript.onload = async () => {
-                    // Once script is loaded, initialize Leaflet
-                    this.initLeaflet();
-                    await crs.call("component", "notify_ready", { element: this });
-                    resolve();
-                };
-                this.shadowRoot.appendChild(leafletScript);
+                this.initLeaflet();
+                await crs.call("component", "notify_ready", {element: this});
+                resolve();
             })
         })
     }

@@ -2,7 +2,25 @@ import "./../../components/interactive-map/interactive-map-actions.js";
 
 export default class Map extends crsbinding.classes.ViewBase {
 
-    preLoad() {
+    async connectedCallback() {
+        await super.connectedCallback();
+
+
+        const container = this.element.querySelector("#maps-container");
+
+        await crs.call("interactive_map", "initialize_lib");
+
+        const map1 = document.createElement("interactive-map");
+        map1.setAttribute("data-provider", "openstreetmap");
+        map1.setAttribute("id", "openstreetmap");
+        container.appendChild(map1);
+
+        const map2 = document.createElement("interactive-map");
+        map2.setAttribute("data-provider", "image");
+        map2.setAttribute("data-image-url", "app/map/floorplan.jpg");
+        map2.setAttribute("id", "floorplan");
+        container.appendChild(map2);
+
         this.setProperty("map", "#openstreetmap");
     }
 
@@ -11,6 +29,8 @@ export default class Map extends crsbinding.classes.ViewBase {
     }
 
     async modeChanged(mode) {
+        if(this.getProperty("map") == null) {return};
+
         await crs.call("interactive_map", "set_mode", {
             element: this.getProperty("map"),
             mode: mode

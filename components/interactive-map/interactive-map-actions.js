@@ -6,8 +6,23 @@ export class InteractiveMapActions {
         await this[step.action]?.(step, context, process, item);
     }
 
+    static async initialize_lib(step, context, process, item) {
+        return new Promise(resolve => {
+            requestAnimationFrame(async () => {
+                const leafletScript = document.createElement('script');
+                leafletScript.src = "/packages/leaflet/leaflet.js";
+                leafletScript.onload = async () => {
+
+                    resolve();
+                }
+                document.body.appendChild(leafletScript);
+            });
+        });
+    }
+
     static async set_mode(step, context, process, item) {
         const instance = await crs.dom.get_element(step, context, process, item);
+
         const mode = await crs.process.getValue(step.args.mode, context, process, item);
 
         if (instance.currentMode != null) {
