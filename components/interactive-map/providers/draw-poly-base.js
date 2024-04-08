@@ -111,7 +111,8 @@ export default class DrawPolyBase {
     }
 
     async #drawHandles(polygon) {
-        const latLngs = polygon.getLatLngs()[0];
+        let latLngs = polygon.getLatLngs();
+        latLngs = Array.isArray(latLngs[0]) ? latLngs[0] : latLngs;
 
         for (const latLng of latLngs) {
             if (Array.isArray(latLng)) {
