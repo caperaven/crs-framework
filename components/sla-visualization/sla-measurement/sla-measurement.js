@@ -1,7 +1,6 @@
 import { loadHTML } from "../../../src/load-resources.js";
 
 export class SlaMeasurement extends crs.classes.BindableElement {
-    #clickHandler = this.#click.bind(this);
 
     constructor() {
         super();
@@ -16,26 +15,12 @@ export class SlaMeasurement extends crs.classes.BindableElement {
     async load() {
         return new Promise(resolve => {
             requestAnimationFrame(async () => {
-                console.log("the sla-measurement element is loaded");
-                this.shadowRoot.addEventListener("click", this.#clickHandler);
 
-                await crs.call("component", "notify_ready", { element: this });
+                this.dataset.status = "loading";
+                this.dispatchEvent(new CustomEvent("loading-measurement"));
                 resolve();
             });
         });
-    }
-
-    async disconnectedCallback() {
-        this.shadowRoot.removeEventListener("click", this.#clickHandler);
-        this.#clickHandler = null;
-    }
-
-    async #click(event) {
-        console.log("click event", event);
-    }
-
-    async updateProgress() {
-        // Get the progress value from the data-progress attribute
     }
 }
 

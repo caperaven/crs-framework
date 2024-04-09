@@ -17,10 +17,8 @@ export async function create_sla_grid(data, slaVisualization) {
     // 1.1 the status cell area name = cl_status_${statusId} e.g. cl_status_1001 and cl_status_1002
 
     const element = slaVisualization
-    const numberOfRows = data.statuses.length + 2;
-    const numberOfColumns = data.sla.length + 1;
 
-    createInitialGrid(element, numberOfRows, numberOfColumns);
+    createInitialGrid(element);
 
     // Generate the grid template array
     element.style.gridTemplate = generateGridTemplateArray(data.statuses, data.sla).join('\n');
@@ -44,7 +42,7 @@ export async function create_sla_grid(data, slaVisualization) {
  * @returns {void}
  */
 
-function createInitialGrid(element, numberOfRows, numberOfColumns) {
+function createInitialGrid(element) {
     crs.call("cssgrid", "init", {element: element, id: "sla-grid"});
 }
 
@@ -65,12 +63,15 @@ function createStatusLabels(element, statuses) {
     statusBackground.classList.add("status-background");
     element.shadowRoot.appendChild(statusBackground);
 
-    for(const item of statuses) {
+    for(const status of statuses) {
+        if (status.id === -1) {
+            continue;
+        }
         const statusLabel = document.createElement("div");
-        statusLabel.id = `status_${item.id}`;
+        statusLabel.id = `status_${status.id}`;
         statusLabel.classList.add("status-label");
-        statusLabel.style.gridArea = `status_${item.id}`;
-        statusLabel.textContent = item.name;
+        statusLabel.style.gridArea = `status_${status.id}`;
+        statusLabel.textContent = status.name;
         element.shadowRoot.appendChild(statusLabel);
     }
 
@@ -87,6 +88,10 @@ function createRowElements(element, statuses) {
         div.style.gridRow = index;
         div.classList.add("status-row");
         element.shadowRoot.appendChild(div);
+        if (index === statuses.length) {
+            div.classList.add("sla-footer-border");
+        }
+
         index++;
     }
 }
@@ -108,7 +113,7 @@ function createSlaLayers(element, slaCollection) {
         slaLayer.id = `sla_${sla.id}`;
         slaLayer.classList.add("sla-layer");
         slaLayer.style.gridArea = `sla_${sla.id}`;
-        slaLayer.textContent = sla.code;
+
         element.shadowRoot.appendChild(slaLayer);
     }
 
@@ -162,43 +167,23 @@ function generateGridTemplateArray(dataStatuses, dataSla) {
     // For example : '". status_1 status_2 status_3" 2rem'
     const reversedStatuses = [...dataStatuses].reverse();
 
+    let statusCount = 1;
+
     const gridTemplateArray = reversedStatuses.map(status => {
-        let rowHeight = "1fr";
+        let rowHeight = statusCount === 1 ? "3fr" : "1fr";
+        statusCount++;
         let row = status.id === -1 ? "." : `status_${status.id}`;
         let slaArray = dataSla.map(sla => ` sla_${sla.id}`);
         return `"${row + slaArray.join('')}"${rowHeight}`;
     });
 
-    let columnWidth = dataSla.map(sla => "auto").join(' ');
+    let columnWidth = dataSla.map(sla => "max-content").join(' ');
     // add the column width for the status column at the beginning of the string
 
-    columnWidth = `/ auto ${columnWidth}`;
+    columnWidth = `/ max-content ${columnWidth}`;
 
     // add the column width to the end of the grid template array
     gridTemplateArray.push(columnWidth);
 
-
     return gridTemplateArray;
-}
-
-
-/**
- * Apply the css columns to the element
- * @param element {HTMLElement} - the sla visualization element
- * @param numberOfColumns {Number} - the number of columns
- */
-
-function applyCssColumns(element, numberOfColumns) {
-    // element.style.gridTemplateColumns = `repeat(${numberOfColumns}, 1fr)`;
-    crs.call("cssgrid", "set_columns", {element: element, columns: `repeat(${numberOfColumns}, 1fr)`});
-}
-
-/**
- * Apply the css rows to the element
- * @param element {HTMLElement} - the sla visualization element
- * @param numberOfRows {Number} - the number of rows
- */
-
-function applyCssRows(element, numberOfRows) {
-    crs.call("cssgrid", "set_rows", {element: element, rows: `repeat(${numberOfRows}, 1fr)`});
 }

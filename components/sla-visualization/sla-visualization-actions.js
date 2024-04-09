@@ -34,8 +34,8 @@ export class SlaVisualizationActions {
         const element = await crs.dom.get_element(step.args.element, context, process, item);
 
         await create_sla_grid(data, element);
-        // await crs.call("sla_layer", "create_all_sla", { parent: element, data: data });
-        // await crs.call("component", "notify_ready", { element: element });
+        await crs.call("sla_layer", "create_all_sla", { parent: element, data: data });
+        await crs.call("component", "notify_ready", { element: element });
     }
 
 }

@@ -15,18 +15,19 @@ export class SlaLayer extends crs.classes.BindableElement {
     async connectedCallback() {
         super.connectedCallback();
         this.shadowRoot.innerHTML = await loadHTML(import.meta.url);
-        await this.load()
+        // await this.load()
+        this.dispatchEvent(new CustomEvent("loading"));
+
     }
 
-    async load() {
-        return new Promise(resolve => {
-            requestAnimationFrame(async () => {
-                this.dataset.status = "loading";
-                this.dispatchEvent(new CustomEvent("loading"));
-                resolve();
-            });
-        });
-    }
+    // async load() {
+    //     return new Promise(resolve => {
+    //         requestAnimationFrame(async () => {
+    //             // this.dataset.status = "loading";
+    //             resolve();
+    //         });
+    //     });
+    // }
 }
 
 customElements.define("sla-layer", SlaLayer);

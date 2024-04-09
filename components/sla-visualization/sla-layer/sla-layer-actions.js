@@ -41,6 +41,19 @@ export class SlaLayerActions{
             await onSlaLayerLoading(element, async () => {
                 await crs.call("sla_measurement", "create_all", { parent: element, data: sla.measurements });
             })
+
+            for(const measurement of element.shadowRoot.querySelectorAll("sla-measurement")) {
+                const measurementOverlay = document.createElement("div");
+                measurementOverlay.classList.add("overlay"); //change class name!!
+                measurementOverlay.style.gridArea = `m_${measurement.id}`;
+                measurementOverlay.style.gridRow = `2 / span ${slaData.statuses.length - 2}`;
+                element.shadowRoot.appendChild(measurementOverlay);
+            }
+
+            // loop to create sla headers and place them in the correct grid area
+            await createSlaHeader(element, sla);
+
+
         }
     }
 }
@@ -70,7 +83,7 @@ async function createSlaGrid(slaLayerElement, slaItemData, statusData) {
      */
     const statusLookupTable = createStatusLookupTable(statusData);
     const matrix = createMeasurementsMatrix(statusData, slaItemData);
-    populateMeasurementMatrix(matrix, statusLookupTable, slaItemData);
+    populateMeasurementsMatrix(matrix, statusLookupTable, slaItemData);
     slaLayerElement.style.gridTemplate = matrixToTemplate(matrix);
 }
 
@@ -80,6 +93,7 @@ async function createSlaGrid(slaLayerElement, slaItemData, statusData) {
  * @return {{}}
  */
 function createStatusLookupTable(statusData) {
+    // create a dictionary where the key is the status id and the value is the index in the grid.
     const lookupTable = {};
     let index = statusData.length - 2;
 
@@ -118,7 +132,7 @@ function createMeasurementsMatrix(statusData, slaItemData) {
 
     for (let i = 0; i < numberOfColumns; i++) {
         matrix[0][i] = "header";
-        matrix[numberOfRows - 1][i] = "footer";
+        matrix[numberOfRows - 1][i] = `f_${slaItemData.measurements[i].id}`;
     }
 
     return matrix;
@@ -134,13 +148,11 @@ function initializeMatrix(matrix, numberOfRows, numberOfColumns) {
     }
 }
 
-function populateMeasurementMatrix(matrix, statusLookupTable, slaItemData) {
+function populateMeasurementsMatrix(matrix, statusLookupTable, slaItemData) {
     let measurementIndex = 0;
     for (const measurement of slaItemData.measurements) {
-        const startStatus = measurement.start_status;
-        const endStatus = measurement.end_status;
-        const startIndex = statusLookupTable[startStatus];
-        const endIndex = statusLookupTable[endStatus];
+        const startIndex = statusLookupTable[measurement.start_status];
+        const endIndex = statusLookupTable[measurement.end_status];
 
         for (let index = endIndex; index <= startIndex; index++) {
             matrix[index][measurementIndex] = `m_${measurement.id}`;
@@ -153,17 +165,39 @@ function populateMeasurementMatrix(matrix, statusLookupTable, slaItemData) {
 function matrixToTemplate(matrix) {
     const columns = [];
     for (let i = 0; i < matrix[0].length; i++) {
-        columns.push("3rem");
+        columns.push("8rem");
     }
 
     const result = [];
     for (let row = 0; row < matrix.length; row++) {
-        const rowStr = `"${matrix[row].join(" ")}" 1fr`;
-        result.push(rowStr)
+        // const rowStr = `"${matrix[row].join(" ")}" 1fr`;
+        // result.push(rowStr)
+        let rowStr;
+        if (row === 0) {
+            rowStr = `"${matrix[row].join(" ")}" 3fr`;
+        } else {
+            rowStr = `"${matrix[row].join(" ")}" 1fr`;
+        }
+        result.push(rowStr);
     }
 
     result.push(`/ ${columns.join(" ")}`);
     return result.join("\n");
+}
+
+/**
+ * @method createSlaHeader - Creates the sla header component
+ * @param slaLayerElement {HTMLElement} - The sla layer element
+ * @param slaItemData {Object} - The sla item data
+ */
+
+async function createSlaHeader(slaLayerElement, slaItemData) {
+    const slaHeaderTemplate = slaLayerElement.shadowRoot.querySelector("template.sla-header-template");
+    const slaHeader = slaHeaderTemplate.content.cloneNode(true);
+
+    await crs.binding.staticInflationManager.inflateElement(slaHeader.firstElementChild, slaItemData);
+
+    slaLayerElement.shadowRoot.appendChild(slaHeader);
 }
 
 crs.intent.sla_layer = SlaLayerActions;
