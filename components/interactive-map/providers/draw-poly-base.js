@@ -9,8 +9,13 @@ export default class DrawPolyBase {
     #shape = null;
     #map = null;
     #points = [];
+    #subDivisionPoints = [];
 
-    #clickHandler = this.#click.bind(this);
+    #disableNewPoints = false;
+
+    #mouseDownHandler = this.#mouseDown.bind(this);
+    #mouseUpHandler = this.#mouseUp.bind(this);
+
     #contextMenuHandler = this.#contextMenu.bind(this);
     #dragHandler = this.#drag.bind(this);
 
@@ -22,22 +27,29 @@ export default class DrawPolyBase {
         return 3;
     }
 
+    get closeShape() {
+        return true;
+    }
+
     set points(value) {
         this.#points = value;
     }
 
     async initialize(map, shape) {
         this.#map = map;
-        this.#map.on("click", this.#clickHandler);
+        this.#map.on("mousedown", this.#mouseDownHandler);
+        this.#map.on("mouseup", this.#mouseUpHandler);
 
         if (shape != null) {
             await this.#drawHandles(shape);
+            await this.#addSubDivisionMarkers();
             this.#shape = shape;
         }
     }
 
     async dispose() {
-        this.#map.off("click", this.#clickHandler);
+        this.#map.off("mousedown", this.#mouseDownHandler);
+        this.#map.off("mouseup", this.#mouseUpHandler);
         this.#map = null;
 
         for (const point of this.#points) {
@@ -45,36 +57,36 @@ export default class DrawPolyBase {
             point.handle.remove();
         }
 
+        await this.#removeSubDivisionMarkers();
         this.#points = null;
-        this.#clickHandler = null;
+        this.#mouseDownHandler = null;
         this.#contextMenuHandler = null;
     }
 
-    async #click(event) {
-        await this.#createHandle(event.latlng, this.#points.length);
-        if (this.#points.length < this.minPoints) return;
+    async #mouseDown(event) {
+        if (event.originalEvent.target.dataset.type === "subdivide") {
+            return;
+        }
+        await this.#removeSubDivisionMarkers();
+    }
 
-        if (this.#shape == null) {
-            this.#shape = await crs.call("interactive_map", `add_${this.shapeKey}`, {
-                coordinates: this.#points.map(_ => _.coordinates),
-                element: this.#map
-            });
-        } else {
-            await this.redraw();
+    async #mouseUp(event) {
+        if (event.originalEvent.target.dataset.type === "subdivide") {
+            this.#disableNewPoints = true;
+            const index = Number(event.originalEvent.target.dataset.index);
+            await this.#convertSubDivisionMarker(index);
+        }
+        else if (this.#disableNewPoints === false && (event.originalEvent.target.dataset.type === "draghandle") === false) {
+            await this.#addPoint(event.latlng);
+        }
+
+        if (this.#points.length > 1) {
+                await this.#addSubDivisionMarkers();
         }
     }
 
     async #contextMenu(event) {
-        // When the user right clicks a marker we want to remove the marker and remove the point at the index of the marker.
-        const index = event.target.options.index;
-        const removedPoint = this.#points.splice(index, 1);
-        removedPoint[0].handle.remove();
-
-        // Recalculate the indexes of the markers.
-        this.#points.forEach((point, i) => {
-            point.handle.options.index = i;
-        });
-        await this.redraw();
+        await this.#removePoint(event.target.options.index);
     }
 
     async redraw() {
@@ -93,33 +105,129 @@ export default class DrawPolyBase {
         await this.redraw();
     }
 
-    async #createHandle(coordinates) {
-        const handle = await crs.call("interactive_map", "add_drag_handle", {
+    async #createDragHandle(coordinates, index) {
+        const handle = await crs.call("interactive_map", "add_handle", {
             element: this.#map,
             coordinates: [coordinates.lat, coordinates.lng],
-            options: {index: this.#points.length}
+            options: {
+                draggable: true,
+                index: index
+            },
+            type: "draghandle"
         });
 
         handle.on("drag", this.#dragHandler);
         handle.on("contextmenu", this.#contextMenuHandler);
 
-        this.#points.push(
-            {
-                handle: handle,
-                coordinates: [coordinates.lat, coordinates.lng]
-            });
+        this.#points.splice(index, 0, {
+            handle: handle,
+            coordinates: [coordinates.lat, coordinates.lng]
+        });
     }
 
     async #drawHandles(polygon) {
         let latLngs = polygon.getLatLngs();
         latLngs = Array.isArray(latLngs[0]) ? latLngs[0] : latLngs;
 
-        for (const latLng of latLngs) {
+
+        for (let i = 0; i < latLngs.length; i++) {
+            const latLng = latLngs[i];
             if (Array.isArray(latLng)) {
                 await this.#drawHandles(latLng);
                 continue;
             }
-            await this.#createHandle(latLng);
+            await this.#createDragHandle(latLng, i);
         }
+    }
+
+    async #addPoint(coordinates, index = this.#points.length) {
+        await this.#createDragHandle(coordinates, index)
+
+        // If the first point we do nothing
+        if (this.#points.length < 2) return;
+
+
+        if (this.#shape == null) {
+            // If the shape is not yet created we create it.
+            this.#shape = await crs.call("interactive_map", `add_${this.shapeKey}`, {
+                coordinates: this.#points.map(_ => _.coordinates),
+                element: this.#map
+            });
+        } else {
+            // If it already exists we just update the coordinates.
+            await this.redraw();
+        }
+    }
+
+    async #removePoint(index) {
+        // When the user right-clicks a marker we want to remove the marker and remove the point at the index of the marker.
+        const removedPoint = this.#points.splice(index, 1);
+        removedPoint[0].handle.remove();
+
+        // Recalculate the indexes of the markers.
+        await this.#updateHandleIndexes();
+        await this.redraw();
+    }
+
+    async #addSubDivisionMarkers() {
+        // Add a marker in the middle of the line between two points.
+        // If last point we add a marker between the last and the first point.
+        for (let i = 0; i < this.#points.length; i++) {
+            const startCoordinates = this.#points[i];
+
+            const isLastPoint =  i === this.#points.length - 1;
+
+            if (isLastPoint === true && this.closeShape === false) {
+                // If closeShape is false we don't want to add a marker between the last and the first point.
+                // This is because we only show lines when closeShape is false.
+                return;
+            }
+
+            const endCoordinates = isLastPoint ? this.#points[0] : this.#points[i + 1];
+            await this.#addSubDivisionMarker(startCoordinates, endCoordinates, i);
+        }
+    }
+
+    async #addSubDivisionMarker(startCoordinates, endCoordinates, index ) {
+        const lat = (endCoordinates.coordinates[0] + startCoordinates.coordinates[0]) / 2;
+        const lng = (endCoordinates.coordinates[1] + startCoordinates.coordinates[1]) / 2;
+
+        const handle = await crs.call("interactive_map", "add_handle", {
+            element: this.#map,
+            coordinates: [lat, lng],
+            type: "subdivide",
+            options: {
+                index: index,
+                fillColor: "red"
+            }
+        });
+
+        this.#subDivisionPoints.push({
+            handle: handle,
+            coordinates: [lat, lng]
+        });
+    }
+
+    async #removeSubDivisionMarkers() {
+        // Remove all subdivision markers when the user starts drawing a new polygon.
+        for (const point of this.#subDivisionPoints) {
+            point.handle.remove();
+        }
+        this.#subDivisionPoints = [];
+    }
+
+    async #updateHandleIndexes() {
+        this.#points.forEach((point, i) => {
+            point.handle.options.index = i;
+        });
+    }
+
+    async #convertSubDivisionMarker(index) {
+        const point = this.#subDivisionPoints[index];
+        const latlng = L.latLng(point.coordinates);
+        const dragPointIndex = index+1;
+        await this.#addPoint(latlng, dragPointIndex);
+        await this.#updateHandleIndexes();
+        await this.#removeSubDivisionMarkers();
     }
 }

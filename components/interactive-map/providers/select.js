@@ -34,6 +34,7 @@ export default class SelectProvider {
 
             const provider = await this.getProvider(shape);
             this.#selectionProvider = provider;
+            this.#map.selectedShape = shape;
             await provider.initialize(this.#map, shape);
         }
     }

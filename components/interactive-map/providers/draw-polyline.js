@@ -9,4 +9,8 @@ export default class DrawPolyline extends DrawPolyBase{
     get minPoints() {
         return 2;
     }
+
+    get closeShape() {
+        return false;
+    }
 }

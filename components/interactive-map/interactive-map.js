@@ -29,14 +29,14 @@ export class InteractiveMap extends HTMLElement {
     async load() {
         return new Promise(resolve => {
             requestAnimationFrame(async () => {
-                this.initLeaflet();
+                await this.initLeaflet();
                 await crs.call("component", "notify_ready", {element: this});
                 resolve();
             })
         })
     }
 
-    initLeaflet() {
+    async initLeaflet() {
         const mapDiv = this.shadowRoot.querySelector("#map");
 
 
@@ -63,6 +63,8 @@ export class InteractiveMap extends HTMLElement {
             L.imageOverlay(this.dataset.imageUrl, bounds).addTo(this.#map);
             this.#map.fitBounds(bounds);
         }
+
+        await crs.call("interactive_map", "set_colors", {element: this, stroke_color: this.dataset.strokeColor, fill_color: this.dataset.fillColor});
     }
 
     addToMap(geoJson, drawingOptions) {

@@ -21,13 +21,23 @@
         line-height: 1rem;
     }
 
-    .handle {
+    .handle[data-type="drag"] {
         background: var(--cl-primary-alt);
         border: var(--border);
         height: 1rem;
         width: 1rem;
         border-radius: 50%;
         border: 2px solid var(--grey);
+    }
+
+    .handle[data-type="subdivide"] {
+        background: var(--cl-primary-alt);
+        border: var(--border);
+        height: 0.5rem;
+        width: 0.5rem;
+        border-radius: 50%;
+        border: 2px solid var(--grey);
+
     }
 </style>
 <div id="map"></div>

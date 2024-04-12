@@ -11,7 +11,9 @@ export default class Map extends crsbinding.classes.ViewBase {
         await crs.call("interactive_map", "initialize_lib");
 
         const map1 = document.createElement("interactive-map");
-        map1.setAttribute("data-provider", "openstreetmap");
+        map1.dataset.provider = "openstreetmap";
+        map1.dataset.fillColor = "blue";
+        map1.dataset.strokeColor = "red";
         map1.setAttribute("id", "openstreetmap");
         container.appendChild(map1);
 
@@ -80,5 +82,19 @@ export default class Map extends crsbinding.classes.ViewBase {
 
     locateMe() {
         this.map.locateMe();
+    }
+
+    async fillColorChanged(color) {
+        await crs.call("interactive_map", "set_colors", {
+            element: this.getProperty("map"),
+            fill_color: color
+        });
+    }
+
+    async strokeColorChanged(color) {
+        await crs.call("interactive_map", "set_colors", {
+            element: this.getProperty("map"),
+            stroke_color: color
+        });
     }
 }

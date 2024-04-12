@@ -19,14 +19,18 @@
         height: 100%;
     }
 
-    interactive-map {
-        height: 600px;
-    }
+
 
     .flex {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         height: 100%;
+    }
+
+    @media (max-width: 600px) {
+        .flex {
+            flex-direction: column;
+        }
     }
 
 </style>
@@ -42,6 +46,16 @@
         <button class="icon" click.setvalue="mode = 'draw-polygon'" disabled.if="mode =='draw-polygon'? true">show-chart</button>
         <button class="icon" click.setvalue="mode = 'draw-rectangle'" disabled.if="mode =='draw-rectangle'? true">check-box-blank</button>
         <button class="icon" click.setvalue="mode = 'draw-circle'" disabled.if="mode =='draw-circle'? true">radio-button-unchecked</button>
+
+        <label>
+            <span>Fill Color</span>
+            <input value.bind="fillColor" type="color">
+        </label>
+
+        <label>
+            <span>Stroke Color</span>
+            <input value.bind="strokeColor" type="color">
+        </label>
     </div>
 
     <div class="flex vertical" id="maps-container">
