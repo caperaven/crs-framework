@@ -13,60 +13,65 @@ export default class SelectProvider {
 
     async initialize(map) {
         this.#map = map;
-        this.#clickHandler = this.onClick.bind(this)
-        this.#map.on("click", this.#clickHandler);
+        await this.#setupEvents();
     }
 
     async dispose() {
-        this.#map.off("click", this.#clickHandler);
         this.#map = null;
         this.#selectionProvider?.dispose();
         this.#selectionProvider = null;
     }
 
     async onClick(e) {
-        const shape = getShapeAt(this.#map, e.latlng);
+        const shape = e.target;
+        const element = e.originalEvent.target;
 
         if (shape != null) {
             if (this.#selectionProvider != null) {
                 this.#selectionProvider.dispose();
             }
 
-            const provider = await this.getProvider(shape);
+            const provider = await this.#getProvider(shape);
             this.#selectionProvider = provider;
             this.#map.selectedShape = shape;
-            await provider.initialize(this.#map, shape);
+            await provider.initialize(this.#map, shape, element);
         }
     }
 
-    async getProvider(shape) {
-        const type = shape.type;
-        const module = await import(`./selection/select-${type}.js`);
-        return new module.default();
-    }
-}
-
-function getShapeAt(map, latlng) {
-    const layers = Object.values(map._layers);
-    const point = map.latLngToLayerPoint(latlng);
-
-    for (const layer of layers) {
-        // Check if layer is a shape layer
-        if (layer instanceof L.Path) {
-            // For polygons and polylines
-            if (layer.getBounds && layer.getBounds().contains(latlng)) {
-                return layer;
+    async #setupEvents() {
+        this.#clickHandler = this.onClick.bind(this);
+        this.#map.eachLayer(layer => {
+            if (layer instanceof L.Path || layer instanceof L.Marker) {
+                layer.on("click", this.#clickHandler);
             }
-            // For circles
-            else if (layer instanceof L.Circle && layer.getLatLng().distanceTo(latlng) <= layer.getRadius()) {
-                return layer;
+        })
+    }
+
+    async #removeEvents() {
+        this.#map.eachLayer(layer => {
+            if (layer instanceof L.Path || layer instanceof L.Marker) {
+                layer.off("click", this.#clickHandler);
             }
-        }
-        // For rectangles
-        else if (layer instanceof L.Rectangle && layer.getBounds().contains(latlng)) {
-            return layer;
+        })
+    }
+
+    async #getProvider(shape) {
+        if(shape instanceof L.Layer) {
+            const type = await this.#getType(shape);
+            const module = await import(`./selection/select-${type}.js`);
+            return new module.default();
         }
     }
 
-    return null; // No shape found at given point
+    async #getType(shape) {
+        if (shape instanceof L.Rectangle) {
+            return "rectangle";
+        } else if (shape instanceof L.Polygon) {
+            return "polygon";
+        } else if (shape instanceof L.Polyline) {
+            return "polyline";
+        } else if (shape instanceof L.Marker) {
+            return "point";
+        }
+    }
 }

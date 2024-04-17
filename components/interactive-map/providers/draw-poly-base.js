@@ -10,11 +10,13 @@ export default class DrawPolyBase {
     #map = null;
     #points = [];
     #subDivisionPoints = [];
+    #isDragging = false;
 
     #disableNewPoints = false;
 
     #mouseDownHandler = this.#mouseDown.bind(this);
     #mouseUpHandler = this.#mouseUp.bind(this);
+    #dragStartHandler = this.#dragStart.bind(this);
 
     #contextMenuHandler = this.#contextMenu.bind(this);
     #dragHandler = this.#drag.bind(this);
@@ -39,8 +41,10 @@ export default class DrawPolyBase {
         this.#map = map;
         this.#map.on("mousedown", this.#mouseDownHandler);
         this.#map.on("mouseup", this.#mouseUpHandler);
+        this.#map.on("dragstart", this.#dragStartHandler);
 
         if (shape != null) {
+            this.#disableNewPoints = true; // If we have a shape we don't want to add new points.
             await this.#drawHandles(shape);
             await this.#addSubDivisionMarkers();
             this.#shape = shape;
@@ -50,6 +54,7 @@ export default class DrawPolyBase {
     async dispose() {
         this.#map.off("mousedown", this.#mouseDownHandler);
         this.#map.off("mouseup", this.#mouseUpHandler);
+        this.#map.off("dragstart", this.#dragStartHandler);
         this.#map = null;
 
         for (const point of this.#points) {
@@ -64,24 +69,38 @@ export default class DrawPolyBase {
     }
 
     async #mouseDown(event) {
+        this.#isDragging = false;
         if (event.originalEvent.target.dataset.type === "subdivide") {
             return;
         }
-        await this.#removeSubDivisionMarkers();
+
+        if (event.originalEvent.target.dataset.type === "draghandle") {
+            await this.#removeSubDivisionMarkers();
+        }
+    }
+
+    async #dragStart() {
+        // When the user starts dragging we don't want to add new points.
+        this.#isDragging = true;
     }
 
     async #mouseUp(event) {
+        if (this.#isDragging === true) return;
+
+        const isDragHandle = event.originalEvent.target.dataset.type === "draghandle";
+
         if (event.originalEvent.target.dataset.type === "subdivide") {
+            // This fires when we click on a subdivision marker.
             this.#disableNewPoints = true;
             const index = Number(event.originalEvent.target.dataset.index);
-            await this.#convertSubDivisionMarker(index);
+            return this.#convertSubDivisionMarker(index);
+        } else if (this.#disableNewPoints === false && isDragHandle === false) {
+            // This fires when we are not dragging a draghandle and we want to add a new point.
+            return this.#addPoint(event.latlng);
         }
-        else if (this.#disableNewPoints === false && (event.originalEvent.target.dataset.type === "draghandle") === false) {
-            await this.#addPoint(event.latlng);
-        }
-
-        if (this.#points.length > 1) {
-                await this.#addSubDivisionMarkers();
+        else if(this.#points.length > 1 && isDragHandle === true)  {
+            // This fires when we are moving a draghandle and we want to re-add the subdivision markers.
+            await this.#addSubDivisionMarkers();
         }
     }
 
@@ -141,6 +160,7 @@ export default class DrawPolyBase {
     }
 
     async #addPoint(coordinates, index = this.#points.length) {
+        await this.#removeSubDivisionMarkers();
         await this.#createDragHandle(coordinates, index)
 
         // If the first point we do nothing
@@ -157,6 +177,8 @@ export default class DrawPolyBase {
             // If it already exists we just update the coordinates.
             await this.redraw();
         }
+
+        await this.#addSubDivisionMarkers();
     }
 
     async #removePoint(index) {
@@ -167,6 +189,8 @@ export default class DrawPolyBase {
         // Recalculate the indexes of the markers.
         await this.#updateHandleIndexes();
         await this.redraw();
+        await this.#removeSubDivisionMarkers();
+        await this.#addSubDivisionMarkers();
     }
 
     async #addSubDivisionMarkers() {
@@ -175,7 +199,7 @@ export default class DrawPolyBase {
         for (let i = 0; i < this.#points.length; i++) {
             const startCoordinates = this.#points[i];
 
-            const isLastPoint =  i === this.#points.length - 1;
+            const isLastPoint = i === this.#points.length - 1;
 
             if (isLastPoint === true && this.closeShape === false) {
                 // If closeShape is false we don't want to add a marker between the last and the first point.
@@ -188,7 +212,7 @@ export default class DrawPolyBase {
         }
     }
 
-    async #addSubDivisionMarker(startCoordinates, endCoordinates, index ) {
+    async #addSubDivisionMarker(startCoordinates, endCoordinates, index) {
         const lat = (endCoordinates.coordinates[0] + startCoordinates.coordinates[0]) / 2;
         const lng = (endCoordinates.coordinates[1] + startCoordinates.coordinates[1]) / 2;
 
@@ -225,7 +249,7 @@ export default class DrawPolyBase {
     async #convertSubDivisionMarker(index) {
         const point = this.#subDivisionPoints[index];
         const latlng = L.latLng(point.coordinates);
-        const dragPointIndex = index+1;
+        const dragPointIndex = index + 1;
         await this.#addPoint(latlng, dragPointIndex);
         await this.#updateHandleIndexes();
         await this.#removeSubDivisionMarkers();

@@ -20,6 +20,15 @@ export class InteractiveMapActions {
         });
     }
 
+    static async initialize(step, context, process, item) {
+        const instance = await crs.dom.get_element(step, context, process, item);
+
+        if(globalThis.L == null) {
+            await this.initialize_lib(step, context, process, item);
+        }
+        await instance.initialize();
+    }
+
     static async set_colors(step, context, process, item) {
         const map = await getMap(step, context, process, item);
         const strokeColor = await crs.process.getValue(step.args.stroke_color, context, process, item);
@@ -60,17 +69,39 @@ export class InteractiveMapActions {
         await modeClass.initialize(instance.map);
     }
 
+    static async add_geo_json(step, context, process, item) {
+        const map = await getMap(step, context, process, item);
+        const data = await crs.process.getValue(step.args.data, context, process, item);
+        const options = await crs.process.getValue(step.args.options || {}, context, process, item);
+
+        const geoJson = L.geoJSON(data, {...options}).addTo(map);
+        return geoJson;
+    }
+
     static async add_point(step, context, process, item) {
-        const instance = await crs.dom.get_element(step, context, process, item);
+        const map = await getMap(step, context, process, item);
         const coordinates = await crs.process.getValue(step.args.coordinates, context, process, item);
-        const marker = L.marker(coordinates).addTo(instance.map);
+        const iconName = await crs.process.getValue(step.args.icon_name || "location-pin", context, process, item);
+        const options = await crs.process.getValue(step.args.options || {}, context, process, item);
+
+        const customIcon = L.divIcon({
+            className: 'marker',
+            html: `<div class="point">${iconName}</div>`,
+            iconSize: [32, 32], // Size of the icon
+            iconAnchor: [16, 32] // Point of the icon which will correspond to marker's location
+        });
+        const marker = L.marker(coordinates, {icon: customIcon,  ...options}).addTo(map);
+        marker.type = "point";
+        return marker;
     }
 
     static async add_polygon(step, context, process, item) {
         const map = await getMap(step, context, process, item);
         const coordinates = await crs.process.getValue(step.args.coordinates, context, process, item);
 
-        const polygon = L.polygon(coordinates, {color: 'red'}).addTo(map);
+        const colors = await getColorData(step, context, process, item, map);
+
+        const polygon = L.polygon(coordinates, {...colors}).addTo(map);
         polygon.type = "polygon";
         return polygon;
     }
@@ -79,7 +110,9 @@ export class InteractiveMapActions {
         const map = await getMap(step, context, process, item);
         const coordinates = await crs.process.getValue(step.args.coordinates, context, process, item);
 
-        const polygon = L.polyline(coordinates, {color: 'red'}).addTo(map);
+        const colors = await getColorData(step, context, process, item, map);
+
+        const polygon = L.polyline(coordinates, {...colors}).addTo(map);
         polygon.type = "polyline";
         return polygon;
     }
@@ -87,9 +120,7 @@ export class InteractiveMapActions {
     static async add_rectangle(step, context, process, item) {
         const map = await getMap(step, context, process, item);
         const coordinates = await crs.process.getValue(step.args.coordinates, context, process, item);
-        const fillColor = await crs.process.getValue(step.args.fill_color, context, process, item);
-        const strokeColor = await crs.process.getValue(step.args.stroke_color, context, process, item);
-        const strokeWeight = await crs.process.getValue(step.args.stroke_weight, context, process, item);
+
 
         const rectangle = L.rectangle(coordinates, { fillColor, color: strokeColor, weight: strokeWeight}).addTo(map);
         rectangle.type = "rectangle";
@@ -121,6 +152,19 @@ async function getModeProvider(mode) {
 async function getMap(step, context, process, item) {
     const instance = await crs.dom.get_element(step, context, process, item);
     return instance instanceof InteractiveMap ? instance.map : instance;
+}
+
+async function getColorData(step, context, process, item, map) {
+
+    const fillColor = await crs.process.getValue(step.args.fill_color, context, process, item);
+    const strokeColor = await crs.process.getValue(step.args.stroke_color, context, process, item);
+    const strokeWeight = await crs.process.getValue(step.args.stroke_weight, context, process, item);
+
+    return {
+        fillColor: fillColor || map.fillColor,
+        color: strokeColor || map.strokeColor,
+        weight: strokeWeight || 2
+    }
 }
 
 

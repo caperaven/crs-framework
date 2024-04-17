@@ -7,8 +7,6 @@
         display: flex;
     }
 
-
-
     .toolbar {
         display: flex;
     }
@@ -19,12 +17,14 @@
         height: 100%;
     }
 
-
-
     .flex {
         display: flex;
         flex-direction: row;
         height: 100%;
+    }
+
+    interactive-map {
+        height: 600px;
     }
 
     @media (max-width: 600px) {
@@ -42,6 +42,7 @@
             <option value="#floorplan">Floorplan</option>
         </select>
         <button class="icon" click.setvalue="mode = 'select'" disabled.if="mode =='select'? true">pointer</button>
+        <button class="icon" click.setvalue="mode = 'draw-point'" disabled.if="mode =='draw-point'? true">location-pin</button>
         <button class="icon" click.setvalue="mode = 'draw-polyline'" disabled.if="mode =='draw-polyline'? true">minimize</button>
         <button class="icon" click.setvalue="mode = 'draw-polygon'" disabled.if="mode =='draw-polygon'? true">show-chart</button>
         <button class="icon" click.setvalue="mode = 'draw-rectangle'" disabled.if="mode =='draw-rectangle'? true">check-box-blank</button>
@@ -59,6 +60,7 @@
     </div>
 
     <div class="flex vertical" id="maps-container">
+        <interactive-map id="openstreetmap" data-provider="openstreetmap" class="flex" data-fill-color="#0276C2" data-stroke-color="#0276C2" ready.call="mapReady"></interactive-map>
 
     </div>
 </div>

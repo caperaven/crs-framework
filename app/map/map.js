@@ -2,26 +2,21 @@ import "./../../components/interactive-map/interactive-map-actions.js";
 
 export default class Map extends crsbinding.classes.ViewBase {
 
+    async preLoad() {
+
+    }
+
     async connectedCallback() {
+
         await super.connectedCallback();
 
 
         const container = this.element.querySelector("#maps-container");
 
-        await crs.call("interactive_map", "initialize_lib");
 
-        const map1 = document.createElement("interactive-map");
-        map1.dataset.provider = "openstreetmap";
-        map1.dataset.fillColor = "blue";
-        map1.dataset.strokeColor = "red";
-        map1.setAttribute("id", "openstreetmap");
-        container.appendChild(map1);
 
-        const map2 = document.createElement("interactive-map");
-        map2.setAttribute("data-provider", "image");
-        map2.setAttribute("data-image-url", "app/map/floorplan.jpg");
-        map2.setAttribute("id", "floorplan");
-        container.appendChild(map2);
+
+
 
         this.setProperty("map", "#openstreetmap");
     }
@@ -39,47 +34,6 @@ export default class Map extends crsbinding.classes.ViewBase {
         });
     }
 
-    addPolygon() {
-        const polygonGeoJSON = {
-            "type": "Feature",
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                    [
-                        [-77.034084142948, 38.909671288923],
-                        [-77.032908, 38.910568],
-                        [-77.033983, 38.911562],
-                        [-77.035866, 38.9115],
-                        [-77.034084142948, 38.909671288923]
-                    ]
-                ]
-            },
-            "properties": {
-                "name": "Example Polygon"
-            }
-        };
-
-
-
-        this.map.addToMap(polygonGeoJSON);
-    }
-
-    addPoint() {
-
-        const markerGeoJSON = {
-            "type": "Feature",
-            "geometry": {
-                "type": "Point",
-                "coordinates": [-77.034084142948, 38.909671288923]
-            },
-            "properties": {
-                "name": "Example Marker"
-            }
-        };
-
-        this.map.addPoint(markerGeoJSON);
-    }
-
     locateMe() {
         this.map.locateMe();
     }
@@ -95,6 +49,47 @@ export default class Map extends crsbinding.classes.ViewBase {
         await crs.call("interactive_map", "set_colors", {
             element: this.getProperty("map"),
             stroke_color: color
+        });
+    }
+
+    async mapReady() {
+        await crs.call("interactive_map", "initialize", {
+            element: "#openstreetmap"
+        });
+
+        await crs.call("interactive_map", "add_geo_json", {
+            element: "#openstreetmap",
+            data: {
+                "type": "Feature",
+                "properties": {},
+                "geometry": {
+                    "type": "Polygon",
+                    "coordinates": [
+                        [
+                            [
+                                13.4765625,
+                                56.9449741808516
+                            ],
+                            [
+                                13.4765625,
+                                57.32652122521709
+                            ],
+                            [
+                                13.9306640625,
+                                57.32652122521709
+                            ],
+                            [
+                                13.9306640625,
+                                56.9449741808516
+                            ],
+                            [
+                                13.4765625,
+                                56.9449741808516
+                            ]
+                        ]
+                    ]
+                }
+            }
         });
     }
 }

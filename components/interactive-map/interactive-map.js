@@ -20,7 +20,19 @@ export class InteractiveMap extends HTMLElement {
     }
 
     async disconnectedCallback() {
+        // Dispose map mode
+        if (this.currentMode != null) {
+            await this.currentMode.dispose(this);
+            this.currentMode = null;
+        }
+
+        // Remove all layers
+        this.#map.eachLayer(layer => {
+            this.#map.removeLayer(layer);
+        });
+
         // Clean up
+        this.#map.off();
         this.#map.remove();
         this.#map = null;
 
@@ -29,16 +41,15 @@ export class InteractiveMap extends HTMLElement {
     async load() {
         return new Promise(resolve => {
             requestAnimationFrame(async () => {
-                await this.initLeaflet();
+
                 await crs.call("component", "notify_ready", {element: this});
                 resolve();
             })
         })
     }
 
-    async initLeaflet() {
+    async initialize() {
         const mapDiv = this.shadowRoot.querySelector("#map");
-
 
         // Add a tile layer
         if (this.dataset.provider === "openstreetmap") {
@@ -50,7 +61,6 @@ export class InteractiveMap extends HTMLElement {
 
             // Set the view to start with
             this.#map.setView([38.910, -77.034], 13);
-
         }
 
         if (this.dataset.provider === "image") {
@@ -64,31 +74,14 @@ export class InteractiveMap extends HTMLElement {
             this.#map.fitBounds(bounds);
         }
 
+        // This is to remove the default zoom control and add a new one to the bottom right
+        // this.#map.removeControl( this.#map.zoomControl);
+        // L.control.zoom({ position: 'bottomright'}).addTo(this.#map);
+
         await crs.call("interactive_map", "set_colors", {element: this, stroke_color: this.dataset.strokeColor, fill_color: this.dataset.fillColor});
     }
 
-    addToMap(geoJson, drawingOptions) {
-        // Create a GeoJSON layer and add it to the map
-        L.geoJSON(geoJson, drawingOptions).addTo(this.#map);
-    }
 
-    addPoint(geoJson) {
-
-        // Define the custom marker icon using a <div> element
-        const customIcon = L.divIcon({
-            className: 'marker',
-            html: "<div class='icon'>radio-button-unchecked</div>",
-            iconSize: [32, 32], // Size of the icon
-            iconAnchor: [16, 16] // Point of the icon which will correspond to marker's location
-        });
-
-        // Add a marker to the map
-        L.geoJSON(geoJson, {
-            pointToLayer: function (feature, latlng) {
-                return L.marker(latlng, {icon: customIcon, draggable: true});
-            }
-        }).addTo(this.#map);
-    }
 }
 
 customElements.define("interactive-map", InteractiveMap);
