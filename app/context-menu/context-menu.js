@@ -47,6 +47,11 @@ export default class ContextMenu extends crsbinding.classes.ViewBase {
                                 { id: "sub item child 2", tags: "sub item child 2", title: "sub item child 2", icon: "condition" },
                                 { id: "sub item child 3", tags: "sub item child 3", title: "sub item child 3" }]
                         },
+                        { id: "sub item 2", tags: "sub item 2", title: "sub item 2", children: [
+                                { id: "sub item child 1", tags: "sub item child 1", title: "sub item child 1", icon: "date-and-time"},
+                                { id: "sub item child 2", tags: "sub item child 2", title: "sub item child 2", icon: "condition" },
+                                { id: "sub item child 3", tags: "sub item child 3", title: "sub item child 3" }]
+                        },
                         { id: "sub item 2", tags: "sub item 2",  title: "sub item 1", icon: "calendar" },
                         { id: "sub item 3", tags: "sub item 3", title: "sub item 1" }]
                 },
@@ -76,6 +81,26 @@ export default class ContextMenu extends crsbinding.classes.ViewBase {
              */
 
             options: [
+                { id: "item0", tags: "master item", title: "Master Item", icon: "browse", icon_color: "#ff9000", children: [
+                        { id: "sub item 1", tags: "sub item 1", title: "sub item 1", children: [
+                                { id: "sub item 0", tags: "sub item 1", title: "sub item 1", children: [
+                                        { id: "sub item child 1", tags: "sub item child 1", title: "sub item child 1", icon: "date-and-time"},
+                                        { id: "sub item child 2", tags: "sub item child 2", title: "sub item child 2", icon: "condition" },
+                                        { id: "sub item child 3", tags: "sub item child 3", title: "sub item child 3" }]},
+                                { id: "sub item 1", tags: "sub item 1", title: "sub item 1", children: [
+                                        { id: "sub item child 1", tags: "sub item child 1", title: "sub item child 1", icon: "date-and-time"},
+                                        { id: "sub item child 2", tags: "sub item child 2", title: "sub item child 2", icon: "condition" },
+                                        { id: "sub item child 3", tags: "sub item child 3", title: "sub item child 3" }]},
+                                { id: "sub item child 1", tags: "sub item child 1", title: "sub item child 1", icon: "date-and-time"},
+                                { id: "sub item child 2", tags: "sub item child 2", title: "sub item child 2", icon: "condition" }]
+                        },
+                        { id: "sub item 2", tags: "sub item 2", title: "sub item 2", children: [
+                                { id: "sub item child 1", tags: "sub item child 1", title: "sub item child 1", icon: "date-and-time"},
+                                { id: "sub item child 2", tags: "sub item child 2", title: "sub item child 2", icon: "condition" },
+                                { id: "sub item child 3", tags: "sub item child 3", title: "sub item child 3" }]
+                        },
+                        { id: "sub item 2", tags: "sub item 2",  title: "sub item 1", icon: "calendar" },
+                        { id: "sub item 3", tags: "sub item 3", title: "sub item 1" }]},
                 { id: "item1", title: "&{approved}", tags: "approved", icon: "approved", icon_color: "#ff0090", type: "console", action: "log", args: { message: "Approved "}, attributes: { "aria-hidden.if": "status == 'b'" } },
                 { id: "item2", title: "Browse", tags: "browse", icon: "browse", type: "console", action: "log", args: { message: "Browse "}, styles: { "background": "green"} },
                 { id: "item3", title: "Calendar", tags: "calendar", icon: "calendar", type: "console", action: "log", args: { message: "Calendar "} },

@@ -14,6 +14,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     #anchor;
     #target;
     #clickHandler = this.#click.bind(this);
+    #keyHandler = this.#keySelection.bind(this);
     #context;
     #process;
     #item;
@@ -40,7 +41,8 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     async init() {
         return new Promise(async (resolve) => {
             requestAnimationFrame(async () => {
-                this.shadowRoot.addEventListener("click", this.#clickHandler);
+                globalThis.addEventListener("click", this.#clickHandler);
+                this.shadowRoot.addEventListener("keydown", this.#keyHandler);
                 const ul = this.shadowRoot.querySelector(".popup");
 
                 this.#isHierarchical = await buildElements.call(this, this.#options, this.#templates, this.#context, this.container);
@@ -50,7 +52,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
 
                 if (this.#target) {
                     at = "bottom";
-                    anchor = "left";
+                    anchor = "right";
                 }
 
                 await crs.call("fixed_layout", "set", {
@@ -92,8 +94,10 @@ class ContextMenu extends crsbinding.classes.BindableElement {
             this.#filterHeader.removeEventListener("close", this.#filterCloseHandler);
         }
 
-        this.shadowRoot.removeEventListener("click", this.#clickHandler);
+        globalThis.removeEventListener("click", this.#clickHandler);
+        this.shadowRoot.removeEventListener("keydown", this.#keyHandler);
 
+        this.#keyHandler = null;
         this.#filtering = null;
         this.#filterHeader = null;
         this.#filterCloseHandler = null;
@@ -114,11 +118,22 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     }
 
     async #click(event) {
-        if (event.target.matches(".back")) {
-            return await this.#filterClose();
-        }
+        const element = event.composedPath()[0]
 
-        await handleSelection(event, this.#options, this, this.#filterHeader);
+        const response = await handleSelection(element, this.#options, this, this.#filterHeader);
+
+        if (response === "close") {
+            await this.#filterClose();
+        }
+    }
+
+    async #keySelection(event) {
+        const key = event.key;
+        const element = event.composedPath()[0]
+
+        //Todo: implement keyboard functionality for accessiblity
+        //1. Call the handle selection function
+
     }
 
     async #filterClose(event) {

@@ -81,7 +81,11 @@ async function createListItems(parentElement, collection, templates) {
                 const ul = await crs.call("dom", "create_element", {
                     parent: li,
                     tag_name: "ul",
-                    classes: ["submenu"]
+                    classes: ["submenu"],
+                    dataset: {
+                        closable: true,
+                        edge: false
+                    }
                 });
 
                 await createListItems(ul, option.children, templates);
