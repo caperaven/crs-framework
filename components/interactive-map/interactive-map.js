@@ -11,12 +11,11 @@ export class InteractiveMap extends HTMLElement {
 
     constructor() {
         super();
-        this.attachShadow({ mode: "open" });
+        this.attachShadow({mode: "open"});
     }
 
     async connectedCallback() {
         this.shadowRoot.innerHTML = await fetch(this.html).then(result => result.text());
-        await this.load();
     }
 
     async disconnectedCallback() {
@@ -35,26 +34,20 @@ export class InteractiveMap extends HTMLElement {
         this.#map.off();
         this.#map.remove();
         this.#map = null;
-
-    }
-
-    async load() {
-        return new Promise(resolve => {
-            requestAnimationFrame(async () => {
-
-                await crs.call("component", "notify_ready", {element: this});
-                resolve();
-            })
-        })
     }
 
     async initialize() {
+        if (this.#map != null) return;
+
+        await crs.call("interactive_map", "initialize_lib", {});
+
         const mapDiv = this.shadowRoot.querySelector("#map");
 
+        const provider = this.dataset.provider;
         // Add a tile layer
-        if (this.dataset.provider === "openstreetmap") {
+        if (provider == null || provider === "openstreetmap") {
             // Initialize Leaflet map
-            this.#map = L.map(mapDiv, {})
+            this.#map = L.map(mapDiv, { preferCanvas: true});
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; OpenStreetMap contributors',
             }).addTo(this.#map);
@@ -69,7 +62,7 @@ export class InteractiveMap extends HTMLElement {
                 crs: L.CRS.Simple,
                 minZoom: -5
             })
-            const bounds = [[0,0], [1406,2300]];
+            const bounds = [[0, 0], [1406, 2300]];
             L.imageOverlay(this.dataset.imageUrl, bounds).addTo(this.#map);
             this.#map.fitBounds(bounds);
         }
@@ -78,10 +71,18 @@ export class InteractiveMap extends HTMLElement {
         // this.#map.removeControl( this.#map.zoomControl);
         // L.control.zoom({ position: 'bottomright'}).addTo(this.#map);
 
-        await crs.call("interactive_map", "set_colors", {element: this, stroke_color: this.dataset.strokeColor, fill_color: this.dataset.fillColor});
+        await crs.call("interactive_map", "set_colors", {
+            element: this,
+            stroke_color: this.dataset.strokeColor,
+            fill_color: this.dataset.fillColor
+        });
+
+        await crs.call("component", "notify_ready", {element: this});
     }
 
-
+    async enable() {
+        await this.initialize();
+    }
 }
 
 customElements.define("interactive-map", InteractiveMap);

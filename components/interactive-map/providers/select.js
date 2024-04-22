@@ -3,7 +3,7 @@
 // However if the shape selected changes, the selection provider will be disposed and a new one will be created
 
 export default class SelectProvider {
-    #map;
+    #instance;
     #selectionProvider;
     #clickHandler;
 
@@ -11,13 +11,13 @@ export default class SelectProvider {
         this.#selectionProvider = null;
     }
 
-    async initialize(map) {
-        this.#map = map;
+    async initialize(instance) {
+        this.#instance = instance;
         await this.#setupEvents();
     }
 
     async dispose() {
-        this.#map = null;
+        this.#instance = null;
         this.#selectionProvider?.dispose();
         this.#selectionProvider = null;
     }
@@ -33,14 +33,15 @@ export default class SelectProvider {
 
             const provider = await this.#getProvider(shape);
             this.#selectionProvider = provider;
-            this.#map.selectedShape = shape;
-            await provider.initialize(this.#map, shape, element);
+            this.#instance.selectedShape = shape;
+            await provider.initialize(this.#instance, shape, element);
+
         }
     }
 
     async #setupEvents() {
         this.#clickHandler = this.onClick.bind(this);
-        this.#map.eachLayer(layer => {
+        this.#instance.map.eachLayer(layer => {
             if (layer instanceof L.Path || layer instanceof L.Marker) {
                 layer.on("click", this.#clickHandler);
             }
@@ -48,7 +49,7 @@ export default class SelectProvider {
     }
 
     async #removeEvents() {
-        this.#map.eachLayer(layer => {
+        this.#instance.map.eachLayer(layer => {
             if (layer instanceof L.Path || layer instanceof L.Marker) {
                 layer.off("click", this.#clickHandler);
             }

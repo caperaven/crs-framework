@@ -3,6 +3,7 @@
 <style>
     :host {
         display: block;
+        position: relative;
         height: 100%;
         width: 100%;
     }
@@ -53,5 +54,16 @@
         display: flex;
         flex-direction: row-reverse;
     }
+
+    /* Make the slotted drawing tools appear at the top right of the map */
+    ::slotted([slot="drawing-tools"]) {
+        margin: var(--margin);
+        position: absolute;
+        top: 0;
+        right: 0;
+        z-index: 1000;
+    }
+
 </style>
 <div id="map"></div>
+<slot name="drawing-tools"></slot>

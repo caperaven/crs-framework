@@ -1,31 +1,30 @@
-import "./interactive-map.js";
-import {InteractiveMap} from "./interactive-map.js";
 
 export class InteractiveMapActions {
     static async perform(step, context, process, item) {
         await this[step.action]?.(step, context, process, item);
     }
 
-    static async initialize_lib(step, context, process, item) {
+    static initialize_lib(step, context, process, item) {
         return new Promise(resolve => {
-            requestAnimationFrame(async () => {
-                const leafletScript = document.createElement('script');
-                leafletScript.src = "/packages/leaflet/leaflet.js";
-                leafletScript.onload = async () => {
+            if (globalThis.L == null) {
 
-                    resolve();
-                }
-                document.body.appendChild(leafletScript);
-            });
+                requestAnimationFrame(async () => {
+                    const leafletScript = document.createElement('script');
+                    leafletScript.src = "/packages/leaflet/leaflet.js";
+                    leafletScript.onload = async () => {
+
+                        resolve();
+                    }
+                    document.body.appendChild(leafletScript);
+                });
+            } else {
+                resolve();
+            }
         });
     }
 
     static async initialize(step, context, process, item) {
         const instance = await crs.dom.get_element(step, context, process, item);
-
-        if(globalThis.L == null) {
-            await this.initialize_lib(step, context, process, item);
-        }
         await instance.initialize();
     }
 
@@ -66,7 +65,7 @@ export class InteractiveMapActions {
 
         const modeClass = await getModeProvider(mode);
         instance.currentMode = await modeClass;
-        await modeClass.initialize(instance.map);
+        await modeClass.initialize(instance);
     }
 
     static async add_geo_json(step, context, process, item) {
@@ -142,6 +141,29 @@ export class InteractiveMapActions {
         const marker = L.marker(coordinates, {icon: customIcon,  ...options}).addTo(map);
         return marker;
     }
+
+    static async show_drawing_tools(step, context, process, item) {
+        const instance = await crs.dom.get_element(step, context, process, item);
+
+        await import("./interactive-map-draw-toolbar/interactive-map-draw-toolbar.js");
+
+        const toolbar = document.createElement("interactive-map-draw-toolbar");
+        toolbar.slot = "drawing-tools";
+
+        instance.appendChild(toolbar);
+
+        await toolbar.setInstance(instance);
+    }
+
+    static async remove_selected(step, context, process, item) {
+        const instance = await crs.dom.get_element(step, context, process, item);
+        const map = instance.map;
+        if (instance.selectedShape != null) {
+            map.removeLayer(instance.selectedShape);
+            instance.selectedShape = null;
+            await crs.call("interactive_map", "set_mode", {element: instance, mode: "none"});
+        }
+    }
 }
 
 async function getModeProvider(mode) {
@@ -151,7 +173,7 @@ async function getModeProvider(mode) {
 
 async function getMap(step, context, process, item) {
     const instance = await crs.dom.get_element(step, context, process, item);
-    return instance instanceof InteractiveMap ? instance.map : instance;
+    return instance.nodeName === "INTERACTIVE-MAP" ? instance.map : instance;
 }
 
 async function getColorData(step, context, process, item, map) {

@@ -1,4 +1,5 @@
 import "./../../components/interactive-map/interactive-map-actions.js";
+import "./../../components/interactive-map/interactive-map.js";
 
 export default class Map extends crsbinding.classes.ViewBase {
 
@@ -14,11 +15,9 @@ export default class Map extends crsbinding.classes.ViewBase {
         const container = this.element.querySelector("#maps-container");
 
 
-
-
-
-
         this.setProperty("map", "#openstreetmap");
+
+        await this.mapReady();
     }
 
     async mapChanged(mode) {
@@ -53,7 +52,10 @@ export default class Map extends crsbinding.classes.ViewBase {
     }
 
     async mapReady() {
-        await crs.call("interactive_map", "initialize", {
+
+        await crs.call("interactive_map", "initialize", { element: "#openstreetmap"});
+
+        await crs.call("interactive_map", "show_drawing_tools", {
             element: "#openstreetmap"
         });
 
@@ -67,24 +69,24 @@ export default class Map extends crsbinding.classes.ViewBase {
                     "coordinates": [
                         [
                             [
-                                13.4765625,
-                                56.9449741808516
+                                -77.032013,
+                                38.931639
                             ],
                             [
-                                13.4765625,
-                                57.32652122521709
+                                -77.029095,
+                                38.899984
                             ],
                             [
-                                13.9306640625,
-                                57.32652122521709
+                                -76.971073,
+                                38.88983
                             ],
                             [
-                                13.9306640625,
-                                56.9449741808516
+                                -77.059994,
+                                38.884619
                             ],
                             [
-                                13.4765625,
-                                56.9449741808516
+                                -77.032013,
+                                38.931639
                             ]
                         ]
                     ]
