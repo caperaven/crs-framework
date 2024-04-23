@@ -31,10 +31,11 @@ export class SlaVisualizationActions {
      */
     static async initialize(step, context, process, item) {
         const data = await crs.process.getValue(step.args.data, context, process, item);
+        const parentPhase = await crs.process.getValue(step.args.phase, context, process, item); // refactor for phase
         const element = await crs.dom.get_element(step.args.element, context, process, item);
 
         await create_sla_grid(data, element);
-        await crs.call("sla_layer", "create_all_sla", { parent: element, data: data });
+        await crs.call("sla_layer", "create_all_sla", { parent: element, data: data , parentPhase: parentPhase}); // refactor for phase
         await crs.call("component", "notify_ready", { element: element });
     }
 

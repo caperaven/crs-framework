@@ -1,4 +1,5 @@
-export const data = {
+const data1 = {
+    "workOrder": {"statusDescription": "Approved"},
     "statuses": [
         {
             "id": 1,
@@ -49,48 +50,88 @@ export const data = {
         {
             "id": "1001",
             "code": "SLA-1",
-            "description": "something",
+            "description": "Pump Breakdown",
             "duration": "99%",
             "measurements": [
                 {
                     "id": "1001",
-                    "code": "measurement 1",
+                    "code": "Response Time",
                     "description": "something",
                     "start_status": 1,
                     "end_status": 3,
                     "progress": 25,
                     "status": "active",
-                    "duration": "27:00"
+                    "duration": "27:00",
+                    "triggers": [
+                        {
+                            "id": "1001",
+                            "trigger": 15
+                        },
+                        {
+                            "id": "1002",
+                            "trigger": 55
+                        }
+                    ]
                 },
                 {
                     "id": "777",
-                    "code": "measurement 7",
+                    "code": "Inspection",
                     "description": "something else",
                     "start_status": 1,
                     "end_status": 3,
                     "progress": 100,
                     "status": "active",
-                    "duration": "27:00"
+                    "duration": "27:00",
+                    "triggers": [
+                        {
+                            "id": "1001",
+                            "trigger": 25
+                        },
+                        {
+                            "id": "1002",
+                            "trigger": 50
+                        }
+                    ]
                 },
                 {
                     "id": "1002",
-                    "code": "measurement 2",
+                    "code": "Maintenance",
                     "description": "something",
                     "start_status": 3,
                     "end_status": 6,
                     "progress": 50,
                     "status": "active",
-                    "duration": "10:00"
+                    "duration": "10:00",
+                    "triggers": [
+                        {
+                            "id": "1001",
+                            "trigger": 25
+                        },
+                        {
+                            "id": "1002",
+                            "trigger": 75
+                        }
+                    ]
                 },
                 {
                     "id": "1003",
-                    "code": "measurement 3",
+                    "code": "Completion",
                     "description": "something",
                     "start_status": 7,
                     "end_status": 10,
                     "progress": 75,
                     "status": "active",
-                    "duration": "50:00"
+                    "duration": "50:00",
+                    "triggers": [
+                        {
+                            "id": "1001",
+                            "trigger": 25
+                        },
+                        {
+                            "id": "1002",
+                            "trigger": 0
+                        }
+                    ]
                 }
             ]
         },
@@ -107,8 +148,13 @@ export const data = {
                     "start_status": 1,
                     "end_status": 2,
                     "progress": 25,
-                    "status": "active",
-                    "duration": "27:00"
+                    "duration": "27:00",
+                    "triggers": [
+                        {
+                            "id": "1004",
+                            "trigger": 75
+                        }
+                        ]
                 },
                 {
                     "id": "1005",
@@ -116,9 +162,16 @@ export const data = {
                     "description": "something",
                     "start_status": 3,
                     "end_status": 8,
-                    "progress": 50,
+                    "progress": 88,
                     "status": "active",
-                    "duration": "10:00"
+                    "state": "warning",
+                    "duration": "10:00",
+                    "triggers": [
+                        {
+                            "id": "1001",
+                            "trigger": 25
+                        }
+                    ]
                 },
                 {
                     "id": "1006",
@@ -126,8 +179,9 @@ export const data = {
                     "description": "something",
                     "start_status": 9,
                     "end_status": 11,
-                    "progress": 75,
+                    "progress": 110,
                     "status": "active",
+                    "state": "overdue",
                     "duration": "50:00"
                 }
             ]
@@ -144,31 +198,153 @@ export const data = {
                     "description": "something",
                     "start_status": 1,
                     "end_status": 4,
-                    "progress": 25,
+                    "progress": 111,
                     "status": "active",
                     "duration": "27:00"
-                },
-                {
-                    "id": "1008",
-                    "code": "measurement 8",
-                    "description": "something",
-                    "start_status": 5,
-                    "end_status": 6,
-                    "progress": 50,
-                    "state": "inactive",
-                    "duration": "10:00"
-                },
-                {
-                    "id": "1009",
-                    "code": "measurement 9",
-                    "description": "something",
-                    "start_status": 7,
-                    "end_status": 10,
-                    "progress": 75,
-                    "status": "active",
-                    "duration": "50:00"
                 }
             ]
         }
     ]
 }
+
+const data2 = {
+    "workOrder": {"statusDescription": "Cancelled"},
+    "statuses": [
+        {
+            "id": 1,
+            "name": "Awaiting Approval"
+        },
+        {
+            "id": 2,
+            "name": "To Be Inspected"
+        },
+        {
+            "id": 3,
+            "name": "Approved"
+        },
+        {
+            "id": 4,
+            "name": "Awaiting Labour"
+        },
+        {
+            "id": 5,
+            "name": "Awaiting Spares"
+        },
+        {
+            "id": 6,
+            "name": "In Progress"
+        },
+        {
+            "id": 7,
+            "name": "Complete/Awaiting Feedback"
+        },
+        {
+            "id": 8,
+            "name": "Complete/Awaiting Costs"
+        },
+        {
+            "id": 9,
+            "name": "Completed"
+        },
+        {
+            "id": 10,
+            "name": "Closed"
+        },
+        {
+            "id": 11,
+            "name": "Cancelled"
+        }
+    ],
+    "sla": [
+        {
+            "id": "1001",
+            "code": "SLA-1",
+            "description": "Pump Breakdown",
+            "duration": "99%",
+            "measurements": [
+                {
+                    "id": "1001",
+                    "code": "Response Time",
+                    "description": "something",
+                    "start_status": 1,
+                    "end_status": 3,
+                    "progress": 25,
+                    "status": "active",
+                    "duration": "27:00",
+                    "triggers": [
+                        {
+                            "id": "1001",
+                            "trigger": 15
+                        },
+                        {
+                            "id": "1002",
+                            "trigger": 55
+                        }
+                    ]
+                },
+                {
+                    "id": "777",
+                    "code": "Inspection",
+                    "description": "something else",
+                    "start_status": 1,
+                    "end_status": 3,
+                    "progress": 100,
+                    "status": "active",
+                    "duration": "27:00",
+                    "triggers": [
+                        {
+                            "id": "1001",
+                            "trigger": 25
+                        },
+                        {
+                            "id": "1002",
+                            "trigger": 50
+                        }
+                    ]
+                },
+                {
+                    "id": "1002",
+                    "code": "Maintenance",
+                    "description": "something",
+                    "start_status": 3,
+                    "end_status": 6,
+                    "progress": 50,
+                    "status": "active",
+                    "duration": "10:00",
+                    "triggers": [
+                        {
+                            "id": "1001",
+                            "trigger": 25
+                        },
+                        {
+                            "id": "1002",
+                            "trigger": 75
+                        }
+                    ]
+                },
+                {
+                    "id": "1003",
+                    "code": "Completion",
+                    "description": "something",
+                    "start_status": 7,
+                    "end_status": 10,
+                    "progress": 75,
+                    "status": "active",
+                    "duration": "50:00",
+                    "triggers": [
+                        {
+                            "id": "1001",
+                            "trigger": 25
+                        },
+                        {
+                            "id": "1002",
+                            "trigger": 0
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+
+export { data1, data2 }

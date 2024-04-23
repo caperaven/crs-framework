@@ -17,20 +17,18 @@ export async function create_sla_grid(data, slaVisualization) {
     // 1.1 the status cell area name = cl_status_${statusId} e.g. cl_status_1001 and cl_status_1002
 
     const element = slaVisualization
+    const slaVisualizationPhase = element.dataset.phase; // refactor for phase
+    element.shadowRoot.querySelector("#measurement-name").style.opacity = 1;
 
     createInitialGrid(element);
 
     // Generate the grid template array
-    element.style.gridTemplate = generateGridTemplateArray(data.statuses, data.sla).join('\n');
+    element.style.gridTemplate = generateGridTemplateArray(data.statuses, data.sla, slaVisualizationPhase).join('\n'); // refactor for phase
+    element.dataset.workOrderStatus = data.workOrder.statusDescription;
 
     createStatusLabels(element, data.statuses);
     createRowElements(element, data.statuses);
     createSlaLayers(element, data.sla);
-
-    // 2. create sla text elements and place on grid
-
-    // 3. create sla layer and place on grid
-    // 3.1 when creating the sla layer, you need to pass the css grid rows text on because it needs to use it
 }
 
 
@@ -63,6 +61,11 @@ function createStatusLabels(element, statuses) {
     statusBackground.classList.add("status-background");
     element.shadowRoot.appendChild(statusBackground);
 
+    const statusHeader = document.createElement("span");
+    statusHeader.classList.add("status-description");
+    statusHeader.textContent = "Status";
+    statusBackground.appendChild(statusHeader);
+
     for(const status of statuses) {
         if (status.id === -1) {
             continue;
@@ -79,12 +82,32 @@ function createStatusLabels(element, statuses) {
 
 }
 
+// function createRowElements(element, statuses) {
+//     let index = 1;
+//
+//     for (let status of statuses) {
+//         const div = document.createElement("div");
+//         div.dataset.status = status.id;
+//         div.dataset.id = status.name;
+//         div.style.gridRow = index;
+//         div.classList.add("status-row");
+//         element.shadowRoot.appendChild(div);
+//         if (index === statuses.length) {
+//             div.classList.add("sla-footer-border");
+//         }
+//
+//         index++;
+//     }
+// }
+
 function createRowElements(element, statuses) {
     let index = 1;
 
-    for (let status of statuses) {
+    for (let i = statuses.length - 1; i >= 0; i--) {
+        const status = statuses[i];
         const div = document.createElement("div");
         div.dataset.status = status.id;
+        div.dataset.id = status.name;
         div.style.gridRow = index;
         div.classList.add("status-row");
         element.shadowRoot.appendChild(div);
@@ -156,9 +179,10 @@ function createStatusRegions(statuses) {
  * Generate the grid template array
  * @param dataStatuses {[Object]} - the array of status objects
  * @param dataSla {[Object]} - the array of sla objects
+ * @param visualizationPhase
  * @returns {[string]} - the generated grid template array
  */
-function generateGridTemplateArray(dataStatuses, dataSla) {
+function generateGridTemplateArray(dataStatuses, dataSla, visualizationPhase) { // refactor for phase
     dataStatuses.unshift({id: -1});
     dataStatuses.push({id: -1});
 
@@ -170,7 +194,7 @@ function generateGridTemplateArray(dataStatuses, dataSla) {
     let statusCount = 1;
 
     const gridTemplateArray = reversedStatuses.map(status => {
-        let rowHeight = statusCount === 1 ? "3fr" : "1fr";
+        let rowHeight = statusCount === 1 && visualizationPhase === "runtime" ? "3fr" : "1fr"; // refactor for phase
         statusCount++;
         let row = status.id === -1 ? "." : `status_${status.id}`;
         let slaArray = dataSla.map(sla => ` sla_${sla.id}`);

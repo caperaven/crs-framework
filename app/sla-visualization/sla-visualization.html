@@ -1,4 +1,14 @@
-<div class="fake-tab">
-    <sla-visualization></sla-visualization>
+
+
+<h2>Setup & Management Visualization</h2>
+<div class="setup-tab">
+    <sla-visualization id="setup" data-phase="setup"></sla-visualization>
 </div>
-<button click.call="initialize">Initialize</button>
+<button click.call="initializeSetup">Initialize</button>
+<button class="icon" click.call="removeMeasurement">delete</button>
+
+<h2>Run-Time Visualization</h2>
+<div class="run-tab">
+    <sla-visualization id="runtime" data-phase="runtime"></sla-visualization>
+</div>
+<button click.call="initializeRuntime">Initialize</button>

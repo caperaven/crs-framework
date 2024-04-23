@@ -23,6 +23,7 @@ export class SlaLayerActions{
 
     static async create_all_sla(step, context, process, item) {
         const parentElement = await crs.dom.get_element(step.args.parent, context, process, item);
+        const parentPhase = await crs.process.getValue(step.args.parentPhase, context, process, item);
         const slaData = await crs.process.getValue(step.args.data, context, process, item);
 
         // for each sla object in the data array of objects, create a sla-layer component
@@ -34,17 +35,23 @@ export class SlaLayerActions{
             element.id = sla.id;
             element.shadowRoot.textContent = sla.code;
             element.style.gridArea = `sla_${sla.id}`
+            element.dataset.parentPhase = parentPhase; // refactor for phase
             parentElement.shadowRoot.appendChild(element);
 
             await createSlaGrid(element, sla, slaData.statuses);
+            // in the sla data, based on the workOrder.statusDescription, call function:
+            // showCurrentWorkOrderStatus(workOrder.statusDescription, element);
+            await showCurrentWorkOrderStatus(slaData.workOrder.statusDescription, parentElement);
+            element.dataset.activeRow = parentElement.shadowRoot.querySelector(".active-status-row").dataset.status;
 
             await onSlaLayerLoading(element, async () => {
-                await crs.call("sla_measurement", "create_all", { parent: element, data: sla.measurements });
+                await crs.call("sla_measurement", "create_all", { parent: element, data: sla.measurements, parentPhase: element.dataset.parentPhase });
             })
 
             for(const measurement of element.shadowRoot.querySelectorAll("sla-measurement")) {
                 const measurementOverlay = document.createElement("div");
-                measurementOverlay.classList.add("overlay"); //change class name!!
+                measurementOverlay.id = `m_${measurement.id}`;
+                measurementOverlay.classList.add("measurement-overlay"); //change class name!!
                 measurementOverlay.style.gridArea = `m_${measurement.id}`;
                 measurementOverlay.style.gridRow = `2 / span ${slaData.statuses.length - 2}`;
                 element.shadowRoot.appendChild(measurementOverlay);
@@ -84,7 +91,7 @@ async function createSlaGrid(slaLayerElement, slaItemData, statusData) {
     const statusLookupTable = createStatusLookupTable(statusData);
     const matrix = createMeasurementsMatrix(statusData, slaItemData);
     populateMeasurementsMatrix(matrix, statusLookupTable, slaItemData);
-    slaLayerElement.style.gridTemplate = matrixToTemplate(matrix);
+    slaLayerElement.style.gridTemplate = matrixToTemplate(matrix, slaLayerElement);
 }
 
 /**
@@ -126,13 +133,17 @@ function createStatusLookupTable(statusData) {
  */
 function createMeasurementsMatrix(statusData, slaItemData) {
     const numberOfRows = statusData.length;
-    const numberOfColumns = slaItemData.measurements.length;
+    // const numberOfColumns = slaItemData.measurements.length;
+    const numberOfColumns = slaItemData.measurements.length < 3 ? 3 : slaItemData.measurements.length;
+
     const matrix = [];
     initializeMatrix(matrix, numberOfRows, numberOfColumns);
 
     for (let i = 0; i < numberOfColumns; i++) {
         matrix[0][i] = "header";
-        matrix[numberOfRows - 1][i] = `f_${slaItemData.measurements[i].id}`;
+        // matrix[numberOfRows - 1][i] = `f_${slaItemData.measurements[i].id}`;
+        matrix[numberOfRows - 1][i] = slaItemData.measurements[i] ? `f_${slaItemData.measurements[i].id}` : `f_${slaItemData.measurements[0].id}`;
+
     }
 
     return matrix;
@@ -162,10 +173,18 @@ function populateMeasurementsMatrix(matrix, statusLookupTable, slaItemData) {
     }
 }
 
-function matrixToTemplate(matrix) {
+function matrixToTemplate(matrix, slaLayerElement) {
     const columns = [];
+    // for (let i = 0; i < matrix[0].length; i++) {
+    //     columns.push("8rem");
+    // }
+
     for (let i = 0; i < matrix[0].length; i++) {
-        columns.push("8rem");
+        if (matrix[0].length === 1) {
+            columns.push("12rem");
+            break;
+        }
+        columns.push("5rem");
     }
 
     const result = [];
@@ -173,7 +192,7 @@ function matrixToTemplate(matrix) {
         // const rowStr = `"${matrix[row].join(" ")}" 1fr`;
         // result.push(rowStr)
         let rowStr;
-        if (row === 0) {
+        if (row === 0 && slaLayerElement.dataset.parentPhase === "runtime") {
             rowStr = `"${matrix[row].join(" ")}" 3fr`;
         } else {
             rowStr = `"${matrix[row].join(" ")}" 1fr`;
@@ -198,6 +217,32 @@ async function createSlaHeader(slaLayerElement, slaItemData) {
     await crs.binding.staticInflationManager.inflateElement(slaHeader.firstElementChild, slaItemData);
 
     slaLayerElement.shadowRoot.appendChild(slaHeader);
+}
+
+/**
+ * @method showCurrentWorkOrderStatus - Shows the current work order status and applies the correct styles on the sla grid visualization.
+ * @param statusDescription {String} - The status description
+ * @param parentElement {HTMLElement} - The parent element
+ */
+
+async function showCurrentWorkOrderStatus(statusDescription, parentElement) {
+    // apply the class "active-status-label" to the status label that matches the status description
+    const statusLabels = parentElement.shadowRoot.querySelectorAll(".status-label");
+    for (const statusLabel of statusLabels) {
+        if (statusLabel.textContent === statusDescription) {
+            statusLabel.classList.add("active-status-label");
+        }
+    }
+
+    // apply the class "active-status-row" to the row that matches the status description key
+
+    const statusRows = parentElement.shadowRoot.querySelectorAll(".status-row");
+    for (const statusRow of statusRows) {
+        if (statusRow.dataset.id === statusDescription) {
+            statusRow.classList.add("active-status-row");
+        }
+    }
+
 }
 
 crs.intent.sla_layer = SlaLayerActions;
