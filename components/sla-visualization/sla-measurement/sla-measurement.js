@@ -3,6 +3,7 @@ import "./../../dialogs/dialogs-actions.js";
 import "./../../context-menu/context-menu-actions.js";
 
 export class SlaMeasurement extends crs.classes.BindableElement {
+    // ToDo: See if we can use this convention instead of all the handlers
     // #mouseEventHandlers = {
     //     "mouseenter": this.#mouseEnter.bind(this),
     //     "mouseleave": this.#mouseLeave.bind(this)
@@ -50,12 +51,6 @@ export class SlaMeasurement extends crs.classes.BindableElement {
     async #mouseEvent(event) {
         const parent = event.composedPath()[0].getRootNode().host;
 
-        // if (parent.dataset.parentPhase === "runtime") {
-        //     await crs.call("sla_measurement", "display_measurement_info", {
-        //         element: event.composedPath()[0],
-        //         type: event.type
-        //     });
-        // }
         await crs.call("sla_measurement", "display_measurement_info", {
             element: event.composedPath()[0],
             type: event.type
@@ -83,10 +78,6 @@ export class SlaMeasurement extends crs.classes.BindableElement {
         const parentElement = event.composedPath()[0].getRootNode().host;
 
         if (measurement.dataset.parentPhase === "setup") {
-            // await crs.call("sla_measurement", "display_measurement_info", {
-            //     element: event.composedPath()[0],
-            //     type: event.type
-            // });
             await crs.call("context_menu", "show", {
                 element: event.composedPath()[0],
                 icon_font_family: "crsfrw",

@@ -1,15 +1,26 @@
 <div class="icon progress-bar"></div>
-<!--<div class="measurement-info"></div>-->
 
-<!--<template class="measurement-info-template">-->
-<!--    <div class="measurement-info">-->
-<!--        <span >Code : <span id="sla-code" class="measurement-content">${code}</span></span>-->
-<!--        <span > Description : <span id="sla-description" class="measurement-content">${description}</span></span>-->
-<!--        <span > Time-Elapsed : <span id="sla-duration" class="measurement-content">${duration}</span></span>-->
-<!--    </div>-->
-<!--</template>-->
+<template class="setup-measurement-info-template">
+    <div class="measurement-info">
+        <h4>${code}</h4>
 
-<template class="measurement-info-template">
+        <div class="measurement-status-info">
+            <div>Start-Status : <span id="setup-start-status" class="measurement-content">${startStatus}</span></div>
+            <div>End-Status : <span id="setup-end-status" class="measurement-content">${endStatus}</span></div>
+        </div>
+
+
+        <div class="measurement-duration-info">
+            <div>Duration :<span id="setup-measurement-duration" class="measurement-content">${duration}</span></div>
+        </div>
+
+        <div class="measurement-trigger-info">
+            <div>Number Of Triggers : <span id="number-of-triggers" class="measurement-content">${NumOfTriggers}</span></div>
+        </div>
+    </div>
+</template>
+
+<template class="runtime-measurement-info-template">
     <div class="measurement-info">
         <h4>${code}</h4>
 
@@ -24,10 +35,9 @@
             <div>Work Progress : <span id="measurement-progress" class="measurement-content">${progress}</span></div>
         </div>
 
-        <!-- Trigger Container -->
         <div class="measurement-trigger-info">
-            <div>Next Trigger : <span id="next-trigger" class="measurement-content">80%</span></div>
-            <span>Trigger Description : <span id="trigger-description" class="measurement-content">Warning</span></span>
+            <div>Next Trigger : <span id="next-trigger" class="measurement-content">${nextTrigger}</span></div>
+            <span>Trigger Description : <span id="trigger-description" class="measurement-content">${triggerType}</span></span>
         </div>
     </div>
 </template>

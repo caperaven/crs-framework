@@ -1,3 +1,9 @@
+/**
+ * @typedef {Object} Data
+ * @type {{workOrder: {statusDescription: string}, statuses: [{name: string, id: number},{name: string, id: number},{name: string, id: number},{name: string, id: number},{name: string, id: number},null,null,null,null,null,null], sla: [{duration: string, code: string, description: string, id: string, measurements: [{duration: string, end_status: number, code: string, description: string, progress: number, id: string, triggers: [{id: string, trigger: number},{id: string, trigger: number}], start_status: number, status: string},{duration: string, end_status: number, code: string, description: string, progress: number, id: string, triggers: [{id: string, trigger: number},{id: string, trigger: number}], start_status: number, status: string},{duration: string, end_status: number, code: string, description: string, progress: number, id: string, triggers: [{id: string, trigger: number},{id: string, trigger: number}], start_status: number, status: string},{duration: string, end_status: number, code: string, description: string, progress: number, id: string, triggers: [{id: string, trigger: number},{id: string, trigger: number}], start_status: number, status: string}]},{duration: string, code: string, description: string, id: string, measurements: [{duration: string, end_status: number, code: string, description: string, progress: number, id: string, triggers: [{id: string, trigger: number}], start_status: number},{duration: string, end_status: number, code: string, description: string, progress: number, id: string, state: string, triggers: [{id: string, trigger: number}], start_status: number, status: string},{duration: string, end_status: number, code: string, description: string, progress: number, id: string, state: string, start_status: number, status: string}]},{duration: string, code: string, description: string, id: string, measurements: [{duration: string, end_status: number, code: string, description: string, progress: number, id: string, start_status: number, status: string}]}]}}
+ * @description Data objects used in the sla visualization
+ */
+
 const data1 = {
     "workOrder": {"statusDescription": "Approved"},
     "statuses": [
@@ -65,11 +71,13 @@ const data1 = {
                     "triggers": [
                         {
                             "id": "1001",
-                            "trigger": 15
+                            "trigger": 15,
+                            "type": "warning"
                         },
                         {
                             "id": "1002",
-                            "trigger": 55
+                            "trigger": 55,
+                            "type": "overdue"
                         }
                     ]
                 },
@@ -85,11 +93,13 @@ const data1 = {
                     "triggers": [
                         {
                             "id": "1001",
-                            "trigger": 25
+                            "trigger": 25,
+                            "type": "warning"
                         },
                         {
                             "id": "1002",
-                            "trigger": 50
+                            "trigger": 50,
+                            "type": "warning"
                         }
                     ]
                 },
@@ -105,11 +115,13 @@ const data1 = {
                     "triggers": [
                         {
                             "id": "1001",
-                            "trigger": 25
+                            "trigger": 25,
+                            "type": "warning"
                         },
                         {
                             "id": "1002",
-                            "trigger": 75
+                            "trigger": 75,
+                            "type": "overdue"
                         }
                     ]
                 },
@@ -125,7 +137,8 @@ const data1 = {
                     "triggers": [
                         {
                             "id": "1001",
-                            "trigger": 25
+                            "trigger": 25,
+                            "type": "warning"
                         },
                         {
                             "id": "1002",
@@ -154,7 +167,7 @@ const data1 = {
                             "id": "1004",
                             "trigger": 75
                         }
-                        ]
+                    ]
                 },
                 {
                     "id": "1005",
@@ -274,11 +287,13 @@ const data2 = {
                     "triggers": [
                         {
                             "id": "1001",
-                            "trigger": 15
+                            "trigger": 15,
+                            "type": "warning"
                         },
                         {
                             "id": "1002",
-                            "trigger": 55
+                            "trigger": 55,
+                            "type": "warning"
                         }
                     ]
                 },
@@ -294,11 +309,13 @@ const data2 = {
                     "triggers": [
                         {
                             "id": "1001",
-                            "trigger": 25
+                            "trigger": 25,
+                            "type": "warning"
                         },
                         {
                             "id": "1002",
-                            "trigger": 50
+                            "trigger": 50,
+                            "type": "warning"
                         }
                     ]
                 },
@@ -314,11 +331,13 @@ const data2 = {
                     "triggers": [
                         {
                             "id": "1001",
-                            "trigger": 25
+                            "trigger": 25,
+                            "type": "warning"
                         },
                         {
                             "id": "1002",
-                            "trigger": 75
+                            "trigger": 75,
+                            "type": "warning"
                         }
                     ]
                 },
@@ -334,11 +353,13 @@ const data2 = {
                     "triggers": [
                         {
                             "id": "1001",
-                            "trigger": 25
+                            "trigger": 25,
+                            "type": "warning"
                         },
                         {
                             "id": "1002",
-                            "trigger": 0
+                            "trigger": 0,
+                            "type": "warning"
                         }
                     ]
                 }
@@ -347,4 +368,4 @@ const data2 = {
     ]
 }
 
-export { data1, data2 }
+export {data1, data2}

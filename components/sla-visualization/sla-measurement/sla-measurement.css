@@ -13,10 +13,6 @@
     z-index: 1;
 }
 
-/*:host([data-parent-phase="setup"]):hover {*/
-/*    background: #075E96;*/
-/*}*/
-
 :host([data-state="inactive"]) {
     background: var(--grey-s2);
 }
@@ -162,7 +158,7 @@ div.progress-bar {
     width: 150px;
     height: max-content;
     background: var(--window);
-    font-size: 0.875rem;
+    font-size: 0.75rem;
     padding: 0.5rem;
     margin-top: 0.5rem;
     z-index: 1;

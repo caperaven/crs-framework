@@ -13,9 +13,6 @@ import "../../packages/crs-process-api/action-systems/css-grid-actions.js";
  * @return {Promise<void>}
  */
 export async function create_sla_grid(data, slaVisualization) {
-    // 1. create css grid
-    // 1.1 the status cell area name = cl_status_${statusId} e.g. cl_status_1001 and cl_status_1002
-
     const element = slaVisualization
     const slaVisualizationPhase = element.dataset.phase; // refactor for phase
     element.shadowRoot.querySelector("#measurement-name").style.opacity = 1;
@@ -35,8 +32,6 @@ export async function create_sla_grid(data, slaVisualization) {
 /**
  * @method createInitialGrid - creates the initial grid for the sla visualization
  * @param element {HTMLElement} - the sla visualization element
- * @param numberOfRows {Number} - the number of rows
- * @param numberOfColumns {Number} - the number of columns
  * @returns {void}
  */
 
@@ -77,29 +72,13 @@ function createStatusLabels(element, statuses) {
         statusLabel.textContent = status.name;
         element.shadowRoot.appendChild(statusLabel);
     }
-
-
-
 }
 
-// function createRowElements(element, statuses) {
-//     let index = 1;
-//
-//     for (let status of statuses) {
-//         const div = document.createElement("div");
-//         div.dataset.status = status.id;
-//         div.dataset.id = status.name;
-//         div.style.gridRow = index;
-//         div.classList.add("status-row");
-//         element.shadowRoot.appendChild(div);
-//         if (index === statuses.length) {
-//             div.classList.add("sla-footer-border");
-//         }
-//
-//         index++;
-//     }
-// }
-
+/**
+ * @method createRowElements - creates the row elements for the sla visualization
+ * @param element {HTMLElement} - the sla visualization element
+ * @param statuses {[Object]} - the array of status objects
+ */
 function createRowElements(element, statuses) {
     let index = 1;
 
@@ -120,9 +99,9 @@ function createRowElements(element, statuses) {
 }
 
 /**
- * Create the sla layers
+ * @method createSlaLayers - creates the sla layers for the sla visualization
  * @param element {HTMLElement} - the sla visualization element
- * @param sla {[Object]} - the array of sla objects
+ * @param slaCollection {[Object]} - the array of sla objects
  */
 
 function createSlaLayers(element, slaCollection) {
@@ -139,47 +118,15 @@ function createSlaLayers(element, slaCollection) {
 
         element.shadowRoot.appendChild(slaLayer);
     }
-
-    // NB!!!!!
-    // The Sla will be created via the process api.
 }
 
-/**
- * Apply the regions to the element
- * @param element {HTMLElement} - the sla visualization element
- * @param regions {[Object]} - the array of regions
- */
-
-function applyRegions(element, regions) {
-
-}
-
-/**
- * Create the sla regions
- * @param element {HTMLElement} - the sla visualization element
- * @param sla {[Object]} - the array of sla objects
- * @param regions {[Object]} - the array of regions
- */
-
-function createSlaRegions(sla) {
-}
-
-/**
- * Create the status regions
- * @param element {HTMLElement} - the sla visualization element
- * @param statuses {[Object]} - the array of status objects
- * @param regions {[Object]} - the array of regions
- */
-
-function createStatusRegions(statuses) {
-}
 
 // Function to generate the grid template string
 /**
- * Generate the grid template array
+ * @method generateGridTemplateArray - generates the grid template array for the sla visualization
  * @param dataStatuses {[Object]} - the array of status objects
  * @param dataSla {[Object]} - the array of sla objects
- * @param visualizationPhase
+ * @param visualizationPhase {string} - the phase of the visualization
  * @returns {[string]} - the generated grid template array
  */
 function generateGridTemplateArray(dataStatuses, dataSla, visualizationPhase) { // refactor for phase
