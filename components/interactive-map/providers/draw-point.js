@@ -1,17 +1,17 @@
 export default class DrawPoint {
 
-    #map = null;
+    #instance = null;
     #clickHandler = this.#click.bind(this);
     #point = null;
 
-    async initialize(map) {
-        this.#map = map;
-        this.#map.on("click", this.#clickHandler);
+    async initialize(instance) {
+        this.#instance = instance;
+        this.#instance.map.on("click", this.#clickHandler);
     }
 
     async dispose() {
-        this.#map.off("click", this.#clickHandler);
-        this.#map = null;
+        this.#instance.map.off("click", this.#clickHandler);
+        this.#instance = null;
 
         this.#point = null;
     }
@@ -21,6 +21,6 @@ export default class DrawPoint {
            this.#point.remove();
         }
 
-        this.#point = await crs.call("interactive_map", "add_point", {coordinates: [event.latlng.lat, event.latlng.lng], element: this.#map});
+        this.#point = await crs.call("interactive_map", "add_point", {coordinates: [event.latlng.lat, event.latlng.lng], element: this.#instance});
     }
 }

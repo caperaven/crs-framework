@@ -59,8 +59,10 @@ export default class Map extends crsbinding.classes.ViewBase {
             element: "#openstreetmap"
         });
 
+        // Set data to cape town
         await crs.call("interactive_map", "add_geo_json", {
             element: "#openstreetmap",
+            layer: "default",
             data: {
                 "type": "Feature",
                 "properties": {},
@@ -69,24 +71,76 @@ export default class Map extends crsbinding.classes.ViewBase {
                     "coordinates": [
                         [
                             [
-                                -77.032013,
-                                38.931639
+                                18.42038154602051,
+                                -33.926382242852945
                             ],
                             [
-                                -77.029095,
-                                38.899984
+                                18.42038154602051,
+                                -34.926382242852945
                             ],
                             [
-                                -76.971073,
-                                38.88983
+                                19.42038154602051,
+                                -34.926382242852945
                             ],
                             [
-                                -77.059994,
-                                38.884619
+                                19.42038154602051,
+                                -33.926382242852945
                             ],
                             [
-                                -77.032013,
-                                38.931639
+                                18.42038154602051,
+                                -33.926382242852945
+                            ]
+                        ]
+                    ]
+                }
+            }
+
+        });
+    }
+
+    async getLayerGeoJson() {
+        const geoJson =  await crs.call("interactive_map", "get_layer_geo_json", {
+            element: "#openstreetmap",
+            layer: "default"
+        });
+
+        console.log(geoJson);
+    }
+
+    async setLayerGeoJson() {
+
+        // add some data to johannesburg
+        await crs.call("interactive_map", "add_geo_json", {
+            element: "#openstreetmap",
+            layer: "default",
+            move_to: true,
+            replace: true,
+            data: {
+                "type": "Feature",
+                "properties": {},
+                "geometry": {
+                    "type": "Polygon",
+                    "coordinates": [
+                        [
+                            [
+                                27.925262451171875,
+                                -26.20410235599473
+                            ],
+                            [
+                                27.925262451171875,
+                                -27.20410235599473
+                            ],
+                            [
+                                28.925262451171875,
+                                -27.20410235599473
+                            ],
+                            [
+                                28.925262451171875,
+                                -26.20410235599473
+                            ],
+                            [
+                                27.925262451171875,
+                                -26.20410235599473
                             ]
                         ]
                     ]

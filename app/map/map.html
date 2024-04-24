@@ -41,12 +41,10 @@
             <option value="#openstreetmap">Open Street Map</option>
             <option value="#floorplan">Floorplan</option>
         </select>
-        <button class="icon" click.setvalue="mode = 'select'" disabled.if="mode =='select'? true">pointer</button>
-        <button class="icon" click.setvalue="mode = 'draw-point'" disabled.if="mode =='draw-point'? true">location-pin</button>
-        <button class="icon" click.setvalue="mode = 'draw-polyline'" disabled.if="mode =='draw-polyline'? true">minimize</button>
-        <button class="icon" click.setvalue="mode = 'draw-polygon'" disabled.if="mode =='draw-polygon'? true">show-chart</button>
-        <button class="icon" click.setvalue="mode = 'draw-rectangle'" disabled.if="mode =='draw-rectangle'? true">check-box-blank</button>
-        <button class="icon" click.setvalue="mode = 'draw-circle'" disabled.if="mode =='draw-circle'? true">radio-button-unchecked</button>
+
+
+        <button click.call="getLayerGeoJson">Get Layer GeoJson</button>
+        <button click.call="setLayerGeoJson">Set Layer GeoJson</button>
 
         <label>
             <span>Fill Color</span>

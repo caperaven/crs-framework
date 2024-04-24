@@ -126,7 +126,7 @@ export default class DrawPolyBase {
 
     async #createDragHandle(coordinates, index) {
         const handle = await crs.call("interactive_map", "add_handle", {
-            element: this.#instance.map,
+            element: this.#instance,
             coordinates: [coordinates.lat, coordinates.lng],
             options: {
                 draggable: true,
@@ -171,7 +171,7 @@ export default class DrawPolyBase {
             // If the shape is not yet created we create it.
             this.#shape = await crs.call("interactive_map", `add_${this.shapeKey}`, {
                 coordinates: this.#points.map(_ => _.coordinates),
-                element: this.#instance.map
+                element: this.#instance
             });
         } else {
             // If it already exists we just update the coordinates.
@@ -217,7 +217,7 @@ export default class DrawPolyBase {
         const lng = (endCoordinates.coordinates[1] + startCoordinates.coordinates[1]) / 2;
 
         const handle = await crs.call("interactive_map", "add_handle", {
-            element: this.#instance.map,
+            element: this.#instance,
             coordinates: [lat, lng],
             type: "subdivide",
             options: {

@@ -53,7 +53,7 @@ export class InteractiveMap extends HTMLElement {
             }).addTo(this.#map);
 
             // Set the view to start with
-            this.#map.setView([38.910, -77.034], 13);
+            this.#map.setView([-33.926382242852945, 18.42038154602051], 13);
         }
 
         if (this.dataset.provider === "image") {
