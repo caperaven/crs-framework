@@ -49,6 +49,7 @@ async function createListItems(parentElement, collection, templates) {
             attributes: {
                 role: "menuitem",
                 "aria-selected": option.selected == true,
+                tabindex: -1,
                 ...(option.attributes || {})
             },
             styles: option.styles,
@@ -83,8 +84,7 @@ async function createListItems(parentElement, collection, templates) {
                     tag_name: "ul",
                     classes: ["submenu"],
                     dataset: {
-                        closable: true,
-                        edge: false
+                        closable: true
                     }
                 });
 

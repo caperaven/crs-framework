@@ -1,6 +1,6 @@
 import "./../filter-header/filter-header.js";
 import {buildElements} from "./utils/build-elements.js";
-import {handleSelection} from "./utils/select-item-handler.js";
+import {handleSelection, setTabIndex} from "./utils/select-item-handler.js";
 
 /**
  * @class ContextMenu - A context menu component that can be used to display a list of options.
@@ -24,6 +24,13 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     #filterCloseHandler = this.#filterClose.bind(this);
     #filterHeader;
     #isHierarchical = false;
+    #actions = Object.freeze({
+        "ArrowDown": this.#arrowDown.bind(this),
+        "ArrowUp": this.#arrowUp.bind(this),
+        "ArrowRight": this.#arrowRight.bind(this),
+        "ArrowLeft": this.#arrowLeft.bind(this),
+        "Enter": this.#enter.bind(this)
+    })
 
     get shadowDom() {
         return true;
@@ -42,7 +49,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         return new Promise(async (resolve) => {
             requestAnimationFrame(async () => {
                 globalThis.addEventListener("click", this.#clickHandler);
-                this.shadowRoot.addEventListener("keydown", this.#keyHandler);
+                this.container.addEventListener("keydown", this.#keyHandler);
                 const ul = this.shadowRoot.querySelector(".popup");
 
                 this.#isHierarchical = await buildElements.call(this, this.#options, this.#templates, this.#context, this.container);
@@ -80,6 +87,12 @@ class ContextMenu extends crsbinding.classes.BindableElement {
                 }
 
                 await crs.call("component", "notify_ready", {element: this});
+                //set focus on the first element
+                const firstElement = this.container.querySelector("li");
+                if (firstElement) {
+                    firstElement.tabIndex = 0;
+                    firstElement.focus();
+                }
                 resolve();
             })
         });
@@ -118,22 +131,52 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     }
 
     async #click(event) {
-        const element = event.composedPath()[0]
+        let element = event.composedPath()[0];
+        const tagName = element.tagName.toLowerCase();
 
-        const response = await handleSelection(element, this.#options, this, this.#filterHeader);
+        if (tagName === "filter-header" || element.id === "input-filter") return;
 
-        if (response === "close") {
+        if (element.parentElement.dataset.closable == null) {
             await this.#filterClose();
+            return;
         }
+
+        await handleSelection(element, this.#options, this, this.#filterHeader);
     }
 
     async #keySelection(event) {
         const key = event.key;
         const element = event.composedPath()[0]
+        //review all code related to keyboard interaction
+        if (this.#actions[key] != null) {
+            event.preventDefault();
+            await this.#actions[key](element);
+        }
+    }
 
-        //Todo: implement keyboard functionality for accessiblity
-        //1. Call the handle selection function
+    async #arrowDown(element) {
+        await setTabIndex(element, "nextElementSibling");
+    }
 
+    async #arrowUp(element) {
+        await setTabIndex(element, "previousElementSibling");
+    }
+
+    async #arrowRight(element) {
+        if (element.matches(".parent-menu-item") === false) return
+        await handleSelection(element, this.#options, this, this.#filterHeader);
+    }
+
+    async #arrowLeft(element) {
+        const parent = element.parentElement.querySelector(".parent-menu-item[aria-expanded='true']")
+        if (parent != null) return
+
+        parent.setAttribute("aria-expanded", "false");
+        parent.focus();
+    }
+
+    async #enter(element) {
+        await handleSelection(element, this.#options, this, this.#filterHeader);
     }
 
     async #filterClose(event) {

@@ -74,7 +74,11 @@
         align-items: center;
         cursor: pointer;
         user-select: none;
-        border-radius: 0.25rem;
+        border-radius: var(--radius);
+    }
+
+    li > *:not(ul) {
+        pointer-events: none;
     }
 
     li[hidden] {
@@ -102,6 +106,7 @@
         position: absolute;
         right: 0.5rem;
         color: var(--blue);
+        font-size: 1rem;
     }
 
     [aria-hidden="true"] {
@@ -137,16 +142,39 @@
         border-radius: var(--radius);
         z-index: 1;
     }
-    .submenu[data-edge = "false"] {
+    .submenu[data-at-viewport-edge = "false"] {
         left: 100%;
     }
 
-    .submenu[data-edge = "true"] {
+    .submenu[data-at-viewport-edge = "true"] {
         right: 100%;
     }
 
     li[aria-expanded="true"] > .submenu {
         display: block;
+
+    }
+
+    li[aria-expanded="true"] {
+        background: var(--blue-s2);
+    }
+
+    /*li:hover,li[aria-expanded="true"] {*/
+    /*    margin-left: 0.25rem;*/
+    /*    margin-right: 0.25rem;*/
+    /*}*/
+
+    li:focus, li[aria-expanded="true"]:focus {
+        outline: none;
+        border-left: 0.25rem solid var(--blue);
+    }
+
+    li[aria-expanded="true"]:focus {
+        background: var(--blue-s2);
+    }
+
+    li:focus {
+        background: var(--grey-s3);
     }
 
     .hierarchy {
