@@ -193,6 +193,11 @@
             "title": "percentage bar",
             "hash": "percentage-bar",
             "view": "percentage-bar"
+        },
+        {
+            "title": "sla-visualization",
+            "view": "sla-visualization",
+            "hash": "#sla-visualization"
         }
     ]
 }

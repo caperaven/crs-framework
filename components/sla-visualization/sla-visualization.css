@@ -1,0 +1,97 @@
+@import "./../../styles/lib/narrow-scrollbar.css";
+
+:host {
+    display: none;
+    position: relative;
+    height: 100%;
+    width: 100%;
+    border: var(--border);
+    overflow: auto;
+    /*!*gap: 0.5rem;*! causes uneven rows*/
+    padding: 1rem 0;
+    grid-column-gap: 0.5rem;
+}
+
+.status-label {
+    position: sticky;
+    padding: 0.5rem;
+    color: var(--grey-s1);
+    text-align: right;
+    align-content: center;
+    left: 0;
+    z-index: 3;
+    font-size: 0.75rem;
+}
+
+.status-row {
+    border-bottom: var(--border);
+    grid-column: 2 / -1;
+}
+
+.status-background {
+    grid-column: 1;
+    grid-row: 1 / -1;
+    background: var(--window);
+    position: sticky;
+    /*box-shadow: rgba(0, 0, 0, 0.3) 2px 0 4px;*/
+    left: 0;
+    z-index: 2;
+    min-width: 12.5rem;
+}
+
+.sla-layer {
+    z-index: -1;
+    background: var(--grey-s3);
+}
+
+.active-status-label {
+    color: var(--blue);
+    font-weight: bold;
+}
+
+.active-status-row {
+    background: var(--blue-s2);
+    z-index: 0;
+}
+
+.sla-footer-border {
+    border-top: 2px solid black;
+}
+
+.status-description{
+    position: sticky;
+    top: 50%;
+    left: 0;
+    z-index: 3;
+    margin-left: 0.5rem;
+    writing-mode: vertical-lr;
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--cl-text);
+}
+
+#measurement-name{
+    opacity: 0;
+    position: sticky;
+    left: 50%;
+    bottom: 0;
+    padding: 0.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--cl-text);
+}
+
+
+:host([data-phase="setup"]) {
+    background-color: var(--grey-s4)
+}
+
+:host([data-phase="setup"]) .active-status-label {
+   color: var(--grey-s1);
+    font-weight: normal;
+}
+
+:host([data-phase="setup"]) .active-status-row {
+    background: transparent;
+    z-index: 0;
+}

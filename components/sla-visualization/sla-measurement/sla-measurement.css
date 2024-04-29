@@ -1,0 +1,188 @@
+:host {
+    --clock-outline: "update";
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    justify-self: center;
+    height: 100%;
+    border: 1px solid silver;
+    border-radius: var(--radius) var(--radius) 0 0;
+    position: relative;
+    background: var(--blue);
+    color: var(--cl-primary-alt);
+    z-index: 1;
+}
+
+:host([data-state="inactive"]) {
+    background: var(--grey-s2);
+}
+
+:host([data-state="inactive"]) div.progress-bar {
+    background: var(--grey-s3);
+}
+
+:host::before {
+    content:' 'var(--clock-outline)'  'attr(data-duration)' ';
+    position: absolute;
+    display: block;
+    color: var(--grey-s1);
+    top: -1rem;
+    font-family: crsfrw;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+div.progress-bar {
+    display: flex;
+    width: 93%;
+    margin: 0.25rem;
+    background-color: var(--blue-s1);
+    position: absolute;
+    bottom: 0;
+    border-radius: var(--radius) var(--radius) 0 0;
+    transition: height 0.7s ease;
+    height: 0;
+    justify-content: center;
+}
+
+:host([data-parent-phase="setup"]) div.progress-bar {
+    display: none;
+}
+
+:host::after {
+    content: attr(data-progress);
+    justify-content: center;
+    display: block;
+    color: var(--cl-text);
+    font-family: 'SourceSansPro', sans-serif;
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: bold;
+    height: fit-content;
+    background: var(--blue-s2);
+    border: 1px solid silver;
+    border-radius: 5px;
+    width: 2rem;
+    bottom: 0.5rem;
+    position: absolute;
+}
+
+:host([data-parent-phase="setup"])::after {
+    display: none;
+}
+
+:host([data-state="inactive"])::after {
+    /*opacity: 0;*/
+    background: var(--grey-s3);
+}
+
+.icon {
+    font-family: crsfrw;
+}
+
+:host div.measurement-trigger-indicator {
+    display: flex;
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background-image: linear-gradient(to right, var(--orange) 50%, transparent 50%);
+    background-size: 0.75rem 2px; /* Adjust the size and spacing of the dashes */
+    background-repeat: repeat-x;
+}
+
+.measurement-trigger-indicator::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: -8%; /* Position at the end of the dashed line */
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 8px 0 8px 8px; /* Adjust size to change triangle dimensions */
+    border-color: transparent transparent transparent var(--orange); /* Yellow to match the dashed line color */
+    transform: translateY(-50%);
+}
+
+:host(.measurement-warning-state) {
+    background: var(--orange);
+}
+
+:host(.measurement-warning-state) div.progress-bar {
+    background: var(--orange-s1);
+}
+
+:host(.measurement-warning-state)::after {
+    background: var(--orange-s2);
+}
+
+/* Styles for measurement overdue state */
+:host(.measurement-overdue-state) {
+    background: var(--red);
+}
+
+:host(.measurement-overdue-state) div.progress-bar {
+    background: var(--red-s2);
+}
+
+:host(.measurement-overdue-state)::after {
+    background: var(--red-s3);
+}
+
+/* Additional styles for inactive state */
+:host([data-state="inactive"].measurement-warning-state),
+:host([data-state="inactive"].measurement-overdue-state) {
+    background: var(--grey-s2);
+}
+
+:host([data-state="inactive"].measurement-warning-state) div.progress-bar,
+:host([data-state="inactive"].measurement-overdue-state) div.progress-bar {
+    background: var(--grey-s3);
+}
+
+:host([data-state="inactive"].measurement-warning-state)::after,
+:host([data-state="inactive"].measurement-overdue-state)::after {
+    background: var(--grey-s3);
+}
+
+:host .measurement-info{
+    display: none;
+    flex-direction: column;
+    color: var(--grey-s1);
+    position: absolute;
+    left: 30%;
+    top: 30%;
+    justify-content: space-evenly;
+    border: var(--border);
+    border-radius: var(--radius);
+    /*height: max-content;*/
+    width: 150px;
+    height: max-content;
+    background: var(--window);
+    font-size: 0.75rem;
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+    z-index: 1;
+}
+
+.measurement-info h4 {
+    color: var(--grey-s1);
+    font-size: 1rem;
+    margin: 0.25rem;
+    border-bottom: var(--border);
+}
+
+.measurement-content {
+    color: var(--cl-text);
+    margin: 0.25rem 0;
+}
+
+.measurement-status-info, .measurement-duration-info, .measurement-trigger-info{
+    border-bottom: var(--border);
+    padding: 0.25rem;
+}
+
+.measurement-status-info div, .measurement-duration-info div, .measurement-trigger-info div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

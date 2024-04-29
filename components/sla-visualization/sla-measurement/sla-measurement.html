@@ -1,0 +1,43 @@
+<div class="icon progress-bar"></div>
+
+<template class="setup-measurement-info-template">
+    <div class="measurement-info">
+        <h4>${code}</h4>
+
+        <div class="measurement-status-info">
+            <div>Start-Status : <span id="setup-start-status" class="measurement-content">${startStatus}</span></div>
+            <div>End-Status : <span id="setup-end-status" class="measurement-content">${endStatus}</span></div>
+        </div>
+
+
+        <div class="measurement-duration-info">
+            <div>Duration :<span id="setup-measurement-duration" class="measurement-content">${duration}</span></div>
+        </div>
+
+        <div class="measurement-trigger-info">
+            <div>Number Of Triggers : <span id="number-of-triggers" class="measurement-content">${NumOfTriggers}</span></div>
+        </div>
+    </div>
+</template>
+
+<template class="runtime-measurement-info-template">
+    <div class="measurement-info">
+        <h4>${code}</h4>
+
+        <div class="measurement-status-info">
+            <div>Start-Status : <span id="measurement-start" class="measurement-content">${startStatus}</span></div>
+            <div>End-Status : <span id="measurement-end" class="measurement-content">${endStatus}</span></div>
+        </div>
+
+
+        <div class="measurement-duration-info">
+            <div>Duration :<span id="measurement-duration" class="measurement-content">${duration}</span></div>
+            <div>Work Progress : <span id="measurement-progress" class="measurement-content">${progress}</span></div>
+        </div>
+
+        <div class="measurement-trigger-info">
+            <div>Next Trigger : <span id="next-trigger" class="measurement-content">${nextTrigger}</span></div>
+            <span>Trigger Description : <span id="trigger-description" class="measurement-content">${triggerType}</span></span>
+        </div>
+    </div>
+</template>
