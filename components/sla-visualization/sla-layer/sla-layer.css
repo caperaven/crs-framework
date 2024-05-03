@@ -49,4 +49,5 @@
     opacity: 0;
     border: 1px solid var(--blue);
     border-radius: var(--radius);
+    pointer-events: none;
 }

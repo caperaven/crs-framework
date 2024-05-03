@@ -112,6 +112,15 @@ export class SlaMeasurementActions {
             const measurementInfoElement = element.shadowRoot.querySelector(".measurement-info");
             measurementInfoElement.style.display = type === "mouseenter" ? "flex" : "none";
             element.style.background = backgroundStyle;
+
+            await crs.call("fixed_layout", "set", {
+                element: measurementInfoElement,
+                target: element,
+                point: "top",
+                at: "right",
+                anchor: "top",
+                margin: 0
+            })
         }
 
 
