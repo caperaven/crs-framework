@@ -4,22 +4,24 @@
  *
  *
  **/
-import {loadHTML} from "./../../../dist/src/load-resources.js";
 
-export class SlaLayer extends crs.classes.BindableElement {
-    constructor() {
-        super();
-        this.attachShadow({ mode: "open" });
+export class SlaLayer extends crsbinding.classes.BindableElement {
+
+    get shadowDom() {
+        return true;
+    }
+
+    get html() {
+        return import.meta.url.replace(".js", ".html");
     }
 
     async connectedCallback() {
-        super.connectedCallback();
-        this.shadowRoot.innerHTML = await loadHTML(import.meta.url);
+        await super.connectedCallback();
         this.dispatchEvent(new CustomEvent("loading"));
     }
 
     async disconnectedCallback() {
-        super.disconnectedCallback();
+        await super.disconnectedCallback();
     }
 }
 

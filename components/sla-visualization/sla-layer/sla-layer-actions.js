@@ -261,7 +261,7 @@ async function createSlaHeader(slaLayerElement, slaItemData) {
     const slaHeaderTemplate = slaLayerElement.shadowRoot.querySelector("template.sla-header-template");
     const slaHeader = slaHeaderTemplate.content.cloneNode(true);
 
-    await crs.binding.staticInflationManager.inflateElement(slaHeader.firstElementChild, slaItemData);
+    await crsbinding.staticInflationManager.inflateElement(slaHeader.firstElementChild, slaItemData);
 
     slaLayerElement.shadowRoot.appendChild(slaHeader);
 }

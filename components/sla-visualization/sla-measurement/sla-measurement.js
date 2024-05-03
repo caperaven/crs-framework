@@ -1,9 +1,9 @@
-import { loadHTML } from "./../../../dist/src/load-resources.js";
-import "./../../dialogs/dialogs-actions.js";
-import "./../../context-menu/context-menu-actions.js";
+// import { loadHTML } from "./../../../dist/src/load-resources.js";
+// import "./../../dialogs/dialogs-actions.js";
+// import "./../../context-menu/context-menu-actions.js";
 
-export class SlaMeasurement extends crs.classes.BindableElement {
-    // ToDo: See if we can use this convention instead of all the handlers
+class SlaMeasurement extends crsbinding.classes.BindableElement {
+    // ToDo: AW - See if we can use this convention instead of all the handlers
     // #mouseEventHandlers = {
     //     "mouseenter": this.#mouseEnter.bind(this),
     //     "mouseleave": this.#mouseLeave.bind(this)
@@ -13,13 +13,17 @@ export class SlaMeasurement extends crs.classes.BindableElement {
     #clickHandler = this.#click.bind(this);
     #contextMenuHandler = this.#contextMenu.bind(this);
 
-    constructor() {
-        super();
-        this.attachShadow({ mode: "open" });
+    get shadowDom() {
+        return true;
+    }
+
+    get html() {
+        return import.meta.url.replace(".js", ".html");
     }
 
     async connectedCallback() {
-        this.shadowRoot.innerHTML = await loadHTML(import.meta.url);
+        await super.connectedCallback();
+        // this.shadowRoot.innerHTML = await fetch(import.meta.url.replace(".js", ".html")).then(response => response.text());
         await this.load();
         this.addEventListener("mouseenter", this.#mouseEventHandler);
         this.addEventListener("mouseleave", this.#mouseEventHandler);
@@ -39,6 +43,7 @@ export class SlaMeasurement extends crs.classes.BindableElement {
     }
 
     async disconnectedCallback() {
+        await super.disconnectedCallback();
         this.removeEventListener("mouseenter", this.#mouseEventHandler);
         this.removeEventListener("mouseleave", this.#mouseEventHandler);
         this.removeEventListener("click", this.#clickHandler);

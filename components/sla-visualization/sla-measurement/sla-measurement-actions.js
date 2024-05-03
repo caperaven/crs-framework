@@ -106,7 +106,7 @@ export class SlaMeasurementActions {
             const measurementInfoTemplate = element.shadowRoot.querySelector(templateSelector);
             const measurementInfo = measurementInfoTemplate.content.cloneNode(true);
 
-            await crs.binding.staticInflationManager.inflateElement(measurementInfo.firstElementChild, measurementData);
+            await crsbinding.staticInflationManager.inflateElement(measurementInfo.firstElementChild, measurementData);
             element.shadowRoot.appendChild(measurementInfo);
 
             const measurementInfoElement = element.shadowRoot.querySelector(".measurement-info");

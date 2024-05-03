@@ -4,16 +4,22 @@
  *
  *
  **/
-import {loadHTML} from "./../../dist/src/load-resources.js";
-export class SlaVisualization extends crs.classes.BindableElement {
-    constructor() {
-        super();
-        this.attachShadow({ mode: "open" });
+export class SlaVisualization extends crsbinding.classes.BindableElement {
+
+    get shadowDom() {
+        return true;
+    }
+
+    get html() {
+        return import.meta.url.replace(".js", ".html");
     }
 
     async connectedCallback() {
         super.connectedCallback();
-        this.shadowRoot.innerHTML = await loadHTML(import.meta.url);
+    }
+
+    async disconnectedCallback() {
+        super.disconnectedCallback();
     }
 }
 

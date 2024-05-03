@@ -368,4 +368,52 @@ const data2 = {
     ]
 }
 
-export {data1, data2}
+const data3 = {
+    "workOrder": {"statusDescription": "Status 7"},
+    "statuses": generateStatuses(20),
+    "sla": generateSLAs(25)
+};
+
+function generateStatuses(count) {
+    const statuses = [];
+    for (let i = 1; i <= count; i++) {
+        statuses.push({"id": i, "name": `Status ${i}`});
+    }
+    return statuses;
+}
+
+function generateSLAs(count) {
+    const slas = [];
+    for (let i = 1; i <= count; i++) {
+        const measurements = [];
+        for (let j = 1; j <= 50; j++) {
+            measurements.push({
+                "id": `Measurement-${j}`,
+                "code": `Measurement ${j}`,
+                "description": `Measurement ${j} Description`,
+                "start_status": getRandomInt(1, 20),
+                "end_status": getRandomInt(1, 20),
+                "progress": getRandomInt(1, 110),
+                "status": "active",
+                "duration": `${getRandomInt(1, 60)}:00`,
+                "triggers": [{"id": `Trigger-${j}`, "trigger": getRandomInt(20, 90), "type": "warning"}]
+            });
+        }
+        slas.push({
+            "id": `SLA-${i}`,
+            "code": `SLA-${i}`,
+            "description": `SLA ${i} Description`,
+            "duration": "99%",
+            "measurements": measurements
+        });
+    }
+    return slas;
+}
+
+function getRandomInt(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+
+
+export {data1, data2, data3}
