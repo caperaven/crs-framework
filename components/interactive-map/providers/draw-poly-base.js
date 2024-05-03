@@ -7,19 +7,30 @@ export default class DrawPolyBase {
     // The class will also handle the events for the polygon drawing.
 
     #shape = null;
+    #subDivisionLine = null;
+    #subDivisionLinePoints = [];
+
     #instance = null;
     #points = [];
+    #selectedPoints = [];
     #subDivisionPoints = [];
-    #isDragging = false;
+
 
     #disableNewPoints = false;
 
-    #mouseDownHandler = this.#mouseDown.bind(this);
-    #mouseUpHandler = this.#mouseUp.bind(this);
-    #dragStartHandler = this.#dragStart.bind(this);
+    #pointClickHandler = this.#pointClick.bind(this);
+    #pointDragStartHandler = this.#pointDragStart.bind(this);
+    #pointDragHandler = this.#pointDrag.bind(this);
+    #pointDragEndHandler = this.#pointDragEnd.bind(this);
+    #pointContextMenuHandler = this.#pointContextMenu.bind(this);
 
-    #contextMenuHandler = this.#contextMenu.bind(this);
-    #dragHandler = this.#drag.bind(this);
+    #subPointDragStartHandler = this.#subPointDragStart.bind(this);
+    #subPointDragHandler = this.#subPointDrag.bind(this);
+    #subPointDragEndHandler = this.#subPointDragEnd.bind(this);
+
+    #clickHandler = this.#click.bind(this);
+
+
 
     get shapeKey() {
         throw new Error("Not implemented");
@@ -39,9 +50,7 @@ export default class DrawPolyBase {
 
     async initialize(instance, shape) {
         this.#instance = instance;
-        this.#instance.map.on("mousedown", this.#mouseDownHandler);
-        this.#instance.map.on("mouseup", this.#mouseUpHandler);
-        this.#instance.map.on("dragstart", this.#dragStartHandler);
+        this.#instance.map.on("click", this.#clickHandler);
 
         if (shape != null) {
             this.#disableNewPoints = true; // If we have a shape we don't want to add new points.
@@ -52,60 +61,82 @@ export default class DrawPolyBase {
     }
 
     async dispose() {
-        this.#instance.map.off("mousedown", this.#mouseDownHandler);
-        this.#instance.map.off("mouseup", this.#mouseUpHandler);
-        this.#instance.map.off("dragstart", this.#dragStartHandler);
+        this.#instance.map.off("click", this.#clickHandler);
         this.#instance = null;
 
         for (const point of this.#points) {
-            point.handle.off("drag", this.#dragHandler);
+            point.handle.off("drag", this.#pointDragHandler);
             point.handle.remove();
         }
 
         await this.#removeSubDivisionMarkers();
         this.#points = null;
-        this.#mouseDownHandler = null;
-        this.#contextMenuHandler = null;
+        this.#clickHandler = null;
+        this.#pointContextMenuHandler = null;
     }
 
-    async #mouseDown(event) {
-        this.#isDragging = false;
-        if (event.originalEvent.target.dataset.type === "subdivide") {
+    async #pointClick(event) {
+        // When selecting a point we to change the style of the point to selected.
+        // We also want to add it to the selected points array.
+    }
+
+    async #pointDragStart(event) {
+        await this.#removeSubDivisionMarkers();
+    }
+
+    async #pointDrag(event) {
+        console.log("dragging handle");
+        // Update the shape as the user moves the mouse based on the current mouse position.
+        this.#points[event.target.options.index].coordinates = [event.latlng.lat, event.latlng.lng];
+        await this.redraw();
+    }
+
+    async #pointDragEnd(event, test) {
+        await this.#addSubDivisionMarkers();
+    }
+
+    async #pointContextMenu(event) {
+        return await this.#removePoint(event.target.options.index);
+    }
+
+    async #subPointDragStart(event) {
+        const lastPointIndex =  (event.target.options.index + 1) >= this.#points.length ? 0 : event.target.options.index + 1;
+        const lastPoint = this.#points[lastPointIndex].coordinates;
+
+        this.#subDivisionLinePoints = [this.#points[event.target.options.index].coordinates, this.#subDivisionPoints[event.target.options.index].coordinates , lastPoint];
+
+        this.#subDivisionLine = await crs.call("interactive_map", "add_polyline", {
+            element: this.#instance,
+            coordinates: this.#subDivisionLinePoints,
+            dash_array: '5'
+        });
+    }
+
+    async #subPointDrag(event) {
+        if( this.#subDivisionLine == null)  return;
+
+        this.#subDivisionLinePoints[1] = [event.latlng.lat, event.latlng.lng];
+        this.#subDivisionLine.setLatLngs(this.#subDivisionLinePoints);
+    }
+
+    async #subPointDragEnd(event) {
+        if (this.#subDivisionLine == null)  return;
+        this.#disableNewPoints = true;
+
+        this.#subDivisionLine.remove();
+        this.#subDivisionLine = null;
+
+        await this.#convertSubDivisionMarker(event.target);
+        await this.#addSubDivisionMarkers();
+    }
+
+
+    async #click(event) {
+        if (this.#disableNewPoints === true) {
             return;
         }
 
-        if (event.originalEvent.target.dataset.type === "draghandle") {
-            await this.#removeSubDivisionMarkers();
-        }
-    }
-
-    async #dragStart() {
-        // When the user starts dragging we don't want to add new points.
-        this.#isDragging = true;
-    }
-
-    async #mouseUp(event) {
-        if (this.#isDragging === true) return;
-
-        const isDragHandle = event.originalEvent.target.dataset.type === "draghandle";
-
-        if (event.originalEvent.target.dataset.type === "subdivide") {
-            // This fires when we click on a subdivision marker.
-            this.#disableNewPoints = true;
-            const index = Number(event.originalEvent.target.dataset.index);
-            return this.#convertSubDivisionMarker(index);
-        } else if (this.#disableNewPoints === false && isDragHandle === false) {
-            // This fires when we are not dragging a draghandle and we want to add a new point.
-            return this.#addPoint(event.latlng);
-        }
-        else if(this.#points.length > 1 && isDragHandle === true)  {
-            // This fires when we are moving a draghandle and we want to re-add the subdivision markers.
-            await this.#addSubDivisionMarkers();
-        }
-    }
-
-    async #contextMenu(event) {
-        await this.#removePoint(event.target.options.index);
+        await this.#addPoint(event.latlng);
     }
 
     async redraw() {
@@ -115,13 +146,6 @@ export default class DrawPolyBase {
             return;
         }
         this.#shape.setLatLngs(this.#points.map(_ => _.coordinates));
-    }
-
-
-    async #drag(event) {
-        // Update the shape as the user moves the mouse based on the current mouse position.
-        this.#points[event.target.options.index].coordinates = [event.latlng.lat, event.latlng.lng];
-        await this.redraw();
     }
 
     async #createDragHandle(coordinates, index) {
@@ -135,8 +159,11 @@ export default class DrawPolyBase {
             type: "draghandle"
         });
 
-        handle.on("drag", this.#dragHandler);
-        handle.on("contextmenu", this.#contextMenuHandler);
+        handle.on("click", this.#pointClickHandler);
+        handle.on("dragstart", this.#pointDragStartHandler);
+        handle.on("dragend", this.#pointDragEndHandler);
+        handle.on("drag", this.#pointDragHandler);
+        handle.on("contextmenu", this.#pointContextMenuHandler);
 
         this.#points.splice(index, 0, {
             handle: handle,
@@ -147,7 +174,6 @@ export default class DrawPolyBase {
     async #drawHandles(polygon) {
         let latLngs = polygon.getLatLngs();
         latLngs = Array.isArray(latLngs[0]) ? latLngs[0] : latLngs;
-
 
         for (let i = 0; i < latLngs.length; i++) {
             const latLng = latLngs[i];
@@ -222,9 +248,14 @@ export default class DrawPolyBase {
             type: "subdivide",
             options: {
                 index: index,
+                draggable: true,
                 fillColor: "red"
             }
         });
+
+        handle.on("dragstart", this.#subPointDragStartHandler);
+        handle.on("drag", this.#subPointDragHandler);
+        handle.on("dragend", this.#subPointDragEndHandler);
 
         this.#subDivisionPoints.push({
             handle: handle,
@@ -235,6 +266,10 @@ export default class DrawPolyBase {
     async #removeSubDivisionMarkers() {
         // Remove all subdivision markers when the user starts drawing a new polygon.
         for (const point of this.#subDivisionPoints) {
+            point.handle.off("dragstart", this.#subPointDragStartHandler);
+            point.handle.off("drag", this.#subPointDragHandler);
+            point.handle.off("dragend", this.#subPointDragEndHandler);
+
             point.handle.remove();
         }
         this.#subDivisionPoints = [];
@@ -246,11 +281,10 @@ export default class DrawPolyBase {
         });
     }
 
-    async #convertSubDivisionMarker(index) {
-        const point = this.#subDivisionPoints[index];
-        const latlng = L.latLng(point.coordinates);
+    async #convertSubDivisionMarker(marker) {
+        const index = marker.options.index;
         const dragPointIndex = index + 1;
-        await this.#addPoint(latlng, dragPointIndex);
+        await this.#addPoint(marker.getLatLng(), dragPointIndex);
         await this.#updateHandleIndexes();
         await this.#removeSubDivisionMarkers();
     }

@@ -1,5 +1,6 @@
 import "./../../components/interactive-map/interactive-map-actions.js";
 import "./../../components/interactive-map/interactive-map.js";
+import "../../components/toast-notification/toast-notification-actions.js";
 
 export default class Map extends crsbinding.classes.ViewBase {
 
@@ -11,6 +12,7 @@ export default class Map extends crsbinding.classes.ViewBase {
 
         await super.connectedCallback();
 
+        await crs.call("toast_notification", "enable", { position: "bottom-center", margin: 10 });
 
         const container = this.element.querySelector("#maps-container");
 
@@ -72,7 +74,7 @@ export default class Map extends crsbinding.classes.ViewBase {
                         [
                             [
                                 18.42038154602051,
-                                -33.926382242852945
+                                -33.396382242852945
                             ],
                             [
                                 18.42038154602051,
@@ -86,10 +88,6 @@ export default class Map extends crsbinding.classes.ViewBase {
                                 19.42038154602051,
                                 -33.926382242852945
                             ],
-                            [
-                                18.42038154602051,
-                                -33.926382242852945
-                            ]
                         ]
                     ]
                 }

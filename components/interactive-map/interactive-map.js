@@ -37,7 +37,9 @@ export class InteractiveMap extends HTMLElement {
     }
 
     async initialize() {
-        if (this.#map != null) return;
+        if (this.#map != null || this.dataset.loading != null) return;
+        console.log("Initializing map");
+        await crs.call("component", "notify_loading", {element: this});
 
         await crs.call("interactive_map", "initialize_lib", {});
 
@@ -81,7 +83,19 @@ export class InteractiveMap extends HTMLElement {
     }
 
     async enable() {
-        await this.initialize();
+        if (this.#map == null) {
+            await this.initialize();
+        }
+        else {
+           // Get the bounds of the map and then invalidate the size of the map
+            // Then fit the bounds of the map
+
+            const bounds = this.#map.getBounds();
+
+            this.#map.invalidateSize();
+            this.#map.fitBounds();
+
+        }
     }
 }
 

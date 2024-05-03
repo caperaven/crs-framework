@@ -125,29 +125,27 @@ export class InteractiveMapActions {
     }
 
     static async add_polygon(step, context, process, item) {
-        const instance = await crs.dom.get_element(step, context, process, item);
-        const map = instance.map;
-        const coordinates = await crs.process.getValue(step.args.coordinates, context, process, item);
-        const layerName = await crs.process.getValue(step.args.layer || instance.defaultLayer, context, process, item);
-
-        const colors = await getColorData(step, context, process, item, map);
-
-        const polygon = L.polygon(coordinates, {...colors}).addTo(map);
-        polygon.type = "polygon";
-        polygon.layer_name = layerName;
-        return polygon;
+        step.args.shape = "polygon";
+        return this.add_polyline( step, context, process, item);
     }
 
     static async add_polyline(step, context, process, item) {
         const instance = await crs.dom.get_element(step, context, process, item);
         const map = instance.map;
+        const shape = await crs.process.getValue(step.args.shape || "polyline", context, process, item);
         const coordinates = await crs.process.getValue(step.args.coordinates, context, process, item);
         const layerName = await crs.process.getValue(step.args.layer || instance.defaultLayer, context, process, item);
-
+        const dashArray = await crs.process.getValue(step.args.dash_array, context, process, item);
         const colors = await getColorData(step, context, process, item, map);
 
-        const polygon = L.polyline(coordinates, {...colors}).addTo(map);
-        polygon.type = "polyline";
+        const options = {...colors};
+
+        if (dashArray != null) {
+            options.dashArray = dashArray;
+        }
+
+        const polygon = L[shape](coordinates, options).addTo(map);
+        polygon.type = shape;
         polygon.layer_name = layerName;
         return polygon;
     }
@@ -166,6 +164,7 @@ export class InteractiveMapActions {
             iconAnchor: [8, 8] // Point of the icon which will correspond to marker's location
         });
         const marker = L.marker(coordinates, {icon: customIcon, ...options}).addTo(map);
+        marker.type = type;
         return marker;
     }
 
@@ -196,6 +195,8 @@ export class InteractiveMapActions {
     static async remove_layer_if_exists(step, context, process, item) {
         const instance = await crs.dom.get_element(step, context, process, item);
         const map = instance.map;
+
+        if (map == null) return false;
 
         const target = await crs.process.getValue(step.args.target, context, process, item);
         let layer = await crs.process.getValue(step.args.layer, context, process, item);
