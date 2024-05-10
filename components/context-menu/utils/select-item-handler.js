@@ -2,7 +2,6 @@ export async function handleSelection(li, options, component, filterHeader) {
     if (li.matches(".parent-menu-item")) {
         filterHeader.clear();
         await expandAndCollapseSubmenu(li);
-        await verifyViewportBoundary(li)
         return;
     }
 
@@ -19,13 +18,26 @@ export async function handleSelection(li, options, component, filterHeader) {
     await crs.call("context_menu", "close");
 }
 
-export async function setTabIndex(element,siblingType) {
-    let siblingElement = element[siblingType];
-    if (siblingElement != null) {
-        element.tabIndex = -1;
-        siblingElement.tabIndex = 0;
-        siblingElement.focus();
+export async function setTabIndex(element,siblingType = null) {
+    let li = element[siblingType];
+
+    // If the next or previous sibling is null,
+    // We want to get the first or last element in the ul list respectively and set the focus on it.
+    if (li == null) {
+        const elementPosition = {
+            nextElementSibling: "firstElementChild",
+            previousElementSibling: "lastElementChild"
+        }[siblingType];
+        li = element.parentElement[elementPosition];
     }
+
+    element.tabIndex = -1;
+    await setFocusState(li);
+}
+
+export async function setFocusState(li) {
+    li.tabIndex = 0;
+    li.focus();
 }
 
 async function findInStructure(collection, id) {
@@ -41,33 +53,38 @@ async function findInStructure(collection, id) {
     }
 }
 
-async function expandAndCollapseSubmenu(element) {
-    const subMenuParent = element.parentElement.querySelector(".parent-menu-item[aria-expanded='true']");
-
-    if (subMenuParent != null) {
-        await toggleExpansionState(subMenuParent);
+async function expandAndCollapseSubmenu(li) {
+    if (li.getAttribute("aria-expanded") === "true") {
+        return toggleExpansionState(li);
     }
 
-    if (subMenuParent === element) return;
+    const previousOpenLi = li.parentElement.querySelector(".parent-menu-item[aria-expanded='true']");
 
-    await toggleExpansionState(element);
+    if (previousOpenLi != null) {
+        await toggleExpansionState(previousOpenLi);
+    }
+
+    await toggleExpansionState(li);
+    await assertViewportBoundary(li);
 }
 
-async function toggleExpansionState(element) {
-    const isExpanded = element.getAttribute("aria-expanded") === "true";
-    element.setAttribute("aria-expanded", !isExpanded);
-    const submenu = element.querySelector(".submenu");
-    submenu.dataset.atViewportEdge = "false";
+async function toggleExpansionState(li) {
+    const isExpanded = li.getAttribute("aria-expanded") === "true";
+    li.setAttribute("aria-expanded", !isExpanded);
+
+    // We set the atViewportEdge attribute to false so that we recalculate the position of the submenu
+    // This is to ensure that the submenu is always visible if the parent was already at the edge.
+    const ul = li.querySelector(".submenu");
+    ul.dataset.atViewportEdge = "false";
 }
 
-async function verifyViewportBoundary(element) {
-    if (element == null) return;
+async function assertViewportBoundary(li) {
+    const ul = li.querySelector(".submenu");
+    const { left, width } = ul.getBoundingClientRect();
 
-    const submenu = element.querySelector(".submenu");
-    const { left, width } = submenu.getBoundingClientRect();
+    // sets the first element in the submenu/ul to be focused when the submenu/ul is opened
+    await setFocusState(ul.firstChild);
 
-    const firstChild = submenu.firstChild;
-    firstChild.tabIndex = firstChild.tabIndex === -1 ? 0 : -1;
-    firstChild.focus();
-    submenu.dataset.atViewportEdge = window.innerWidth - left < width;
+    //Checks if the available space is less than the width of the submenu/ul
+    ul.dataset.atViewportEdge = window.innerWidth - left < width;
 }

@@ -49,6 +49,7 @@ async function createListItems(parentElement, collection, templates) {
             attributes: {
                 role: "menuitem",
                 "aria-selected": option.selected == true,
+                "aria-label": option.title,
                 tabindex: -1,
                 ...(option.attributes || {})
             },
@@ -67,17 +68,14 @@ async function createListItems(parentElement, collection, templates) {
             li.appendChild(fragment);
         }
         else {
-            if (option.children == null) {
-                li.textContent = option.title;
-            }
-            else {
-                li.classList.add("parent-menu-item")
+            await crs.call("dom", "create_element", {
+                parent: li,
+                tag_name: "span",
+                text_content: option.title
+            });
 
-                await crs.call("dom", "create_element", {
-                    parent: li,
-                    tag_name: "div",
-                    text_content: option.title
-                });
+            if (option.children != null) {
+                li.classList.add("parent-menu-item")
 
                 const ul = await crs.call("dom", "create_element", {
                     parent: li,

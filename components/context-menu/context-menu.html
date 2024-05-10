@@ -50,6 +50,7 @@
 
     ul[role="menu"] {
         overflow: auto;
+        pointer-events: none;
     }
 
     hr {
@@ -75,6 +76,8 @@
         cursor: pointer;
         user-select: none;
         border-radius: var(--radius);
+        margin: 0.25rem;
+        pointer-events: auto;
     }
 
     li > *:not(ul) {
@@ -141,6 +144,7 @@
         min-width: 12.5rem;
         border-radius: var(--radius);
         z-index: 1;
+        cursor: default;
     }
     .submenu[data-at-viewport-edge = "false"] {
         left: 100%;
@@ -158,11 +162,6 @@
     li[aria-expanded="true"] {
         background: var(--blue-s2);
     }
-
-    /*li:hover,li[aria-expanded="true"] {*/
-    /*    margin-left: 0.25rem;*/
-    /*    margin-right: 0.25rem;*/
-    /*}*/
 
     li:focus, li[aria-expanded="true"]:focus {
         outline: none;
