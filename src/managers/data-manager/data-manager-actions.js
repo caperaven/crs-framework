@@ -84,6 +84,7 @@ class DataManagerActions {
         const type = await crs.process.getValue(step.args.type || "idb", context, process, item);
         const records = await crs.process.getValue(step.args.records || [], context, process, item);
         const selectedCount = await crs.process.getValue(step.args.selected_count || 0, context, process, item);
+        const requestCallback = await crs.process.getValue(step.args.request_callback, context, process, item);
 
         if (type === "idb" && globalThis.hasDataManagerDB != true) {
             await import ("./../../../packages/crs-process-api/action-systems/managers/indexdb-manager.js");
@@ -113,6 +114,10 @@ class DataManagerActions {
         if (type !== "perspective") {
             await instance.setRecords(records);
             instance.selectedCount = selectedCount;
+        }
+
+        if (requestCallback != null) {
+            instance.requestCallback = requestCallback;
         }
 
         return globalThis.dataManagers[manager];
@@ -145,6 +150,7 @@ class DataManagerActions {
      */
     static async dispose(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        globalThis.dataManagers[manager].requestCallback = null;
         globalThis.dataManagers[manager].dispose();
         delete globalThis.dataManagers[manager];
     }
@@ -203,6 +209,21 @@ class DataManagerActions {
 
         const dataManager = globalThis.dataManagers[manager];
         return { total: dataManager.count, selected: dataManager.selectedCount };
+    }
+
+    static async request_records(step, context, process, item) {
+        const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        const events_required = await crs.process.getValue(step.args.events_required || true, context, process, item);
+        if (manager == null) return;
+
+        const instance = await globalThis.dataManagers[manager];
+
+        if (events_required && instance.eventCount === 0) {
+            return;
+        }
+
+        const records = await instance.requestCallback(manager);
+        await crs.call("data_manager", "set_records", { manager, records });
     }
 
     /**

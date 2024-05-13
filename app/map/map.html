@@ -50,6 +50,7 @@
 
         <button click.call="getLayerGeoJson">Get Layer GeoJson</button>
         <button click.call="setLayerGeoJson">Set Layer GeoJson</button>
+        <button click.call="clear">Clear all</button>
 
         <label>
             <span>Fill Color</span>
@@ -63,7 +64,7 @@
     </div>
 
     <div class="flex vertical" id="maps-container">
-        <interactive-map id="openstreetmap" data-provider="openstreetmap" class="flex" data-fill-color="#0276C2" data-stroke-color="#0276C2"></interactive-map>
+        <interactive-map id="openstreetmap" data-provider="openstreetmap" data-manager="my_data" class="flex" data-fill-color="#0276C2" data-stroke-color="#0276C2"></interactive-map>
 
     </div>
 </div>

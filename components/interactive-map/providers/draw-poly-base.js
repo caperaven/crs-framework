@@ -78,6 +78,20 @@ export default class DrawPolyBase {
     async #pointClick(event) {
         // When selecting a point we to change the style of the point to selected.
         // We also want to add it to the selected points array.
+
+        const index = event.target.options.index;
+        const point = this.#points[index];
+
+        if (this.#selectedPoints.includes(point)) {
+            // If the point is already selected we want to deselect it.
+            event.target.setStyle({fillColor: "blue"});
+            this.#selectedPoints = this.#selectedPoints.filter(_ => _ !== point);
+        }
+        else {
+            // If the point is not selected we want to select it.
+            event.target.setStyle({fillColor: "green"});
+            this.#selectedPoints.push(point);
+        }
     }
 
     async #pointDragStart(event) {

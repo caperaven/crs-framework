@@ -3,7 +3,7 @@ export class InteractiveMapActions {
         await this[step.action]?.(step, context, process, item);
     }
 
-    static initialize_lib(step, context, process, item) {
+    static async initialize_lib(step, context, process, item) {
         return new Promise(resolve => {
             if (globalThis.L == null) {
 
@@ -93,13 +93,22 @@ export class InteractiveMapActions {
             await crs.call("interactive_map", "remove_layer_if_exists", {layer: layerName, element: instance});
         }
 
-        const geoJson = L.geoJSON(data, {...options}).addTo(map);
+        options.pointToLayer = (feature, latlng) => {
+            return createDefaultPoint("location-pin", [latlng.lat, latlng.lng], options);
+        }
+        options.style = (feature) => {
+            console.log(feature.properties.style)
+            return feature.properties.style;
+        }
+
+        const geoJson = L.geoJSON(data, {...options, }).addTo(map);
 
         if (moveTo) {
             await crs.call("interactive_map", "set_view_to_shape", {element: instance, shape: geoJson});
         }
 
         geoJson.layer_name = layerName;
+        geoJson.type = "geojson";
 
         return geoJson;
     }
@@ -112,15 +121,10 @@ export class InteractiveMapActions {
         const options = await crs.process.getValue(step.args.options || {}, context, process, item);
         const layerName = await crs.process.getValue(step.args.layer || instance.defaultLayer, context, process, item);
 
-        const customIcon = L.divIcon({
-            className: 'marker',
-            html: `<div class="point">${iconName}</div>`,
-            iconSize: [32, 32], // Size of the icon
-            iconAnchor: [16, 32] // Point of the icon which will correspond to marker's location
-        });
-        const marker = L.marker(coordinates, {icon: customIcon, ...options}).addTo(map);
+        const marker = createDefaultPoint(iconName, coordinates, options).addTo(map);
         marker.type = "point";
         marker.layer_name = layerName;
+
         return marker;
     }
 
@@ -181,9 +185,21 @@ export class InteractiveMapActions {
         await toolbar.setInstance(instance);
     }
 
+    static async clear_layers(step, context, process, item) {
+        const instance = await crs.dom.get_element(step, context, process, item);
+        const map = instance.map;
+
+        if(map == null) return;
+
+        map.eachLayer(layer => {
+            if (layer.type != null) {
+                map.removeLayer(layer);
+            }
+        });
+    }
+
     static async remove_selected(step, context, process, item) {
         const instance = await crs.dom.get_element(step, context, process, item);
-
 
         if (instance.selectedShape != null) {
             await crs.call("interactive_map", "remove_layer_if_exists", {layer: instance.selectedShape, element: instance});
@@ -263,6 +279,17 @@ async function getColorData(step, context, process, item, map) {
         color: strokeColor || map.strokeColor,
         weight: strokeWeight || 2
     }
+}
+
+function createDefaultPoint(iconName, coordinates, options = {}) {
+    const customIcon = L.divIcon({
+        className: 'marker',
+        html: `<div class="point">${iconName}</div>`,
+        iconSize: [32, 32], // Size of the icon
+        iconAnchor: [16, 32] // Point of the icon which will correspond to marker's location
+    });
+    const marker =  L.marker(coordinates, {icon: customIcon, ...options});
+    return marker;
 }
 
 

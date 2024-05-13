@@ -1,6 +1,7 @@
 import "./../../components/interactive-map/interactive-map-actions.js";
 import "./../../components/interactive-map/interactive-map.js";
 import "../../components/toast-notification/toast-notification-actions.js";
+import "../../src/managers/data-manager/data-manager-actions.js";
 
 export default class Map extends crsbinding.classes.ViewBase {
 
@@ -15,6 +16,12 @@ export default class Map extends crsbinding.classes.ViewBase {
         await crs.call("toast_notification", "enable", { position: "bottom-center", margin: 10 });
 
         const container = this.element.querySelector("#maps-container");
+
+        await crs.call("data_manager", "register", {
+            manager: "my_data",
+            id_field: "id",
+            type: "memory",
+        });
 
 
         this.setProperty("map", "#openstreetmap");
@@ -39,6 +46,12 @@ export default class Map extends crsbinding.classes.ViewBase {
         this.map.locateMe();
     }
 
+    async clear() {
+        await crs.call("interactive_map", "clear_layers", {
+            element: this.getProperty("map")
+        });
+    }
+
     async fillColorChanged(color) {
         await crs.call("interactive_map", "set_colors", {
             element: this.getProperty("map"),
@@ -61,39 +74,39 @@ export default class Map extends crsbinding.classes.ViewBase {
             element: "#openstreetmap"
         });
 
-        // Set data to cape town
-        await crs.call("interactive_map", "add_geo_json", {
-            element: "#openstreetmap",
-            layer: "default",
-            data: {
-                "type": "Feature",
-                "properties": {},
-                "geometry": {
-                    "type": "Polygon",
-                    "coordinates": [
-                        [
-                            [
-                                18.42038154602051,
-                                -33.396382242852945
-                            ],
-                            [
-                                18.42038154602051,
-                                -34.926382242852945
-                            ],
-                            [
-                                19.42038154602051,
-                                -34.926382242852945
-                            ],
-                            [
-                                19.42038154602051,
-                                -33.926382242852945
-                            ],
-                        ]
-                    ]
-                }
-            }
-
-        });
+        // // Set data to cape town
+        // await crs.call("interactive_map", "add_geo_json", {
+        //     element: "#openstreetmap",
+        //     layer: "default",
+        //     data: {
+        //         "type": "Feature",
+        //         "properties": {},
+        //         "geometry": {
+        //             "type": "Polygon",
+        //             "coordinates": [
+        //                 [
+        //                     [
+        //                         18.42038154602051,
+        //                         -33.396382242852945
+        //                     ],
+        //                     [
+        //                         18.42038154602051,
+        //                         -34.926382242852945
+        //                     ],
+        //                     [
+        //                         19.42038154602051,
+        //                         -34.926382242852945
+        //                     ],
+        //                     [
+        //                         19.42038154602051,
+        //                         -33.926382242852945
+        //                     ],
+        //                 ]
+        //             ]
+        //         }
+        //     }
+        //
+        // });
     }
 
     async getLayerGeoJson() {
@@ -108,42 +121,126 @@ export default class Map extends crsbinding.classes.ViewBase {
     async setLayerGeoJson() {
 
         // add some data to johannesburg
-        await crs.call("interactive_map", "add_geo_json", {
-            element: "#openstreetmap",
-            layer: "default",
-            move_to: true,
-            replace: true,
-            data: {
+
+        // const data =  {
+        //     "type": "Feature",
+        //     "properties": {},
+        //     "geometry": {
+        //         "type": "Polygon",
+        //         "coordinates": [
+        //             [
+        //                 [
+        //                     27.925262451171875,
+        //                     -26.20410235599473
+        //                 ],
+        //                 [
+        //                     27.925262451171875,
+        //                     -27.20410235599473
+        //                 ],
+        //                 [
+        //                     28.925262451171875,
+        //                     -27.20410235599473
+        //                 ],
+        //                 [
+        //                     28.925262451171875,
+        //                     -26.20410235599473
+        //                 ],
+        //                 [
+        //                     27.925262451171875,
+        //                     -26.20410235599473
+        //                 ]
+        //             ]
+        //         ]
+        //     }
+        // };
+
+        const polygons =  await this.generateRandomPolygonsGeoJson(2);
+        const points = await this.generateRandomPointsGeoJson(2);
+
+        await crs.call("data_manager", "set_records", {
+            manager: "my_data",
+            id_field: "id",
+            type: "memory",
+            records: [...polygons, ...points]
+        })
+    }
+
+
+    async generateRandomPolygonsGeoJson(count) {
+        // Create a random geojson polygons object for the the provided count
+
+        const data = [];
+
+        for(let i = 0; i < count; i++) {
+            const lat = Math.random() * 180 - 90;
+            const lng = Math.random() * 360 - 180;
+
+            const geoJson = {
                 "type": "Feature",
-                "properties": {},
+                "properties": {
+                    "id": i,
+                    "name": `Polygon ${i}`
+                },
                 "geometry": {
                     "type": "Polygon",
                     "coordinates": [
                         [
                             [
-                                27.925262451171875,
-                                -26.20410235599473
+                                lng,
+                                lat
                             ],
                             [
-                                27.925262451171875,
-                                -27.20410235599473
+                                lng + 1,
+                                lat
                             ],
                             [
-                                28.925262451171875,
-                                -27.20410235599473
+                                lng + 1,
+                                lat + 1
                             ],
                             [
-                                28.925262451171875,
-                                -26.20410235599473
+                                lng,
+                                lat + 1
                             ],
                             [
-                                27.925262451171875,
-                                -26.20410235599473
+                                lng,
+                                lat
                             ]
                         ]
                     ]
                 }
-            }
-        });
+            };
+
+            data.push(geoJson);
+        }
+        return data;
+    }
+
+    async generateRandomPointsGeoJson(count) {
+        // Create a random geojson points object for the the provided count
+
+        const data = [];
+
+        for(let i = 0; i < count; i++) {
+            const lat = Math.random() * 180 - 90;
+            const lng = Math.random() * 360 - 180;
+
+            const geoJson = {
+                "type": "Feature",
+                "properties": {
+                    "id": i,
+                    "name": `Point ${i}`
+                },
+                "geometry": {
+                    "type": "Point",
+                    "coordinates": [
+                        lng,
+                        lat
+                    ]
+                }
+            };
+
+            data.push(geoJson);
+        }
+        return data;
     }
 }

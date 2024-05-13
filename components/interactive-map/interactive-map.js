@@ -1,5 +1,16 @@
+import {CHANGE_TYPES} from "../../src/managers/data-manager/data-manager-types.js";
+
 export class InteractiveMap extends HTMLElement {
     #map;
+    #dataManagerChangedHandler = this.#dataManagerChanged.bind(this);
+
+    #changeEventMap = {
+        [CHANGE_TYPES.add]: this.#addRecord,
+        [CHANGE_TYPES.update]: this.#updateRecord,
+        [CHANGE_TYPES.delete]: this.#deleteRecord,
+        [CHANGE_TYPES.filter]: this.#filterRecords,
+        [CHANGE_TYPES.refresh]: this.#refresh,
+    };
 
     get html() {
         return import.meta.url.replace(".js", ".html");
@@ -18,6 +29,8 @@ export class InteractiveMap extends HTMLElement {
         this.shadowRoot.innerHTML = await fetch(this.html).then(result => result.text());
     }
 
+
+
     async disconnectedCallback() {
         // Dispose map mode
         if (this.currentMode != null) {
@@ -25,10 +38,10 @@ export class InteractiveMap extends HTMLElement {
             this.currentMode = null;
         }
 
+        if (this.#map == null) return; // If map was never initialized, return
+
         // Remove all layers
-        this.#map.eachLayer(layer => {
-            this.#map.removeLayer(layer);
-        });
+        await crs.call("interactive_map", "clear_layers", { element: this});
 
         // Clean up
         this.#map.off();
@@ -79,23 +92,86 @@ export class InteractiveMap extends HTMLElement {
             fill_color: this.dataset.fillColor
         });
 
+        await this.#hookDataManager();
+
         await crs.call("component", "notify_ready", {element: this});
     }
+
+    /**
+     * @private
+     * @method #hoodDataManager - get the data manager and set the event listeners to be notified of change
+     */
+    async #hookDataManager() {
+        await crs.call("data_manager", "on_change", {
+            manager: this.dataset.manager,
+            callback: this.#dataManagerChangedHandler
+        });
+    }
+
+    /**
+     * @private
+     * @method #dataManagerChanged - when the data manager changes, update the map
+     * @returns {Promise<void>}
+     */
+    async #dataManagerChanged(args) {
+        await this.#changeEventMap[args.action].call(this, args);
+    }
+
+    /**
+     * @method #addRecord - add a record to the table where it was added in the data manager
+     * @param args {Object} - arguments from the data manager change event
+     * @returns {Promise<void>}
+     */
+    async #addRecord(args) {
+    }
+
+    /**
+     * @method #updateRecord - update a record in the table where it was updated in the data manager
+     * @param args {Object} - arguments from the data manager change event
+     * @returns {Promise<void>}
+     */
+    async #updateRecord(args) {
+    }
+
+    /**
+     * @method #deleteRecord - delete a record from the table where it was deleted in the data manager
+     * @param args {Object} - arguments from the data manager change event
+     * @returns {Promise<void>}
+     */
+    async #deleteRecord(args) {
+    }
+
+    /**
+     * @method #filterRecords - the data manager performed a filter operation and these are the records you need to show
+     * @param args {Object} - arguments from the data manager change event
+     * @returns {Promise<void>}
+     */
+    async #filterRecords(args) {
+    }
+
+
+    async #refresh(args) {
+        await crs.call("interactive_map", "clear_layers", { element: this});
+        const data = await crs.call("data_manager", "get_all", { manager: this.dataset.manager });
+
+        if (data?.length > 0) {
+            await crs.call("interactive_map", "add_geo_json", {
+                element: this,
+                layer: "default",
+                data: data
+            });
+        }
+    }
+
+
 
     async enable() {
         if (this.#map == null) {
             await this.initialize();
-        }
-        else {
-           // Get the bounds of the map and then invalidate the size of the map
-            // Then fit the bounds of the map
-
-            const bounds = this.#map.getBounds();
-
-            this.#map.invalidateSize();
-            this.#map.fitBounds();
 
         }
+
+        await crs.call("data_manager", "request_records", {manager: this.dataset.manager});
     }
 }
 
