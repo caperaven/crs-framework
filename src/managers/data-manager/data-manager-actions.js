@@ -208,7 +208,7 @@ class DataManagerActions {
         if (manager == null) return 0;
 
         const dataManager = globalThis.dataManagers[manager];
-        return { total: dataManager.count, selected: dataManager.selectedCount };
+        return {total: dataManager.count, selected: dataManager.selectedCount};
     }
 
     static async request_records(step, context, process, item) {
@@ -223,7 +223,7 @@ class DataManagerActions {
         }
 
         const records = await instance.requestCallback(manager);
-        await crs.call("data_manager", "set_records", { manager, records });
+        await crs.call("data_manager", "set_records", {manager, records});
     }
 
     /**
@@ -427,8 +427,7 @@ class DataManagerActions {
 
         if (indexes != null) {
             result = await dataManager.removeIndexes(indexes);
-        }
-        else {
+        } else {
             result = await dataManager.removeIds(ids);
         }
 
@@ -501,8 +500,7 @@ class DataManagerActions {
         let result;
         if (index != null) {
             result = await dataManager.updateIndex(index, changes);
-        }
-        else {
+        } else {
             result = await dataManager.updateId(id, changes);
         }
 
@@ -573,8 +571,7 @@ class DataManagerActions {
 
         if (indexes != null) {
             await dataManager.setSelectedIndexes(indexes, selected);
-        }
-        else {
+        } else {
             await dataManager.setSelectedIds(ids, selected);
         }
 
@@ -625,8 +622,7 @@ class DataManagerActions {
 
         if (indexes != null) {
             await dataManager.toggleSelectedIndexes(indexes);
-        }
-        else {
+        } else {
             await dataManager.toggleSelectedIds(ids);
         }
 
@@ -802,8 +798,7 @@ class DataManagerActions {
             let result;
             if (item.index != null) {
                 result = await dataManager.updateIndex(item.index, item.changes);
-            }
-            else {
+            } else {
                 result = await dataManager.updateId(item.id, item.changes);
             }
 

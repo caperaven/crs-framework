@@ -1,6 +1,5 @@
 export class InteractiveMapDrawToolbar extends crsbinding.classes.BindableElement {
     #instance = null;
-    #selectionHandler = this.#selectionChanged.bind(this);
 
     get html() {
         return import.meta.url.replace(".js", ".html");
@@ -11,19 +10,12 @@ export class InteractiveMapDrawToolbar extends crsbinding.classes.BindableElemen
     }
 
     async disconnectedCallback() {
-        this.#instance.removeEventListener("shapeSelected", this.#selectionHandler);
         this.#instance = null;
-        this.#selectionHandler = null;
         await super.disconnectedCallback();
-    }
-
-    async preLoad() {
-        this.setProperty("toolbar", "My binding toolbar");
     }
 
     async setInstance(instance) {
         this.#instance = instance;
-        this.#instance.addEventListener("shapeSelected", this.#selectionHandler);
     }
 
 
@@ -40,10 +32,6 @@ export class InteractiveMapDrawToolbar extends crsbinding.classes.BindableElemen
         await crs.call("interactive_map", "remove_selected", {
             element: this.#instance
         });
-    }
-
-    async #selectionChanged(event) {
-        console.log("Shape selected", event);
     }
 }
 

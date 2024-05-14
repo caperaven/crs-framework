@@ -3,15 +3,13 @@ export class InteractiveMapActions {
         await this[step.action]?.(step, context, process, item);
     }
 
-    static async initialize_lib(step, context, process, item) {
+    static async initialize_lib() {
         return new Promise(resolve => {
             if (globalThis.L == null) {
-
                 requestAnimationFrame(async () => {
                     const leafletScript = document.createElement('script');
                     leafletScript.src = "/packages/leaflet/leaflet.js";
                     leafletScript.onload = async () => {
-
                         resolve();
                     }
                     document.body.appendChild(leafletScript);
@@ -31,19 +29,18 @@ export class InteractiveMapActions {
 
     static async set_colors(step, context, process, item) {
         const map = await getMap(step, context, process, item);
-        const strokeColor = await crs.process.getValue(step.args.stroke_color || "#0276C2", context, process, item);
-        const fillColor = await crs.process.getValue(step.args.fill_color || "#0276C2", context, process, item);
+        const color = await crs.process.getValue(step.args.color || "#E00000", context, process, item);
+        const fillColor = await crs.process.getValue(step.args.fill_color || "#E000004D", context, process, item);
 
-        if (strokeColor != null) {
-            map.strokeColor = strokeColor;
+        if (color != null) {
+            map.color = color;
             if (map.selectedShape != null) {
-                map.selectedShape.setStyle({color: strokeColor});
+                map.selectedShape.setStyle({color: color});
             }
         }
 
         if (fillColor != null) {
             map.fillColor = fillColor;
-
             if (map.selectedShape != null) {
                 map.selectedShape.setStyle({fillColor: fillColor});
             }
@@ -86,7 +83,6 @@ export class InteractiveMapActions {
         const moveTo = await crs.process.getValue(step.args.move_to || true, context, process, item);
         const replace = await crs.process.getValue(step.args.replace || false, context, process, item);
         const options = await crs.process.getValue(step.args.options || {}, context, process, item);
-
         const layerName = await crs.process.getValue(step.args.layer || instance.defaultLayer, context, process, item);
 
         if (replace) {
@@ -97,11 +93,20 @@ export class InteractiveMapActions {
             return createDefaultPoint("location-pin", [latlng.lat, latlng.lng], options);
         }
         options.style = (feature) => {
-            console.log(feature.properties.style)
-            return feature.properties.style;
+            const style = feature.properties?.style || {};
+
+            if (style.fillColor == null) {
+                style.fillColor = map.fillColor;
+            }
+
+            if (style.color == null) {
+                style.color = map.color;
+            }
+
+            return style;
         }
 
-        const geoJson = L.geoJSON(data, {...options, }).addTo(map);
+        const geoJson = L.geoJSON(data, {...options,}).addTo(map);
 
         if (moveTo) {
             await crs.call("interactive_map", "set_view_to_shape", {element: instance, shape: geoJson});
@@ -130,7 +135,7 @@ export class InteractiveMapActions {
 
     static async add_polygon(step, context, process, item) {
         step.args.shape = "polygon";
-        return this.add_polyline( step, context, process, item);
+        return this.add_polyline(step, context, process, item);
     }
 
     static async add_polyline(step, context, process, item) {
@@ -189,7 +194,7 @@ export class InteractiveMapActions {
         const instance = await crs.dom.get_element(step, context, process, item);
         const map = instance.map;
 
-        if(map == null) return;
+        if (map == null) return;
 
         map.eachLayer(layer => {
             if (layer.type != null) {
@@ -202,7 +207,10 @@ export class InteractiveMapActions {
         const instance = await crs.dom.get_element(step, context, process, item);
 
         if (instance.selectedShape != null) {
-            await crs.call("interactive_map", "remove_layer_if_exists", {layer: instance.selectedShape, element: instance});
+            await crs.call("interactive_map", "remove_layer_if_exists", {
+                layer: instance.selectedShape,
+                element: instance
+            });
             instance.selectedShape = null;
             await crs.call("interactive_map", "set_mode", {element: instance, mode: "none"});
         }
@@ -225,7 +233,7 @@ export class InteractiveMapActions {
         let result = false;
 
         if (layer != null) {
-            if(layer._eventParents != null) {
+            if (layer._eventParents != null) {
                 const keys = Object.keys(layer._eventParents);
                 map.removeLayer(map._layers[keys[0]]);
             }
@@ -269,15 +277,14 @@ async function getMap(step, context, process, item) {
 }
 
 async function getColorData(step, context, process, item, map) {
-
     const fillColor = await crs.process.getValue(step.args.fill_color, context, process, item);
-    const strokeColor = await crs.process.getValue(step.args.stroke_color, context, process, item);
-    const strokeWeight = await crs.process.getValue(step.args.stroke_weight, context, process, item);
+    const color = await crs.process.getValue(step.args.color, context, process, item);
+    const weight = await crs.process.getValue(step.args.weight, context, process, item);
 
     return {
         fillColor: fillColor || map.fillColor,
-        color: strokeColor || map.strokeColor,
-        weight: strokeWeight || 2
+        color: color || map.color,
+        weight: weight || 2
     }
 }
 
@@ -288,7 +295,7 @@ function createDefaultPoint(iconName, coordinates, options = {}) {
         iconSize: [32, 32], // Size of the icon
         iconAnchor: [16, 32] // Point of the icon which will correspond to marker's location
     });
-    const marker =  L.marker(coordinates, {icon: customIcon, ...options});
+    const marker = L.marker(coordinates, {icon: customIcon, ...options});
     return marker;
 }
 

@@ -99,7 +99,6 @@ export default class DrawPolyBase {
     }
 
     async #pointDrag(event) {
-        console.log("dragging handle");
         // Update the shape as the user moves the mouse based on the current mouse position.
         this.#points[event.target.options.index].coordinates = [event.latlng.lat, event.latlng.lng];
         await this.redraw();

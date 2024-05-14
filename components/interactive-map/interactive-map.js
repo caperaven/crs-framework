@@ -1,9 +1,9 @@
 import {CHANGE_TYPES} from "../../src/managers/data-manager/data-manager-types.js";
+import {createImageMap, createStandardMap} from "./interactive-map-utils.js";
 
 export class InteractiveMap extends HTMLElement {
     #map;
     #dataManagerChangedHandler = this.#dataManagerChanged.bind(this);
-
     #changeEventMap = {
         [CHANGE_TYPES.add]: this.#addRecord,
         [CHANGE_TYPES.update]: this.#updateRecord,
@@ -29,10 +29,11 @@ export class InteractiveMap extends HTMLElement {
         this.shadowRoot.innerHTML = await fetch(this.html).then(result => result.text());
     }
 
-
-
     async disconnectedCallback() {
-        // Dispose map mode
+        await crs.call("data_manager", "remove_change", {manager: this.dataset.manager, callback: this.#dataManagerChangedHandler});
+        this.#dataManagerChangedHandler = null;
+        this.#changeEventMap = null;
+        // Dispose map mode if any
         if (this.currentMode != null) {
             await this.currentMode.dispose(this);
             this.currentMode = null;
@@ -51,44 +52,22 @@ export class InteractiveMap extends HTMLElement {
 
     async initialize() {
         if (this.#map != null || this.dataset.loading != null) return;
-        console.log("Initializing map");
         await crs.call("component", "notify_loading", {element: this});
-
         await crs.call("interactive_map", "initialize_lib", {});
 
-        const mapDiv = this.shadowRoot.querySelector("#map");
+        const container = this.shadowRoot.querySelector("#map");
 
         const provider = this.dataset.provider;
         // Add a tile layer
         if (provider == null || provider === "openstreetmap") {
-            // Initialize Leaflet map
-            this.#map = L.map(mapDiv, { preferCanvas: true});
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap contributors',
-            }).addTo(this.#map);
-
-            // Set the view to start with
-            this.#map.setView([-33.926382242852945, 18.42038154602051], 13);
+           this.#map = await createStandardMap(container);
+        } else if (this.dataset.provider === "image") {
+            this.#map = await createImageMap(container);
         }
-
-        if (this.dataset.provider === "image") {
-            // Initialize Leaflet map
-            this.#map = L.map(mapDiv, {
-                crs: L.CRS.Simple,
-                minZoom: -5
-            })
-            const bounds = [[0, 0], [1406, 2300]];
-            L.imageOverlay(this.dataset.imageUrl, bounds).addTo(this.#map);
-            this.#map.fitBounds(bounds);
-        }
-
-        // This is to remove the default zoom control and add a new one to the bottom right
-        // this.#map.removeControl( this.#map.zoomControl);
-        // L.control.zoom({ position: 'bottomright'}).addTo(this.#map);
 
         await crs.call("interactive_map", "set_colors", {
             element: this,
-            stroke_color: this.dataset.strokeColor,
+            stroke_color: this.dataset.color,
             fill_color: this.dataset.fillColor
         });
 
@@ -151,10 +130,11 @@ export class InteractiveMap extends HTMLElement {
 
 
     async #refresh(args) {
-        await crs.call("interactive_map", "clear_layers", { element: this});
-        const data = await crs.call("data_manager", "get_all", { manager: this.dataset.manager });
+        await crs.call("interactive_map", "clear_layers", {element: this});
+        const data = await crs.call("data_manager", "get_all", {manager: this.dataset.manager});
 
         if (data?.length > 0) {
+            // For now we are assuming geo data here. We will need to add support for other types of data in future
             await crs.call("interactive_map", "add_geo_json", {
                 element: this,
                 layer: "default",
@@ -164,11 +144,9 @@ export class InteractiveMap extends HTMLElement {
     }
 
 
-
     async enable() {
         if (this.#map == null) {
             await this.initialize();
-
         }
 
         await crs.call("data_manager", "request_records", {manager: this.dataset.manager});
