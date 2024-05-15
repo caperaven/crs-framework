@@ -63,40 +63,68 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     }
 
     async #click(event) {
-        if (event.composedPath()[0] === this.btnBack) {
-            return this.#closeSubGroup();
+        const element = event.composedPath()[0];
+        const tagName = element.tagName.toLowerCase();
+
+        if (tagName === "filter-header" || element.id === "input-filter") return;
+
+        if (element === this.btnBack) {
+            return  await this.#closeSubGroup();
         }
 
-        await handleSelection(event, this.#options, this, this.#filterHeader);
+        await handleSelection(event.composedPath()[0], this.#options, this, this.#filterHeader);
+
+        //Todo: this function should only trigger when an expansion occurs of the user clicks
+        //on the back button so it would be best if this was moved to the selecthandler
+        await this.#handleContainerOverflow(element);
 
         if (this.btnBack == null) return;
 
+        await this.#handleButtonState(this.btnBack);
+    }
+
+    async #handleContainerOverflow(element) {
+        const child = element.querySelector("ul");
+
+        //check if overflow is required for the sub menu if not remove it
+        const addOverflow = child.scrollHeight > child.clientHeight;
+
+        if (addOverflow === false) {
+            this.container.classList.add("no-overflow");
+            return;
+        }
+
+        this.container.classList.remove("no-overflow");
+    }
+
+    async #handleButtonState(backButton) {
         const subGroups = this.shadowRoot.querySelectorAll(".parent-menu-item[aria-expanded='true']");
         const hasSubGroup = subGroups.length > 0;
 
         if (!hasSubGroup) {
-            this.btnBack.classList.remove("visible");
-        }
-        else if (!this.btnBack.classList.contains("visible")) {
-            this.btnBack.classList.add("visible");
+
+            backButton.classList.remove("visible");
+
+        } else if (!backButton.classList.contains("visible")) {
+            backButton.classList.add("visible");
         }
 
         if (subGroups.length > 0) {
             const container = subGroups[subGroups.length - 1].querySelector("ul");
             this.#filterHeader.container = container;
-        }
-        else {
+        } else {
             this.#filterHeader.container = this.container;
         }
     }
 
-    #closeSubGroup() {
+    async #closeSubGroup() {
         const groups = this.shadowRoot.querySelectorAll(".parent-menu-item[aria-expanded='true']");
-        groups[groups.length -1].removeAttribute("aria-expanded");
+        groups[groups.length - 1].removeAttribute("aria-expanded");
 
         if (groups.length == 1) {
-            this.btnBack.classList.remove("visible")
+            this.btnBack.classList.remove("visible");
         }
+        await this.#handleContainerOverflow(groups[groups.length - 1].parentElement.parentElement);
     }
 
     setOptions(args) {
