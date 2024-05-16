@@ -65,30 +65,45 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     async #click(event) {
         const element = event.composedPath()[0];
         const tagName = element.tagName.toLowerCase();
+        const className = element.className;
 
-        if (tagName === "filter-header" || element.id === "input-filter") return;
+        if (tagName === "filter-header" || element.id === "input-filter" || className === "submenu") return;
 
-        if (element === this.btnBack) {
-            return  await this.#closeSubGroup();
+        if (className === "back") {
+            await crs.call("context_menu", "close");
+            return;
         }
 
-        await handleSelection(event.composedPath()[0], this.#options, this, this.#filterHeader);
+        if (element === this.btnBack) {
+            return await this.#closeSubGroup();
+        }
 
-        //Todo: this function should only trigger when an expansion occurs of the user clicks
-        //on the back button so it would be best if this was moved to the selecthandler
-        await this.#handleContainerOverflow(element);
+        await handleSelection(event.composedPath()[0], this.#options, this, this.#filterHeader, true);
 
-        if (this.btnBack == null) return;
+        if (!element.matches(".parent-menu-item") && this.btnBack == null) return;
 
-        await this.#handleButtonState(this.btnBack);
+        await this.#setUlContainerOverflow(element);
+        await this.#handleButtonState();
     }
 
-    async #handleContainerOverflow(element) {
-        const child = element.querySelector("ul");
+    /**
+     * @method #setUlContainerOverflow - Sets the overflow property on the ul container based on the content.
+     * @param element- the selected parent li element.
+     * @returns {Promise<void>}
+     */
+    async #setUlContainerOverflow(element) {
+        const ul = element.querySelector("ul");
+        const submenuUlRect = ul.getBoundingClientRect();
+        const ulMenuRect = this.container.getBoundingClientRect();
 
-        //check if overflow is required for the sub menu if not remove it
-        const addOverflow = child.scrollHeight > child.clientHeight;
+        //positions the submenu relative to the container and not the parent li element.
+        const offset = submenuUlRect.top - ulMenuRect.top;
+        if (offset > 0) {
+            ul.style.transform = `translateY(${-offset}px)`;
+        }
 
+        //if overflow is required for the sub menu if not remove it
+        const addOverflow = ul.scrollHeight > ul.clientHeight;
         if (addOverflow === false) {
             this.container.classList.add("no-overflow");
             return;
@@ -97,16 +112,22 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         this.container.classList.remove("no-overflow");
     }
 
-    async #handleButtonState(backButton) {
+    /**
+     * @method #handleButtonState - Handles the visibility of the back button based on the sub group expansion.
+     * @param backButton - the back button element.
+     * @returns {Promise<void>}
+     */
+    async #handleButtonState() {
         const subGroups = this.shadowRoot.querySelectorAll(".parent-menu-item[aria-expanded='true']");
         const hasSubGroup = subGroups.length > 0;
 
         if (!hasSubGroup) {
+            this.btnBack.classList.remove("visible");
+            this.spanBorder.classList.remove("visible");
 
-            backButton.classList.remove("visible");
-
-        } else if (!backButton.classList.contains("visible")) {
-            backButton.classList.add("visible");
+        } else if (!this.btnBack.classList.contains("visible")) {
+            this.btnBack.classList.add("visible");
+            this.spanBorder.classList.add("visible");
         }
 
         if (subGroups.length > 0) {
@@ -123,8 +144,9 @@ class ContextMenu extends crsbinding.classes.BindableElement {
 
         if (groups.length == 1) {
             this.btnBack.classList.remove("visible");
+            this.spanBorder.classList.remove("visible");
         }
-        await this.#handleContainerOverflow(groups[groups.length - 1].parentElement.parentElement);
+        await this.#setUlContainerOverflow(groups[groups.length - 1].parentElement.parentElement);
     }
 
     setOptions(args) {

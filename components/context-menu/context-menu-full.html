@@ -44,6 +44,8 @@
         padding: 0;
         list-style: none;
         background: var(--window);
+        border-bottom-left-radius: 0.5rem;
+        border-bottom-right-radius: 0.5rem;
     }
 
     ul[role="menu"] {
@@ -62,13 +64,15 @@
         align-items: center;
         cursor: pointer;
         user-select: none;
+        -webkit-tap-highlight-color: transparent;
     }
 
     li > *:not(ul) {
         pointer-events: none;
     }
 
-    li[hidden] {
+    li[hidden],
+    #span-border {
         display: none;
     }
 
@@ -108,9 +112,6 @@
         bottom: 0;
         display: none;
         border: var(--border);
-        background: var(--window);
-        width: 100%;
-        height: 100%;
     }
 
     .parent-menu-item[aria-expanded="true"] > .submenu {
@@ -140,14 +141,15 @@
 
     #btnBack {
         font-family: var(--icon-font);
-        font-size: 1.5rem;
+        font-size: 1.25rem;
         height: 2.5rem;
         width: 2.5rem;
         padding: 0;
         display: none;
         border: none;
-        border-bottom: var(--border);
-        border-right: var(--border);
+        border-right: none;
+        border-top-left-radius: var(--radius);
+        background: transparent;
     }
 
     #btnBack.visible {
@@ -156,11 +158,25 @@
 
     .toolbar {
         display: flex;
+        align-items: center;
         flex-direction: row;
         height: 2.5rem;
+        border-bottom: var(--border);
+        box-sizing: border-box;
     }
+
     .no-overflow {
         overflow: hidden!important;
+    }
+
+    #span-border {
+        width: 0.0625rem;
+        height: 1.875rem;
+        background: var(--grey-s2);
+    }
+
+    #span-border.visible {
+        display: inline;
     }
 
 </style>
@@ -169,7 +185,8 @@
 <div class="back"></div>
 <div class="popup" ref="popup">
     <div class="toolbar">
-        <button id="btnBack" ref="btnBack">chevron-left</button>
+        <button id="btnBack" ref="btnBack">arrow-left</button>
+        <span id="span-border" ref="spanBorder"></span>
         <filter-header for="ul"></filter-header>
     </div>
     <ul ref="container" role="menu" tabindex="0" class="narrow-scrollbar"></ul>

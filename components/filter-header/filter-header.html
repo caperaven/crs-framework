@@ -4,6 +4,7 @@
         display: flex;
         flex-direction: row;
         width: 100%;
+        height: 2.5rem;
         align-items: center;
         border-bottom: var(--border);
     }
@@ -40,7 +41,17 @@
     }
 
     #btnClose {
-        display: var(--close-display);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: transparent;
+        border: none;
+    }
+
+    .span-border {
+        width: 0.0625rem;
+        height: 1.875rem;
+        background: var(--grey-s2);
     }
 </style>
 
@@ -55,5 +66,6 @@
 
 <svg class="filter-icon"><use href="#filter"></use></svg>
 <input id="input-filter" placeholder="Type here to filter" keyup.call="filter"/>
+<span class="span-border"></span>
 <button id="btnClose" aria-label="close" click.call="close"><svg><use href="#close"></use></svg></button>
 

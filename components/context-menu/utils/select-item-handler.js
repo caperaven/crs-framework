@@ -88,3 +88,4 @@ async function assertViewportBoundary(li) {
     //Checks if the available space is less than the width of the submenu/ul
     ul.dataset.atViewportEdge = window.innerWidth - left < width;
 }
+
