@@ -30,7 +30,7 @@ export default class DrawPolyBase {
 
     #clickHandler = this.#click.bind(this);
 
-
+    #originalColor = null;
 
     get shapeKey() {
         throw new Error("Not implemented");
@@ -56,11 +56,23 @@ export default class DrawPolyBase {
             this.#disableNewPoints = true; // If we have a shape we don't want to add new points.
             await this.#drawHandles(shape);
             await this.#addSubDivisionMarkers();
+            this.#originalColor = shape.options.color;
             this.#shape = shape;
+            this.#shape.setStyle({color: this.#instance.map.selectionColor});
+        }
+        else {
+            this.#originalColor = this.#instance.map.color;
         }
     }
 
     async dispose() {
+
+        if (this.#shape != null) {
+            this.#shape.setStyle({color: this.#originalColor});
+            this.#shape.options.color = this.#originalColor;
+            this.#shape = null;
+        }
+
         this.#instance.map.off("click", this.#clickHandler);
         this.#instance = null;
 
@@ -118,28 +130,35 @@ export default class DrawPolyBase {
 
         this.#subDivisionLinePoints = [this.#points[event.target.options.index].coordinates, this.#subDivisionPoints[event.target.options.index].coordinates , lastPoint];
 
-        this.#subDivisionLine = await crs.call("interactive_map", "add_polyline", {
-            element: this.#instance,
-            coordinates: this.#subDivisionLinePoints,
-            dash_array: '5'
-        });
+
+        const element = event.target.getElement();
+        element.firstChild.dataset.type = "draghandle";
+
+
+        const index = event.target.options.index;
+        const dragPointIndex = index + 1;
+        await this.#addPoint(dragPointIndex, event.target.getLatLng(), null);
     }
 
     async #subPointDrag(event) {
-        if( this.#subDivisionLine == null)  return;
+        const index = event.target.options.index + 1;
+        this.#points[index].coordinates = [event.latlng.lat, event.latlng.lng];
 
-        this.#subDivisionLinePoints[1] = [event.latlng.lat, event.latlng.lng];
-        this.#subDivisionLine.setLatLngs(this.#subDivisionLinePoints);
+        await this.redraw();
     }
 
     async #subPointDragEnd(event) {
-        if (this.#subDivisionLine == null)  return;
+        // if (this.#subDivisionLine == null)  return;
         this.#disableNewPoints = true;
 
-        this.#subDivisionLine.remove();
-        this.#subDivisionLine = null;
+        const index = event.target.options.index +1;
 
-        await this.#convertSubDivisionMarker(event.target);
+        const handle = await this.#createDragHandle(event.target.getLatLng(), index);
+
+        this.#points[index].handle = handle;
+
+        await this.#updateHandleIndexes();
+        await this.#removeSubDivisionMarkers();
         await this.#addSubDivisionMarkers();
     }
 
@@ -149,7 +168,7 @@ export default class DrawPolyBase {
             return;
         }
 
-        await this.#addPoint(event.latlng);
+        await this.#addNewPoint(event.latlng);
     }
 
     async redraw() {
@@ -178,10 +197,7 @@ export default class DrawPolyBase {
         handle.on("drag", this.#pointDragHandler);
         handle.on("contextmenu", this.#pointContextMenuHandler);
 
-        this.#points.splice(index, 0, {
-            handle: handle,
-            coordinates: [coordinates.lat, coordinates.lng]
-        });
+        return handle;
     }
 
     async #drawHandles(polygon) {
@@ -194,13 +210,15 @@ export default class DrawPolyBase {
                 await this.#drawHandles(latLng);
                 continue;
             }
-            await this.#createDragHandle(latLng, i);
+            const handle = await this.#createDragHandle(latLng, i);
+            await this.#addPoint(i, latLng, handle);
         }
     }
 
-    async #addPoint(coordinates, index = this.#points.length) {
+    async #addNewPoint(coordinates, index = this.#points.length) {
         await this.#removeSubDivisionMarkers();
-        await this.#createDragHandle(coordinates, index)
+        const handle = await this.#createDragHandle(coordinates, index)
+        await this.#addPoint(index, coordinates, handle);
 
         // If the first point we do nothing
         if (this.#points.length < 2) return;
@@ -210,7 +228,8 @@ export default class DrawPolyBase {
             // If the shape is not yet created we create it.
             this.#shape = await crs.call("interactive_map", `add_${this.shapeKey}`, {
                 coordinates: this.#points.map(_ => _.coordinates),
-                element: this.#instance
+                element: this.#instance,
+                color: this.#instance.map.selectionColor
             });
         } else {
             // If it already exists we just update the coordinates.
@@ -218,6 +237,15 @@ export default class DrawPolyBase {
         }
 
         await this.#addSubDivisionMarkers();
+    }
+
+    async #addPoint(index, coordinates, handle) {
+        const newPoint = {
+            handle: handle,
+            coordinates: [coordinates.lat, coordinates.lng]
+        };
+        this.#points.splice(index, 0, newPoint);
+        return newPoint;
     }
 
     async #removePoint(index) {
@@ -294,11 +322,4 @@ export default class DrawPolyBase {
         });
     }
 
-    async #convertSubDivisionMarker(marker) {
-        const index = marker.options.index;
-        const dragPointIndex = index + 1;
-        await this.#addPoint(marker.getLatLng(), dragPointIndex);
-        await this.#updateHandleIndexes();
-        await this.#removeSubDivisionMarkers();
-    }
 }

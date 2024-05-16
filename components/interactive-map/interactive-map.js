@@ -41,6 +41,8 @@ export class InteractiveMap extends HTMLElement {
 
         if (this.#map == null) return; // If map was never initialized, return
 
+        await crs.call("dom_observer", "unobserve_resize", {element: this});
+
         // Remove all layers
         await crs.call("interactive_map", "clear_layers", { element: this});
 
@@ -68,10 +70,18 @@ export class InteractiveMap extends HTMLElement {
         await crs.call("interactive_map", "set_colors", {
             element: this,
             stroke_color: this.dataset.color,
-            fill_color: this.dataset.fillColor
+            fill_color: this.dataset.fillColor,
+            selection_color: this.dataset.selectionColor
         });
 
         await this.#hookDataManager();
+
+        await crs.call("dom_observer", "observe_resize", {
+            element: this,
+            callback: (value)=> {
+                this.#map.invalidateSize();
+            }
+        })
 
         await crs.call("component", "notify_ready", {element: this});
     }

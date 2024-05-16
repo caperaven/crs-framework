@@ -31,19 +31,15 @@ export class InteractiveMapActions {
         const map = await getMap(step, context, process, item);
         const color = await crs.process.getValue(step.args.color || "#E00000", context, process, item);
         const fillColor = await crs.process.getValue(step.args.fill_color || "#E000004D", context, process, item);
+        const selectionColor = await crs.process.getValue(step.args.selection_color || "#0276C2", context, process, item);
 
-        if (color != null) {
-            map.color = color;
-            if (map.selectedShape != null) {
-                map.selectedShape.setStyle({color: color});
-            }
-        }
+        map.color = color;
+        map.fillColor = fillColor;
+        map.selectionColor = selectionColor;
 
-        if (fillColor != null) {
-            map.fillColor = fillColor;
-            if (map.selectedShape != null) {
-                map.selectedShape.setStyle({fillColor: fillColor});
-            }
+        if (map.selectedShape != null) {
+            map.selectedShape.setStyle({fillColor: fillColor});
+            map.selectedShape.setStyle({color: color});
         }
     }
 
