@@ -17,6 +17,7 @@ export async function createImageMap(container, imageUrl) {
     })
     L.imageOverlay(imageUrl, bounds).addTo(map);
     // TODO determine bounds from image
+    // This code is not yet complete. Its a placeholder for when we add interactive graphics
     const bounds = [[0, 0], [1406, 2300]];
     map.fitBounds(bounds);
     return map;

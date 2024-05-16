@@ -42,25 +42,9 @@
 
 <div class="container">
     <div class="toolbar">
-        <select value.bind="map">
-            <option value="#openstreetmap">Open Street Map</option>
-            <option value="#floorplan">Floorplan</option>
-        </select>
-
-
-        <button click.call="getLayerGeoJson">Get Layer GeoJson</button>
-        <button click.call="setLayerGeoJson">Set Layer GeoJson</button>
+        <button click.call="setLayerGeoJson">Set Random Data</button>
+        <button click.call="getLayerGeoJson">Get GeoJson</button>
         <button click.call="clear">Clear all</button>
-
-        <label>
-            <span>Fill Color</span>
-            <input value.bind="fillColor" type="color">
-        </label>
-
-        <label>
-            <span>Stroke Color</span>
-            <input value.bind="color" type="color">
-        </label>
     </div>
 
     <div class="flex vertical" id="maps-container">

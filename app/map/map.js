@@ -5,13 +5,8 @@ import "../../src/managers/data-manager/data-manager-actions.js";
 
 export default class Map extends crsbinding.classes.ViewBase {
 
-    async preLoad() {
-
-    }
-
     async connectedCallback() {
         await super.connectedCallback();
-
         await crs.call("data_manager", "register", {
             manager: "my_data",
             id_field: "id",
@@ -30,13 +25,12 @@ export default class Map extends crsbinding.classes.ViewBase {
         });
     }
 
-
     async mapReady() {
-
-        await crs.call("interactive_map", "initialize", { element: "#openstreetmap"});
-
-        await crs.call("interactive_map", "show_drawing_tools", {
-            element: "#openstreetmap"
+        requestAnimationFrame(async () => {
+            await crs.call("interactive_map", "initialize", { element: "#openstreetmap"});
+            await crs.call("interactive_map", "show_drawing_tools", {
+                element: "#openstreetmap"
+            });
         });
     }
 
@@ -60,7 +54,6 @@ export default class Map extends crsbinding.classes.ViewBase {
             records: [...polygons, ...points]
         })
     }
-
 
     async generateRandomPolygonsGeoJson(count) {
         // Create a random geojson polygons object for the the provided count
