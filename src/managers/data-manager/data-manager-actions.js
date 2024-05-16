@@ -211,14 +211,28 @@ class DataManagerActions {
         return {total: dataManager.count, selected: dataManager.selectedCount};
     }
 
+    /**
+     * @method request_records - Request records from a data manager. This will trigger the data manager to call its requestCallback
+     * @param step {object} - The step that contains the action to perform
+     * @param context {object} - The context of the process
+     * @param process {object} - The process
+     * @param item {object} - Current item in a process loop
+     *
+     * @param step.args.manager {string} - The name of the data manager. You will use this when performing operations on the data manager.
+     * @param [step.args.events_required] {boolean} - Whether to request records only if there are events. Default is true
+     *
+     * @returns {Promise<void>}
+     */
+
     static async request_records(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
-        const events_required = await crs.process.getValue(step.args.events_required || true, context, process, item);
+        let eventsRequired  = await crs.process.getValue(step.args.events_required ?? true, context, process, item);
+
         if (manager == null) return;
 
         const instance = await globalThis.dataManagers[manager];
 
-        if (events_required && instance.eventCount === 0) {
+        if (eventsRequired && instance.eventCount === 0) {
             return;
         }
 
