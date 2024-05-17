@@ -29,7 +29,6 @@ export default class SelectProvider {
     }
 
     async #onShapeClick(e) {
-        console.log("shape click")
         const shape = e.target;
         const element = e.originalEvent.target;
 
