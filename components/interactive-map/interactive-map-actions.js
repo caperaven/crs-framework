@@ -8,11 +8,13 @@ export class InteractiveMapActions {
             if (globalThis.L == null) {
                 requestAnimationFrame(async () => {
                     const leafletScript = document.createElement('script');
-                    leafletScript.src = "/packages/leaflet/leaflet.js";
+                    const baseUrl = window.location.origin + window.location.pathname.split('/').slice(0, -1).join('/');
+                    leafletScript.src = `${baseUrl}/packages/leaflet/leaflet.js`;
                     leafletScript.onload = async () => {
                         resolve();
                     }
                     document.body.appendChild(leafletScript);
+
                 });
             } else {
                 resolve();
