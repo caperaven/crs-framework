@@ -84,6 +84,7 @@ class DataManagerActions {
         const type = await crs.process.getValue(step.args.type || "idb", context, process, item);
         const records = await crs.process.getValue(step.args.records || [], context, process, item);
         const selectedCount = await crs.process.getValue(step.args.selected_count || 0, context, process, item);
+        const requestCallback = await crs.process.getValue(step.args.request_callback, context, process, item);
 
         if (type === "idb" && globalThis.hasDataManagerDB != true) {
             await import ("./../../../packages/crs-process-api/action-systems/managers/indexdb-manager.js");
@@ -113,6 +114,10 @@ class DataManagerActions {
         if (type !== "perspective") {
             await instance.setRecords(records);
             instance.selectedCount = selectedCount;
+        }
+
+        if (requestCallback != null) {
+            instance.requestCallback = requestCallback;
         }
 
         return globalThis.dataManagers[manager];
@@ -145,6 +150,7 @@ class DataManagerActions {
      */
     static async dispose(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        globalThis.dataManagers[manager].requestCallback = null;
         globalThis.dataManagers[manager].dispose();
         delete globalThis.dataManagers[manager];
     }
@@ -202,7 +208,36 @@ class DataManagerActions {
         if (manager == null) return 0;
 
         const dataManager = globalThis.dataManagers[manager];
-        return { total: dataManager.count, selected: dataManager.selectedCount };
+        return {total: dataManager.count, selected: dataManager.selectedCount};
+    }
+
+    /**
+     * @method request_records - Request records from a data manager. This will trigger the data manager to call its requestCallback
+     * @param step {object} - The step that contains the action to perform
+     * @param context {object} - The context of the process
+     * @param process {object} - The process
+     * @param item {object} - Current item in a process loop
+     *
+     * @param step.args.manager {string} - The name of the data manager. You will use this when performing operations on the data manager.
+     * @param [step.args.events_required] {boolean} - Whether to request records only if there are events. Default is true
+     *
+     * @returns {Promise<void>}
+     */
+
+    static async request_records(step, context, process, item) {
+        const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        let eventsRequired  = await crs.process.getValue(step.args.events_required ?? true, context, process, item);
+
+        if (manager == null) return;
+
+        const instance = await globalThis.dataManagers[manager];
+
+        if (eventsRequired && instance.eventCount === 0) {
+            return;
+        }
+
+        const records = await instance.requestCallback(manager);
+        await crs.call("data_manager", "set_records", {manager, records});
     }
 
     /**
@@ -406,8 +441,7 @@ class DataManagerActions {
 
         if (indexes != null) {
             result = await dataManager.removeIndexes(indexes);
-        }
-        else {
+        } else {
             result = await dataManager.removeIds(ids);
         }
 
@@ -480,8 +514,7 @@ class DataManagerActions {
         let result;
         if (index != null) {
             result = await dataManager.updateIndex(index, changes);
-        }
-        else {
+        } else {
             result = await dataManager.updateId(id, changes);
         }
 
@@ -552,8 +585,7 @@ class DataManagerActions {
 
         if (indexes != null) {
             await dataManager.setSelectedIndexes(indexes, selected);
-        }
-        else {
+        } else {
             await dataManager.setSelectedIds(ids, selected);
         }
 
@@ -604,8 +636,7 @@ class DataManagerActions {
 
         if (indexes != null) {
             await dataManager.toggleSelectedIndexes(indexes);
-        }
-        else {
+        } else {
             await dataManager.toggleSelectedIds(ids);
         }
 
@@ -781,8 +812,7 @@ class DataManagerActions {
             let result;
             if (item.index != null) {
                 result = await dataManager.updateIndex(item.index, item.changes);
-            }
-            else {
+            } else {
                 result = await dataManager.updateId(item.id, item.changes);
             }
 
