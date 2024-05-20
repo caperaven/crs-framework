@@ -1,0 +1,40 @@
+<style>
+    @import "/styles/lib/buttons.css";
+
+    :host {
+        display: flex;
+        background: var(--cl-primary-alt);
+        height: 2.5rem;
+        align-items: center;
+        border-radius: 0.5rem;
+        border: var(--border);
+    }
+
+    button.icon {
+        height: 2rem;
+        width: 2rem;
+        background: none;
+    }
+
+    .separator {
+        width: 1px;
+        height: 2rem;
+        background: var(--grey-s2);
+        margin: 0 var(--half-margin);
+    }
+
+
+
+
+
+    button
+</style>
+
+
+<button class="icon" click.setvalue="mode = 'select'" disabled.if="mode =='select'? true">pointer</button>
+<div class="separator"></div>
+<button class="icon" click.setvalue="mode = 'draw-point'" disabled.if="mode =='draw-point'? true">location-pin</button>
+<button class="icon" click.setvalue="mode = 'draw-polyline'" disabled.if="mode =='draw-polyline'? true">line-shape</button>
+<button class="icon" click.setvalue="mode = 'draw-polygon'" disabled.if="mode =='draw-polygon'? true">polygon</button>
+<div class="separator"></div>
+<button class="icon" click.call="removeSelected">delete</button>

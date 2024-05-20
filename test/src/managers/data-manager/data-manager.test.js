@@ -25,8 +25,12 @@ describe("data manager tests", () => {
             manager: "store",
             id_field: "id",
             type: "memory",
-            records: records
+            request_callback: async (args) => {
+                return records;
+            }
         })
+
+        await crs.call("data_manager", "request_records", { manager: "store",  events_required: false});
 
         await crs.call("data_manager", "on_change", {
             manager: "store",
@@ -144,8 +148,6 @@ describe("data manager tests", () => {
     })
 
     it ("update_batch - indexes", async () => {
-        debugger;
-
         await crs.call("data_manager", "update_batch", {
             manager: "store",
             batch: [
@@ -400,5 +402,23 @@ describe("data manager tests", () => {
         assertEquals(changeArgs[0].changes, "all");
         assertEquals(changeArgs[1].action, "selected");
         assertEquals(changeArgs[1].changes, "none");
+    });
+
+    it("request_records", async () => {
+        // Clear the records
+        await crs.call("data_manager", "set_records", {
+            manager: "store",
+            records: []
+        })
+
+        // Request records
+        await crs.call("data_manager", "request_records", {
+            manager: "store",
+            events_required: true
+        })
+
+        // Check if the records are set
+        const records = await crs.call("data_manager", "get_all", { manager: "store" });
+        assertEquals(records.length, 2);
     });
 })
