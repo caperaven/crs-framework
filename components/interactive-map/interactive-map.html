@@ -1,20 +1,18 @@
-<link rel="stylesheet" href="../../packages/leaflet/leaflet.css">
-
 <style>
-    :host {
+    interactive-map {
         display: block;
         position: relative;
         height: 100%;
         width: 100%;
     }
 
-    #map {
+    interactive-map #map {
         height: 100%;
         width: 100%;
         cursor: default;
     }
 
-    .point {
+    interactive-map .point {
         font-family: crsfrw;
         font-size: 2rem;
         font-weight: 500;
@@ -25,11 +23,11 @@
         min-width: 2rem;
     }
 
-    .point.selected {
+    interactive-map .point.selected {
         color: var(--cl-primary);
     }
 
-    .handle[data-type="draghandle"] {
+    interactive-map .handle[data-type="draghandle"] {
         background: var(--cl-primary-alt);
         border: var(--border);
         height: 1rem;
@@ -39,7 +37,7 @@
         box-sizing: border-box;
     }
 
-    .handle[data-type="subdivide"] {
+    interactive-map .handle[data-type="subdivide"] {
         background: var(--cl-primary-alt);
         border: var(--border);
         height: 0.75rem;
@@ -50,13 +48,13 @@
         box-sizing: border-box;
     }
 
-    .leaflet-control-zoom {
+    interactive-map .leaflet-control-zoom {
         display: flex;
         flex-direction: row-reverse;
     }
 
     /* Make the slotted drawing tools appear at the top right of the map */
-    ::slotted([slot="drawing-tools"]) {
+    interactive-map #drawing-tools {
         margin: var(--margin);
         position: absolute;
         top: 0;
@@ -64,6 +62,10 @@
         z-index: 1000;
     }
 
+    interactive-map [aria-hidden="true"] {
+        display: unset !important;
+    }
+
 </style>
 <div id="map"></div>
-<slot name="drawing-tools"></slot>
+<div id="drawing-tools"></div>

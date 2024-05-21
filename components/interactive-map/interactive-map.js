@@ -22,11 +22,10 @@ export class InteractiveMap extends HTMLElement {
 
     constructor() {
         super();
-        this.attachShadow({mode: "open"});
     }
 
     async connectedCallback() {
-        this.shadowRoot.innerHTML = await fetch(this.html).then(result => result.text());
+        this.innerHTML = await fetch(this.html).then(result => result.text());
     }
 
     async disconnectedCallback() {
@@ -57,7 +56,7 @@ export class InteractiveMap extends HTMLElement {
         await crs.call("component", "notify_loading", {element: this});
         await crs.call("interactive_map", "initialize_lib", {});
 
-        const container = this.shadowRoot.querySelector("#map");
+        const container = this.querySelector("#map");
 
         const provider = this.dataset.provider;
         // Add a tile layer
@@ -141,10 +140,16 @@ export class InteractiveMap extends HTMLElement {
 
     async #refresh(args) {
         await crs.call("interactive_map", "clear_layers", {element: this});
-        const data = await crs.call("data_manager", "get_all", {manager: this.dataset.manager});
+        let data = await crs.call("data_manager", "get_all", {manager: this.dataset.manager});
 
         if (data?.length > 0) {
             // For now we are assuming geo data here. We will need to add support for other types of data in future
+            if(this.dataset.geoDataPath != null) {
+                data = data.map(record => {
+                    return record[this.dataset.geoDataPath];
+                });
+            }
+
             await crs.call("interactive_map", "add_geo_json", {
                 element: this,
                 layer: "default",
