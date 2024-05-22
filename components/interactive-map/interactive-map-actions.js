@@ -13,6 +13,11 @@ export class InteractiveMapActions {
                     leafletScript.onload = async () => {
                         resolve();
                     }
+
+                    const leafletCss = document.createElement('link');
+                    leafletCss.rel = 'stylesheet';
+                    leafletCss.href = `${baseUrl}/packages/leaflet/leaflet.css`;
+                    document.head.appendChild(leafletCss);
                     document.body.appendChild(leafletScript);
 
                 });
@@ -181,9 +186,8 @@ export class InteractiveMapActions {
         await import("./interactive-map-draw-toolbar/interactive-map-draw-toolbar.js");
 
         const toolbar = document.createElement("interactive-map-draw-toolbar");
-        toolbar.slot = "drawing-tools";
 
-        instance.appendChild(toolbar);
+        instance.querySelector("#drawing-tools").appendChild(toolbar);
 
         await toolbar.setInstance(instance);
     }
