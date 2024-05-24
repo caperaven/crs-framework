@@ -8,7 +8,8 @@
 <button class="icon" click.call="removeMeasurement">delete</button>
 
 <h2 id="runtime-header">Run-Time Visualization</h2>
-<div class="run-tab">
-    <sla-visualization id="runtime" data-phase="runtime"></sla-visualization>
-</div>
 <button id="start-runtime" click.call="initializeRuntime">Initialize</button>
+
+<div class="run-tab">
+    <sla-visualization id="runtime" data-phase="runtime" data-manager="my_sla"></sla-visualization>
+</div>

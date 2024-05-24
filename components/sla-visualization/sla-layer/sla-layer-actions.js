@@ -36,13 +36,13 @@ export class SlaLayerActions{
             element.shadowRoot.textContent = sla.code;
             element.style.gridArea = `sla_${sla.id}`
             element.dataset.parentPhase = parentPhase; // refactor for phase
-            parentElement.shadowRoot.appendChild(element);
+            parentElement.appendChild(element);
 
             await createSlaGrid(element, sla, slaData.statuses);
             // in the sla data, based on the workOrder.statusDescription, call function:
             // showCurrentWorkOrderStatus(workOrder.statusDescription, element);
-            await showCurrentWorkOrderStatus(slaData.workOrder.statusDescription, parentElement);
-            element.dataset.activeRow = parentElement.shadowRoot.querySelector(".active-status-row").dataset.status;
+            await showCurrentStatus(slaData.currentStatus, parentElement);
+            element.dataset.activeRow = parentElement.querySelector(".active-status-row").dataset.status;
 
             // Added to wait for the measurements to be created before creating the headers.
             // Timing issues occur when the headers are created before the measurements are created.
@@ -268,23 +268,23 @@ async function createSlaHeader(slaLayerElement, slaItemData) {
 
 /**
  * @method showCurrentWorkOrderStatus - Shows the current work order status and applies the correct styles on the sla grid visualization.
- * @param statusDescription {String} - The status description
+ * @param currentStatus {String} - The status description
  * @param parentElement {HTMLElement} - The parent element
  */
 
-async function showCurrentWorkOrderStatus(statusDescription, parentElement) {
+async function showCurrentStatus(currentStatus, parentElement) {
     // apply the class "active-status-label" to the status label that matches the status description
-    const statusLabels = parentElement.shadowRoot.querySelectorAll(".status-label");
+    const statusLabels = parentElement.querySelectorAll(".status-label");
     for (const statusLabel of statusLabels) {
-        if (statusLabel.textContent === statusDescription) {
+        if (statusLabel.textContent === currentStatus) {
             statusLabel.classList.add("active-status-label");
         }
     }
 
     // apply the class "active-status-row" to the row that matches the status description key.
-    const statusRows = parentElement.shadowRoot.querySelectorAll(".status-row");
+    const statusRows = parentElement.querySelectorAll(".status-row");
     for (const statusRow of statusRows) {
-        if (statusRow.dataset.id === statusDescription) {
+        if (statusRow.dataset.id === currentStatus) {
             statusRow.classList.add("active-status-row");
         }
     }

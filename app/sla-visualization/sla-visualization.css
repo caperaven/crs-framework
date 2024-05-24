@@ -5,11 +5,11 @@ h2#setup-header, h2#runtime-header {
 .run-tab, .setup-tab {
     height: 600px;
     width: 800px;
-    border: var(--border);
 }
 
 button#start-setup, button#start-runtime {
-    margin-top: 2rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
 }
 
 button.icon {

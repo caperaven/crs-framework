@@ -265,7 +265,9 @@ async function updateProgressStyles(element, measurementData) {
 
     if (measurementData.progress > 100) {
         element.classList.add("measurement-overdue-state");
+        element.dataset.state = "overdue";
     } else if (measurementData.progress >= 80 && measurementData.progress <= 99) {
+        element.dataset.state = "warning"
         element.classList.add("measurement-warning-state");
     }
 }
@@ -304,7 +306,12 @@ async function updateStatus(element, measurementData) {
         if (element.dataset.activeRow < measurementData.start_status || element.dataset.activeRow > measurementData.end_status) {
             element.dataset.state = "inactive";
         }
+        else {
+            element.dataset.state = "active";
+        }
     }
+
+    await updateProgressStyles(element, measurementData);
 }
 
 

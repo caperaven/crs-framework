@@ -12,16 +12,16 @@ import "../../packages/crs-process-api/action-systems/css-grid-actions.js";
  * @param slaVisualization {HTMLElement} element that is the sla visualization component
  * @return {Promise<void>}
  */
-export async function create_sla_grid(data, slaVisualization) {
-    const element = slaVisualization
+export async function create_sla_grid(data,slaGridContainer, slaVisualization) {
+    const element = slaGridContainer
     const slaVisualizationPhase = element.dataset.phase; // refactor for phase
-    element.shadowRoot.querySelector("#measurement-name").style.opacity = 1;
+    slaVisualization.shadowRoot.querySelector("#measurement-name").style.opacity = 1;
 
     createInitialGrid(element);
 
     // Generate the grid template array
     element.style.gridTemplate = generateGridTemplateArray(data.statuses, data.sla, slaVisualizationPhase).join('\n'); // refactor for phase
-    element.dataset.workOrderStatus = data.workOrder.statusDescription;
+    // element.dataset.workOrderStatus = data.workOrder.currentStatus; // Remove or num chucks
 
     createStatusLabels(element, data.statuses);
     createRowElements(element, data.statuses);
@@ -54,7 +54,7 @@ function createStatusLabels(element, statuses) {
 
     const statusBackground = document.createElement("div");
     statusBackground.classList.add("status-background");
-    element.shadowRoot.appendChild(statusBackground);
+    element.appendChild(statusBackground);
 
     const statusHeader = document.createElement("span");
     statusHeader.classList.add("status-description");
@@ -70,7 +70,7 @@ function createStatusLabels(element, statuses) {
         statusLabel.classList.add("status-label");
         statusLabel.style.gridArea = `status_${status.id}`;
         statusLabel.textContent = status.name;
-        element.shadowRoot.appendChild(statusLabel);
+        element.appendChild(statusLabel);
     }
 }
 
@@ -89,7 +89,7 @@ function createRowElements(element, statuses) {
         div.dataset.id = status.name;
         div.style.gridRow = index;
         div.classList.add("status-row");
-        element.shadowRoot.appendChild(div);
+        element.appendChild(div);
         if (index === statuses.length) {
             div.classList.add("sla-footer-border");
         }
@@ -116,7 +116,7 @@ function createSlaLayers(element, slaCollection) {
         slaLayer.classList.add("sla-layer");
         slaLayer.style.gridArea = `sla_${sla.id}`;
 
-        element.shadowRoot.appendChild(slaLayer);
+        element.appendChild(slaLayer);
     }
 }
 

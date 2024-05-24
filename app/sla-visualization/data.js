@@ -5,7 +5,7 @@
  */
 
 const data1 = {
-    "workOrder": {"statusDescription": "Approved"},
+    "currentStatus":"Approved",
     "statuses": [
         {
             "id": 1,
@@ -221,7 +221,7 @@ const data1 = {
 }
 
 const data2 = {
-    "workOrder": {"statusDescription": "Cancelled"},
+    "currentStatus": "Cancelled",
     "statuses": [
         {
             "id": 1,
@@ -369,7 +369,7 @@ const data2 = {
 }
 
 const data3 = {
-    "workOrder": {"statusDescription": "Status 7"},
+    "currentStatus": "Status 7",
     "statuses": generateStatuses(20),
     "sla": generateSLAs(25)
 };

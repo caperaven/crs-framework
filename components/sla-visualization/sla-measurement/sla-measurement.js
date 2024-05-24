@@ -73,6 +73,13 @@ class SlaMeasurement extends crsbinding.classes.BindableElement {
                 element: event.composedPath()[0],
                 measurementParent: parentElement
             });
+
+            // console.log("Element: ", element);
+            const selectedElements = parentElement.shadowRoot.querySelectorAll("sla-measurement[data-selected='true']")
+            const selectedIds = Array.from(selectedElements).map(element => element.id);
+            this.shadowRoot.dispatchEvent(new CustomEvent("measurement-selected", {detail: {selected: selectedIds}, bubbles: true,
+                composed: true}));
+            // await crs.call("data_manager", "set_selected", {manager: this.dataset.manager, ids: [selectedElements]});
         }
 
     }

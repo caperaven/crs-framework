@@ -1,12 +1,12 @@
 import "./sla-visualization.js";
 import "./sla-layer/sla-layer-actions.js";
-import {create_sla_grid} from "./sla-grid-utils.js"
 
 /**
  * class SlaMeasurementActions - A class that contains methods for the sla-measurement component
  */
 
 export class SlaVisualizationActions {
+
 
     static async perform(step, context, process, item) {
         await this[step.action](step, context, process, item);
@@ -30,15 +30,17 @@ export class SlaVisualizationActions {
      * 3. create sla layer and set it's area to the relevant sla area
      */
     static async initialize(step, context, process, item) {
-        const data = await crs.process.getValue(step.args.data, context, process, item);
-        const parentPhase = await crs.process.getValue(step.args.phase, context, process, item); // refactor for phase
+        const statuses = await crs.process.getValue(step.args.statuses, context, process, item);
+        const currentStatus = await crs.process.getValue(step.args.currentStatus, context, process, item);
         const element = await crs.dom.get_element(step.args.element, context, process, item);
 
-        await create_sla_grid(data, element);
-        await crs.call("sla_layer", "create_all_sla", { parent: element, data: data , parentPhase: parentPhase}); // refactor for phase
-        await crs.call("component", "notify_ready", { element: element });
+        await element.initialize(statuses, currentStatus);
     }
 
+    static async render(step, context, process, item) {
+        const element = await crs.dom.get_element(step.args.element, context, process, item);
+        await element.render();
+    }
 }
 
 crs.intent.sla_visualization = SlaVisualizationActions;

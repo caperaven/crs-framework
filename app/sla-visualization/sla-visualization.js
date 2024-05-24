@@ -3,11 +3,38 @@ import "./../../components/sla-visualization/sla-layer/sla-layer-actions.js";
 import "./../../components/sla-visualization/sla-measurement/sla-measurement-actions.js";
 import {data1, data2, data3} from "./data.js";
 import "./../../components/sla-visualization/sla-visualization.js";
+import "../../src/managers/data-manager/data-manager-actions.js";
+
 export default class SlaVisualization extends crsbinding.classes.ViewBase {
 
-    async connectedCallback() {
-        await super.connectedCallback();
+    constructor() {
+        super();
+        globalThis.translations ||= {}
 
+        globalThis.translations.noContent = {
+            title: "No Records Found",
+            message: "Either you do not have sufficient user rights required to display the records or there are no records to be displayed."
+        }
+    }
+
+    async connectedCallback() {
+
+
+        await super.connectedCallback();
+        await crs.call("data_manager", "register", {
+            manager: "my_sla",
+            id_field: "id",
+            type: "memory",
+            request_callback: async () => {
+                return data1.sla
+            }
+        });
+
+        await crs.call("sla_visualization", "initialize", {
+            element: document.querySelector("sla-visualization#runtime"),
+            statuses: data1.statuses,
+            currentStatus: data1.currentStatus,
+        })
     }
 
     async disconnectedCallback() {
@@ -16,18 +43,14 @@ export default class SlaVisualization extends crsbinding.classes.ViewBase {
 
     async initializeRuntime() {
         const slaVisualization = document.querySelector("sla-visualization#runtime");
-        await crs.call("sla_visualization", "initialize", {
-            element: slaVisualization,
-            phase : slaVisualization.dataset.phase,
-            data: data1
-        })
+        slaVisualization.enable();
+
     }
 
     async initializeSetup() {
         const slaVisualization = document.querySelector("sla-visualization#setup");
         await crs.call("sla_visualization", "initialize", {
             element: slaVisualization,
-            phase : slaVisualization.dataset.phase,
             data: data2
         })
     }
