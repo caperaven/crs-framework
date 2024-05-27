@@ -28,9 +28,6 @@ export default class Map extends crsbinding.classes.ViewBase {
     async mapReady() {
         requestAnimationFrame(async () => {
             await crs.call("interactive_map", "initialize", { element: "#openstreetmap"});
-            await crs.call("interactive_map", "show_drawing_tools", {
-                element: "#openstreetmap"
-            });
         });
     }
 
@@ -47,11 +44,21 @@ export default class Map extends crsbinding.classes.ViewBase {
         const polygons =  await this.generateRandomPolygonsGeoJson(2);
         const points = await this.generateRandomPointsGeoJson(2);
 
+        const shapes = [...polygons, ...points];
+
+        const data = [];
+        for (const shape of shapes) {
+            data.push({
+                id: data.length,
+                geographicLocation: shape
+            });
+        }
+
         await crs.call("data_manager", "set_records", {
             manager: "my_data",
             id_field: "id",
             type: "memory",
-            records: [...polygons, ...points]
+            records: data
         })
     }
 

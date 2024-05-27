@@ -9,6 +9,7 @@ export default class DrawPolyBase {
     #shape = null;
     #subDivisionLine = null;
     #subDivisionLinePoints = [];
+    #originalPoints = null;
 
     #instance = null;
     #points = [];
@@ -53,6 +54,7 @@ export default class DrawPolyBase {
         this.#instance.map.on("click", this.#clickHandler);
 
         if (shape != null) {
+            this.#originalPoints = shape.getLatLngs();
             this.#disableNewPoints = true; // If we have a shape we don't want to add new points.
             await this.#drawHandles(shape);
             await this.#addSubDivisionMarkers();
@@ -66,10 +68,7 @@ export default class DrawPolyBase {
     }
 
     async dispose() {
-
         if (this.#shape != null) {
-            this.#shape.setStyle({color: this.#originalColor});
-            this.#shape.options.color = this.#originalColor;
             this.#shape = null;
         }
 
@@ -85,6 +84,39 @@ export default class DrawPolyBase {
         this.#points = null;
         this.#clickHandler = null;
         this.#pointContextMenuHandler = null;
+        this.#subPointDragStartHandler = null;
+        this.#subPointDragHandler = null;
+        this.#subPointDragEndHandler = null;
+        this.#pointDragStartHandler = null;
+        this.#pointDragHandler = null;
+        this.#pointDragEndHandler = null;
+        this.#pointClickHandler = null;
+    }
+
+    async redraw() {
+        if (this.#shape != null && this.#points.length < this.minPoints) {
+            this.#shape.remove();
+            this.#shape = null;
+            return;
+        }
+        this.#shape.setLatLngs(this.#points.map(_ => _.coordinates));
+    }
+
+    async cancel() {
+        if (this.#shape != null) {
+            if (this.#originalPoints != null) {
+                this.#shape.setLatLngs(this.#originalPoints);
+            }
+            else {
+                this.#shape.remove();
+            }
+        }
+    }
+
+    async accept() {
+        if (this.#shape != null) {
+            this.#shape.setStyle({color: this.#originalColor});
+        }
     }
 
     async #pointClick(event) {
@@ -169,15 +201,6 @@ export default class DrawPolyBase {
         }
 
         await this.#addNewPoint(event.latlng);
-    }
-
-    async redraw() {
-        if (this.#shape != null && this.#points.length < this.minPoints) {
-            this.#shape.remove();
-            this.#shape = null;
-            return;
-        }
-        this.#shape.setLatLngs(this.#points.map(_ => _.coordinates));
     }
 
     async #createDragHandle(coordinates, index) {

@@ -33,6 +33,23 @@ export class InteractiveMapDrawToolbar extends crsbinding.classes.BindableElemen
             element: this.#instance
         });
     }
+
+    async discard() {
+        if(this.#instance == null) return;
+        await crs.call("interactive_map", "cancel_polygon", {
+            element: this.#instance
+        });
+        this.setProperty("mode", null);
+    }
+
+    async accept() {
+        if(this.#instance == null) return;
+        await crs.call("interactive_map", "accept_polygon", {
+            element: this.#instance
+        });
+        this.setProperty("mode", null);
+
+    }
 }
 
 customElements.define("interactive-map-draw-toolbar", InteractiveMapDrawToolbar);

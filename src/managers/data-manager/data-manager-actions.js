@@ -232,7 +232,7 @@ class DataManagerActions {
 
         const instance = await globalThis.dataManagers[manager];
 
-        if (eventsRequired && instance.eventCount === 0) {
+        if (eventsRequired && instance.eventCount === 0 || instance.requestCallback == null) {
             return;
         }
 

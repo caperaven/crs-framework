@@ -29,7 +29,7 @@ export class InteractiveMapActions {
 
     static async initialize(step, context, process, item) {
         const instance = await crs.dom.get_element(step, context, process, item);
-        const defaultLayer = await crs.process.getValue(step.args.default_layer, context, process, item);
+        const defaultLayer = await crs.process.getValue(step.args.default_layer || "default", context, process, item);
         await instance.initialize();
         instance.defaultLayer = defaultLayer;
     }
@@ -69,55 +69,39 @@ export class InteractiveMapActions {
         await modeClass.initialize(instance);
     }
 
-    static async set_view_to_shape(step, context, process, item) {
+    static async cancel_poly(step, context, process, item) {
         const instance = await crs.dom.get_element(step, context, process, item);
-        const shape = await crs.process.getValue(step.args.shape, context, process, item);
+
+        if (instance.currentMode != null) {
+            await instance.currentMode.cancel();
+            await crs.call("interactive_map", "set_mode", {element: instance, mode: "none"});
+        }
+    }
+
+    static async accept_poly(step, context, process, item) {
+        const instance = await crs.dom.get_element(step, context, process, item);
+
+        if (instance.currentMode != null) {
+            await instance.currentMode.accept();
+            await crs.call("interactive_map", "set_mode", {element: instance, mode: "none"});
+        }
+    }
+
+    static async fit_bounds(step, context, process, item) {
+        const instance = await crs.dom.get_element(step, context, process, item);
+        const layer = await crs.process.getValue(step.args.layer, context, process, item);
+        const padding = await crs.process.getValue(step.args.padding || [30, 30], context, process, item);
         const map = instance.map;
 
-        if (shape != null) {
-            map.fitBounds(shape.getBounds());
+        if (padding != null) {
+            map.fitBounds(layer.getBounds(), { padding: padding });
         }
     }
 
     static async add_geo_json(step, context, process, item) {
-        const instance = await crs.dom.get_element(step, context, process, item);
-        const map = instance.map;
         const data = await crs.process.getValue(step.args.data, context, process, item);
-        const moveTo = await crs.process.getValue(step.args.move_to || true, context, process, item);
-        const replace = await crs.process.getValue(step.args.replace || false, context, process, item);
-        const options = await crs.process.getValue(step.args.options || {}, context, process, item);
-        const layerName = await crs.process.getValue(step.args.layer || instance.defaultLayer, context, process, item);
-
-        if (replace) {
-            await crs.call("interactive_map", "remove_layer_if_exists", {layer: layerName, element: instance});
-        }
-
-        options.pointToLayer = (feature, latlng) => {
-            return createDefaultPoint("location-pin", [latlng.lat, latlng.lng], options);
-        }
-        options.style = (feature) => {
-            const style = feature.properties?.style || {};
-
-            if (style.fillColor == null) {
-                style.fillColor = map.fillColor;
-            }
-
-            if (style.color == null) {
-                style.color = map.color;
-            }
-
-            return style;
-        }
-
-        const geoJson = L.geoJSON(data, {...options,}).addTo(map);
-
-        if (moveTo) {
-            await crs.call("interactive_map", "set_view_to_shape", {element: instance, shape: geoJson});
-        }
-
-        geoJson.layer_name = layerName;
-        geoJson.type = "geojson";
-
+        const layer = await crs.process.getValue(step.args.layer, context, process, item);
+        const geoJson = layer.addData(data);
         return geoJson;
     }
 
@@ -146,7 +130,6 @@ export class InteractiveMapActions {
         const map = instance.map;
         const shape = await crs.process.getValue(step.args.shape || "polyline", context, process, item);
         const coordinates = await crs.process.getValue(step.args.coordinates, context, process, item);
-        const layerName = await crs.process.getValue(step.args.layer || instance.defaultLayer, context, process, item);
         const dashArray = await crs.process.getValue(step.args.dash_array, context, process, item);
         const colors = await getColorData(step, context, process, item, map);
 
@@ -156,9 +139,8 @@ export class InteractiveMapActions {
             options.dashArray = dashArray;
         }
 
-        const polygon = L[shape](coordinates, options).addTo(map);
+        const polygon = L[shape](coordinates, options).addTo(instance.activeLayer);
         polygon.type = shape;
-        polygon.layer_name = layerName;
         return polygon;
     }
 
@@ -199,11 +181,22 @@ export class InteractiveMapActions {
         if (map == null) return;
 
         map.eachLayer(layer => {
-            if (layer.type != null) {
-                map.removeLayer(layer);
-            }
+            map.removeLayer(layer);
         });
     }
+
+    static async clear_layer(step, context, process, item) {
+        const instance = await crs.dom.get_element(step, context, process, item);
+        const map = instance.map;
+        const layer = await crs.process.getValue(step.args.layer, context, process, item);
+
+        if (map == null) return;
+
+        layer.eachLayer(child => {
+            layer.removeLayer(child);
+        });
+    }
+
 
     static async remove_selected(step, context, process, item) {
         const instance = await crs.dom.get_element(step, context, process, item);
@@ -259,6 +252,21 @@ export class InteractiveMapActions {
         const layer = Object.values(layers).find(layer => layer.layer_name === layerName);
 
         const value = layer.toGeoJSON();
+
+        if (target != null) {
+            await crs.process.setValue(step.args.target, value, context, process, item);
+        }
+
+        return value;
+    }
+
+    static async convert_geo_json_to_array(step, context, process, item) {
+        const geoJson = await crs.process.getValue(step.args.geo_json, context, process, item);
+        const target = await crs.process.getValue(step.args.target, context, process, item);
+
+        const value = geoJson.features.map(feature => {
+            return feature.geometry.coordinates;
+        });
 
         if (target != null) {
             await crs.process.setValue(step.args.target, value, context, process, item);

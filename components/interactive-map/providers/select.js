@@ -4,14 +4,11 @@
 
 export default class SelectProvider {
     #instance;
-    #selectionProvider;
+
     #shapeClickHandler;
     #clickHandler;
     #shapeSelected = false;
 
-    constructor() {
-        this.#selectionProvider = null;
-    }
 
     async initialize(instance) {
         this.#instance = instance;
@@ -24,33 +21,22 @@ export default class SelectProvider {
         }
         await this.#removeEvents();
         this.#instance = null;
-        this.#selectionProvider?.dispose();
-        this.#selectionProvider = null;
     }
 
     async #onShapeClick(e) {
         const shape = e.target;
-        const element = e.originalEvent.target;
 
-        if (shape != null) {
+        const index = shape.options.index || shape.feature.properties.index;
+        if (index != null) {
             this.#shapeSelected = true;
-            if (this.#selectionProvider != null) {
-                this.#selectionProvider.dispose();
-            }
-
-            const provider = await this.#getProvider(shape);
-            this.#selectionProvider = provider;
-            this.#instance.selectedShape = shape;
-
-            await provider.initialize(this.#instance, shape, element);
+            await crs.call("data_manager", "set_selected", { manager: this.#instance.dataset.manager, indexes: [shape.feature.properties.index] });
         }
     }
 
     async #onMapClick(e) {
-        if (this.#shapeSelected === false && this.#selectionProvider != null) {
-            this.#selectionProvider.dispose();
-            this.#selectionProvider = null;
+        if (this.#shapeSelected === false) {
             this.#instance.selectedShape = null;
+            await crs.call("data_manager", "set_selected", { manager: this.#instance.dataset.manager, indexes: [] });
         }
         this.#shapeSelected = false;
     }
@@ -77,26 +63,5 @@ export default class SelectProvider {
 
         this.#clickHandler = null;
         this.#shapeClickHandler = null;
-    }
-
-    async #getProvider(shape) {
-        if (shape instanceof L.Layer) {
-            const type = await this.#getType(shape);
-            const module = await import(`./selection/select-${type}.js`);
-            return new module.default();
-        }
-    }
-
-    async #getType(shape) {
-        // The order of the checks is important as a polygon is also a polyline and a rectangle is also a polygon
-        if (shape instanceof L.Rectangle) {
-            return "rectangle";
-        } else if (shape instanceof L.Polygon) {
-            return "polygon";
-        } else if (shape instanceof L.Polyline) {
-            return "polyline";
-        } else if (shape instanceof L.Marker) {
-            return "point";
-        }
     }
 }
