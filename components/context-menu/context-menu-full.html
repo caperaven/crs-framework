@@ -6,7 +6,6 @@
 
         display: flex;
         justify-content: center;
-        align-items: center;
         position: fixed;
         top: 0;
         left: 0;
@@ -25,17 +24,17 @@
     }
 
     .popup {
-        bottom: 0;
+        position: absolute;
+        bottom: 72px;
         margin: 0;
+        top: 5rem;
         border: var(--border);
         background: var(--grey-surface);
         display: grid;
         grid-template-rows: auto 1fr;
         width: 20rem;
-        height: 20rem;
         border-radius: var(--radius);
         z-index: 1;
-        position: relative;
     }
 
     ul {
@@ -88,6 +87,10 @@
         color: var(--cl-icon);
     }
 
+    li:not(li[data-icon]) {
+        padding-left: var(--margin);
+    }
+
     li[aria-selected="true"]::after {
         content: "check";
         font-family: crsfrw;
@@ -118,7 +121,7 @@
         display: block;
         z-index: 1;
         width: 20rem;
-        height: 25rem;
+        height: max-content;
         border: none;
     }
 
@@ -177,6 +180,14 @@
 
     #span-border.visible {
         display: inline;
+    }
+
+    .max-height {
+        height: max-content;
+    }
+
+    .calc-height {
+        max-height: calc(100% - 72px);
     }
 
 </style>

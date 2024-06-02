@@ -54,8 +54,8 @@ export default class ContextMenu extends crsbinding.classes.ViewBase {
                         },
                         { id: "sub item 2", tags: "sub item 2",  title: "sub item 1", icon: "calendar" },
                         { id: "sub item 3", tags: "sub item 3", title: "sub item 1" },
-                        { id: "item4", title: "Item 4", tags: "item 4" },
-                        { id: "item5", title: "Item 5", tags: "item 5" },
+                        { id: "sub item 4", title: "sub Item 4", tags: "item 4" },
+                        { id: "sub item 5", title: "sub Item 5", tags: "item 5" },
 
                     ]
                 },
@@ -67,7 +67,18 @@ export default class ContextMenu extends crsbinding.classes.ViewBase {
                 { id: "item7", title: "Item 7", tags: "item 7" },
                 { id: "item8", title: "Item 8", tags: "item 8" },
                 { id: "item9", title: "Item 9", tags: "item 9" },
-                { id: "item10", title: "Item 10", tags: "item 10" }
+                { id: "item10", title: "Item 10", tags: "item 10" },
+                { id: "item11", title: "Item 11", tags: "item 11" },
+                { id: "item12", title: "Item 12", tags: "item 12" },
+                { id: "item13", title: "Item 13", tags: "item 13" },
+                { id: "item14", title: "Item 14", tags: "item 14" },
+                { id: "item15", title: "Item 15", tags: "item 15" },
+                { id: "item16", title: "Item 16", tags: "item 16" },
+                { id: "item17", title: "Item 17", tags: "item 17" },
+                { id: "item18", title: "Item 18", tags: "item 18" },
+                { id: "item19", title: "Item 19", tags: "item 19" },
+                { id: "item20", title: "Item 20", tags: "item 20" }
+
             ],
         }, { status: "a" });
 

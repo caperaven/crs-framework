@@ -36,12 +36,16 @@ async function createListItems(parentElement, collection, templates) {
             continue;
         }
 
+        if (option.icon != null) {
+            option.dataset = option.dataset || {}
+            option.dataset.icon = option.icon;
+        }
+
         const li = await crs.call("dom", "create_element", {
             parent: parentElement,
             id: option.id,
             tag_name: "li",
             dataset: {
-                icon: option.icon,
                 ic: option.icon_color || "black",
                 tags: option.tags || "",
                 ...(option.dataset || {})

@@ -6,8 +6,7 @@ export async function handleSelection(li, options, component, filterHeader) {
     }
 
     //if the element does not have an id I want to do the comparison against its title
-    const title = li.getAttribute("aria-label");
-    const option = await findInStructure(options, li.id || title);
+    const option = await findInStructure(options, li.id );
 
     if (option.type != null) {
         // if a step we don't wait for the result as the context menu should close immediately
@@ -16,7 +15,6 @@ export async function handleSelection(li, options, component, filterHeader) {
 
     //what do you do ?
     component.dataset.value = option.id;
-
     component.dispatchEvent(new CustomEvent("change", {detail: option}));
 
     await crs.call("context_menu", "close");
@@ -44,12 +42,12 @@ export async function setFocusState(li) {
     li.focus();
 }
 
-async function findInStructure(collection, property) {
+async function findInStructure(collection, id) {
     for (const item of collection) {
-        if (item.id === property || item.title === property) return item;
+        if (item.id === id || item.id === parseInt(id)) return item;
 
         if (item.children != null) {
-            const childItem = await findInStructure(item.children, property);
+            const childItem = await findInStructure(item.children, id);
             if (childItem != null) {
                 return childItem;
             }
@@ -62,14 +60,19 @@ async function expandAndCollapseSubmenu(li) {
         return toggleExpansionState(li);
     }
 
-    const previousOpenLi = li.parentElement.querySelector(".parent-menu-item[aria-expanded='true']");
+    const openedLiList = li.parentElement.querySelectorAll(".parent-menu-item[aria-expanded='true']");
 
-    if (previousOpenLi != null) {
-        await toggleExpansionState(previousOpenLi);
-    }
-
+    await assertExpandedState(openedLiList, li);
     await toggleExpansionState(li);
     await assertViewportBoundary(li);
+}
+
+async function assertExpandedState(openedLiList, li) {
+    for (const openedLi of openedLiList) {
+        if (openedLi === li) continue;
+
+        await toggleExpansionState(openedLi);
+    }
 }
 
 async function toggleExpansionState(li) {
@@ -84,7 +87,7 @@ async function toggleExpansionState(li) {
 
 async function assertViewportBoundary(li) {
     const ul = li.querySelector(".submenu");
-    const { left, width, height } = ul.getBoundingClientRect();
+    const { left, width, height,top, bottom } = ul.getBoundingClientRect();
 
     // sets the first element in the submenu/ul to be focused when the submenu/ul is opened
     await setFocusState(ul.firstChild);
@@ -92,7 +95,13 @@ async function assertViewportBoundary(li) {
     //Checks if the available space is less than the width of the submenu/ul
     ul.dataset.atViewportEdge = window.innerWidth - left < width;
 
-    //Todo: if this is not true I want to move the container hight up the screen
-    const viewport = window.innerHeight - top > height
+    //Checks if the available space is less than the height of the submenu/ul and repositions the submenu/ul
+    const hasExceededViewportBottomEdge = window.innerHeight - top > height;
+    if (hasExceededViewportBottomEdge === false){
+        const parentUl = ul.parentElement.parentElement;
+        const parentUlBottom = parentUl.getBoundingClientRect().bottom;
+
+        ul.style.top = `${parentUlBottom - bottom}px`;
+    }
 }
 

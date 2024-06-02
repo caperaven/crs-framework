@@ -37,6 +37,8 @@ class ContextMenu extends crsbinding.classes.BindableElement {
                 this.#filterHeader.container = this.container;
 
                 await crs.call("component", "notify_ready", {element: this});
+
+                await this.#asserOverflowIsRequired(this.container, this.popup);
                 resolve();
             })
         });
@@ -82,34 +84,52 @@ class ContextMenu extends crsbinding.classes.BindableElement {
 
         if (!element.matches(".parent-menu-item") && this.btnBack == null) return;
 
-        await this.#setUlContainerOverflow(element);
+        await this.#setOffsetAndOverflow(element);
         await this.#handleButtonState();
     }
 
     /**
-     * @method #setUlContainerOverflow - Sets the overflow property on the ul container based on the content.
+     * @method #setOffsetAndOverflow - Sets the overflow property on the ul container based on the content.
      * @param element- the selected parent li element.
      * @returns {Promise<void>}
      */
-    async #setUlContainerOverflow(element) {
+    async #setOffsetAndOverflow(element) {
         const ul = element.querySelector("ul");
-        const submenuUlRect = ul.getBoundingClientRect();
-        const ulMenuRect = this.container.getBoundingClientRect();
+        const ulElementRect = ul.getBoundingClientRect();
+        const ulContainerRect = this.container.getBoundingClientRect();
 
-        //positions the submenu relative to the container and not the parent li element.
-        const offset = submenuUlRect.top - ulMenuRect.top;
+        const offset = ulElementRect.top - ulContainerRect.top;
         if (offset > 0) {
             ul.style.transform = `translateY(${-offset}px)`;
         }
 
-        //if overflow is required for the sub menu if not remove it
-        const addOverflow = ul.scrollHeight > ul.clientHeight;
-        if (addOverflow === false) {
-            this.container.classList.add("no-overflow");
+        this.container.style.height = `${ulElementRect.height}px`;
+
+        await this.#asserOverflowIsRequired(ul, this.popup);
+    }
+
+    /**
+     * @method #asserOverFlowIsRequired - Asserts if the overflow property is required on the ul container.
+     * @param element - the ul element.
+     * @param container - the parent container of the ul element.
+     * @returns {Promise<void>}
+     */
+    async #asserOverflowIsRequired(element, container) {
+        //calculate the height of the ul container
+        const assertOverflowRequired = element.scrollHeight > element.clientHeight;
+        const assertBottomEdge = container.getBoundingClientRect().bottom - element.getBoundingClientRect().bottom;
+
+        if (assertOverflowRequired === true && assertBottomEdge <= 73) {
+            this.container.classList.remove("no-overflow");
+            container.classList.remove("max-height");
+            container.classList.add("calc-height");
+            this.container.style.height = "";
             return;
         }
 
-        this.container.classList.remove("no-overflow");
+        container.classList.remove("calc-height");
+        this.container.classList.add("no-overflow");
+        container.classList.add("max-height");
     }
 
     /**
@@ -146,7 +166,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
             this.btnBack.classList.remove("visible");
             this.spanBorder.classList.remove("visible");
         }
-        await this.#setUlContainerOverflow(groups[groups.length - 1].parentElement.parentElement);
+        await this.#setOffsetAndOverflow(groups[groups.length - 1].parentElement.parentElement);
     }
 
     setOptions(args) {
