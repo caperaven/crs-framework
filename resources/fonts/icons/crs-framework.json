@@ -1,1891 +1,1897 @@
 {
   "selection": [
     {
-      "order": 493,
+      "order": 1124,
       "name": "add",
       "prevSize": 32,
       "ligatures": "add"
     },
     {
-      "order": 494,
+      "order": 1125,
       "name": "add-above",
       "prevSize": 32,
       "ligatures": "add-above"
     },
     {
-      "order": 495,
+      "order": 1126,
       "name": "add-all",
       "prevSize": 32,
       "ligatures": "add-all"
     },
     {
-      "order": 496,
+      "order": 1127,
       "name": "add-below",
       "prevSize": 32,
       "ligatures": "add-below"
     },
     {
-      "order": 497,
+      "order": 1128,
       "name": "add-circle",
       "prevSize": 32,
       "ligatures": "add-circle"
     },
     {
-      "order": 498,
+      "order": 1129,
       "name": "add-circle-outline",
       "prevSize": 32,
       "ligatures": "add-circle-outline"
     },
     {
-      "order": 499,
+      "order": 1130,
       "name": "add-link",
       "prevSize": 32,
       "ligatures": "add-link"
     },
     {
-      "order": 500,
+      "order": 1131,
       "name": "add-person-outline",
       "prevSize": 32,
       "ligatures": "add-person-outline"
     },
     {
-      "order": 501,
+      "order": 1132,
       "name": "add-square",
       "prevSize": 32,
       "ligatures": "add-square"
     },
     {
-      "order": 502,
+      "order": 1133,
       "name": "add-widget",
       "prevSize": 32,
       "ligatures": "add-widget"
     },
     {
-      "order": 503,
+      "order": 1134,
       "name": "alarm",
       "prevSize": 32,
       "ligatures": "alarm"
     },
     {
-      "order": 504,
+      "order": 1135,
       "name": "alarm-add",
       "prevSize": 32,
       "ligatures": "alarm-add"
     },
     {
-      "order": 505,
+      "order": 1136,
       "name": "alarm-off",
       "prevSize": 32,
       "ligatures": "alarm-off"
     },
     {
-      "order": 506,
+      "order": 1137,
       "name": "alarm-on",
       "prevSize": 32,
       "ligatures": "alarm-on"
     },
     {
-      "order": 507,
+      "order": 1138,
       "name": "all",
       "prevSize": 32,
       "ligatures": "all"
     },
     {
-      "order": 508,
+      "order": 1139,
       "name": "approved",
       "prevSize": 32,
       "ligatures": "approved"
     },
     {
-      "order": 509,
+      "order": 1140,
       "name": "arrow-alt-down",
       "prevSize": 32,
       "ligatures": "arrow-alt-down"
     },
     {
-      "order": 510,
+      "order": 1141,
       "name": "arrow-alt-up",
       "prevSize": 32,
       "ligatures": "arrow-alt-up"
     },
     {
-      "order": 511,
+      "order": 1142,
       "name": "arrow-down",
       "prevSize": 32,
       "ligatures": "arrow-down"
     },
     {
-      "order": 512,
+      "order": 1143,
       "name": "arrow-drop-up",
       "prevSize": 32,
       "ligatures": "arrow-drop-up"
     },
     {
-      "order": 513,
+      "order": 1144,
       "name": "arrow-left",
       "prevSize": 32,
       "ligatures": "arrow-left"
     },
     {
-      "order": 514,
+      "order": 1145,
       "name": "arrow-right",
       "prevSize": 32,
       "ligatures": "arrow-right"
     },
     {
-      "order": 515,
+      "order": 1146,
       "name": "arrow-up",
       "prevSize": 32,
       "ligatures": "arrow-up"
     },
     {
-      "order": 516,
+      "order": 1147,
       "name": "asset-type",
       "prevSize": 32,
       "ligatures": "asset-type"
     },
     {
-      "order": 517,
+      "order": 1148,
       "name": "attach-file",
       "prevSize": 32,
       "ligatures": "attach-file"
     },
     {
-      "order": 518,
+      "order": 1149,
       "name": "attachment",
       "prevSize": 32,
       "ligatures": "attachment"
     },
     {
-      "order": 519,
+      "order": 1150,
       "name": "audio-file",
       "prevSize": 32,
       "ligatures": "audio-file"
     },
     {
-      "order": 520,
+      "order": 1151,
       "name": "auto-delete",
       "prevSize": 32,
       "ligatures": "auto-delete"
     },
     {
-      "order": 521,
+      "order": 1152,
       "name": "aux-task",
       "prevSize": 32,
       "ligatures": "aux-task"
     },
     {
-      "order": 522,
+      "order": 1153,
       "name": "bar-chart",
       "prevSize": 32,
       "ligatures": "bar-chart"
     },
     {
-      "order": 523,
+      "order": 1154,
       "name": "barcode-scanner",
       "prevSize": 32,
       "ligatures": "barcode-scanner"
     },
     {
-      "order": 524,
+      "order": 1155,
       "name": "below-arrow-left",
       "prevSize": 32,
       "ligatures": "below-arrow-left"
     },
     {
-      "order": 525,
+      "order": 1156,
       "name": "below-arrow-right",
       "prevSize": 32,
       "ligatures": "below-arrow-right"
     },
     {
-      "order": 526,
+      "order": 1157,
       "name": "block",
       "prevSize": 32,
       "ligatures": "block"
     },
     {
-      "order": 527,
+      "order": 1158,
       "name": "browse",
       "prevSize": 32,
       "ligatures": "browse"
     },
     {
-      "order": 528,
+      "order": 1159,
       "name": "bubble-chart",
       "prevSize": 32,
       "ligatures": "bubble-chart"
     },
     {
-      "order": 529,
+      "order": 1160,
       "name": "cached",
       "prevSize": 32,
       "ligatures": "cached"
     },
     {
-      "order": 530,
+      "order": 1161,
       "name": "calculate",
       "prevSize": 32,
       "ligatures": "calculate"
     },
     {
-      "order": 531,
+      "order": 1162,
       "name": "calendar",
       "prevSize": 32,
       "ligatures": "calendar"
     },
     {
-      "order": 532,
+      "order": 1163,
       "name": "check",
       "prevSize": 32,
       "ligatures": "check"
     },
     {
-      "order": 533,
+      "order": 1164,
       "name": "check-box",
       "prevSize": 32,
       "ligatures": "check-box"
     },
     {
-      "order": 534,
+      "order": 1165,
       "name": "check-box-blank",
       "prevSize": 32,
       "ligatures": "check-box-blank"
     },
     {
-      "order": 535,
+      "order": 1166,
       "name": "check-box-close",
       "prevSize": 32,
       "ligatures": "check-box-close"
     },
     {
-      "order": 536,
+      "order": 1167,
       "name": "check-box-mixed",
       "prevSize": 32,
       "ligatures": "check-box-mixed"
     },
     {
-      "order": 537,
+      "order": 1168,
       "name": "check-box-null",
       "prevSize": 32,
       "ligatures": "check-box-null"
     },
     {
-      "order": 538,
+      "order": 1169,
       "name": "check-circle",
       "prevSize": 32,
       "ligatures": "check-circle"
     },
     {
-      "order": 539,
+      "order": 1170,
       "name": "check-circle-outline",
       "prevSize": 32,
       "ligatures": "check-circle-outline"
     },
     {
-      "order": 540,
+      "order": 1171,
       "name": "chevron-circle-down",
       "prevSize": 32,
       "ligatures": "chevron-circle-down"
     },
     {
-      "order": 541,
+      "order": 1172,
       "name": "chevron-circle-up",
       "prevSize": 32,
       "ligatures": "chevron-circle-up"
     },
     {
-      "order": 542,
+      "order": 1173,
       "name": "chevron-down",
       "prevSize": 32,
       "ligatures": "chevron-down"
     },
     {
-      "order": 543,
+      "order": 1174,
       "name": "chevron-left",
       "prevSize": 32,
       "ligatures": "chevron-left"
     },
     {
-      "order": 544,
+      "order": 1175,
       "name": "chevron-right",
       "prevSize": 32,
       "ligatures": "chevron-right"
     },
     {
-      "order": 545,
+      "order": 1176,
       "name": "chevron-up",
       "prevSize": 32,
       "ligatures": "chevron-up"
     },
     {
-      "order": 546,
+      "order": 1177,
       "name": "choc-menu",
       "prevSize": 32,
       "ligatures": "choc-menu"
     },
     {
-      "order": 547,
+      "order": 1178,
       "name": "clear",
       "prevSize": 32,
       "ligatures": "clear"
     },
     {
-      "order": 548,
+      "order": 1179,
       "name": "clock",
       "prevSize": 32,
       "ligatures": "clock"
     },
     {
-      "order": 549,
+      "order": 1180,
       "name": "clock-outline",
       "prevSize": 32,
       "ligatures": "clock-outline"
     },
     {
-      "order": 550,
+      "order": 1181,
       "name": "close",
       "prevSize": 32,
       "ligatures": "close"
     },
     {
-      "order": 551,
+      "order": 1182,
       "name": "close-fullscreen",
       "prevSize": 32,
       "ligatures": "close-fullscreen"
     },
     {
-      "order": 552,
+      "order": 1183,
       "name": "close-fullscreen-alt",
       "prevSize": 32,
       "ligatures": "close-fullscreen-alt"
     },
     {
-      "order": 553,
+      "order": 1184,
       "name": "code",
       "prevSize": 32,
       "ligatures": "code"
     },
     {
-      "order": 554,
+      "order": 1185,
       "name": "colour-picker",
       "prevSize": 32,
       "ligatures": "colour-picker"
     },
     {
-      "order": 555,
+      "order": 1186,
       "name": "columns",
       "prevSize": 32,
       "ligatures": "columns"
     },
     {
-      "order": 556,
+      "order": 1187,
       "name": "compare",
       "prevSize": 32,
       "ligatures": "compare"
     },
     {
-      "order": 557,
+      "order": 1188,
       "name": "component-placeholder",
       "prevSize": 32,
       "ligatures": "component-placeholder"
     },
     {
-      "order": 558,
+      "order": 1189,
       "name": "condition",
       "prevSize": 32,
       "ligatures": "condition"
     },
     {
-      "order": 559,
+      "order": 1190,
       "name": "copy",
       "prevSize": 32,
       "ligatures": "copy"
     },
     {
-      "order": 560,
+      "order": 1191,
       "name": "create",
       "prevSize": 32,
       "ligatures": "create"
     },
     {
-      "order": 561,
+      "order": 1192,
       "name": "create-new-folder",
       "prevSize": 32,
       "ligatures": "create-new-folder"
     },
     {
-      "order": 562,
+      "order": 1193,
       "name": "database",
       "prevSize": 32,
       "ligatures": "database"
     },
     {
-      "order": 563,
+      "order": 1194,
       "name": "data-summary",
       "prevSize": 32,
       "ligatures": "data-summary"
     },
     {
-      "order": 564,
+      "order": 1195,
       "name": "date-and-time",
       "prevSize": 32,
       "ligatures": "date-and-time"
     },
     {
-      "order": 565,
+      "order": 1196,
       "name": "date-range",
       "prevSize": 32,
       "ligatures": "date-range"
     },
     {
-      "order": 566,
+      "order": 1197,
       "name": "default-status",
       "prevSize": 32,
       "ligatures": "default-status"
     },
     {
-      "order": 567,
+      "order": 1198,
       "name": "default-status-outline",
       "prevSize": 32,
       "ligatures": "default-status-outline"
     },
     {
-      "order": 568,
+      "order": 1199,
       "name": "delete",
       "prevSize": 32,
       "ligatures": "delete"
     },
     {
-      "order": 569,
+      "order": 1200,
       "name": "delete-confirmed",
       "prevSize": 32,
       "ligatures": "delete-confirmed"
     },
     {
-      "order": 570,
+      "order": 1201,
       "name": "deleted-awaiting--confirmation",
       "prevSize": 32,
       "ligatures": "deleted-awaiting--confirmation"
     },
     {
-      "order": 571,
+      "order": 1202,
       "name": "deleted-awaiting-confirmation",
       "prevSize": 32,
       "ligatures": "deleted-awaiting-confirmation"
     },
     {
-      "order": 572,
+      "order": 1203,
       "name": "delete-forever",
       "prevSize": 32,
       "ligatures": "delete-forever"
     },
     {
-      "order": 573,
+      "order": 1204,
       "name": "delete-outline",
       "prevSize": 32,
       "ligatures": "delete-outline"
     },
     {
-      "order": 574,
+      "order": 1205,
       "name": "designer",
       "prevSize": 32,
       "ligatures": "designer"
     },
     {
-      "order": 575,
+      "order": 1206,
       "name": "document",
       "prevSize": 32,
       "ligatures": "document"
     },
     {
-      "order": 576,
+      "order": 1207,
       "name": "download",
       "prevSize": 32,
       "ligatures": "download"
     },
     {
-      "order": 577,
+      "order": 1208,
       "name": "download-alt",
       "prevSize": 32,
       "ligatures": "download-alt"
     },
     {
-      "order": 578,
+      "order": 1209,
       "name": "download-done",
       "prevSize": 32,
       "ligatures": "download-done"
     },
     {
-      "order": 579,
+      "order": 1210,
       "name": "drag-hori",
       "prevSize": 32,
       "ligatures": "drag-hori"
     },
     {
-      "order": 580,
+      "order": 1211,
       "name": "drag-hori-alt",
       "prevSize": 32,
       "ligatures": "drag-hori-alt"
     },
     {
-      "order": 581,
+      "order": 1212,
       "name": "drag-vert",
       "prevSize": 32,
       "ligatures": "drag-vert"
     },
     {
-      "order": 582,
+      "order": 1213,
       "name": "drag-vert-alt",
       "prevSize": 32,
       "ligatures": "drag-vert-alt"
     },
     {
-      "order": 583,
+      "order": 1214,
       "name": "edit",
       "prevSize": 32,
       "ligatures": "edit"
     },
     {
-      "order": 584,
+      "order": 1215,
       "name": "ends-with",
       "prevSize": 32,
       "ligatures": "ends-with"
     },
     {
-      "order": 585,
+      "order": 1216,
       "name": "entity-card",
       "prevSize": 32,
       "ligatures": "entity-card"
     },
     {
-      "order": 586,
+      "order": 1217,
       "name": "equal",
       "prevSize": 32,
       "ligatures": "equal"
     },
     {
-      "order": 587,
+      "order": 1218,
       "name": "error",
       "prevSize": 32,
       "ligatures": "error"
     },
     {
-      "order": 588,
+      "order": 1219,
       "name": "error-outline",
       "prevSize": 32,
       "ligatures": "error-outline"
     },
     {
-      "order": 589,
+      "order": 1220,
       "name": "event",
       "prevSize": 32,
       "ligatures": "event"
     },
     {
-      "order": 590,
+      "order": 1221,
       "name": "excel-file",
       "prevSize": 32,
       "ligatures": "excel-file"
     },
     {
-      "order": 591,
+      "order": 1222,
       "name": "expand-window",
       "prevSize": 32,
       "ligatures": "expand-window"
     },
     {
-      "order": 592,
+      "order": 1223,
       "name": "export",
       "prevSize": 32,
       "ligatures": "export"
     },
     {
-      "order": 593,
+      "order": 1224,
       "name": "fetch-data",
       "prevSize": 32,
       "ligatures": "fetch-data"
     },
     {
-      "order": 594,
+      "order": 1225,
       "name": "file",
       "prevSize": 32,
       "ligatures": "file"
     },
     {
-      "order": 595,
+      "order": 1226,
       "name": "filter",
       "prevSize": 32,
       "ligatures": "filter"
     },
     {
-      "order": 596,
+      "order": 1227,
       "name": "filter-outline",
       "prevSize": 32,
       "ligatures": "filter-outline"
     },
     {
-      "order": 597,
+      "order": 1228,
       "name": "first-page",
       "prevSize": 32,
       "ligatures": "first-page"
     },
     {
-      "order": 598,
+      "order": 1229,
       "name": "flip",
       "prevSize": 32,
       "ligatures": "flip"
     },
     {
-      "order": 599,
+      "order": 1230,
       "name": "folder",
       "prevSize": 32,
       "ligatures": "folder"
     },
     {
-      "order": 600,
+      "order": 1231,
       "name": "folder-outline",
       "prevSize": 32,
       "ligatures": "folder-outline"
     },
     {
-      "order": 601,
+      "order": 1232,
       "name": "follow-up-task",
       "prevSize": 32,
       "ligatures": "follow-up-task"
     },
     {
-      "order": 602,
+      "order": 1233,
       "name": "format-align-center",
       "prevSize": 32,
       "ligatures": "format-align-center"
     },
     {
-      "order": 603,
+      "order": 1234,
       "name": "format-align-justify",
       "prevSize": 32,
       "ligatures": "format-align-justify"
     },
     {
-      "order": 604,
+      "order": 1235,
       "name": "format-align-left",
       "prevSize": 32,
       "ligatures": "format-align-left"
     },
     {
-      "order": 605,
+      "order": 1236,
       "name": "format-align-right",
       "prevSize": 32,
       "ligatures": "format-align-right"
     },
     {
-      "order": 606,
+      "order": 1237,
       "name": "format-bold",
       "prevSize": 32,
       "ligatures": "format-bold"
     },
     {
-      "order": 607,
+      "order": 1238,
       "name": "format-italic",
       "prevSize": 32,
       "ligatures": "format-italic"
     },
     {
-      "order": 608,
+      "order": 1239,
       "name": "format-list-bulleted",
       "prevSize": 32,
       "ligatures": "format-list-bulleted"
     },
     {
-      "order": 609,
+      "order": 1240,
       "name": "format-list-numbered-left",
       "prevSize": 32,
       "ligatures": "format-list-numbered-left"
     },
     {
-      "order": 610,
+      "order": 1241,
       "name": "format-list-numbered-right",
       "prevSize": 32,
       "ligatures": "format-list-numbered-right"
     },
     {
-      "order": 611,
+      "order": 1242,
       "name": "format-size",
       "prevSize": 32,
       "ligatures": "format-size"
     },
     {
-      "order": 612,
+      "order": 1243,
       "name": "format-strikethrough",
       "prevSize": 32,
       "ligatures": "format-strikethrough"
     },
     {
-      "order": 613,
+      "order": 1244,
       "name": "format-strikethrough-alt",
       "prevSize": 32,
       "ligatures": "format-strikethrough-alt"
     },
     {
-      "order": 614,
+      "order": 1245,
       "name": "format-underlined",
       "prevSize": 32,
       "ligatures": "format-underlined"
     },
     {
-      "order": 615,
+      "order": 1246,
       "name": "globe-alt",
       "prevSize": 32,
       "ligatures": "globe-alt"
     },
     {
-      "order": 616,
+      "order": 1247,
       "name": "globe-filled",
       "prevSize": 32,
       "ligatures": "globe-filled"
     },
     {
-      "order": 617,
+      "order": 1248,
       "name": "globe-outline",
       "prevSize": 32,
       "ligatures": "globe-outline"
     },
     {
-      "order": 618,
+      "order": 1249,
       "name": "greater-than",
       "prevSize": 32,
       "ligatures": "greater-than"
     },
     {
-      "order": 619,
+      "order": 1250,
       "name": "grid-on",
       "prevSize": 32,
       "ligatures": "grid-on"
     },
     {
-      "order": 620,
+      "order": 1251,
       "name": "group",
       "prevSize": 32,
       "ligatures": "group"
     },
     {
-      "order": 621,
+      "order": 1252,
       "name": "group-add",
       "prevSize": 32,
       "ligatures": "group-add"
     },
     {
-      "order": 622,
+      "order": 1253,
       "name": "grouping",
       "prevSize": 32,
       "ligatures": "grouping"
     },
     {
-      "order": 623,
+      "order": 1254,
       "name": "grouping-alt",
       "prevSize": 32,
       "ligatures": "grouping-alt"
     },
     {
-      "order": 624,
+      "order": 1255,
       "name": "groups",
       "prevSize": 32,
       "ligatures": "groups"
     },
     {
-      "order": 625,
+      "order": 1256,
       "name": "hand-tool",
       "prevSize": 32,
       "ligatures": "hand-tool"
     },
     {
-      "order": 626,
+      "order": 1257,
       "name": "help",
       "prevSize": 32,
       "ligatures": "help"
     },
     {
-      "order": 627,
+      "order": 1258,
       "name": "help-outline",
       "prevSize": 32,
       "ligatures": "help-outline"
     },
     {
-      "order": 628,
+      "order": 1259,
       "name": "home",
       "prevSize": 32,
       "ligatures": "home"
     },
     {
-      "order": 629,
+      "order": 1260,
       "name": "import",
       "prevSize": 32,
       "ligatures": "import"
     },
     {
-      "order": 630,
+      "order": 1261,
       "name": "info",
       "prevSize": 32,
       "ligatures": "info"
     },
     {
-      "order": 631,
+      "order": 1262,
       "name": "info-outline",
       "prevSize": 32,
       "ligatures": "info-outline"
     },
     {
-      "order": 632,
+      "order": 1263,
       "name": "inherited",
       "prevSize": 32,
       "ligatures": "inherited"
     },
     {
-      "order": 633,
+      "order": 1264,
       "name": "inline-editing",
       "prevSize": 32,
       "ligatures": "inline-editing"
     },
     {
-      "order": 634,
+      "order": 1265,
       "name": "inplace-asset-type",
       "prevSize": 32,
       "ligatures": "inplace-asset-type"
     },
     {
-      "order": 635,
+      "order": 1266,
       "name": "insert-chart",
       "prevSize": 32,
       "ligatures": "insert-chart"
     },
     {
-      "order": 636,
+      "order": 1267,
       "name": "insert-chart-outline",
       "prevSize": 32,
       "ligatures": "insert-chart-outline"
     },
     {
-      "order": 637,
+      "order": 1268,
       "name": "insert-link",
       "prevSize": 32,
       "ligatures": "insert-link"
     },
     {
-      "order": 638,
+      "order": 1269,
       "name": "insert-photo",
       "prevSize": 32,
       "ligatures": "insert-photo"
     },
     {
-      "order": 639,
+      "order": 1270,
       "name": "inspect",
       "prevSize": 32,
       "ligatures": "inspect"
     },
     {
-      "order": 640,
+      "order": 1271,
       "name": "json-file",
       "prevSize": 32,
       "ligatures": "json-file"
     },
     {
-      "order": 641,
+      "order": 1272,
       "name": "kabab-horiz",
       "prevSize": 32,
       "ligatures": "kabab-horiz"
     },
     {
-      "order": 642,
+      "order": 1273,
       "name": "kabab-vert",
       "prevSize": 32,
       "ligatures": "kabab-vert"
     },
     {
-      "order": 643,
+      "order": 1274,
       "name": "kanban",
       "prevSize": 32,
       "ligatures": "kanban"
     },
     {
-      "order": 644,
+      "order": 1275,
       "name": "last-page",
       "prevSize": 32,
       "ligatures": "last-page"
     },
     {
-      "order": 645,
+      "order": 1276,
       "name": "launch",
       "prevSize": 32,
       "ligatures": "launch"
     },
     {
-      "order": 646,
+      "order": 1277,
       "name": "launch-alt",
       "prevSize": 32,
       "ligatures": "launch-alt"
     },
     {
-      "order": 647,
+      "order": 1278,
       "name": "layers",
       "prevSize": 32,
       "ligatures": "layers"
     },
     {
-      "order": 648,
+      "order": 1279,
       "name": "leaderboard",
       "prevSize": 32,
       "ligatures": "leaderboard"
     },
     {
-      "order": 649,
+      "order": 1280,
       "name": "less-than",
       "prevSize": 32,
       "ligatures": "less-than"
     },
     {
-      "order": 650,
+      "order": 1281,
       "name": "light-bulb",
       "prevSize": 32,
       "ligatures": "light-bulb"
     },
     {
-      "order": 651,
+      "order": 1282,
       "name": "light-bulb-outline",
       "prevSize": 32,
       "ligatures": "light-bulb-outline"
     },
     {
-      "order": 652,
+      "order": 1283,
       "name": "line-shape",
       "prevSize": 32,
       "ligatures": "line-shape"
     },
     {
-      "order": 653,
+      "order": 1284,
       "name": "line-style",
       "prevSize": 32,
       "ligatures": "line-style"
     },
     {
-      "order": 654,
+      "order": 1285,
       "name": "line-weight",
       "prevSize": 32,
       "ligatures": "line-weight"
     },
     {
-      "order": 655,
+      "order": 1286,
       "name": "link",
       "prevSize": 32,
       "ligatures": "link"
     },
     {
-      "order": 656,
+      "order": 1287,
       "name": "linked-aux-task",
       "prevSize": 32,
       "ligatures": "linked-aux-task"
     },
     {
-      "order": 657,
+      "order": 1288,
       "name": "list",
       "prevSize": 32,
       "ligatures": "list"
     },
     {
-      "order": 658,
+      "order": 1289,
       "name": "loader",
       "prevSize": 32,
       "ligatures": "loader"
     },
     {
-      "order": 659,
+      "order": 1290,
       "name": "locate",
       "prevSize": 32,
       "ligatures": "locate"
     },
     {
-      "order": 660,
+      "order": 1291,
       "name": "location",
       "prevSize": 32,
       "ligatures": "location"
     },
     {
-      "order": 661,
+      "order": 1292,
       "name": "location-pin",
       "prevSize": 32,
       "ligatures": "location-pin"
     },
     {
-      "order": 662,
+      "order": 1293,
+      "name": "location-pin-user",
+      "prevSize": 32,
+      "ligatures": "location-pin-user"
+    },
+    {
+      "order": 1294,
       "name": "lock",
       "prevSize": 32,
       "ligatures": "lock"
     },
     {
-      "order": 663,
+      "order": 1295,
       "name": "lock-open",
       "prevSize": 32,
       "ligatures": "lock-open"
     },
     {
-      "order": 664,
+      "order": 1296,
       "name": "lock-outline",
       "prevSize": 32,
       "ligatures": "lock-outline"
     },
     {
-      "order": 665,
+      "order": 1297,
       "name": "login",
       "prevSize": 32,
       "ligatures": "login"
     },
     {
-      "order": 666,
+      "order": 1298,
       "name": "log-out",
       "prevSize": 32,
       "ligatures": "log-out"
     },
     {
-      "order": 667,
+      "order": 1299,
       "name": "lookup",
       "prevSize": 32,
       "ligatures": "lookup"
     },
     {
-      "order": 668,
+      "order": 1300,
       "name": "lookup-outline",
       "prevSize": 32,
       "ligatures": "lookup-outline"
     },
     {
-      "order": 669,
+      "order": 1301,
       "name": "maintenance-significant-item",
       "prevSize": 32,
       "ligatures": "maintenance-significant-item"
     },
     {
-      "order": 670,
+      "order": 1302,
       "name": "menu",
       "prevSize": 32,
       "ligatures": "menu"
     },
     {
-      "order": 671,
+      "order": 1303,
       "name": "merge",
       "prevSize": 32,
       "ligatures": "merge"
     },
     {
-      "order": 672,
+      "order": 1304,
       "name": "merge-type",
       "prevSize": 32,
       "ligatures": "merge-type"
     },
     {
-      "order": 673,
+      "order": 1305,
       "name": "meter",
       "prevSize": 32,
       "ligatures": "meter"
     },
     {
-      "order": 674,
+      "order": 1306,
       "name": "meters",
       "prevSize": 32,
       "ligatures": "meters"
     },
     {
-      "order": 675,
+      "order": 1307,
       "name": "minimize",
       "prevSize": 32,
       "ligatures": "minimize"
     },
     {
-      "order": 676,
+      "order": 1308,
       "name": "minimize-widget",
       "prevSize": 32,
       "ligatures": "minimize-widget"
     },
     {
-      "order": 677,
+      "order": 1309,
       "name": "minus",
       "prevSize": 32,
       "ligatures": "minus"
     },
     {
-      "order": 678,
+      "order": 1310,
       "name": "minus-circle",
       "prevSize": 32,
       "ligatures": "minus-circle"
     },
     {
-      "order": 679,
+      "order": 1311,
       "name": "minus-circle-outline",
       "prevSize": 32,
       "ligatures": "minus-circle-outline"
     },
     {
-      "order": 680,
+      "order": 1312,
       "name": "modified-awaiting-confirmation",
       "prevSize": 32,
       "ligatures": "modified-awaiting-confirmation"
     },
     {
-      "order": 681,
+      "order": 1313,
       "name": "modified-under-development",
       "prevSize": 32,
       "ligatures": "modified-under-development"
     },
     {
-      "order": 682,
+      "order": 1314,
       "name": "move",
       "prevSize": 32,
       "ligatures": "move"
     },
     {
-      "order": 683,
+      "order": 1315,
       "name": "move-to",
       "prevSize": 32,
       "ligatures": "move-to"
     },
     {
-      "order": 684,
+      "order": 1316,
       "name": "multiline-chart",
       "prevSize": 32,
       "ligatures": "multiline-chart"
     },
     {
-      "order": 685,
+      "order": 1317,
       "name": "navigate",
       "prevSize": 32,
       "ligatures": "navigate"
     },
     {
-      "order": 686,
+      "order": 1318,
       "name": "new-awaiting--confirmation",
       "prevSize": 32,
       "ligatures": "new-awaiting--confirmation"
     },
     {
-      "order": 687,
+      "order": 1319,
       "name": "new-under-development",
       "prevSize": 32,
       "ligatures": "new-under-development"
     },
     {
-      "order": 688,
+      "order": 1320,
       "name": "no-date",
       "prevSize": 32,
       "ligatures": "no-date"
     },
     {
-      "order": 689,
+      "order": 1321,
       "name": "not-equal",
       "prevSize": 32,
       "ligatures": "not-equal"
     },
     {
-      "order": 690,
+      "order": 1322,
       "name": "notifications",
       "prevSize": 32,
       "ligatures": "notifications"
     },
     {
-      "order": 691,
+      "order": 1323,
       "name": "notifications-active",
       "prevSize": 32,
       "ligatures": "notifications-active"
     },
     {
-      "order": 692,
+      "order": 1324,
       "name": "notifications-outline",
       "prevSize": 32,
       "ligatures": "notifications-outline"
     },
     {
-      "order": 693,
+      "order": 1325,
       "name": "notifications-paused",
       "prevSize": 32,
       "ligatures": "notifications-paused"
     },
     {
-      "order": 694,
+      "order": 1326,
       "name": "null",
       "prevSize": 32,
       "ligatures": "null"
     },
     {
-      "order": 695,
+      "order": 1327,
       "name": "open-fullscreen",
       "prevSize": 32,
       "ligatures": "open-fullscreen"
     },
     {
-      "order": 696,
+      "order": 1328,
       "name": "open-fullscreen-alt",
       "prevSize": 32,
       "ligatures": "open-fullscreen-alt"
     },
     {
-      "order": 697,
+      "order": 1329,
       "name": "override-off",
       "prevSize": 32,
       "ligatures": "override-off"
     },
     {
-      "order": 698,
+      "order": 1330,
       "name": "override-on",
       "prevSize": 32,
       "ligatures": "override-on"
     },
     {
-      "order": 699,
+      "order": 1331,
       "name": "paste",
       "prevSize": 32,
       "ligatures": "paste"
     },
     {
-      "order": 700,
+      "order": 1332,
       "name": "pause-circle",
       "prevSize": 32,
       "ligatures": "pause-circle"
     },
     {
-      "order": 701,
+      "order": 1333,
       "name": "pause-circle-outline",
       "prevSize": 32,
       "ligatures": "pause-circle-outline"
     },
     {
-      "order": 702,
+      "order": 1334,
       "name": "pause-square",
       "prevSize": 32,
       "ligatures": "pause-square"
     },
     {
-      "order": 703,
+      "order": 1335,
       "name": "pdf-file",
       "prevSize": 32,
       "ligatures": "pdf-file"
     },
     {
-      "order": 704,
+      "order": 1336,
       "name": "pencil",
       "prevSize": 32,
       "ligatures": "pencil"
     },
     {
-      "order": 705,
+      "order": 1337,
       "name": "pending",
       "prevSize": 32,
       "ligatures": "pending"
     },
     {
-      "order": 706,
+      "order": 1338,
       "name": "pen-tool",
       "prevSize": 32,
       "ligatures": "pen-tool"
     },
     {
-      "order": 707,
+      "order": 1339,
       "name": "person",
       "prevSize": 32,
       "ligatures": "person"
     },
     {
-      "order": 708,
+      "order": 1340,
       "name": "person-add",
       "prevSize": 32,
       "ligatures": "person-add"
     },
     {
-      "order": 709,
+      "order": 1341,
       "name": "perspective-manager",
       "prevSize": 32,
       "ligatures": "perspective-manager"
     },
     {
-      "order": 710,
+      "order": 1342,
       "name": "pie-chart",
       "prevSize": 32,
       "ligatures": "pie-chart"
     },
     {
-      "order": 711,
+      "order": 1343,
       "name": "placeholder-asset-component",
       "prevSize": 32,
       "ligatures": "placeholder-asset-component"
     },
     {
-      "order": 712,
+      "order": 1344,
       "name": "placeholder-asset-empty",
       "prevSize": 32,
       "ligatures": "placeholder-asset-empty"
     },
     {
-      "order": 713,
+      "order": 1345,
       "name": "placeholder-asset-linked",
       "prevSize": 32,
       "ligatures": "placeholder-asset-linked"
     },
     {
-      "order": 714,
+      "order": 1346,
       "name": "placeholder-asset-type-component-empty",
       "prevSize": 32,
       "ligatures": "placeholder-asset-type-component-empty"
     },
     {
-      "order": 715,
+      "order": 1347,
       "name": "placeholder-asset-type-component-linked",
       "prevSize": 32,
       "ligatures": "placeholder-asset-type-component-linked"
     },
     {
-      "order": 716,
+      "order": 1348,
       "name": "plus-multiple",
       "prevSize": 32,
       "ligatures": "plus-multiple"
     },
     {
-      "order": 717,
+      "order": 1349,
       "name": "pointer",
       "prevSize": 32,
       "ligatures": "pointer"
     },
     {
-      "order": 718,
+      "order": 1350,
       "name": "polygon",
       "prevSize": 32,
       "ligatures": "polygon"
     },
     {
-      "order": 719,
+      "order": 1351,
       "name": "preview",
       "prevSize": 32,
       "ligatures": "preview"
     },
     {
-      "order": 720,
+      "order": 1352,
       "name": "properties",
       "prevSize": 32,
       "ligatures": "properties"
     },
     {
-      "order": 721,
+      "order": 1353,
       "name": "publish",
       "prevSize": 32,
       "ligatures": "publish"
     },
     {
-      "order": 722,
+      "order": 1354,
       "name": "push-pin",
       "prevSize": 32,
       "ligatures": "push-pin"
     },
     {
-      "order": 723,
+      "order": 1355,
       "name": "push-pin-side",
       "prevSize": 32,
       "ligatures": "push-pin-side"
     },
     {
-      "order": 724,
+      "order": 1356,
       "name": "qr-code",
       "prevSize": 32,
       "ligatures": "qr-code"
     },
     {
-      "order": 725,
+      "order": 1357,
       "name": "query-builder",
       "prevSize": 32,
       "ligatures": "query-builder"
     },
     {
-      "order": 726,
+      "order": 1358,
       "name": "radio-button-checked",
       "prevSize": 32,
       "ligatures": "radio-button-checked"
     },
     {
-      "order": 727,
+      "order": 1359,
       "name": "radio-button-unchecked",
       "prevSize": 32,
       "ligatures": "radio-button-unchecked"
     },
     {
-      "order": 728,
+      "order": 1360,
       "name": "redo",
       "prevSize": 32,
       "ligatures": "redo"
     },
     {
-      "order": 729,
+      "order": 1361,
       "name": "refresh",
       "prevSize": 32,
       "ligatures": "refresh"
     },
     {
-      "order": 730,
+      "order": 1362,
       "name": "regular-asset-task",
       "prevSize": 32,
       "ligatures": "regular-asset-task"
     },
     {
-      "order": 731,
+      "order": 1363,
       "name": "regular-asset-type-component",
       "prevSize": 32,
       "ligatures": "regular-asset-type-component"
     },
     {
-      "order": 732,
+      "order": 1364,
       "name": "remove-all",
       "prevSize": 32,
       "ligatures": "remove-all"
     },
     {
-      "order": 733,
+      "order": 1365,
       "name": "report",
       "prevSize": 32,
       "ligatures": "report"
     },
     {
-      "order": 734,
+      "order": 1366,
       "name": "required",
       "prevSize": 32,
       "ligatures": "required"
     },
     {
-      "order": 735,
+      "order": 1367,
       "name": "resize-handle",
       "prevSize": 32,
       "ligatures": "resize-handle"
     },
     {
-      "order": 736,
+      "order": 1368,
       "name": "restore",
       "prevSize": 32,
       "ligatures": "restore"
     },
     {
-      "order": 737,
+      "order": 1369,
       "name": "rotate-left",
       "prevSize": 32,
       "ligatures": "rotate-left"
     },
     {
-      "order": 738,
+      "order": 1370,
       "name": "rotate-right",
       "prevSize": 32,
       "ligatures": "rotate-right"
     },
     {
-      "order": 739,
+      "order": 1371,
       "name": "rounded-corner",
       "prevSize": 32,
       "ligatures": "rounded-corner"
     },
     {
-      "order": 740,
+      "order": 1372,
       "name": "save",
       "prevSize": 32,
       "ligatures": "save"
     },
     {
-      "order": 741,
+      "order": 1373,
       "name": "save-all",
       "prevSize": 32,
       "ligatures": "save-all"
     },
     {
-      "order": 742,
+      "order": 1374,
       "name": "save-alt",
       "prevSize": 32,
       "ligatures": "save-alt"
     },
     {
-      "order": 743,
+      "order": 1375,
       "name": "save-new",
       "prevSize": 32,
       "ligatures": "save-new"
     },
     {
-      "order": 744,
+      "order": 1376,
       "name": "save-outline",
       "prevSize": 32,
       "ligatures": "save-outline"
     },
     {
-      "order": 745,
+      "order": 1377,
       "name": "scatter-plot",
       "prevSize": 32,
       "ligatures": "scatter-plot"
     },
     {
-      "order": 746,
+      "order": 1378,
       "name": "schedule",
       "prevSize": 32,
       "ligatures": "schedule"
     },
     {
-      "order": 747,
+      "order": 1379,
       "name": "search",
       "prevSize": 32,
       "ligatures": "search"
     },
     {
-      "order": 748,
+      "order": 1380,
       "name": "set-main-meter",
       "prevSize": 32,
       "ligatures": "set-main-meter"
     },
     {
-      "order": 749,
+      "order": 1381,
       "name": "settings",
       "prevSize": 32,
       "ligatures": "settings"
     },
     {
-      "order": 750,
+      "order": 1382,
       "name": "settings-outline",
       "prevSize": 32,
       "ligatures": "settings-outline"
     },
     {
-      "order": 751,
+      "order": 1383,
       "name": "show-chart",
       "prevSize": 32,
       "ligatures": "show-chart"
     },
     {
-      "order": 752,
+      "order": 1384,
       "name": "sort",
       "prevSize": 32,
       "ligatures": "sort"
     },
     {
-      "order": 753,
+      "order": 1385,
       "name": "sort-ascending",
       "prevSize": 32,
       "ligatures": "sort-ascending"
     },
     {
-      "order": 754,
+      "order": 1386,
       "name": "sort-descending",
       "prevSize": 32,
       "ligatures": "sort-descending"
     },
     {
-      "order": 755,
+      "order": 1387,
       "name": "source",
       "prevSize": 32,
       "ligatures": "source"
     },
     {
-      "order": 756,
+      "order": 1388,
       "name": "spares",
       "prevSize": 32,
       "ligatures": "spares"
     },
     {
-      "order": 757,
+      "order": 1389,
       "name": "split",
       "prevSize": 32,
       "ligatures": "split"
     },
     {
-      "order": 758,
+      "order": 1390,
       "name": "stacked-line-chart",
       "prevSize": 32,
       "ligatures": "stacked-line-chart"
     },
     {
-      "order": 759,
+      "order": 1391,
       "name": "star",
       "prevSize": 32,
       "ligatures": "star"
     },
     {
-      "order": 760,
+      "order": 1392,
       "name": "star-outline",
       "prevSize": 32,
       "ligatures": "star-outline"
     },
     {
-      "order": 761,
+      "order": 1393,
       "name": "starts-with",
       "prevSize": 32,
       "ligatures": "starts-with"
     },
     {
-      "order": 762,
+      "order": 1394,
       "name": "stick",
       "prevSize": 32,
       "ligatures": "stick"
     },
     {
-      "order": 763,
+      "order": 1395,
       "name": "support",
       "prevSize": 32,
       "ligatures": "support"
     },
     {
-      "order": 764,
+      "order": 1396,
       "name": "suppressed-task",
       "prevSize": 32,
       "ligatures": "suppressed-task"
     },
     {
-      "order": 765,
+      "order": 1397,
       "name": "swap-horiz",
       "prevSize": 32,
       "ligatures": "swap-horiz"
     },
     {
-      "order": 766,
+      "order": 1398,
       "name": "swap-horiz-circle",
       "prevSize": 32,
       "ligatures": "swap-horiz-circle"
     },
     {
-      "order": 767,
+      "order": 1399,
       "name": "swap-vert-circle",
       "prevSize": 32,
       "ligatures": "swap-vert-circle"
     },
     {
-      "order": 768,
+      "order": 1400,
       "name": "sync",
       "prevSize": 32,
       "ligatures": "sync"
     },
     {
-      "order": 769,
+      "order": 1401,
       "name": "sync-disabled",
       "prevSize": 32,
       "ligatures": "sync-disabled"
     },
     {
-      "order": 770,
+      "order": 1402,
       "name": "sync-error",
       "prevSize": 32,
       "ligatures": "sync-error"
     },
     {
-      "order": 771,
+      "order": 1403,
       "name": "table-view",
       "prevSize": 32,
       "ligatures": "table-view"
     },
     {
-      "order": 772,
+      "order": 1404,
       "name": "tabs",
       "prevSize": 32,
       "ligatures": "tabs"
     },
     {
-      "order": 773,
+      "order": 1405,
       "name": "task-alt",
       "prevSize": 32,
       "ligatures": "task-alt"
     },
     {
-      "order": 774,
+      "order": 1406,
       "name": "task-inherited-from-standard",
       "prevSize": 32,
       "ligatures": "task-inherited-from-standard"
     },
     {
-      "order": 775,
+      "order": 1407,
       "name": "text-tool",
       "prevSize": 32,
       "ligatures": "text-tool"
     },
     {
-      "order": 776,
+      "order": 1408,
       "name": "timelapse",
       "prevSize": 32,
       "ligatures": "timelapse"
     },
     {
-      "order": 777,
+      "order": 1409,
       "name": "timeline",
       "prevSize": 32,
       "ligatures": "timeline"
     },
     {
-      "order": 778,
+      "order": 1410,
       "name": "today",
       "prevSize": 32,
       "ligatures": "today"
     },
     {
-      "order": 779,
+      "order": 1411,
       "name": "translation-off",
       "prevSize": 32,
       "ligatures": "translation-off"
     },
     {
-      "order": 780,
+      "order": 1412,
       "name": "translation-on",
       "prevSize": 32,
       "ligatures": "translation-on"
     },
     {
-      "order": 781,
+      "order": 1413,
       "name": "tree-view",
       "prevSize": 32,
       "ligatures": "tree-view"
     },
     {
-      "order": 782,
+      "order": 1414,
       "name": "triangle-down",
       "prevSize": 32,
       "ligatures": "triangle-down"
     },
     {
-      "order": 783,
+      "order": 1415,
       "name": "triangle-left",
       "prevSize": 32,
       "ligatures": "triangle-left"
     },
     {
-      "order": 784,
+      "order": 1416,
       "name": "triangle-right",
       "prevSize": 32,
       "ligatures": "triangle-right"
     },
     {
-      "order": 785,
+      "order": 1417,
       "name": "undo",
       "prevSize": 32,
       "ligatures": "undo"
     },
     {
-      "order": 786,
+      "order": 1418,
       "name": "unfold-less",
       "prevSize": 32,
       "ligatures": "unfold-less"
     },
     {
-      "order": 787,
+      "order": 1419,
       "name": "unfold-more",
       "prevSize": 32,
       "ligatures": "unfold-more"
     },
     {
-      "order": 788,
+      "order": 1420,
       "name": "unset-main-meter",
       "prevSize": 32,
       "ligatures": "unset-main-meter"
     },
     {
-      "order": 789,
+      "order": 1421,
       "name": "unstick",
       "prevSize": 32,
       "ligatures": "unstick"
     },
     {
-      "order": 790,
+      "order": 1422,
       "name": "update",
       "prevSize": 32,
       "ligatures": "update"
     },
     {
-      "order": 791,
+      "order": 1423,
       "name": "upload",
       "prevSize": 32,
       "ligatures": "upload"
     },
     {
-      "order": 792,
+      "order": 1424,
       "name": "upload-alt",
       "prevSize": 32,
       "ligatures": "upload-alt"
     },
     {
-      "order": 793,
+      "order": 1425,
       "name": "user-circle",
       "prevSize": 32,
       "ligatures": "user-circle"
     },
     {
-      "order": 794,
+      "order": 1426,
       "name": "user-outline",
       "prevSize": 32,
       "ligatures": "user-outline"
     },
     {
-      "order": 795,
+      "order": 1427,
       "name": "vertical-align-bottom",
       "prevSize": 32,
       "ligatures": "vertical-align-bottom"
     },
     {
-      "order": 796,
+      "order": 1428,
       "name": "vertical-align-center",
       "prevSize": 32,
       "ligatures": "vertical-align-center"
     },
     {
-      "order": 797,
+      "order": 1429,
       "name": "vertical-align-top",
       "prevSize": 32,
       "ligatures": "vertical-align-top"
     },
     {
-      "order": 798,
+      "order": 1430,
       "name": "video-file",
       "prevSize": 32,
       "ligatures": "video-file"
     },
     {
-      "order": 799,
+      "order": 1431,
       "name": "view-quilt",
       "prevSize": 32,
       "ligatures": "view-quilt"
     },
     {
-      "order": 800,
+      "order": 1432,
       "name": "visibility-off",
       "prevSize": 32,
       "ligatures": "visibility-off"
     },
     {
-      "order": 801,
+      "order": 1433,
       "name": "visibility-on",
       "prevSize": 32,
       "ligatures": "visibility-on"
     },
     {
-      "order": 802,
+      "order": 1434,
       "name": "warning",
       "prevSize": 32,
       "ligatures": "warning"
     },
     {
-      "order": 803,
+      "order": 1435,
       "name": "widget",
       "prevSize": 32,
       "ligatures": "widget"
     },
     {
-      "order": 804,
+      "order": 1436,
       "name": "word-file",
       "prevSize": 32,
       "ligatures": "word-file"
     },
     {
-      "order": 805,
+      "order": 1437,
       "name": "wrap-text",
       "prevSize": 32,
       "ligatures": "wrap-text"
     },
     {
-      "order": 806,
+      "order": 1438,
       "name": "zoom-in",
       "prevSize": 32,
       "ligatures": "zoom-in"
     },
     {
-      "order": 807,
+      "order": 1439,
       "name": "zoom-out",
       "prevSize": 32,
       "ligatures": "zoom-out"
@@ -1897,7 +1903,7 @@
       "width": 24,
       "height": 24
     },
-    "iconsHash": 290006607
+    "iconsHash": 759435495
   },
   "height": 1024,
   "prevSize": 32,
@@ -3627,13 +3633,24 @@
     },
     {
       "paths": [
+        "M576 298.667c0-35.413-28.587-64-64-64s-64 28.587-64 64 28.587 64 64 64 64-28.587 64-64zM384 468.907c27.915 41.647 74.799 68.694 128 68.694s100.085-27.047 127.651-68.141l0.349-0.553c-0.64-42.453-85.547-65.707-128-65.707-42.667 0-127.36 23.253-128 65.707z",
+        "M512 85.333c-165.12 0-298.667 137.173-298.667 306.773 0 182.784 188.587 434.773 266.24 530.773 7.695 9.652 19.451 15.783 32.64 15.783s24.945-6.131 32.575-15.699l0.065-0.084c77.227-96 265.813-347.989 265.813-530.773 0-169.557-133.547-306.773-298.667-306.773zM298.667 384c0-117.76 95.573-213.333 213.333-213.333s213.333 95.573 213.333 213.333-95.573 213.333-213.333 213.333-213.333-95.573-213.333-213.333z"
+      ],
+      "grid": 0,
+      "tags": [
+        "location-pin-user"
+      ],
+      "defaultCode": 59817
+    },
+    {
+      "paths": [
         "M768 384h-42.667v-85.333c0-117.76-95.573-213.333-213.333-213.333s-213.333 95.573-213.333 213.333v85.333h-42.667c-46.933 0-85.333 38.4-85.333 85.333v426.667c0 46.933 38.4 85.333 85.333 85.333h512c46.933 0 85.333-38.4 85.333-85.333v-426.667c0-46.933-38.4-85.333-85.333-85.333zM512 768c-46.933 0-85.333-38.4-85.333-85.333s38.4-85.333 85.333-85.333 85.333 38.4 85.333 85.333-38.4 85.333-85.333 85.333zM384 384v-85.333c0-70.827 57.173-128 128-128s128 57.173 128 128v85.333h-256z"
       ],
       "grid": 0,
       "tags": [
         "lock"
       ],
-      "defaultCode": 59817
+      "defaultCode": 59818
     },
     {
       "paths": [
@@ -3643,7 +3660,7 @@
       "tags": [
         "lock-open"
       ],
-      "defaultCode": 59818
+      "defaultCode": 59819
     },
     {
       "paths": [
@@ -3653,7 +3670,7 @@
       "tags": [
         "lock-outline"
       ],
-      "defaultCode": 59819
+      "defaultCode": 59820
     },
     {
       "paths": [
@@ -3663,7 +3680,7 @@
       "tags": [
         "login"
       ],
-      "defaultCode": 59820
+      "defaultCode": 59821
     },
     {
       "paths": [
@@ -3674,7 +3691,7 @@
       "tags": [
         "log-out"
       ],
-      "defaultCode": 59821
+      "defaultCode": 59822
     },
     {
       "paths": [
@@ -3684,7 +3701,7 @@
       "tags": [
         "lookup"
       ],
-      "defaultCode": 59822
+      "defaultCode": 59823
     },
     {
       "paths": [
@@ -3694,7 +3711,7 @@
       "tags": [
         "lookup-outline"
       ],
-      "defaultCode": 59823
+      "defaultCode": 59824
     },
     {
       "paths": [
@@ -3705,7 +3722,7 @@
       "tags": [
         "maintenance-significant-item"
       ],
-      "defaultCode": 59824
+      "defaultCode": 59825
     },
     {
       "paths": [
@@ -3715,7 +3732,7 @@
       "tags": [
         "menu"
       ],
-      "defaultCode": 59825
+      "defaultCode": 59826
     },
     {
       "paths": [
@@ -3725,7 +3742,7 @@
       "tags": [
         "merge"
       ],
-      "defaultCode": 59826
+      "defaultCode": 59827
     },
     {
       "paths": [
@@ -3735,7 +3752,7 @@
       "tags": [
         "merge-type"
       ],
-      "defaultCode": 59827
+      "defaultCode": 59828
     },
     {
       "paths": [
@@ -3745,7 +3762,7 @@
       "tags": [
         "meter"
       ],
-      "defaultCode": 59828
+      "defaultCode": 59829
     },
     {
       "paths": [
@@ -3755,7 +3772,7 @@
       "tags": [
         "meters"
       ],
-      "defaultCode": 59829
+      "defaultCode": 59830
     },
     {
       "paths": [
@@ -3765,7 +3782,7 @@
       "tags": [
         "minimize"
       ],
-      "defaultCode": 59830
+      "defaultCode": 59831
     },
     {
       "paths": [
@@ -3776,7 +3793,7 @@
       "tags": [
         "minimize-widget"
       ],
-      "defaultCode": 59831
+      "defaultCode": 59832
     },
     {
       "paths": [
@@ -3786,7 +3803,7 @@
       "tags": [
         "minus"
       ],
-      "defaultCode": 59832
+      "defaultCode": 59833
     },
     {
       "paths": [
@@ -3796,7 +3813,7 @@
       "tags": [
         "minus-circle"
       ],
-      "defaultCode": 59833
+      "defaultCode": 59834
     },
     {
       "paths": [
@@ -3806,7 +3823,7 @@
       "tags": [
         "minus-circle-outline"
       ],
-      "defaultCode": 59834
+      "defaultCode": 59835
     },
     {
       "paths": [
@@ -3816,7 +3833,7 @@
       "tags": [
         "modified-awaiting-confirmation"
       ],
-      "defaultCode": 59835
+      "defaultCode": 59836
     },
     {
       "paths": [
@@ -3826,7 +3843,7 @@
       "tags": [
         "modified-under-development"
       ],
-      "defaultCode": 59836
+      "defaultCode": 59837
     },
     {
       "paths": [
@@ -3836,7 +3853,7 @@
       "tags": [
         "move"
       ],
-      "defaultCode": 59837
+      "defaultCode": 59838
     },
     {
       "paths": [
@@ -3849,7 +3866,7 @@
       "tags": [
         "move-to"
       ],
-      "defaultCode": 59838
+      "defaultCode": 59839
     },
     {
       "paths": [
@@ -3859,7 +3876,7 @@
       "tags": [
         "multiline-chart"
       ],
-      "defaultCode": 59839
+      "defaultCode": 59840
     },
     {
       "paths": [
@@ -3869,7 +3886,7 @@
       "tags": [
         "navigate"
       ],
-      "defaultCode": 59840
+      "defaultCode": 59841
     },
     {
       "paths": [
@@ -3879,7 +3896,7 @@
       "tags": [
         "new-awaiting -confirmation"
       ],
-      "defaultCode": 59841
+      "defaultCode": 59842
     },
     {
       "paths": [
@@ -3889,7 +3906,7 @@
       "tags": [
         "new-under-development"
       ],
-      "defaultCode": 59842
+      "defaultCode": 59843
     },
     {
       "paths": [
@@ -3900,7 +3917,7 @@
       "tags": [
         "no-date"
       ],
-      "defaultCode": 59843
+      "defaultCode": 59844
     },
     {
       "paths": [
@@ -3911,7 +3928,7 @@
       "tags": [
         "not-equal"
       ],
-      "defaultCode": 59844
+      "defaultCode": 59845
     },
     {
       "paths": [
@@ -3921,7 +3938,7 @@
       "tags": [
         "notifications"
       ],
-      "defaultCode": 59845
+      "defaultCode": 59846
     },
     {
       "paths": [
@@ -3931,7 +3948,7 @@
       "tags": [
         "notifications-active"
       ],
-      "defaultCode": 59846
+      "defaultCode": 59847
     },
     {
       "paths": [
@@ -3941,7 +3958,7 @@
       "tags": [
         "notifications-outline"
       ],
-      "defaultCode": 59847
+      "defaultCode": 59848
     },
     {
       "paths": [
@@ -3951,7 +3968,7 @@
       "tags": [
         "notifications-paused"
       ],
-      "defaultCode": 59848
+      "defaultCode": 59849
     },
     {
       "paths": [
@@ -3961,7 +3978,7 @@
       "tags": [
         "null"
       ],
-      "defaultCode": 59849
+      "defaultCode": 59850
     },
     {
       "paths": [
@@ -3971,7 +3988,7 @@
       "tags": [
         "open-fullscreen"
       ],
-      "defaultCode": 59850
+      "defaultCode": 59851
     },
     {
       "paths": [
@@ -3981,7 +3998,7 @@
       "tags": [
         "open-fullscreen-alt"
       ],
-      "defaultCode": 59851
+      "defaultCode": 59852
     },
     {
       "paths": [
@@ -3992,7 +4009,7 @@
       "tags": [
         "override-off"
       ],
-      "defaultCode": 59852
+      "defaultCode": 59853
     },
     {
       "paths": [
@@ -4004,7 +4021,7 @@
       "tags": [
         "override-on"
       ],
-      "defaultCode": 59853
+      "defaultCode": 59854
     },
     {
       "paths": [
@@ -4014,7 +4031,7 @@
       "tags": [
         "paste"
       ],
-      "defaultCode": 59854
+      "defaultCode": 59855
     },
     {
       "paths": [
@@ -4024,7 +4041,7 @@
       "tags": [
         "pause-circle"
       ],
-      "defaultCode": 59855
+      "defaultCode": 59856
     },
     {
       "paths": [
@@ -4034,7 +4051,7 @@
       "tags": [
         "pause-circle-outline"
       ],
-      "defaultCode": 59856
+      "defaultCode": 59857
     },
     {
       "paths": [
@@ -4044,7 +4061,7 @@
       "tags": [
         "pause-square"
       ],
-      "defaultCode": 59857
+      "defaultCode": 59858
     },
     {
       "paths": [
@@ -4056,7 +4073,7 @@
       "tags": [
         "pdf-file"
       ],
-      "defaultCode": 59858
+      "defaultCode": 59859
     },
     {
       "paths": [
@@ -4066,7 +4083,7 @@
       "tags": [
         "pencil"
       ],
-      "defaultCode": 59859
+      "defaultCode": 59860
     },
     {
       "paths": [
@@ -4076,7 +4093,7 @@
       "tags": [
         "pending"
       ],
-      "defaultCode": 59860
+      "defaultCode": 59861
     },
     {
       "paths": [
@@ -4086,7 +4103,7 @@
       "tags": [
         "pen-tool"
       ],
-      "defaultCode": 59861
+      "defaultCode": 59862
     },
     {
       "paths": [
@@ -4096,7 +4113,7 @@
       "tags": [
         "person"
       ],
-      "defaultCode": 59862
+      "defaultCode": 59863
     },
     {
       "paths": [
@@ -4106,7 +4123,7 @@
       "tags": [
         "person-add"
       ],
-      "defaultCode": 59863
+      "defaultCode": 59864
     },
     {
       "paths": [
@@ -4117,7 +4134,7 @@
       "tags": [
         "perspective-manager"
       ],
-      "defaultCode": 59864
+      "defaultCode": 59865
     },
     {
       "paths": [
@@ -4127,7 +4144,7 @@
       "tags": [
         "pie-chart"
       ],
-      "defaultCode": 59865
+      "defaultCode": 59866
     },
     {
       "paths": [
@@ -4138,7 +4155,7 @@
       "tags": [
         "placeholder-asset-component"
       ],
-      "defaultCode": 59866
+      "defaultCode": 59867
     },
     {
       "paths": [
@@ -4150,7 +4167,7 @@
       "tags": [
         "placeholder-asset-empty"
       ],
-      "defaultCode": 59867
+      "defaultCode": 59868
     },
     {
       "paths": [
@@ -4161,7 +4178,7 @@
       "tags": [
         "placeholder-asset-linked"
       ],
-      "defaultCode": 59868
+      "defaultCode": 59869
     },
     {
       "paths": [
@@ -4173,7 +4190,7 @@
       "tags": [
         "placeholder-asset-type-component-empty"
       ],
-      "defaultCode": 59869
+      "defaultCode": 59870
     },
     {
       "paths": [
@@ -4183,7 +4200,7 @@
       "tags": [
         "placeholder-asset-type-component-linked"
       ],
-      "defaultCode": 59870
+      "defaultCode": 59871
     },
     {
       "paths": [
@@ -4193,7 +4210,7 @@
       "tags": [
         "plus-multiple"
       ],
-      "defaultCode": 59871
+      "defaultCode": 59872
     },
     {
       "paths": [
@@ -4203,7 +4220,7 @@
       "tags": [
         "pointer"
       ],
-      "defaultCode": 59872
+      "defaultCode": 59873
     },
     {
       "paths": [
@@ -4221,7 +4238,7 @@
       "tags": [
         "polygon"
       ],
-      "defaultCode": 59873
+      "defaultCode": 59874
     },
     {
       "paths": [
@@ -4231,7 +4248,7 @@
       "tags": [
         "preview"
       ],
-      "defaultCode": 59874
+      "defaultCode": 59875
     },
     {
       "paths": [
@@ -4241,7 +4258,7 @@
       "tags": [
         "properties"
       ],
-      "defaultCode": 59875
+      "defaultCode": 59876
     },
     {
       "paths": [
@@ -4251,7 +4268,7 @@
       "tags": [
         "publish"
       ],
-      "defaultCode": 59876
+      "defaultCode": 59877
     },
     {
       "paths": [
@@ -4261,7 +4278,7 @@
       "tags": [
         "push-pin"
       ],
-      "defaultCode": 59877
+      "defaultCode": 59878
     },
     {
       "paths": [
@@ -4271,7 +4288,7 @@
       "tags": [
         "push-pin-side"
       ],
-      "defaultCode": 59878
+      "defaultCode": 59879
     },
     {
       "paths": [
@@ -4281,7 +4298,7 @@
       "tags": [
         "qr-code"
       ],
-      "defaultCode": 59879
+      "defaultCode": 59880
     },
     {
       "paths": [
@@ -4291,7 +4308,7 @@
       "tags": [
         "query-builder"
       ],
-      "defaultCode": 59880
+      "defaultCode": 59881
     },
     {
       "paths": [
@@ -4302,7 +4319,7 @@
       "tags": [
         "radio-button-checked"
       ],
-      "defaultCode": 59881
+      "defaultCode": 59882
     },
     {
       "paths": [
@@ -4312,7 +4329,7 @@
       "tags": [
         "radio-button-unchecked"
       ],
-      "defaultCode": 59882
+      "defaultCode": 59883
     },
     {
       "paths": [
@@ -4322,7 +4339,7 @@
       "tags": [
         "redo"
       ],
-      "defaultCode": 59883
+      "defaultCode": 59884
     },
     {
       "paths": [
@@ -4332,7 +4349,7 @@
       "tags": [
         "refresh"
       ],
-      "defaultCode": 59884
+      "defaultCode": 59885
     },
     {
       "paths": [
@@ -4342,7 +4359,7 @@
       "tags": [
         "regular-asset-task"
       ],
-      "defaultCode": 59885
+      "defaultCode": 59886
     },
     {
       "paths": [
@@ -4352,7 +4369,7 @@
       "tags": [
         "regular-asset-type-component"
       ],
-      "defaultCode": 59886
+      "defaultCode": 59887
     },
     {
       "paths": [
@@ -4363,7 +4380,7 @@
       "tags": [
         "remove-all"
       ],
-      "defaultCode": 59887
+      "defaultCode": 59888
     },
     {
       "paths": [
@@ -4373,7 +4390,7 @@
       "tags": [
         "report"
       ],
-      "defaultCode": 59888
+      "defaultCode": 59889
     },
     {
       "paths": [
@@ -4383,7 +4400,7 @@
       "tags": [
         "required"
       ],
-      "defaultCode": 59889
+      "defaultCode": 59890
     },
     {
       "paths": [
@@ -4393,7 +4410,7 @@
       "tags": [
         "resize-handle"
       ],
-      "defaultCode": 59890
+      "defaultCode": 59891
     },
     {
       "paths": [
@@ -4403,7 +4420,7 @@
       "tags": [
         "restore"
       ],
-      "defaultCode": 59891
+      "defaultCode": 59892
     },
     {
       "paths": [
@@ -4413,7 +4430,7 @@
       "tags": [
         "rotate-left"
       ],
-      "defaultCode": 59892
+      "defaultCode": 59893
     },
     {
       "paths": [
@@ -4423,7 +4440,7 @@
       "tags": [
         "rotate-right"
       ],
-      "defaultCode": 59893
+      "defaultCode": 59894
     },
     {
       "paths": [
@@ -4433,7 +4450,7 @@
       "tags": [
         "rounded-corner"
       ],
-      "defaultCode": 59894
+      "defaultCode": 59895
     },
     {
       "paths": [
@@ -4443,7 +4460,7 @@
       "tags": [
         "save"
       ],
-      "defaultCode": 59895
+      "defaultCode": 59896
     },
     {
       "paths": [
@@ -4454,7 +4471,7 @@
       "tags": [
         "save-all"
       ],
-      "defaultCode": 59896
+      "defaultCode": 59897
     },
     {
       "paths": [
@@ -4464,7 +4481,7 @@
       "tags": [
         "save-alt"
       ],
-      "defaultCode": 59897
+      "defaultCode": 59898
     },
     {
       "paths": [
@@ -4474,7 +4491,7 @@
       "tags": [
         "save-new"
       ],
-      "defaultCode": 59898
+      "defaultCode": 59899
     },
     {
       "paths": [
@@ -4484,7 +4501,7 @@
       "tags": [
         "save-outline"
       ],
-      "defaultCode": 59899
+      "defaultCode": 59900
     },
     {
       "paths": [
@@ -4494,7 +4511,7 @@
       "tags": [
         "scatter-plot"
       ],
-      "defaultCode": 59900
+      "defaultCode": 59901
     },
     {
       "paths": [
@@ -4505,7 +4522,7 @@
       "tags": [
         "schedule"
       ],
-      "defaultCode": 59901
+      "defaultCode": 59902
     },
     {
       "paths": [
@@ -4515,7 +4532,7 @@
       "tags": [
         "search"
       ],
-      "defaultCode": 59902
+      "defaultCode": 59903
     },
     {
       "paths": [
@@ -4525,7 +4542,7 @@
       "tags": [
         "set-main-meter"
       ],
-      "defaultCode": 59903
+      "defaultCode": 59904
     },
     {
       "paths": [
@@ -4535,7 +4552,7 @@
       "tags": [
         "settings"
       ],
-      "defaultCode": 59904
+      "defaultCode": 59905
     },
     {
       "paths": [
@@ -4545,7 +4562,7 @@
       "tags": [
         "settings-outline"
       ],
-      "defaultCode": 59905
+      "defaultCode": 59906
     },
     {
       "paths": [
@@ -4555,7 +4572,7 @@
       "tags": [
         "show-chart"
       ],
-      "defaultCode": 59906
+      "defaultCode": 59907
     },
     {
       "paths": [
@@ -4565,7 +4582,7 @@
       "tags": [
         "sort"
       ],
-      "defaultCode": 59907
+      "defaultCode": 59908
     },
     {
       "paths": [
@@ -4575,7 +4592,7 @@
       "tags": [
         "sort-ascending"
       ],
-      "defaultCode": 59908
+      "defaultCode": 59909
     },
     {
       "paths": [
@@ -4585,7 +4602,7 @@
       "tags": [
         "sort-descending"
       ],
-      "defaultCode": 59909
+      "defaultCode": 59910
     },
     {
       "paths": [
@@ -4595,7 +4612,7 @@
       "tags": [
         "source"
       ],
-      "defaultCode": 59910
+      "defaultCode": 59911
     },
     {
       "paths": [
@@ -4606,7 +4623,7 @@
       "tags": [
         "spares"
       ],
-      "defaultCode": 59911
+      "defaultCode": 59912
     },
     {
       "paths": [
@@ -4616,7 +4633,7 @@
       "tags": [
         "split"
       ],
-      "defaultCode": 59912
+      "defaultCode": 59913
     },
     {
       "paths": [
@@ -4626,7 +4643,7 @@
       "tags": [
         "stacked-line-chart"
       ],
-      "defaultCode": 59913
+      "defaultCode": 59914
     },
     {
       "paths": [
@@ -4636,7 +4653,7 @@
       "tags": [
         "star"
       ],
-      "defaultCode": 59914
+      "defaultCode": 59915
     },
     {
       "paths": [
@@ -4646,7 +4663,7 @@
       "tags": [
         "star-outline"
       ],
-      "defaultCode": 59915
+      "defaultCode": 59916
     },
     {
       "paths": [
@@ -4656,7 +4673,7 @@
       "tags": [
         "starts-with"
       ],
-      "defaultCode": 59916
+      "defaultCode": 59917
     },
     {
       "paths": [
@@ -4666,7 +4683,7 @@
       "tags": [
         "stick"
       ],
-      "defaultCode": 59917
+      "defaultCode": 59918
     },
     {
       "paths": [
@@ -4676,7 +4693,7 @@
       "tags": [
         "support"
       ],
-      "defaultCode": 59918
+      "defaultCode": 59919
     },
     {
       "paths": [
@@ -4687,7 +4704,7 @@
       "tags": [
         "suppressed-task"
       ],
-      "defaultCode": 59919
+      "defaultCode": 59920
     },
     {
       "paths": [
@@ -4697,7 +4714,7 @@
       "tags": [
         "swap-horiz"
       ],
-      "defaultCode": 59920
+      "defaultCode": 59921
     },
     {
       "paths": [
@@ -4707,7 +4724,7 @@
       "tags": [
         "swap-horiz-circle"
       ],
-      "defaultCode": 59921
+      "defaultCode": 59922
     },
     {
       "paths": [
@@ -4717,7 +4734,7 @@
       "tags": [
         "swap-vert-circle"
       ],
-      "defaultCode": 59922
+      "defaultCode": 59923
     },
     {
       "paths": [
@@ -4727,7 +4744,7 @@
       "tags": [
         "sync"
       ],
-      "defaultCode": 59923
+      "defaultCode": 59924
     },
     {
       "paths": [
@@ -4737,7 +4754,7 @@
       "tags": [
         "sync-disabled"
       ],
-      "defaultCode": 59924
+      "defaultCode": 59925
     },
     {
       "paths": [
@@ -4747,7 +4764,7 @@
       "tags": [
         "sync-error"
       ],
-      "defaultCode": 59925
+      "defaultCode": 59926
     },
     {
       "paths": [
@@ -4757,7 +4774,7 @@
       "tags": [
         "table-view"
       ],
-      "defaultCode": 59926
+      "defaultCode": 59927
     },
     {
       "paths": [
@@ -4767,7 +4784,7 @@
       "tags": [
         "tabs"
       ],
-      "defaultCode": 59927
+      "defaultCode": 59928
     },
     {
       "paths": [
@@ -4777,7 +4794,7 @@
       "tags": [
         "task-alt"
       ],
-      "defaultCode": 59928
+      "defaultCode": 59929
     },
     {
       "paths": [
@@ -4787,7 +4804,7 @@
       "tags": [
         "task-inherited-from-standard"
       ],
-      "defaultCode": 59929
+      "defaultCode": 59930
     },
     {
       "paths": [
@@ -4797,7 +4814,7 @@
       "tags": [
         "text-tool"
       ],
-      "defaultCode": 59930
+      "defaultCode": 59931
     },
     {
       "paths": [
@@ -4807,7 +4824,7 @@
       "tags": [
         "timelapse"
       ],
-      "defaultCode": 59931
+      "defaultCode": 59932
     },
     {
       "paths": [
@@ -4817,7 +4834,7 @@
       "tags": [
         "timeline"
       ],
-      "defaultCode": 59932
+      "defaultCode": 59933
     },
     {
       "paths": [
@@ -4827,7 +4844,7 @@
       "tags": [
         "today"
       ],
-      "defaultCode": 59933
+      "defaultCode": 59934
     },
     {
       "paths": [
@@ -4839,7 +4856,7 @@
       "tags": [
         "translation-off"
       ],
-      "defaultCode": 59934
+      "defaultCode": 59935
     },
     {
       "paths": [
@@ -4850,7 +4867,7 @@
       "tags": [
         "translation-on"
       ],
-      "defaultCode": 59935
+      "defaultCode": 59936
     },
     {
       "paths": [
@@ -4860,7 +4877,7 @@
       "tags": [
         "tree-view"
       ],
-      "defaultCode": 59936
+      "defaultCode": 59937
     },
     {
       "paths": [
@@ -4870,7 +4887,7 @@
       "tags": [
         "triangle-down"
       ],
-      "defaultCode": 59937
+      "defaultCode": 59938
     },
     {
       "paths": [
@@ -4880,7 +4897,7 @@
       "tags": [
         "triangle-left"
       ],
-      "defaultCode": 59938
+      "defaultCode": 59939
     },
     {
       "paths": [
@@ -4890,7 +4907,7 @@
       "tags": [
         "triangle-right"
       ],
-      "defaultCode": 59939
+      "defaultCode": 59940
     },
     {
       "paths": [
@@ -4900,7 +4917,7 @@
       "tags": [
         "undo"
       ],
-      "defaultCode": 59940
+      "defaultCode": 59941
     },
     {
       "paths": [
@@ -4910,7 +4927,7 @@
       "tags": [
         "unfold-less"
       ],
-      "defaultCode": 59941
+      "defaultCode": 59942
     },
     {
       "paths": [
@@ -4920,7 +4937,7 @@
       "tags": [
         "unfold-more"
       ],
-      "defaultCode": 59942
+      "defaultCode": 59943
     },
     {
       "paths": [
@@ -4930,7 +4947,7 @@
       "tags": [
         "unset-main-meter"
       ],
-      "defaultCode": 59943
+      "defaultCode": 59944
     },
     {
       "paths": [
@@ -4940,7 +4957,7 @@
       "tags": [
         "unstick"
       ],
-      "defaultCode": 59944
+      "defaultCode": 59945
     },
     {
       "paths": [
@@ -4950,7 +4967,7 @@
       "tags": [
         "update"
       ],
-      "defaultCode": 59945
+      "defaultCode": 59946
     },
     {
       "paths": [
@@ -4960,7 +4977,7 @@
       "tags": [
         "upload"
       ],
-      "defaultCode": 59946
+      "defaultCode": 59947
     },
     {
       "paths": [
@@ -4971,7 +4988,7 @@
       "tags": [
         "upload-alt"
       ],
-      "defaultCode": 59947
+      "defaultCode": 59948
     },
     {
       "paths": [
@@ -4981,7 +4998,7 @@
       "tags": [
         "user-circle"
       ],
-      "defaultCode": 59948
+      "defaultCode": 59949
     },
     {
       "paths": [
@@ -4991,7 +5008,7 @@
       "tags": [
         "user-outline"
       ],
-      "defaultCode": 59949
+      "defaultCode": 59950
     },
     {
       "paths": [
@@ -5001,7 +5018,7 @@
       "tags": [
         "vertical-align-bottom"
       ],
-      "defaultCode": 59950
+      "defaultCode": 59951
     },
     {
       "paths": [
@@ -5011,7 +5028,7 @@
       "tags": [
         "vertical-align-center"
       ],
-      "defaultCode": 59951
+      "defaultCode": 59952
     },
     {
       "paths": [
@@ -5021,7 +5038,7 @@
       "tags": [
         "vertical-align-top"
       ],
-      "defaultCode": 59952
+      "defaultCode": 59953
     },
     {
       "paths": [
@@ -5031,7 +5048,7 @@
       "tags": [
         "video-file"
       ],
-      "defaultCode": 59953
+      "defaultCode": 59954
     },
     {
       "paths": [
@@ -5041,7 +5058,7 @@
       "tags": [
         "view-quilt"
       ],
-      "defaultCode": 59954
+      "defaultCode": 59955
     },
     {
       "paths": [
@@ -5051,7 +5068,7 @@
       "tags": [
         "visibility-off"
       ],
-      "defaultCode": 59955
+      "defaultCode": 59956
     },
     {
       "paths": [
@@ -5061,7 +5078,7 @@
       "tags": [
         "visibility-on"
       ],
-      "defaultCode": 59956
+      "defaultCode": 59957
     },
     {
       "paths": [
@@ -5071,7 +5088,7 @@
       "tags": [
         "warning"
       ],
-      "defaultCode": 59957
+      "defaultCode": 59958
     },
     {
       "paths": [
@@ -5081,7 +5098,7 @@
       "tags": [
         "widget"
       ],
-      "defaultCode": 59958
+      "defaultCode": 59959
     },
     {
       "paths": [
@@ -5092,7 +5109,7 @@
       "tags": [
         "word-file"
       ],
-      "defaultCode": 59959
+      "defaultCode": 59960
     },
     {
       "paths": [
@@ -5102,7 +5119,7 @@
       "tags": [
         "wrap-text"
       ],
-      "defaultCode": 59960
+      "defaultCode": 59961
     },
     {
       "paths": [
@@ -5112,7 +5129,7 @@
       "tags": [
         "zoom-in"
       ],
-      "defaultCode": 59961
+      "defaultCode": 59962
     },
     {
       "paths": [
@@ -5122,7 +5139,7 @@
       "tags": [
         "zoom-out"
       ],
-      "defaultCode": 59962
+      "defaultCode": 59963
     }
   ],
   "colorThemes": [],
@@ -5145,7 +5162,11 @@
       },
       "embed": false,
       "resetPoint": 59648,
-      "ligaReset": "names"
+      "ligaReset": "names",
+      "showSelector": true,
+      "showMetrics": true,
+      "showMetadata": true,
+      "showVersion": true
     },
     "imagePref": {
       "prefix": "icon-",
