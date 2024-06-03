@@ -1,3 +1,5 @@
+import {COLORS} from "./interactive-map-colors.js";
+
 export class InteractiveMapActions {
     static async perform(step, context, process, item) {
         await this[step.action]?.(step, context, process, item);
@@ -273,6 +275,67 @@ export class InteractiveMapActions {
         }
 
         return value;
+    }
+
+    static async assign_colors_to_geo_data(step, context, process, item) {
+        const data = await crs.process.getValue(step.args.data ?? [], context, process, item);
+        const featurePath = await crs.process.getValue(step.args.feature_path || "geographicLocation", context, process, item);
+
+        if (data.length === 0) return data;
+        const colorsLength = Object.keys(COLORS).length;
+        let index = 0;
+        data.forEach((item) => {
+            let source;
+            if(item[featurePath].type === "FeatureCollection") {
+                // If it comes from server as feature collection we need to get the first feature. The server does not support multiple features in a collection
+                source = item[featurePath].features[0];
+            }
+            else {
+                source = item[featurePath];
+            }
+
+            source.properties = item[featurePath].properties ?? {};
+            source.properties.fillColor = COLORS[index].fillColor || COLORS[index].fillColor;
+            source.properties.color = COLORS[index].color;
+
+            index ++;
+
+            if(index >= colorsLength) {
+                index = 0;
+            }
+        });
+        return data;
+    }
+
+    static async assign_properties_to_geo_data(step, context, process, item) {
+        const data = await crs.process.getValue(step.args.data ?? [], context, process, item);
+        const featurePath = await crs.process.getValue(step.args.feature_path || "geographicLocation", context, process, item);
+        const properties = await crs.process.getValue(step.args.properties, context, process, item);
+
+        const keys = Object.keys(properties);
+        let values = {};
+
+        for (const key of keys) {
+            values[key] = await crs.process.getValue(properties[key], context, process, item);
+        }
+
+        data.forEach((item) => {
+            let source;
+            if(item[featurePath].type === "FeatureCollection") {
+                // If it comes from server as feature collection we need to get the first feature. The server does not support multiple features in a collection
+                source = item[featurePath].features[0];
+            }
+            else {
+                source = item[featurePath];
+            }
+
+            source.properties = item[featurePath].properties ?? {};
+
+            for (const key of keys) {
+                source.properties[key] = values[key];
+            }
+        });
+        return data;
     }
 }
 

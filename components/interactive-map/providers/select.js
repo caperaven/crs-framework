@@ -26,10 +26,10 @@ export default class SelectProvider {
     async #onShapeClick(e) {
         const shape = e.target;
 
-        const index = shape.options.index || shape.feature.properties.index;
+        const index =  shape.options.index ?? shape.feature.properties?.index;
         if (index != null) {
             this.#shapeSelected = true;
-            await crs.call("data_manager", "set_selected", { manager: this.#instance.dataset.manager, indexes: [shape.feature.properties.index] });
+            await crs.call("data_manager", "set_selected", { manager: this.#instance.dataset.manager, indexes: [index] });
         }
     }
 

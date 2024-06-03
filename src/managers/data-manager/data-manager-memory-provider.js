@@ -171,6 +171,17 @@ export class DataManagerMemoryProvider extends BaseDataManager {
         return this.#records.filter(item => item._selected === isSelected);
     }
 
+    async getSelectedIndexes() {
+        const indexes = [];
+        for (let i = 0; i < this.#records.length; i++) {
+            if (this.#records[i]._selected) {
+                indexes.push(i);
+            }
+        }
+        return indexes;
+    }
+
+
     async toggleSelectedIndexes(indexes) {
         for (const index of indexes) {
             const isSelected = !this.#records[index]._selected;

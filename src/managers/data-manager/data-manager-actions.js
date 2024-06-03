@@ -526,6 +526,8 @@ class DataManagerActions {
         })
     }
 
+
+
     /**
      * @method set_group_selected - given a group id, check the records in that group (in the perspective definition) and then select them.
      * @param step {object} - The step that contains the action to perform
@@ -579,9 +581,14 @@ class DataManagerActions {
         if (manager == null) return;
 
         const selected = await crs.process.getValue(step.args.selected ?? true, context, process, item);
+        const deselectOthers = await crs.process.getValue(step.args.deselect_others ?? false, context, process, item);
         const indexes = await crs.process.getValue(step.args.indexes, context, process, item);
         const ids = await crs.process.getValue(step.args.ids, context, process, item);
         const dataManager = globalThis.dataManagers[manager];
+
+        if (deselectOthers) {
+            await dataManager.setSelectedAll(false);
+        }
 
         if (indexes != null) {
             await dataManager.setSelectedIndexes(indexes, selected);
@@ -752,6 +759,34 @@ class DataManagerActions {
 
         const dataManager = globalThis.dataManagers[manager];
         return await dataManager.getSelected();
+    }
+
+    /** @method get_selected_indexes - Get the selected indexes in a data manager.
+     * @param step {object} - The step that contains the action to perform
+     * @param context {object} - The context of the process
+     * @param process {object} - The process
+     * @param item {object} - Current item in a process loop
+     * @param step.args.manager {string} - The name of the data manager. You will use this when performing operations on the data manager.
+     * @returns {Promise<void>}
+     * @example <caption>javascript example</caption>
+     * const selected = await crs.call("data_manager", "get_selected_indexes" {
+     *  manager: "my_data_manager"
+     *  });
+     *  @example <caption>json example</caption>
+     *  {
+     *  "type": "data_manager",
+     *  "action": "get_selected_indexes",
+     *  "args": {
+     *      "manager": "my_data_manager"
+     *      }
+     *  }
+     *  */
+    static async get_selected_indexes(step, context, process, item) {
+        const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return;
+
+        const dataManager = globalThis.dataManagers[manager];
+        return await dataManager.getSelectedIndexes();
     }
 
     static async get_unselected(step, context, process, item) {

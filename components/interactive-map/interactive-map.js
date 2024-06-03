@@ -94,7 +94,7 @@ export class InteractiveMap extends HTMLElement {
 
         await this.#hookDataManager();
 
-        if (this.dataset.hidesDrawingTools !== true) {
+        if (this.dataset.hideDrawingTools !== "true") {
             await crs.call("interactive_map", "show_drawing_tools", {element: this});
         }
 
@@ -180,7 +180,10 @@ export class InteractiveMap extends HTMLElement {
             // For now we are assuming geo data here. We will need to add support for other types of data in future
 
             for (const item of data) {
-                const geoData = item[this.dataset.path];
+                let geoData = item[this.dataset.path];
+                if (geoData.type === "FeatureCollection") {
+                    geoData = geoData.features[0]
+                }
                 geoData.properties = geoData.properties || {};
                 geoData.properties.id = item.id;
                 geoData.properties.index = item._index;
@@ -191,27 +194,14 @@ export class InteractiveMap extends HTMLElement {
                 });
             }
 
-
             await crs.call("interactive_map", "fit_bounds", {element: this, layer: this.#activeLayer});
         }
     }
 
     async #selectionChanged(args) {
         // We only support single selection
-        if (args.index?.length > 0) {
-            this.#activeLayer.eachLayer(layer => {
-                // If the layer is a feature layer, we need to use the index from the feature properties
-                const index = layer.options.index || layer.feature.properties.index
-                if (index === args.index[0]) {
-                    this.#selectionProvider.select(layer);
-                }
-            });
-        }
-        else {
-            this.#selectionProvider.clear();
-        }
+        this.#selectionProvider.select();
     }
-
 
     async enable() {
         if (this.#map == null) {
@@ -224,7 +214,8 @@ export class InteractiveMap extends HTMLElement {
     async #createDefaultLayer() {
         const defaultLayerOptions = {
             pointToLayer: (feature, latlng) => {
-                return createDefaultPoint("location-pin", [latlng.lat, latlng.lng], {});
+
+                return createDefaultPoint( feature,[latlng.lat, latlng.lng], {});
             },
             style: (feature) => {
                 const style = feature.properties?.style || {};
@@ -245,10 +236,15 @@ export class InteractiveMap extends HTMLElement {
     }
 }
 
-function createDefaultPoint(iconName, coordinates, options = {}) {
+function createDefaultPoint(feature, coordinates, options = {}) {
+    const iconName = feature.properties?.icon || "location-pin";
+    const color = feature.properties?.color || "red";
+
+    const style = `style="color: ${color};"`
+    const html = `<div class="point" ${style}>${iconName}</div>`;
     const customIcon = L.divIcon({
         className: 'marker',
-        html: `<div class="point">${iconName}</div>`,
+        html: html,
         iconSize: [32, 32], // Size of the icon
         iconAnchor: [16, 32] // Point of the icon which will correspond to marker's location
     });

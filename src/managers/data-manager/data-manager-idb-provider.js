@@ -166,4 +166,4 @@ export class DataManagerIDBProvider extends BaseDataManager {
             type: "all"
         }));
     }
-}1
+}

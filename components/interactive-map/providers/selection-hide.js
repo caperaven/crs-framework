@@ -10,15 +10,30 @@ export default class SelectionEditProvider {
         this.#instance = null;
     }
 
-    async select(shape) {
-        // Remove all shapes thats not the provided shape from the map and store them in the cache
-        this.#instance.activeLayer.eachLayer(layer => {
-            if (layer !== shape) {
-                this.#shapeCache.push(layer);
-                this.#instance.activeLayer.removeLayer(layer);
-            }
-        })
+    async select() {
+       // Remove all layers and add to cache
 
+        const indexes = await crs.call("data_manager", "get_selected_indexes", { manager: this.#instance.dataset.manager });
+        if (indexes.length === 0) {
+            // If no shapes are selected, show all shapes
+            await this.clear();
+            return crs.call("interactive_map", "fit_bounds", { element: this.#instance, layer: this.#instance.activeLayer });
+        }
+
+        this.#instance.activeLayer.eachLayer(layer => {
+            this.#shapeCache.push(layer);
+            this.#instance.activeLayer.removeLayer(layer);
+        });
+
+        // Show the selected shapes
+        indexes.forEach(index => {
+            const layer = this.#shapeCache.find(layer => layer.feature.properties.index === index);
+            if (layer) {
+                this.#instance.activeLayer.addLayer(layer);
+            }
+        });
+
+        await crs.call("interactive_map", "fit_bounds", { element: this.#instance, layer: this.#instance.activeLayer });
     }
 
     async clear() {
