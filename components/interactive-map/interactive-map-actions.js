@@ -258,7 +258,7 @@ export class InteractiveMapActions {
         const layers = map._layers;
         const layer = Object.values(layers).find(layer => layer.layer_name === layerName);
 
-        const value = layer.toGeoJSON();
+        const value = layer?.toGeoJSON() ?? {};
 
         if (target != null) {
             await crs.process.setValue(step.args.target, value, context, process, item);
