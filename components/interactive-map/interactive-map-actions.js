@@ -1,4 +1,5 @@
 import {COLORS} from "./interactive-map-colors.js";
+import {getShapeIndex} from "./interactive-map-utils.js";
 
 export class InteractiveMapActions {
     static async perform(step, context, process, item) {
@@ -55,23 +56,24 @@ export class InteractiveMapActions {
     static async set_mode(step, context, process, item) {
         const instance = await crs.dom.get_element(step, context, process, item);
 
-        const mode = await crs.process.getValue(step.args.mode, context, process, item);
+        const mode = await crs.process.getValue(step.args.mode ?? "none", context, process, item);
+        const shape = await crs.process.getValue(step.args.shape, context, process, item);
 
         if (instance.currentMode != null) {
             instance.currentMode.dispose(instance);
             instance.currentMode = null;
         }
 
-        if (mode === "none" || mode == null) {
-            return;
+        if (mode !== "none") {
+            const modeClass = await getModeProvider(mode);
+            instance.currentMode = await modeClass;
+            await modeClass.initialize(instance, shape);
         }
 
-        const modeClass = await getModeProvider(mode);
-        instance.currentMode = await modeClass;
-        await modeClass.initialize(instance);
+        instance.dispatchEvent(new CustomEvent("mode-changed", {detail: {mode: mode}}));
     }
 
-    static async cancel_poly(step, context, process, item) {
+    static async cancel_mode(step, context, process, item) {
         const instance = await crs.dom.get_element(step, context, process, item);
 
         if (instance.currentMode != null) {
@@ -80,7 +82,7 @@ export class InteractiveMapActions {
         }
     }
 
-    static async accept_poly(step, context, process, item) {
+    static async accept_mode(step, context, process, item) {
         const instance = await crs.dom.get_element(step, context, process, item);
 
         if (instance.currentMode != null) {
@@ -100,50 +102,80 @@ export class InteractiveMapActions {
         }
     }
 
-    static async add_geo_json(step, context, process, item) {
-        const data = await crs.process.getValue(step.args.data, context, process, item);
+    static async find_shape_by_index(step, context, process, item) {
         const layer = await crs.process.getValue(step.args.layer, context, process, item);
-        const geoJson = layer.addData(data);
-        return geoJson;
+        const index = await crs.process.getValue(step.args.index, context, process, item);
+
+        return  layer.getLayers().find(shape => {
+
+            const currentShapeIndex = getShapeIndex(shape);
+
+            // Compare with the provided index
+            return index === currentShapeIndex;
+        });
     }
 
-    static async add_point(step, context, process, item) {
+    static async add_records(step, context, process, item) {
+        const records = await crs.process.getValue(step.args.records, context, process, item);
+        const layer = await crs.process.getValue(step.args.layer, context, process, item);
         const instance = await crs.dom.get_element(step, context, process, item);
-        const map = instance.map;
-        const coordinates = await crs.process.getValue(step.args.coordinates, context, process, item);
-        const iconName = await crs.process.getValue(step.args.icon_name || "location-pin", context, process, item);
-        const options = await crs.process.getValue(step.args.options || {}, context, process, item);
-        const layerName = await crs.process.getValue(step.args.layer || instance.defaultLayer, context, process, item);
+        const index = await crs.process.getValue(step.args.index ?? 0, context, process, item);
 
-        const marker = createDefaultPoint(iconName, coordinates, options).addTo(map);
-        marker.type = "point";
-        marker.layer_name = layerName;
+        for (let i = 0; i < records.length; i++) {
 
-        return marker;
-    }
-
-    static async add_polygon(step, context, process, item) {
-        step.args.shape = "polygon";
-        return this.add_polyline(step, context, process, item);
-    }
-
-    static async add_polyline(step, context, process, item) {
-        const instance = await crs.dom.get_element(step, context, process, item);
-        const map = instance.map;
-        const shape = await crs.process.getValue(step.args.shape || "polyline", context, process, item);
-        const coordinates = await crs.process.getValue(step.args.coordinates, context, process, item);
-        const dashArray = await crs.process.getValue(step.args.dash_array, context, process, item);
-        const colors = await getColorData(step, context, process, item, map);
-
-        const options = {...colors};
-
-        if (dashArray != null) {
-            options.dashArray = dashArray;
+            const record = records[i];
+            if (record.geographicLocation != null)  {
+                record.geographicLocation.properties = record.geographicLocation.properties || {};
+                record.geographicLocation.properties.index = index + i;
+                // Add shape via geojson
+                layer.addData(record.geographicLocation);
+            }
+            else {
+                record.options = record.options || {};
+                record.options.index = index + i;
+                await ShapeFactory[`add_${record.type}`](instance.map, layer, record);
+            }
         }
+    }
 
-        const polygon = L[shape](coordinates, options).addTo(instance.activeLayer);
-        polygon.type = shape;
-        return polygon;
+
+    static async redraw_record(step, context, process, item) {
+        const instance = await crs.dom.get_element(step, context, process, item);
+        const layer = await crs.process.getValue(step.args.layer, context, process, item);
+        const index = await crs.process.getValue(step.args.index, context, process, item);
+
+        const shape = await crs.call("interactive_map", "find_shape_by_index", {layer: layer, index: index});
+        const record = await crs.call("data_manager", "get", {manager: instance.dataset.manager, index: index});
+
+        // For now we remove shape and add it again
+        if (shape != null) {
+            layer.removeLayer(shape);
+
+            await crs.call("interactive_map", "add_records", {
+                element: instance,
+                records: [record],
+                layer: layer,
+                index: index
+            });
+        }
+    }
+
+    static async remove_record(step, context, process, item) {
+        const layer = await crs.process.getValue(step.args.layer, context, process, item);
+        const index = await crs.process.getValue(step.args.index, context, process, item);
+
+        const shape = await crs.call("interactive_map", "find_shape_by_index", {layer: layer, index: index});
+        layer.removeLayer(shape);
+    }
+
+    static async add_shape(step, context, process, item) {
+        const instance = await crs.dom.get_element(step, context, process, item);
+        const map = instance.map;
+        const layer = await crs.process.getValue(step.args.layer, context, process, item);
+        const data = await crs.process.getValue(step.args.data, context, process, item);
+
+        const shape = await ShapeFactory[`add_${data.type}`](map, layer, data);
+        return shape;
     }
 
     static async add_handle(step, context, process, item) {
@@ -198,7 +230,6 @@ export class InteractiveMapActions {
             layer.removeLayer(child);
         });
     }
-
 
     static async remove_selected(step, context, process, item) {
         const instance = await crs.dom.get_element(step, context, process, item);
@@ -294,7 +325,7 @@ export class InteractiveMapActions {
                 source = item[featurePath];
             }
 
-            source.properties = item[featurePath].properties ?? {};
+            source.properties = source.properties ?? {};
             source.properties.fillColor = COLORS[index].fillColor || COLORS[index].fillColor;
             source.properties.color = COLORS[index].color;
 
@@ -329,7 +360,7 @@ export class InteractiveMapActions {
                 source = item[featurePath];
             }
 
-            source.properties = item[featurePath].properties ?? {};
+            source.properties = source.properties ?? {};
 
             for (const key of keys) {
                 source.properties[key] = values[key];
@@ -361,16 +392,30 @@ async function getColorData(step, context, process, item, map) {
     }
 }
 
-function createDefaultPoint(iconName, coordinates, options = {}) {
-    const customIcon = L.divIcon({
-        className: 'marker',
-        html: `<div class="point">${iconName}</div>`,
-        iconSize: [32, 32], // Size of the icon
-        iconAnchor: [16, 32] // Point of the icon which will correspond to marker's location
-    });
-    const marker = L.marker(coordinates, {icon: customIcon, ...options});
-    return marker;
-}
+
 
 
 crs.intent.interactive_map = InteractiveMapActions;
+
+
+class ShapeFactory {
+    static async add_polygon(map, layer, data) {
+        return L.polygon(data.coordinates, data.options).addTo(layer);
+    }
+
+    static async add_polyline(map, layer, data) {
+        return L.polyline(data.coordinates, data.options).addTo(layer);
+    }
+
+    static async add_point(map, layer, data) {
+
+        const customIcon = L.divIcon({
+            className: 'marker',
+            html: `<div class="point">${data.options.iconName}</div>`,
+            iconSize: [32, 32], // Size of the icon
+            iconAnchor: [16, 32] // Point of the icon which will correspond to marker's location
+        });
+
+        return L.marker(data.coordinates, {icon: customIcon, ...data.options}).addTo(layer);
+    }
+}

@@ -22,3 +22,9 @@ export async function createImageMap(container, imageUrl) {
     map.fitBounds(bounds);
     return map;
 }
+
+export function getShapeIndex(shape) {
+    // Get the index from either shape options or feature properties
+    return shape.options?.index ?? shape.feature?.properties?.index;
+}
+

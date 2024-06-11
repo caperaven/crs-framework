@@ -390,15 +390,28 @@ class DataManagerActions {
         if (manager == null) return;
 
         const records = await crs.process.getValue(step.args.records || [], context, process, item);
+        const isDirty = await crs.process.getValue(step.args.is_dirty, context, process, item);
 
         const dataManager = globalThis.dataManagers[manager];
         const index = dataManager.count;
         await dataManager.append(...records);
 
+        if (isDirty === true) {
+
+            // Build array of dirty indexes using index and records.length
+            const indexes = [];
+            for (let i = index; i <= dataManager.count; i++) {
+                indexes.push(i);
+            }
+
+            await dataManager.setDirtyIndexes(indexes, false);
+        }
+
         await dataManager.notifyChanges({
             action: CHANGE_TYPES.add,
             models: records,
             index: index,
+            is_dirty: isDirty,
             count: records.length
         });
     }
@@ -508,14 +521,15 @@ class DataManagerActions {
         const index = await crs.process.getValue(step.args.index, context, process, item);
         const id = await crs.process.getValue(step.args.id, context, process, item);
         const changes = await crs.process.getValue(step.args.changes, context, process, item);
+        const isDirty = await crs.process.getValue(step.args.is_dirty, context, process, item);
 
         const dataManager = globalThis.dataManagers[manager];
 
         let result;
         if (index != null) {
-            result = await dataManager.updateIndex(index, changes);
+            result = await dataManager.updateIndex(index, changes, isDirty);
         } else {
-            result = await dataManager.updateId(id, changes);
+            result = await dataManager.updateId(id, changes, isDirty);
         }
 
         await dataManager.notifyChanges({
@@ -1151,6 +1165,53 @@ class DataManagerActions {
         if (manager == null) return;
 
         return globalThis.dataManagers[manager].isAllSelected;
+    }
+
+    static async get_updated(step, context, process, item) {
+        const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return;
+
+        const target = await crs.process.getValue(step.args.target, context, process, item);
+
+        const updated = globalThis.dataManagers[manager].getUpdated();
+
+        if (target != null) {
+            await crs.process.setValue(target, updated, context, process, item);
+        }
+
+        return updated;
+    }
+
+    static async get_created(step, context, process, item) {
+        const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return;
+
+        const target = await crs.process.getValue(step.args.target, context, process, item);
+
+        const created = globalThis.dataManagers[manager].getCreated();
+
+        if (target != null) {
+            await crs.process.setValue(target, created, context, process, item);
+        }
+
+        return created;
+
+    }
+
+    static async clear_dirty(step, context, process, item) {
+        const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return;
+
+        return globalThis.dataManagers[manager].clearDirty();
+    }
+
+    static async clear_dirty_indexes(step, context, process, item) {
+        const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return;
+
+        const indexes = await crs.process.getValue(step.args.indexes, context, process, item);
+
+        return globalThis.dataManagers[manager].clearDirtyIndexes(indexes);
     }
 }
 

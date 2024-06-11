@@ -73,6 +73,8 @@ export class InteractiveMap extends HTMLElement {
         await crs.call("interactive_map", "initialize_lib", {});
         await this.#setSelectionMode();
 
+
+
         const container = this.querySelector("#map");
 
         const provider = this.dataset.provider;
@@ -145,6 +147,14 @@ export class InteractiveMap extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #addRecord(args) {
+        // Assign indexes to the records
+
+        await crs.call("interactive_map", "add_records", {
+            element: this,
+            records: args.models,
+            index: args.index,
+            layer: this.#activeLayer
+        });
     }
 
     /**
@@ -153,6 +163,12 @@ export class InteractiveMap extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #updateRecord(args) {
+        await crs.call("interactive_map", "redraw_record", {
+            element: this,
+            changes: args.changes,
+            index: args.index,
+            layer: this.#activeLayer
+        });
     }
 
     /**
@@ -161,6 +177,11 @@ export class InteractiveMap extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #deleteRecord(args) {
+        await crs.call("interactive_map", "delete_record", {
+            element: this,
+            index: args.index,
+            layer: this.#activeLayer
+        });
     }
 
     /**
@@ -180,19 +201,22 @@ export class InteractiveMap extends HTMLElement {
             // For now we are assuming geo data here. We will need to add support for other types of data in future
 
             for (const item of data) {
-                let geoData = item[this.dataset.path];
-                if (geoData.type === "FeatureCollection") {
-                    geoData = geoData.features[0]
+                if (item.geographicLocation != null) {
+                    if (item.geographicLocation.type === "FeatureCollection") {
+                        item.geographicLocation = item.geographicLocation.features[0]
+                    }
+                    item.geographicLocation.properties = item.geographicLocation.properties || {};
+                    item.geographicLocation.properties.id = item.id;
+                    item.geographicLocation.properties.index = item._index;
                 }
-                geoData.properties = geoData.properties || {};
-                geoData.properties.id = item.id;
-                geoData.properties.index = item._index;
-                await crs.call("interactive_map", "add_geo_json", {
-                    element: this,
-                    data: geoData,
-                    layer: this.#activeLayer,
-                });
             }
+
+            await crs.call("interactive_map", "add_records", {
+                element: this,
+                records: data,
+                layer: this.#activeLayer
+            });
+
 
             await crs.call("interactive_map", "fit_bounds", {element: this, layer: this.#activeLayer});
         }

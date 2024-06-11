@@ -29,39 +29,26 @@ export default class SelectProvider {
         const index =  shape.options.index ?? shape.feature.properties?.index;
         if (index != null) {
             this.#shapeSelected = true;
-            await crs.call("data_manager", "set_selected", { manager: this.#instance.dataset.manager, indexes: [index] });
+
         }
     }
 
     async #onMapClick(e) {
-        if (this.#shapeSelected === false) {
-            this.#instance.selectedShape = null;
-            await crs.call("data_manager", "set_selected", { manager: this.#instance.dataset.manager, indexes: [] });
+        const shape = e.layer;
+
+        const index =  shape.options.index ?? shape.feature.properties?.index;
+        if (index != null) {
+            await crs.call("data_manager", "set_selected", { manager: this.#instance.dataset.manager, indexes: [index] });
         }
-        this.#shapeSelected = false;
     }
 
     async #setupEvents() {
         this.#clickHandler = this.#onMapClick.bind(this);
-        this.#shapeClickHandler = this.#onShapeClick.bind(this);
-
-        this.#instance.map.on("click", this.#clickHandler);
-        this.#instance.map.eachLayer(layer => {
-            if (layer instanceof L.Path || layer instanceof L.Marker) {
-                layer.on("click", this.#shapeClickHandler);
-            }
-        })
+        this.#instance.activeLayer.on("click", this.#clickHandler);
     }
 
     async #removeEvents() {
-        this.#instance.map.off("click", this.#clickHandler);
-        this.#instance.map.eachLayer(layer => {
-            if (layer instanceof L.Path || layer instanceof L.Marker) {
-                layer.off("click", this.#shapeClickHandler);
-            }
-        });
-
+        this.#instance.activeLayer.off("click", this.#clickHandler);
         this.#clickHandler = null;
-        this.#shapeClickHandler = null;
     }
 }

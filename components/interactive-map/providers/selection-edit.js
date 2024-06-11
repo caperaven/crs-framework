@@ -11,16 +11,31 @@ export default class SelectionEditProvider {
         this.#selectionProvider = null;
     }
 
-    async select(shape) {
+    async select() {
        await this.clear();
 
-        if(shape != null) {
-            const provider = await this.#getProvider(shape);
-            this.#selectionProvider = provider;
-            this.#instance.selectedShape = shape;
-
-            await provider.initialize(this.#instance, shape);
+        const indexes = await crs.call("data_manager", "get_selected_indexes", { manager: this.#instance.dataset.manager });
+        if (indexes.length === 0) {
+            // If no shapes are selected, do nothing
+            this.#instance.dispatchEvent(new CustomEvent("selection-changed", { detail: { index: null }}));
+            return;
         }
+
+        const firstIndex = indexes[0];
+
+        const shape = await crs.call("interactive_map", "find_shape_by_index", { layer: this.#instance.activeLayer, index: firstIndex });
+
+        if (shape != null) {
+            const type = await this.#getType(shape);
+
+            await crs.call("interactive_map", "set_mode", {
+                element: this.#instance,
+                mode: `draw-${type}`,
+                shape: shape
+            });
+        }
+
+        this.#instance.dispatchEvent(new CustomEvent("selection-changed", { detail: { index: firstIndex }}));
     }
 
     async clear() {
@@ -30,13 +45,6 @@ export default class SelectionEditProvider {
         }
     }
 
-    async #getProvider(shape) {
-        if (shape instanceof L.Layer) {
-            const type = await this.#getType(shape);
-            const module = await import(`./selection/select-${type}.js`);
-            return new module.default();
-        }
-    }
 
     async #getType(shape) {
         // The order of the checks is important as a polygon is also a polyline and a rectangle is also a polygon

@@ -1,3 +1,5 @@
+import {getShapeIndex} from "../interactive-map-utils.js";
+
 export default class DrawPolyBase {
     // This class will start the drawing of a polygon on the map when the user clicks on the map.
     // Each click will add a new point to the polygon.
@@ -30,8 +32,8 @@ export default class DrawPolyBase {
     #subPointDragEndHandler = this.#subPointDragEnd.bind(this);
 
     #clickHandler = this.#click.bind(this);
+    #isEditing = false;
 
-    #originalColor = null;
 
     get shapeKey() {
         throw new Error("Not implemented");
@@ -54,16 +56,11 @@ export default class DrawPolyBase {
         this.#instance.map.on("click", this.#clickHandler);
 
         if (shape != null) {
-            this.#originalPoints = shape.getLatLngs();
             this.#disableNewPoints = true; // If we have a shape we don't want to add new points.
             await this.#drawHandles(shape);
             await this.#addSubDivisionMarkers();
-            this.#originalColor = shape.options.color;
             this.#shape = shape;
-            this.#shape.setStyle({color: this.#instance.map.selectionColor});
-        }
-        else {
-            this.#originalColor = this.#instance.map.color;
+            this.#isEditing = true;
         }
     }
 
@@ -104,18 +101,56 @@ export default class DrawPolyBase {
 
     async cancel() {
         if (this.#shape != null) {
-            if (this.#originalPoints != null) {
-                this.#shape.setLatLngs(this.#originalPoints);
-            }
-            else {
-                this.#shape.remove();
-            }
+            const index = getShapeIndex(this.#shape);
+            await crs.call("data_manager", "set_selected", {manager: this.#instance.dataset.manager, indexes: [index], selected: false});
+           // Remove temp shape and also redraw the original shape if editing was true
+
+            await crs.call("interactive_map", "redraw_record", {
+                element: this.#instance,
+                index: index,
+                layer: this.#instance.activeLayer
+            });
         }
     }
 
     async accept() {
         if (this.#shape != null) {
-            this.#shape.setStyle({color: this.#originalColor});
+
+
+            if (this.#isEditing === true) {
+                const index = getShapeIndex(this.#shape);
+
+                let changes = {}
+                // Get the changes from either shape options or feature properties
+                if (this.#shape.feature) {
+                   changes.geographicLocation = this.#shape.toGeoJSON()
+                }
+                else {
+                    changes.coordinates =  latLngsToCoordinates(this.#shape);
+                }
+
+                await crs.call("data_manager", "update", {
+                    index: index,
+                    manager: this.#instance.dataset.manager,
+                    changes: changes,
+                    is_dirty: true
+                });
+
+                await crs.call("data_manager", "set_selected", {manager: this.#instance.dataset.manager, indexes: [index], selected: false});
+            }
+            else {
+                await crs.call("data_manager", "append", {
+                    records: [{
+                        coordinates: latLngsToCoordinates(this.#shape),
+                        type: this.shapeKey
+                    }],
+                    manager: this.#instance.dataset.manager,
+                    is_dirty: true
+                });
+            }
+
+            this.#shape.remove();
+            this.#shape = null;
         }
     }
 
@@ -187,6 +222,7 @@ export default class DrawPolyBase {
 
         const handle = await this.#createDragHandle(event.target.getLatLng(), index);
 
+
         this.#points[index].handle = handle;
 
         await this.#updateHandleIndexes();
@@ -249,10 +285,16 @@ export default class DrawPolyBase {
 
         if (this.#shape == null) {
             // If the shape is not yet created we create it.
-            this.#shape = await crs.call("interactive_map", `add_${this.shapeKey}`, {
-                coordinates: this.#points.map(_ => _.coordinates),
+            this.#shape = await crs.call("interactive_map", "add_shape", {
+                layer: this.#instance.activeLayer,
+                data: {
+                    type: this.shapeKey,
+                    coordinates: this.#points.map(_ => _.coordinates),
+                    options: {
+                        color: this.#instance.map.selectionColor
+                    }
+                },
                 element: this.#instance,
-                color: this.#instance.map.selectionColor
             });
         } else {
             // If it already exists we just update the coordinates.
@@ -345,4 +387,11 @@ export default class DrawPolyBase {
         });
     }
 
+}
+
+function latLngsToCoordinates(shape) {
+    let latLngs = shape.getLatLngs();
+    latLngs = Array.isArray(latLngs[0]) ? latLngs[0] : latLngs;
+
+    return latLngs.map(_ => [_.lat, _.lng]);
 }
