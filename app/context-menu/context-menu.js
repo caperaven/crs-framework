@@ -42,24 +42,29 @@ export default class ContextMenu extends crsbinding.classes.ViewBase {
             icon_font_family: "crsfrw",
             options: [
                 { id: "item1", tags: "master item", title: "Master Item", icon: "browse", icon_color: "#ff9000", children: [
-                        { id: "sub item 1", tags: "sub item 2.1", title: "sub item 1", children: [
+                        { id: "sub item 1", tags: "sub item 1", title: "sub item 1", children: [
                                 { id: "sub item child 1", tags: "sub item child 1", title: "sub item child 1", icon: "date-and-time"},
                                 { id: "sub item child 2", tags: "sub item child 2", title: "sub item child 2", icon: "condition" },
-                                { id: "sub item child 3", tags: "sub item child 3", title: "sub item child 3" }]
-                        },
+                                { id: "sub item child 3", tags: "sub item child 3", title: "sub item child 3" }]},
                         { id: "sub item 2", tags: "sub item 2", title: "sub item 2", children: [
-                                { id: "sub item child 2.1", tags: "sub item child 2.1", title: "sub item child 2.1", icon: "date-and-time"},
-                                { id: "sub item child 2.2", tags: "sub item child 2.2", title: "sub item child 2.2", icon: "condition" },
-                                { id: "sub item child 2.3", tags: "sub item child 2.3", title: "sub item child 2.3" }]
-                        },
-                        { id: "sub item 2", tags: "sub item 2",  title: "sub item 1", icon: "calendar" },
-                        { id: "sub item 3", tags: "sub item 3", title: "sub item 1" },
+                                { id: "sub item child 2.1", tags: "sub item child 1", title: "sub item child 1", icon: "date-and-time"},
+                                { id: "sub item child 2.2", tags: "sub item child 2", title: "sub item child 2", icon: "condition" },
+                                { id: "sub item child 2.3", tags: "sub item child 3", title: "sub item child 3" }]},
+                        { id: "sub item 2", tags: "sub item 2",  title: "sub item 2", icon: "calendar" },
+                        { id: "sub item 3", tags: "sub item 3", title: "sub item 3" },
                         { id: "sub item 4", title: "sub Item 4", tags: "item 4" },
                         { id: "sub item 5", title: "sub Item 5", tags: "item 5" },
+                        { id: "sub item 6", title: "sub Item 6", tags: "item 6" },
+                        { id: "sub item 7", title: "sub Item 7", tags: "item 7" },
+                        { id: "sub item 8", title: "sub Item 8", tags: "item 8" },
 
                     ]
                 },
-                { id: "item2", title: "Item 2", tags: "item 2" },
+                { id: "item2", title: "Item 2", tags: "item 2", children: [ { id: "sub item 2", tags: "sub item 2", title: "sub item 2", children: [
+                            { id: "sub item child 2.1", tags: "sub item child 1", title: "sub item child 1", icon: "date-and-time"},
+                            { id: "sub item child 2.2", tags: "sub item child 2", title: "sub item child 2", icon: "condition" },
+                            { id: "sub item child 2.3", tags: "sub item child 3", title: "sub item child 3" }]
+                    },]},
                 { id: "item3", title: "Item 3", tags: "item 3" },
                 { id: "item4", title: "Item 4", tags: "item 4" },
                 { id: "item5", title: "Item 5", tags: "item 5" },
@@ -67,18 +72,7 @@ export default class ContextMenu extends crsbinding.classes.ViewBase {
                 { id: "item7", title: "Item 7", tags: "item 7" },
                 { id: "item8", title: "Item 8", tags: "item 8" },
                 { id: "item9", title: "Item 9", tags: "item 9" },
-                { id: "item10", title: "Item 10", tags: "item 10" },
-                { id: "item11", title: "Item 11", tags: "item 11" },
-                { id: "item12", title: "Item 12", tags: "item 12" },
-                { id: "item13", title: "Item 13", tags: "item 13" },
-                { id: "item14", title: "Item 14", tags: "item 14" },
-                { id: "item15", title: "Item 15", tags: "item 15" },
-                { id: "item16", title: "Item 16", tags: "item 16" },
-                { id: "item17", title: "Item 17", tags: "item 17" },
-                { id: "item18", title: "Item 18", tags: "item 18" },
-                { id: "item19", title: "Item 19", tags: "item 19" },
-                { id: "item20", title: "Item 20", tags: "item 20" }
-
+                { id: "item10", title: "Item 10", tags: "item 10" }
             ],
         }, { status: "a" });
 

@@ -1,4 +1,4 @@
-import {handleSelection, setTabIndex, setFocusState } from "./select-item-handler.js";
+import {handleSelection, setFocusState} from "./select-item-handler.js";
 
 export class KeyboardInputManager {
     #contextMenu;
@@ -11,25 +11,29 @@ export class KeyboardInputManager {
         "ArrowUp": this.#arrowUp.bind(this),
         "ArrowRight": this.#arrowRight.bind(this),
         "ArrowLeft": this.#arrowLeft.bind(this),
-        "Enter": this.#enter.bind(this)
+        "Enter": this.#enter.bind(this),
+        "Escape": this.#escape.bind(this)
     })
 
-    constructor(contextMenu, options,filterHeader) {
+    constructor(contextMenu, options, filterHeader) {
         this.#options = options;
         this.#contextMenu = contextMenu;
         this.#filterHeader = filterHeader;
 
         this.#container = this.#contextMenu.container;
-        this.#container.addEventListener("keydown", this.#keyHandler);
+        this.#contextMenu.addEventListener("keydown", this.#keyHandler);
 
         const firstElement = this.#container.querySelector("li");
         if (firstElement) {
-            setFocusState(firstElement).then(() => {return;});
+            firstElement.tabIndex = 0;
         }
     }
 
+    /**
+     * @method dispose - Disposes the keyboard input manager.
+     */
     dispose() {
-        this.#container.removeEventListener("keydown", this.#keyHandler);
+        this.#contextMenu.removeEventListener("keydown", this.#keyHandler);
         this.#contextMenu = null;
         this.#container = null;
         this.#keyHandler = null;
@@ -38,12 +42,18 @@ export class KeyboardInputManager {
         this.#actions = null;
     }
 
+    /**
+     * @method #keySelection - Handles the keyboard input for the context menu.
+     * @param event
+     * @returns {Promise<void>}
+     */
     async #keySelection(event) {
         const key = event.key;
         const element = event.composedPath()[0]
+        this.#contextMenu.popup.dataset.keyboard = "true";
 
-        if (key === "Escape") {
-            await crs.call("context_menu", "close");
+        if (key === 'Tab' && event.shiftKey) {
+            await this.#shiftTab(event);
             return;
         }
 
@@ -51,31 +61,108 @@ export class KeyboardInputManager {
             event.preventDefault();
             await this.#actions[key](element);
         }
+
     }
 
+    /**
+     * @method #shiftTab - Handles the shift tab event.
+     * @param event - the event object.
+     * @returns {Promise<void>}
+     */
+    async #shiftTab(event) {
+        event.preventDefault();
+
+        await this.#arrowLeft(event.composedPath()[0]);
+    }
+
+    /**
+     * @method #arrowDown - Handles the arrow down event.
+     * @param element - the selected element.
+     * @returns {Promise<void>}
+     */
     async #arrowDown(element) {
-        await setTabIndex(element, "nextElementSibling");
+        if (element.id === "input-filter") {
+            await setFocusState(this.#container.firstElementChild);
+            return;
+        }
+        await this.#setTabIndex(element, "nextElementSibling");
     }
 
+    /**
+     * @method #arrowUp - Handles the arrow up event.
+     * @param element - the selected element.
+     * @returns {Promise<void>}
+     */
     async #arrowUp(element) {
-        await setTabIndex(element, "previousElementSibling");
+        if (element.id === "input-filter") return;
+
+        await this.#setTabIndex(element, "previousElementSibling");
     }
 
+    /**
+     * @method #arrowRight - Handles the arrow right event.
+     * @param element - the selected element.
+     * @returns {Promise<void>}
+     */
     async #arrowRight(element) {
-        if (element.matches(".parent-menu-item") === false) return
+        if (element.matches(".parent-menu-item") === false || element.getAttribute("aria-expanded") === "true") return
         await handleSelection(element, this.#options, this.#contextMenu, this.#filterHeader);
     }
 
+    /**
+     * @method #arrowLeft - Handles the arrow left event.
+     * @param element - the selected element.
+     * @returns {Promise<void>}
+     */
     async #arrowLeft(element) {
-        const li = element.parentElement.parentElement;
+        const li = element.parentElement?.parentElement;
 
-        if (li == null) return
+        if (li == null || li.tagName.toLowerCase() !== "li") return
 
         li.setAttribute("aria-expanded", "false");
         li.focus();
     }
 
+    /**
+     * @method #enter - Handles the enter event.
+     * @param element
+     * @returns {Promise<void>}
+     */
     async #enter(element) {
         await handleSelection(element, this.#options, this.#contextMenu, this.#filterHeader);
+    }
+
+    /**
+     * @method #escape - Handles the escape event.
+     * @returns {Promise<void>}
+     */
+    async #escape() {
+        await crs.call("context_menu", "close");
+    }
+
+    /**
+     * @method #setTabIndex - Sets the tabindex on the selected element.
+     * @param element - the selected element.
+     * @param siblingType {String} - the type of sibling to select.
+     * @returns {Promise<void>}
+     */
+    async #setTabIndex(element, siblingType = null) {
+        let li = element[siblingType];
+
+        const parentId = element.parentElement.id;
+        if (li == null && parentId === "list-container") {
+            li = this.#contextMenu.filter.filterInput;
+        }
+        else if (li == null && parentId !== "list-container") {
+            const elementPosition = {
+                nextElementSibling: "firstElementChild",
+                previousElementSibling: "lastElementChild"
+            }[siblingType];
+
+            li = element.parentElement[elementPosition];
+        }
+
+        element.tabIndex = -1;
+        await setFocusState(li);
     }
 }

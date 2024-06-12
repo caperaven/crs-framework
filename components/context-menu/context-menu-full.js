@@ -116,20 +116,16 @@ class ContextMenu extends crsbinding.classes.BindableElement {
      */
     async #asserOverflowIsRequired(element, container) {
         //calculate the height of the ul container
-        const assertOverflowRequired = element.scrollHeight > element.clientHeight;
-        const assertBottomEdge = container.getBoundingClientRect().bottom - element.getBoundingClientRect().bottom;
+        const assertOverflowRequired = element.scrollHeight > this.popup.scrollHeight;
 
-        if (assertOverflowRequired === true && assertBottomEdge <= 73) {
+        if (assertOverflowRequired === true) {
             this.container.classList.remove("no-overflow");
-            container.classList.remove("max-height");
-            container.classList.add("calc-height");
-            this.container.style.height = "";
+            this.popup.dataset.resizePopup = "true";
             return;
         }
 
-        container.classList.remove("calc-height");
+        this.popup.dataset.resizePopup = "false";
         this.container.classList.add("no-overflow");
-        container.classList.add("max-height");
     }
 
     /**
@@ -144,8 +140,8 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         if (!hasSubGroup) {
             this.btnBack.classList.remove("visible");
             this.spanBorder.classList.remove("visible");
-
-        } else if (!this.btnBack.classList.contains("visible")) {
+        }
+        else if (!this.btnBack.classList.contains("visible")) {
             this.btnBack.classList.add("visible");
             this.spanBorder.classList.add("visible");
         }
@@ -165,7 +161,9 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         if (groups.length == 1) {
             this.btnBack.classList.remove("visible");
             this.spanBorder.classList.remove("visible");
+            this.container.style.height = "max-content";
         }
+        this.popup.dataset.resizePopup = "true";
         await this.#setOffsetAndOverflow(groups[groups.length - 1].parentElement.parentElement);
     }
 

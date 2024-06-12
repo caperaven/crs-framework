@@ -86,7 +86,8 @@ async function createListItems(parentElement, collection, templates) {
                     tag_name: "ul",
                     classes: ["submenu"],
                     dataset: {
-                        closable: true
+                        closable: true,
+                        ignoreClick: true
                     }
                 });
 

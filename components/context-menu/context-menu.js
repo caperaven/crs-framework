@@ -1,6 +1,6 @@
 import "./../filter-header/filter-header.js";
 import {buildElements} from "./utils/build-elements.js";
-import {handleSelection, setTabIndex} from "./utils/select-item-handler.js";
+import {handleSelection, setFocusState} from "./utils/select-item-handler.js";
 import {KeyboardInputManager} from "./utils/keyboard-input-manager.js";
 
 /**
@@ -15,6 +15,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     #anchor;
     #target;
     #clickHandler = this.#click.bind(this);
+    #hoverHandler = this.#onHover.bind(this);
     #context;
     #process;
     #item;
@@ -39,13 +40,16 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         await this.init();
     }
 
+    /**
+     * @method init - Initializes the context menu.
+     * @returns {Promise<unknown>}
+     */
     async init() {
         return new Promise(async (resolve) => {
             requestAnimationFrame(async () => {
                 globalThis.addEventListener("click", this.#clickHandler);
-                const ul = this.shadowRoot.querySelector(".popup");
-
-                this.#isHierarchical = await buildElements.call(this, this.#options, this.#templates, this.#context, this.container);
+                this.container.addEventListener("mouseover", this.#hoverHandler);
+                await this.#buildContextMenu()
 
                 let at = "right";
                 let anchor = "top";
@@ -55,39 +59,24 @@ class ContextMenu extends crsbinding.classes.BindableElement {
                     anchor = "right";
                 }
 
-                await crs.call("fixed_layout", "set", {
-                    element: ul,
-                    target: this.#target,
-                    point: this.#point,
-                    at: this.#at || at,
-                    anchor: this.#anchor || anchor,
-                    margin: this.#margin || 0
-                })
-
-                if (this.#isHierarchical === false) {
-                    await crs.call("dom_interactive", "enable_resize", {
-                        element: this.popup,
-                        resize_query: "#resize",
-                        options: {}
-                    });
-                }
-
-                this.#filterHeader = this.shadowRoot.querySelector("filter-header");
-                if (this.#filtering !== false) {
-                    this.#filterHeader.addEventListener("close", this.#filterCloseHandler);
-                } else {
-                    this.#filterHeader.parentElement.removeChild(this.#filterHeader);
-                }
+                await this.#setFixedLayout(at, anchor);
+                await this.#setFilterState();
 
                 await crs.call("component", "notify_ready", {element: this});
+
                 //set focus on the first element
                 this.#keyboardInputManager = new KeyboardInputManager(this, this.#options, this.#filterHeader);
-
+                const filterInput = this.#filterHeader.shadowRoot.querySelector("#input-filter");
+                await setFocusState(filterInput);
                 resolve();
             })
         });
     }
 
+    /**
+     * @method disconnectedCallback - Cleans up the context menu when it is removed from the DOM.
+     * @returns {Promise<void>}
+     */
     async disconnectedCallback() {
         await crs.call("dom_interactive", "disable_resize", {
             element: this.popup
@@ -98,7 +87,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         }
 
         globalThis.removeEventListener("click", this.#clickHandler);
-
+        this.container.removeEventListener("mouseover", this.#hoverHandler);
         this.#filtering = null;
         this.#filterHeader = null;
         this.#filterCloseHandler = null;
@@ -114,19 +103,23 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         this.#margin = null;
         this.#templates = null;
         this.#isHierarchical = null;
-        this.#keyboardInputManager .dispose();
+        this.#hoverHandler = null;
+        this.#keyboardInputManager.dispose();
         this.#keyboardInputManager = null;
         await super.disconnectedCallback();
     }
 
+    /**
+     * @method #click - Handles the click event on the context menu.
+     * @param event
+     * @returns {Promise<void>}
+     */
     async #click(event) {
         let element = event.composedPath()[0];
-        const tagName = element.tagName.toLowerCase();
-        const className = element.className;
 
-        if (tagName === "filter-header" || element.id === "input-filter" || className === "popup" || className === "submenu") return;
+        if (element.id === "input-filter" || element.dataset.ignoreClick === "true") return;
 
-        if (element.parentElement.dataset.closable == null) {
+        if (element.parentElement?.dataset.closable == null) {
             await this.#filterClose();
             return;
         }
@@ -134,8 +127,70 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         await handleSelection(element, this.#options, this, this.#filterHeader);
     }
 
+    /**
+     * @method #onHover - Handles the hover event on the context menu.
+     * @param event
+     * @returns {Promise<void>}
+     */
+    async #onHover(event) {
+        this.popup.dataset.keyboard = "false";
+    }
+
+    /**
+     * @method #filterClose - Closes the context menu.
+     * @param event
+     * @returns {Promise<void>}
+     */
     async #filterClose(event) {
         await crs.call("context_menu", "close");
+    }
+
+    /**
+     * @method #buildContextMenu - Builds the context menu based on the options passed to the component.
+     * @returns {Promise<void>}
+     */
+    async #buildContextMenu() {
+        this.#isHierarchical = await buildElements.call(this, this.#options, this.#templates, this.#context, this.container);
+
+        if (this.#isHierarchical === false) {
+            await crs.call("dom_interactive", "enable_resize", {
+                element: this.popup,
+                resize_query: "#resize",
+                options: {}
+            });
+        }
+    }
+
+    /**
+     * @method #setFixedLayout - Sets the fixed layout for the context menu.
+     * @param at {String}- The position of the context menu relative to the point. (top, bottom, left, right)
+     * @param anchor {String} - The position of the point relative to the context menu. (top, bottom, left, right)
+     * @returns {Promise<void>}
+     */
+    async #setFixedLayout( at, anchor) {
+        const ul = this.shadowRoot.querySelector(".popup");
+
+        await crs.call("fixed_layout", "set", {
+            element: ul,
+            target: this.#target,
+            point: this.#point,
+            at: this.#at || at,
+            anchor: this.#anchor || anchor,
+            margin: this.#margin || 0
+        })
+    }
+
+    /**
+     * @method #setFilterState - Sets the filter state for the context menu.
+     * @returns {Promise<void>}
+     */
+    async #setFilterState() {
+        this.#filterHeader = this.shadowRoot.querySelector("filter-header");
+        if (this.#filtering !== false) {
+            this.#filterHeader.addEventListener("close", this.#filterCloseHandler);
+        } else {
+            this.#filterHeader.parentElement.removeChild(this.#filterHeader);
+        }
     }
 
     /**

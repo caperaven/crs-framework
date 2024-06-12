@@ -26,7 +26,7 @@
         margin: 0;
         border: var(--border);
         background: var(--grey-surface);
-        box-shadow: var(--drop-shadow);
+        box-shadow: var(--p-shadow-lg);
         width: max-content;
         height: var(--height);
         min-width: 12.5rem;
@@ -46,6 +46,8 @@
         padding: 0;
         list-style: none;
         background: var(--window);
+        border-bottom-left-radius: var(--radius);
+        border-bottom-right-radius: var(--radius);
     }
 
     ul[role="menu"] {
@@ -104,7 +106,8 @@
         color: var(--cl-icon);
         height: 1.25rem;
         width: 1.25rem;
-        margin-left: 0.5rem;
+        margin-left: 0;
+        padding-left: 0.25rem;
     }
 
     li[aria-selected="true"]::after {
@@ -142,7 +145,7 @@
         display: none;
         border: var(--border);
         background: var(--window);
-        box-shadow: var(--drop-shadow);
+        box-shadow: var(--p-shadow-lg);
         width: max-content;
         height: max-content;
         min-width: 12.5rem;
@@ -150,11 +153,12 @@
         z-index: 1;
         cursor: default;
     }
-    .submenu[data-at-viewport-edge = "false"] {
+
+    .submenu[data-on-edge = "false"] {
         left: 100%;
     }
 
-    .submenu[data-at-viewport-edge = "true"] {
+    .submenu[data-on-edge = "true"] {
         right: 100%;
     }
 
@@ -169,15 +173,20 @@
 
     li:focus, li[aria-expanded="true"]:focus {
         outline: none;
-        border-left: 0.25rem solid var(--blue);
+        background: var(--grey-s3);
     }
 
     li[aria-expanded="true"]:focus {
         background: var(--blue-s2);
     }
 
-    li:focus {
-        background: var(--grey-s3);
+    .popup[data-keyboard = "true"] > * li:focus {
+        border-left: 0.25rem solid var(--blue);
+        padding-left: 0.25rem !important;
+    }
+
+    .popup[data-keyboard = "true"] > * li[data-icon]:focus::before {
+        padding-left: 0!important;
     }
 
     .hierarchy {
@@ -201,6 +210,30 @@
         align-items: center;
         justify-content: center;
     }
+
+    h2 {
+        margin: 0;
+        font-size: 1rem;
+        color: var(--grey-s1);
+    }
+
+    p {
+        font-size: 1rem;
+        color: var(--grey-s1);
+        margin: 0.25rem 0.25rem 0.25rem 0;
+    }
+
+    .no-content {
+        display: none;
+
+    }
+
+    ul[data-no-content="true"] ~ .no-content{
+        display: flex;
+        flex-direction: column;
+        padding: 0.5rem;
+        border-top: 2px solid var(--blue);
+    }
 </style>
 
 <svg id="symbols">
@@ -210,10 +243,15 @@
     </symbol>
 </svg>
 
-<div class="popup" ref="popup">
-    <filter-header for="ul"></filter-header>
-    <ul ref="container" role="menu" tabindex="0" class="narrow-scrollbar" data-closable="true"></ul>
+<div class="popup" data-ignore-click="true" ref="popup" tabindex="-1">
+    <filter-header data-ignore-click="true" for="ul" ref="filter"></filter-header>
+    <ul id="list-container" ref="container" role="menu" tabindex="-1" class="narrow-scrollbar" data-closable="true"></ul>
+    <div class="no-content">
+        <h2>No results found</h2>
+        <p>Try a different search term</p>
+    </div>
     <svg id="resize" width="16" height="16">
         <use href="#resize-handle"></use>
     </svg>
 </div>
+

@@ -1,6 +1,5 @@
 export async function handleSelection(li, options, component, filterHeader) {
     if (li.matches(".parent-menu-item")) {
-        filterHeader.clear();
         await expandAndCollapseSubmenu(li);
         return;
     }
@@ -18,23 +17,6 @@ export async function handleSelection(li, options, component, filterHeader) {
     component.dispatchEvent(new CustomEvent("change", {detail: option}));
 
     await crs.call("context_menu", "close");
-}
-
-export async function setTabIndex(element,siblingType = null) {
-    let li = element[siblingType];
-
-    // If the next or previous sibling is null,
-    // We want to get the first or last element in the ul list respectively and set the focus on it.
-    if (li == null) {
-        const elementPosition = {
-            nextElementSibling: "firstElementChild",
-            previousElementSibling: "lastElementChild"
-        }[siblingType];
-        li = element.parentElement[elementPosition];
-    }
-
-    element.tabIndex = -1;
-    await setFocusState(li);
 }
 
 export async function setFocusState(li) {
@@ -82,7 +64,7 @@ async function toggleExpansionState(li) {
     // We set the atViewportEdge attribute to false so that we recalculate the position of the submenu
     // This is to ensure that the submenu is always visible if the parent was already at the edge.
     const ul = li.querySelector(".submenu");
-    ul.dataset.atViewportEdge = "false";
+    ul.dataset.onEdge = "false";
 }
 
 async function assertViewportBoundary(li) {
@@ -93,7 +75,7 @@ async function assertViewportBoundary(li) {
     await setFocusState(ul.firstChild);
 
     //Checks if the available space is less than the width of the submenu/ul
-    ul.dataset.atViewportEdge = window.innerWidth - left < width;
+    ul.dataset.onEdge = window.innerWidth - left < width;
 
     //Checks if the available space is less than the height of the submenu/ul and repositions the submenu/ul
     const hasExceededViewportBottomEdge = window.innerHeight - top > height;
