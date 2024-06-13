@@ -94,12 +94,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
      * @param isSubMenu {Boolean} - a boolean value that indicates if the sub group is expanded.
      * @returns {Promise<void>}
      */
-    async #toggleHeaderType(isSubMenu) {
-        let isHidden = true;
-        if (this.#filterHeader.getAttribute("aria-hidden") === "true" && isSubMenu === false) {
-            isHidden = false;
-        }
-
+    async #toggleHeaderType(isHidden) {
         this.#filterHeader.setAttribute("aria-hidden", isHidden);
         this.groupHeader.setAttribute("aria-hidden", !isHidden);
     }
