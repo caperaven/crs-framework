@@ -12,7 +12,6 @@ export async function handleSelection(li, options, component) {
         crs.call(option.type, option.action, option.args);
     }
 
-    //what do you do ?
     component.dataset.value = option.id;
     component.dispatchEvent(new CustomEvent("change", {detail: option}));
 
