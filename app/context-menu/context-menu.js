@@ -6,11 +6,15 @@ export default class ContextMenu extends crsbinding.classes.ViewBase {
     async connectedCallback() {
         await super.connectedCallback();
         this._element.addEventListener('contextmenu', this.#handler);
+        await this.initialiseTranslations();
     }
 
     async disconnectedCallback() {
         this._element.removeEventListener('contextmenu', this.#handler);
         this.#handler = null;
+        await crs.call("translations", "delete", {
+            context: "contextMenu.labels"
+        });
         await super.disconnectedCallback();
     }
 
@@ -36,6 +40,15 @@ export default class ContextMenu extends crsbinding.classes.ViewBase {
         }, { status: "a" });
     }
 
+    async initialiseTranslations() {
+        await crs.call("translations","add", {
+            context: "contextMenu",
+            "translations": {
+                noResultsFound: "No results found",
+                tryADifferentSearchTerm: "Try a different search term"
+            }
+        });
+    }
     async showHierarchy(event) {
         await crs.call("context_menu", "show", {
             element: event.target,

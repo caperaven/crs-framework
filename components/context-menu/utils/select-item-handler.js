@@ -1,6 +1,6 @@
-export async function handleSelection(li, options, component, filterHeader) {
+export async function handleSelection(li, options, component, filterHeader, isMobile = false, groupHeader= null) {
     if (li.matches(".parent-menu-item")) {
-        await expandAndCollapseSubmenu(li);
+        await expandAndCollapseSubmenu(li,filterHeader, isMobile,groupHeader);
         return;
     }
 
@@ -37,7 +37,7 @@ async function findInStructure(collection, id) {
     }
 }
 
-async function expandAndCollapseSubmenu(li) {
+async function expandAndCollapseSubmenu(li, filterHeader, isMobile, groupHeader) {
     if (li.getAttribute("aria-expanded") === "true") {
         return toggleExpansionState(li);
     }
@@ -45,7 +45,10 @@ async function expandAndCollapseSubmenu(li) {
     const openedLiList = li.parentElement.querySelectorAll(".parent-menu-item[aria-expanded='true']");
 
     await assertExpandedState(openedLiList, li);
-    await toggleExpansionState(li);
+    await toggleExpansionState(li,filterHeader, isMobile,groupHeader);
+
+    if(isMobile === true) return;
+
     await assertViewportBoundary(li);
 }
 
@@ -57,9 +60,15 @@ async function assertExpandedState(openedLiList, li) {
     }
 }
 
-async function toggleExpansionState(li) {
+export async function toggleExpansionState(li, filterHeader, isMobile,groupHeader) {
     const isExpanded = li.getAttribute("aria-expanded") === "true";
     li.setAttribute("aria-expanded", !isExpanded);
+
+    if(isMobile === true && isExpanded === false) {
+        filterHeader.setAttribute("aria-hidden", true);
+        groupHeader.setAttribute("aria-hidden", false);
+        return;
+    }
 
     // We set the atViewportEdge attribute to false so that we recalculate the position of the submenu
     // This is to ensure that the submenu is always visible if the parent was already at the edge.

@@ -80,7 +80,11 @@ class ContextMenu extends crsbinding.classes.BindableElement {
             return await this.#closeSubGroup();
         }
 
-        await handleSelection(event.composedPath()[0], this.#options, this, this.#filterHeader, true);
+        if (element.matches(".parent-menu-item") === true) {
+            this.groupHeader.textContent = element.getAttribute("aria-label");
+        }
+
+        await handleSelection(event.composedPath()[0], this.#options, this, this.#filterHeader, true, this.groupHeader);
 
         if (!element.matches(".parent-menu-item") && this.btnBack == null) return;
 
@@ -146,25 +150,35 @@ class ContextMenu extends crsbinding.classes.BindableElement {
             this.spanBorder.classList.add("visible");
         }
 
-        if (subGroups.length > 0) {
-            const container = subGroups[subGroups.length - 1].querySelector("ul");
-            this.#filterHeader.container = container;
-        } else {
-            this.#filterHeader.container = this.container;
-        }
     }
 
     async #closeSubGroup() {
         const groups = this.shadowRoot.querySelectorAll(".parent-menu-item[aria-expanded='true']");
         groups[groups.length - 1].removeAttribute("aria-expanded");
 
+        if (groups.length > 1) {
+            this.groupHeader.textContent = groups[groups.length - 2].getAttribute("aria-label");
+        }
+
         if (groups.length == 1) {
+            this.container.style.height = "max-content";
             this.btnBack.classList.remove("visible");
             this.spanBorder.classList.remove("visible");
-            this.container.style.height = "max-content";
+            this.groupHeader.setAttribute("aria-hidden", true);
+            this.#filterHeader.setAttribute("aria-hidden", false);
         }
+
         this.popup.dataset.resizePopup = "true";
         await this.#setOffsetAndOverflow(groups[groups.length - 1].parentElement.parentElement);
+    }
+
+    /**
+     * @method #resetUl - Resets the height of the ul container.
+     * @param event - the event object.
+     * @returns {Promise<void>}
+     */
+    async resetUlHeight(event) {
+        this.container.style.height = "";
     }
 
     setOptions(args) {

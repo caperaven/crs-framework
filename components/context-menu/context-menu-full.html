@@ -26,7 +26,6 @@
     .popup {
         position: absolute;
         bottom: 72px;
-        margin: 0;
         top: 5rem;
         border: var(--border);
         background: var(--grey-surface);
@@ -37,18 +36,30 @@
         z-index: 1;
     }
 
-    ul {
-        position: relative;
+    ul, .popup,
+    #no-result-header{
         margin: 0;
-        padding: 0;
+    }
+
+    ul {
         list-style: none;
+        border-radius: 0 0 0.5rem 0.5rem;
+    }
+
+    ul, #btnBack {
+        padding: 0;
+    }
+
+    ul, ul[data-no-content="true"] ~ .no-content {
         background: var(--window);
-        border-bottom-left-radius: 0.5rem;
-        border-bottom-right-radius: 0.5rem;
     }
 
     ul[role="menu"] {
         overflow: auto;
+    }
+
+    ul, li {
+        position: relative;
     }
 
     hr {
@@ -58,20 +69,28 @@
     li {
         --cl-icon: black;
         padding: 0.5rem;
-        position: relative;
-        display: flex;
-        align-items: center;
         cursor: pointer;
         user-select: none;
         -webkit-tap-highlight-color: transparent;
+    }
+
+    li, .parent-menu-item:after,
+    .toolbar, ul[data-no-content="true"] ~ .no-content {
+        display: flex;
+    }
+
+    li, .parent-menu-item:after,
+    .toolbar {
+        align-items: center;
     }
 
     li > *:not(ul) {
         pointer-events: none;
     }
 
-    li[hidden],
-    #span-border {
+    li[hidden], #btnBack,
+    #span-border, .submenu,
+    .no-content {
         display: none;
     }
 
@@ -113,7 +132,6 @@
         left:0;
         right: 0;
         bottom: 0;
-        display: none;
         border: var(--border);
     }
 
@@ -122,6 +140,10 @@
         z-index: 1;
         width: 20rem;
         height: max-content;
+    }
+
+    .parent-menu-item[aria-expanded="true"] > .submenu,
+    #btnBack {
         border: none;
     }
 
@@ -137,19 +159,14 @@
         right: var(--padding);
         top: 0;
         height: 100%;
-        display: flex;
-        align-items: center;
         justify-content: center;
     }
 
     #btnBack {
         font-family: var(--icon-font);
-        font-size: 1.25rem;
+        font-size: 1.1875rem;
         height: 2.5rem;
         width: 2.5rem;
-        padding: 0;
-        display: none;
-        border: none;
         border-right: none;
         border-top-left-radius: var(--radius);
         background: transparent;
@@ -160,8 +177,6 @@
     }
 
     .toolbar {
-        display: flex;
-        align-items: center;
         flex-direction: row;
         height: 2.5rem;
         border-bottom: var(--border);
@@ -190,15 +205,42 @@
         max-height: calc(100% - 72px);
     }
 
-</style>
+    #no-result-header {
+        font-size: 1rem;
+        color: var(--grey-s1);
+    }
 
+    #no-result-info {
+        font-size: 1rem;
+        color: var(--grey-s1);
+        margin: 0.25rem 0.25rem 0.25rem 0;
+    }
+
+    ul[data-no-content="true"] ~ .no-content {
+        flex-direction: column;
+        padding: 0.5rem;
+        border-top: 0.125rem solid var(--blue);
+        border-radius: var(--border-bottom-radius);
+    }
+
+    #group-header {
+        padding-left: 0.5rem;
+        font-weight: bold;
+    }
+
+</style>
 
 <div class="back"></div>
 <div class="popup" ref="popup">
     <div class="toolbar">
         <button id="btnBack" ref="btnBack">arrow-left</button>
         <span id="span-border" ref="spanBorder"></span>
-        <filter-header for="ul"></filter-header>
+        <filter-header id="filter-header" for="ul"  keyup.call="resetUlHeight"></filter-header>
+        <span id="group-header" aria-hidden="true" ref="groupHeader"></span>
     </div>
     <ul ref="container" role="menu" tabindex="0" class="narrow-scrollbar"></ul>
+    <div class="no-content">
+        <h2 id="no-result-header" ref="noResults">&{contextMenu.noResultsFound}</h2>
+        <p id="no-result-info" ref="noInfo">&{contextMenu.tryADifferentSearchTerm}</p>
+    </div>
 </div>

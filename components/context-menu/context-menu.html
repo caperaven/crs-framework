@@ -3,6 +3,7 @@
     :host {
         --icon-font: "";
         --height: max-content;
+        --border-bottom-radius: 0 0 0.25rem 0.25rem;
 
         display: block;
         position: fixed;
@@ -23,10 +24,7 @@
     }
 
     .popup {
-        margin: 0;
-        border: var(--border);
         background: var(--grey-surface);
-        box-shadow: var(--p-shadow-lg);
         width: max-content;
         height: var(--height);
         min-width: 12.5rem;
@@ -36,18 +34,33 @@
         grid-template-rows: auto 1fr;
     }
 
+    hr,
+    .popup,
+    .submenu {
+        border: var(--border);
+    }
+
+    .popup,
+    .submenu {
+        box-shadow: var(--p-shadow-lg);
+    }
+
     #btnClose {
         border-radius: 0 0.5rem 0 0;
     }
 
     ul {
-        position: relative;
-        margin: 0;
         padding: 0;
         list-style: none;
-        background: var(--window);
-        border-bottom-left-radius: var(--radius);
-        border-bottom-right-radius: var(--radius);
+    }
+
+    ul,
+    ul[data-no-content="true"] ~ .no-content {
+        border-radius: var(--border-bottom-radius);
+    }
+
+    ul, li {
+        position: relative;
     }
 
     ul[role="menu"] {
@@ -55,8 +68,17 @@
         pointer-events: none;
     }
 
+    ul, .submenu,
+    ul[data-no-content="true"] ~ .no-content {
+        background: var(--window);
+    }
+
+    ul, .popup,
+    #no-result-header {
+        margin: 0;
+    }
+
     hr {
-        border: var(--border);
         margin: var(--half-margin);
     }
 
@@ -76,21 +98,29 @@
         height: 2rem;
         padding: 0 var(--half-margin);
         --cl-icon: black;
-        position: relative;
-        display: flex;
-        align-items: center;
         cursor: pointer;
         user-select: none;
-        border-radius: var(--radius);
         margin: 0.25rem;
         pointer-events: auto;
+    }
+
+    li,
+    .parent-menu-item:after,
+    ul[data-no-content="true"] ~ .no-content {
+        display: flex;
+    }
+
+    li,
+    .parent-menu-item:after {
+        align-items: center;
     }
 
     li > *:not(ul) {
         pointer-events: none;
     }
 
-    li[hidden] {
+    li[hidden], #symbols, .submenu,
+    .no-content {
         display: none;
     }
 
@@ -131,9 +161,6 @@
         cursor: nwse-resize;
     }
 
-    #symbols {
-        display: none;
-    }
 
     filter-header {
         --close-display: inline-block;
@@ -142,16 +169,15 @@
     .submenu {
         position: absolute;
         top: 0;
-        display: none;
-        border: var(--border);
-        background: var(--window);
-        box-shadow: var(--p-shadow-lg);
         width: max-content;
         height: max-content;
         min-width: 12.5rem;
-        border-radius: var(--radius);
         z-index: 1;
         cursor: default;
+    }
+
+    .submenu, li {
+        border-radius: var(--radius);
     }
 
     .submenu[data-on-edge = "false"] {
@@ -164,7 +190,6 @@
 
     li[aria-expanded="true"] > .submenu {
         display: block;
-
     }
 
     li[aria-expanded="true"] {
@@ -181,12 +206,12 @@
     }
 
     .popup[data-keyboard = "true"] > * li:focus {
-        border-left: 0.25rem solid var(--blue);
+        border-left: var(--radius) solid var(--blue);
         padding-left: 0.25rem !important;
     }
 
     .popup[data-keyboard = "true"] > * li[data-icon]:focus::before {
-        padding-left: 0!important;
+        padding-left: 0 !important;
     }
 
     .hierarchy {
@@ -206,33 +231,24 @@
         right: var(--padding);
         top: 0;
         height: 100%;
-        display: flex;
-        align-items: center;
         justify-content: center;
     }
 
-    h2 {
-        margin: 0;
+    #no-result-header {
         font-size: 1rem;
         color: var(--grey-s1);
     }
 
-    p {
+    #no-result-info {
         font-size: 1rem;
         color: var(--grey-s1);
         margin: 0.25rem 0.25rem 0.25rem 0;
     }
 
-    .no-content {
-        display: none;
-
-    }
-
     ul[data-no-content="true"] ~ .no-content{
-        display: flex;
         flex-direction: column;
         padding: 0.5rem;
-        border-top: 2px solid var(--blue);
+        border-top: 0.125rem solid var(--blue);
     }
 </style>
 
@@ -247,8 +263,8 @@
     <filter-header data-ignore-click="true" for="ul" ref="filter"></filter-header>
     <ul id="list-container" ref="container" role="menu" tabindex="-1" class="narrow-scrollbar" data-closable="true"></ul>
     <div class="no-content">
-        <h2>No results found</h2>
-        <p>Try a different search term</p>
+        <h2 id="no-result-header" ref="noResults">&{contextMenu.noResultsFound}</h2>
+        <p id="no-result-info" ref="noInfo">&{contextMenu.tryADifferentSearchTerm}</p>
     </div>
     <svg id="resize" width="16" height="16">
         <use href="#resize-handle"></use>
