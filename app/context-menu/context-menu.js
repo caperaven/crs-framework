@@ -12,9 +12,7 @@ export default class ContextMenu extends crsbinding.classes.ViewBase {
     async disconnectedCallback() {
         this._element.removeEventListener('contextmenu', this.#handler);
         this.#handler = null;
-        await crs.call("translations", "delete", {
-            context: "contextMenu.labels"
-        });
+        globalThis.translations.contextMenu = null;
         await super.disconnectedCallback();
     }
 
@@ -41,13 +39,13 @@ export default class ContextMenu extends crsbinding.classes.ViewBase {
     }
 
     async initialiseTranslations() {
-        await crs.call("translations","add", {
-            context: "contextMenu",
-            "translations": {
+        globalThis.translations = {};
+        globalThis.translations.contextMenu = {
+            labels: {
                 noResultsFound: "No results found",
                 tryADifferentSearchTerm: "Try a different search term"
             }
-        });
+        };
     }
     async showHierarchy(event) {
         await crs.call("context_menu", "show", {
