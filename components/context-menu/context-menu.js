@@ -15,7 +15,6 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     #anchor;
     #target;
     #clickHandler = this.#click.bind(this);
-    #hoverHandler = this.#onHover.bind(this);
     #context;
     #process;
     #item;
@@ -48,7 +47,6 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         return new Promise(async (resolve) => {
             requestAnimationFrame(async () => {
                 globalThis.addEventListener("click", this.#clickHandler);
-                this.container.addEventListener("mouseover", this.#hoverHandler);
                 await this.#buildContextMenu()
 
                 let at = "right";
@@ -87,7 +85,6 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         }
 
         globalThis.removeEventListener("click", this.#clickHandler);
-        this.container.removeEventListener("mouseover", this.#hoverHandler);
         this.#filtering = null;
         this.#filterHeader = null;
         this.#filterCloseHandler = null;
@@ -103,7 +100,6 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         this.#margin = null;
         this.#templates = null;
         this.#isHierarchical = null;
-        this.#hoverHandler = null;
         this.#keyboardInputManager.dispose();
         this.#keyboardInputManager = null;
         await super.disconnectedCallback();
@@ -124,16 +120,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
             return;
         }
 
-        await handleSelection(element, this.#options, this, this.#filterHeader);
-    }
-
-    /**
-     * @method #onHover - Handles the hover event on the context menu.
-     * @param event
-     * @returns {Promise<void>}
-     */
-    async #onHover(event) {
-        this.popup.dataset.keyboard = "false";
+        await handleSelection(element, this.#options, this);
     }
 
     /**

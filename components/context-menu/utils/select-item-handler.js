@@ -1,13 +1,13 @@
-export async function handleSelection(li, options, component, filterHeader, isMobile = false, groupHeader= null) {
+export async function handleSelection(li, options, component) {
     if (li.matches(".parent-menu-item")) {
-        await expandAndCollapseSubmenu(li,filterHeader, isMobile,groupHeader);
+        await expandAndCollapseSubmenu(li);
         return;
     }
 
     //if the element does not have an id I want to do the comparison against its title
     const option = await findInStructure(options, li.id );
 
-    if (option.type != null) {
+    if (option?.type != null) {
         // if a step we don't wait for the result as the context menu should close immediately
         crs.call(option.type, option.action, option.args);
     }
@@ -37,38 +37,28 @@ async function findInStructure(collection, id) {
     }
 }
 
-async function expandAndCollapseSubmenu(li, filterHeader, isMobile, groupHeader) {
+async function expandAndCollapseSubmenu(li) {
     if (li.getAttribute("aria-expanded") === "true") {
         return toggleExpansionState(li);
     }
 
-    const openedLiList = li.parentElement.querySelectorAll(".parent-menu-item[aria-expanded='true']");
-
-    await assertExpandedState(openedLiList, li);
-    await toggleExpansionState(li,filterHeader, isMobile,groupHeader);
-
-    if(isMobile === true) return;
-
+    await collapseOpenedListItems(li);
+    await toggleExpansionState(li);
     await assertViewportBoundary(li);
 }
 
-async function assertExpandedState(openedLiList, li) {
-    for (const openedLi of openedLiList) {
-        if (openedLi === li) continue;
+async function collapseOpenedListItems(selectedLi) {
+    const listItems = selectedLi.parentElement.querySelectorAll(".parent-menu-item[aria-expanded='true']");
+    for (const li of listItems) {
+        if (li === selectedLi) continue;
 
-        await toggleExpansionState(openedLi);
+        await toggleExpansionState(li);
     }
 }
 
 export async function toggleExpansionState(li, filterHeader, isMobile,groupHeader) {
     const isExpanded = li.getAttribute("aria-expanded") === "true";
     li.setAttribute("aria-expanded", !isExpanded);
-
-    if(isMobile === true && isExpanded === false) {
-        filterHeader.setAttribute("aria-hidden", true);
-        groupHeader.setAttribute("aria-hidden", false);
-        return;
-    }
 
     // We set the atViewportEdge attribute to false so that we recalculate the position of the submenu
     // This is to ensure that the submenu is always visible if the parent was already at the edge.

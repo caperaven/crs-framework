@@ -28,7 +28,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     async load() {
         return new Promise(async (resolve) => {
             requestAnimationFrame(async () => {
-                this.shadowRoot.addEventListener("click", this.#clickHandler);
+                this.addEventListener("click", this.#clickHandler);
 
                 await buildElements.call(this, this.#options, this.#templates, this.#context, this.container);
 
@@ -38,14 +38,13 @@ class ContextMenu extends crsbinding.classes.BindableElement {
 
                 await crs.call("component", "notify_ready", {element: this});
 
-                await this.#asserOverflowIsRequired(this.container, this.popup);
                 resolve();
             })
         });
     }
 
     async disconnectedCallback() {
-        this.shadowRoot.removeEventListener("click", this.#clickHandler);
+        this.removeEventListener("click", this.#clickHandler);
         this.#filterHeader.removeEventListener("close", this.#filterCloseHandler);
 
         this.#options = null;
@@ -66,70 +65,43 @@ class ContextMenu extends crsbinding.classes.BindableElement {
 
     async #click(event) {
         const element = event.composedPath()[0];
-        const tagName = element.tagName.toLowerCase();
         const className = element.className;
 
-        if (tagName === "filter-header" || element.id === "input-filter" || className === "submenu") return;
-
-        if (className === "back") {
-            await crs.call("context_menu", "close");
-            return;
-        }
+        if ( element.id === "input-filter" || element.dataset.ignoreClick === "true") return;
 
         if (element === this.btnBack) {
             return await this.#closeSubGroup();
         }
 
-        if (element.matches(".parent-menu-item") === true) {
-            this.groupHeader.textContent = element.getAttribute("aria-label");
-        }
-
-        await handleSelection(event.composedPath()[0], this.#options, this, this.#filterHeader, true, this.groupHeader);
-
-        if (!element.matches(".parent-menu-item") && this.btnBack == null) return;
-
-        await this.#setOffsetAndOverflow(element);
-        await this.#handleButtonState();
-    }
-
-    /**
-     * @method #setOffsetAndOverflow - Sets the overflow property on the ul container based on the content.
-     * @param element- the selected parent li element.
-     * @returns {Promise<void>}
-     */
-    async #setOffsetAndOverflow(element) {
-        const ul = element.querySelector("ul");
-        const ulElementRect = ul.getBoundingClientRect();
-        const ulContainerRect = this.container.getBoundingClientRect();
-
-        const offset = ulElementRect.top - ulContainerRect.top;
-        if (offset > 0) {
-            ul.style.transform = `translateY(${-offset}px)`;
-        }
-
-        this.container.style.height = `${ulElementRect.height}px`;
-
-        await this.#asserOverflowIsRequired(ul, this.popup);
-    }
-
-    /**
-     * @method #asserOverFlowIsRequired - Asserts if the overflow property is required on the ul container.
-     * @param element - the ul element.
-     * @param container - the parent container of the ul element.
-     * @returns {Promise<void>}
-     */
-    async #asserOverflowIsRequired(element, container) {
-        //calculate the height of the ul container
-        const assertOverflowRequired = element.scrollHeight > this.popup.scrollHeight;
-
-        if (assertOverflowRequired === true) {
-            this.container.classList.remove("no-overflow");
-            this.popup.dataset.resizePopup = "true";
+        if (element.parentElement?.dataset.closable == null) {
+            await this.#filterClose();
             return;
         }
 
-        this.popup.dataset.resizePopup = "false";
-        this.container.classList.add("no-overflow");
+        await handleSelection(event.composedPath()[0], this.#options, this);
+
+        if (element.matches(".parent-menu-item") === true) {
+            this.groupHeader.textContent = element.getAttribute("aria-label");
+
+            await this.#toggleHeaderType(true)
+            element.parentElement.classList.add("child-expanded")
+            await this.#handleButtonState();
+        }
+    }
+
+    /**
+     * @method #toggleHeaderType - Toggles the header type based on the sub group expansion.
+     * @param isSubMenu {Boolean} - a boolean value that indicates if the sub group is expanded.
+     * @returns {Promise<void>}
+     */
+    async #toggleHeaderType(isSubMenu) {
+        let isHidden = true;
+        if (this.#filterHeader.getAttribute("aria-hidden") === "true" && isSubMenu === false) {
+            isHidden = false;
+        }
+
+        this.#filterHeader.setAttribute("aria-hidden", isHidden);
+        this.groupHeader.setAttribute("aria-hidden", !isHidden);
     }
 
     /**
@@ -154,22 +126,21 @@ class ContextMenu extends crsbinding.classes.BindableElement {
 
     async #closeSubGroup() {
         const groups = this.shadowRoot.querySelectorAll(".parent-menu-item[aria-expanded='true']");
-        groups[groups.length - 1].removeAttribute("aria-expanded");
+
+        const li = groups[groups.length - 1];
+        li.removeAttribute("aria-expanded");
+
+        li.parentElement.classList.remove("child-expanded");
 
         if (groups.length > 1) {
             this.groupHeader.textContent = groups[groups.length - 2].getAttribute("aria-label");
         }
 
         if (groups.length == 1) {
-            this.container.style.height = "max-content";
             this.btnBack.classList.remove("visible");
             this.spanBorder.classList.remove("visible");
-            this.groupHeader.setAttribute("aria-hidden", true);
-            this.#filterHeader.setAttribute("aria-hidden", false);
+            await this.#toggleHeaderType(false);
         }
-
-        this.popup.dataset.resizePopup = "true";
-        await this.#setOffsetAndOverflow(groups[groups.length - 1].parentElement.parentElement);
     }
 
     /**

@@ -3,6 +3,7 @@
     :host {
         --icon-font: "";
         --height: 100%;
+        --border-bottom-radius: 0 0 0.25rem 0.25rem;
 
         display: flex;
         justify-content: center;
@@ -11,29 +12,25 @@
         left: 0;
         bottom: 0;
         right: 0;
+        padding: 4.5rem 2rem;
         z-index: 999999;
         user-select: none;
+        background: #00000030;
     }
 
     .back {
         width: 100%;
         height: 100%;
-        background: #000000;
+        background: var(--grey);
         opacity: 0.25;
         position: absolute;
     }
 
     .popup {
-        position: absolute;
-        bottom: 72px;
-        top: 5rem;
-        border: var(--border);
-        background: var(--grey-surface);
-        display: grid;
-        grid-template-rows: auto 1fr;
-        width: 20rem;
+        width: 100%;
+        height: 100%;
         border-radius: var(--radius);
-        z-index: 1;
+        overflow: hidden;
     }
 
     ul, .popup,
@@ -44,6 +41,11 @@
     ul {
         list-style: none;
         border-radius: 0 0 0.5rem 0.5rem;
+        overflow-y: visible;
+        border-top: none;
+        border-bottom: var(--border);
+        border-left: var(--border);
+        border-right: var(--border);
     }
 
     ul, #btnBack {
@@ -54,9 +56,6 @@
         background: var(--window);
     }
 
-    ul[role="menu"] {
-        overflow: auto;
-    }
 
     ul, li {
         position: relative;
@@ -94,10 +93,6 @@
         display: none;
     }
 
-    li:hover {
-        background: var(--cl-li-hover)
-    }
-
     li[data-icon]::before {
         content: attr(data-icon);
         font-family: var(--icon-font);
@@ -124,6 +119,7 @@
 
     filter-header {
         --close-display: inline-block;
+        border-radius: 0.25rem 0.25rem 0 0;
     }
 
     .submenu {
@@ -138,17 +134,12 @@
     .parent-menu-item[aria-expanded="true"] > .submenu {
         display: block;
         z-index: 1;
-        width: 20rem;
         height: max-content;
     }
 
     .parent-menu-item[aria-expanded="true"] > .submenu,
     #btnBack {
         border: none;
-    }
-
-    .parent-menu-item[aria-expanded="true"] > .submenu > li {
-        width: 19rem;
     }
 
     .parent-menu-item:after {
@@ -164,7 +155,7 @@
 
     #btnBack {
         font-family: var(--icon-font);
-        font-size: 1.1875rem;
+        font-size: 1.25rem;
         height: 2.5rem;
         width: 2.5rem;
         border-right: none;
@@ -179,17 +170,15 @@
     .toolbar {
         flex-direction: row;
         height: 2.5rem;
-        border-bottom: var(--border);
+        border: var(--border);
         box-sizing: border-box;
-    }
-
-    .no-overflow {
-        overflow: hidden!important;
+        border-radius: 0.25rem 0.25rem 0 0;
+        background: var(--grey-surface)
     }
 
     #span-border {
         width: 0.0625rem;
-        height: 1.875rem;
+        height: 2rem;
         background: var(--grey-s2);
     }
 
@@ -202,7 +191,7 @@
     }
 
     .popup[data-resize-popup="true"] {
-        max-height: calc(100% - 72px);
+        max-height: calc(100% - 4.5rem);
     }
 
     #no-result-header {
@@ -228,9 +217,20 @@
         font-weight: bold;
     }
 
+    ul.child-expanded > li:not([aria-expanded="true"]){
+        display: none;
+    }
+
+    #ul-container.hierarchy {
+        overflow: auto;
+        max-height: 100%;
+    }
+    #ul-container.child-expanded {
+        overflow: unset;
+        height: auto;
+    }
 </style>
 
-<div class="back"></div>
 <div class="popup" ref="popup">
     <div class="toolbar">
         <button id="btnBack" ref="btnBack">arrow-left</button>
@@ -238,7 +238,7 @@
         <filter-header id="filter-header" for="ul"  keyup.call="resetUlHeight"></filter-header>
         <span id="group-header" aria-hidden="true" ref="groupHeader"></span>
     </div>
-    <ul ref="container" role="menu" tabindex="0" class="narrow-scrollbar"></ul>
+    <ul id="ul-container" ref="container" role="menu" tabindex="0" class="narrow-scrollbar" data-closable="true"></ul>
     <div class="no-content">
         <h2 id="no-result-header" ref="noResults">&{contextMenu.noResultsFound}</h2>
         <p id="no-result-info" ref="noInfo">&{contextMenu.tryADifferentSearchTerm}</p>
