@@ -39,6 +39,10 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         await this.init();
     }
 
+    async preLoad() {
+        await crsbinding.translations.add(globalThis.translations.contextMenu, "contextMenu");
+    }
+
     /**
      * @method init - Initializes the context menu.
      * @returns {Promise<unknown>}

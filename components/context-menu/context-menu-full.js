@@ -25,6 +25,10 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         super.connectedCallback();
     }
 
+    async preLoad() {
+        await crsbinding.translations.add(globalThis.translations.contextMenu, "contextMenu");
+    }
+
     async load() {
         return new Promise(async (resolve) => {
             requestAnimationFrame(async () => {
