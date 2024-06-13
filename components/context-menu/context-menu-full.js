@@ -78,7 +78,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
             return;
         }
 
-        await handleSelection(event.composedPath()[0], this.#options, this);
+        await handleSelection(element, this.#options, this);
 
         if (element.matches(".parent-menu-item") === true) {
             this.groupHeader.textContent = element.getAttribute("aria-label");
