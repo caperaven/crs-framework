@@ -87,9 +87,9 @@
         pointer-events: none;
     }
 
-    li[hidden], #btnBack,
-    #span-border, .submenu,
-    .no-content {
+    li[hidden], .submenu,
+    .no-content, #span-border[data-visible = "false"],
+    #btnBack[data-visible = "false"] {
         display: none;
     }
 
@@ -163,10 +163,6 @@
         background: transparent;
     }
 
-    #btnBack.visible {
-        display: block;
-    }
-
     .toolbar {
         flex-direction: row;
         height: 2.5rem;
@@ -182,7 +178,8 @@
         background: var(--grey-s2);
     }
 
-    #span-border.visible {
+    #span-border[data-visible = "true"],
+    #btnBack[data-visible = "true"] {
         display: inline;
     }
 
@@ -233,9 +230,9 @@
 
 <div class="popup" ref="popup">
     <div class="toolbar">
-        <button id="btnBack" ref="btnBack">arrow-left</button>
-        <span id="span-border" ref="spanBorder"></span>
-        <filter-header id="filter-header" for="ul"  keyup.call="resetUlHeight"></filter-header>
+        <button id="btnBack" ref="btnBack" data-visible = "false">arrow-left</button>
+        <span id="span-border" ref="spanBorder" data-visible = "false"></span>
+        <filter-header id="filter-header" for="ul"></filter-header>
         <span id="group-header" aria-hidden="true" ref="groupHeader"></span>
     </div>
     <ul id="ul-container" ref="container" role="menu" tabindex="0" class="narrow-scrollbar" data-closable="true"></ul>

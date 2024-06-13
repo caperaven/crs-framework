@@ -59,10 +59,19 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         super.disconnectedCallback();
     }
 
+    /**
+     * @method #filterClose - Closes the context menu.
+     * @returns {Promise<void>}
+     */
     async #filterClose() {
         await crs.call("context_menu", "close");
     }
 
+    /**
+     * @method #click - Handles the click event on the context menu.
+     * @param event - The click event.
+     * @returns {Promise<void>}
+     */
     async #click(event) {
         const element = event.composedPath()[0];
         const className = element.className;
@@ -91,7 +100,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
 
     /**
      * @method #toggleHeaderType - Toggles the header type based on the sub group expansion.
-     * @param isSubMenu {Boolean} - a boolean value that indicates if the sub group is expanded.
+     * @param isHidden {Boolean} - a boolean value that indicates if the sub group is expanded.
      * @returns {Promise<void>}
      */
     async #toggleHeaderType(isHidden) {
@@ -101,7 +110,6 @@ class ContextMenu extends crsbinding.classes.BindableElement {
 
     /**
      * @method #handleButtonState - Handles the visibility of the back button based on the sub group expansion.
-     * @param backButton - the back button element.
      * @returns {Promise<void>}
      */
     async #handleButtonState() {
@@ -109,22 +117,32 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         const hasSubGroup = subGroups.length > 0;
 
         if (!hasSubGroup) {
-            this.btnBack.classList.remove("visible");
-            this.spanBorder.classList.remove("visible");
-        }
-        else if (!this.btnBack.classList.contains("visible")) {
-            this.btnBack.classList.add("visible");
-            this.spanBorder.classList.add("visible");
+            await this.#toggleBackButtonVisible(false);
+            return;
         }
 
+        await this.#toggleBackButtonVisible(true);
     }
 
+    /**
+     * @method #toggleBackButtonVisible - Toggles the visibility of the back button and Span.
+     * @param isVisible {Boolean} - a boolean value that indicates if the back button is visible.
+     * @returns {Promise<void>}
+     */
+    async #toggleBackButtonVisible(isVisible) {
+        this.btnBack.dataset.visible = isVisible;
+        this.spanBorder.dataset.visible = isVisible;
+    }
+
+    /**
+     * @method #closeSubGroup - Closes the sub group by removing the aria-expanded attribute.
+     * @returns {Promise<void>}
+     */
     async #closeSubGroup() {
         const groups = this.shadowRoot.querySelectorAll(".parent-menu-item[aria-expanded='true']");
-
         const li = groups[groups.length - 1];
-        li.removeAttribute("aria-expanded");
 
+        li.removeAttribute("aria-expanded");
         li.parentElement.classList.remove("child-expanded");
 
         if (groups.length > 1) {
@@ -132,21 +150,15 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         }
 
         if (groups.length == 1) {
-            this.btnBack.classList.remove("visible");
-            this.spanBorder.classList.remove("visible");
             await this.#toggleHeaderType(false);
+            await this.#toggleBackButtonVisible(false);
         }
     }
 
     /**
-     * @method #resetUl - Resets the height of the ul container.
-     * @param event - the event object.
-     * @returns {Promise<void>}
+     * @method setOptions - Sets the options for the context menu.
+     * @param args {object} - The options for the context menu.
      */
-    async resetUlHeight(event) {
-        this.container.style.height = "";
-    }
-
     setOptions(args) {
         this.#options = args.options;
         this.#target = args.target;
