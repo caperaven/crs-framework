@@ -121,24 +121,9 @@ class ContextMenu extends crsbinding.classes.BindableElement {
      */
     async #handleButtonState() {
         const subGroups = this.shadowRoot.querySelectorAll(".parent-menu-item[aria-expanded='true']");
-        const hasSubGroup = subGroups.length > 0;
-
-        if (!hasSubGroup) {
-            await this.#toggleBackButtonVisible(false);
-            return;
-        }
-
-        await this.#toggleBackButtonVisible(true);
+        this.btnBack.dataset.visible = subGroups.length > 0;
     }
 
-    /**
-     * @method #toggleBackButtonVisible - Toggles the visibility of the back button and Span.
-     * @param isVisible {Boolean} - a boolean value that indicates if the back button is visible.
-     * @returns {Promise<void>}
-     */
-    async #toggleBackButtonVisible(isVisible) {
-        this.btnBack.dataset.visible = isVisible;
-    }
 
     /**
      * @method #closeSubGroup - Closes the sub group by removing the aria-expanded attribute.
@@ -157,7 +142,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
 
         if (groups.length == 1) {
             await this.#toggleHeaderType(false);
-            await this.#toggleBackButtonVisible(false);
+            this.btnBack.dataset.visible = false;
         }
     }
 
