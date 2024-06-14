@@ -27,6 +27,8 @@
     }
 
     .popup {
+        display: grid;
+        grid-template-rows: 2.5rem minmax(0, 1fr);
         width: 100%;
         height: 100%;
         border-radius: var(--radius);
@@ -41,23 +43,22 @@
     ul {
         list-style: none;
         border-radius: 0 0 0.5rem 0.5rem;
-        overflow-y: visible;
-        border-top: none;
-        border-bottom: var(--border);
-        border-left: var(--border);
-        border-right: var(--border);
+        overflow-y: auto;
+        border: none;
+        height: 100%;
+        background: none;
     }
 
     ul, #btnBack {
         padding: 0;
     }
 
-    ul, ul[data-no-content="true"] ~ .no-content {
+    ul[data-no-content="true"] ~ .no-content {
         background: var(--window);
     }
 
 
-    ul, li {
+    ul {
         position: relative;
     }
 
@@ -71,6 +72,8 @@
         cursor: pointer;
         user-select: none;
         -webkit-tap-highlight-color: transparent;
+        background: var(--window);
+        border: none;
     }
 
     li, .parent-menu-item:after,
@@ -108,7 +111,7 @@
     li[aria-selected="true"]::after {
         content: "check";
         font-family: crsfrw;
-        position: absolute;
+        position: relative;
         right: 8px;
         color: var(--blue);
     }
@@ -134,7 +137,6 @@
     .parent-menu-item[aria-expanded="true"] > .submenu {
         display: block;
         z-index: 1;
-        height: max-content;
     }
 
     .parent-menu-item[aria-expanded="true"] > .submenu,
@@ -146,7 +148,7 @@
         font-family: var(--icon-font);
         font-size: 1.5rem;
         content: "chevron-right";
-        position: absolute;
+        position: relative;
         right: var(--padding);
         top: 0;
         height: 100%;
@@ -218,14 +220,14 @@
         display: none;
     }
 
-    #ul-container.hierarchy {
-        overflow: auto;
-        max-height: 100%;
+    li span {
+        flex: 1;
     }
-    #ul-container.child-expanded {
-        overflow: unset;
-        height: auto;
+
+    li:last-child {
+        background: hotpink;
     }
+
 </style>
 
 <div class="popup">
