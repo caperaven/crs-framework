@@ -95,6 +95,8 @@ export class KeyboardInputManager {
     async #arrowRight(element) {
         if (element.matches(".parent-menu-item") === false || element.getAttribute("aria-expanded") === "true") return
         await handleSelection(element, this.#options, this.#contextMenu, this.#filterHeader);
+        const ul = element.querySelector(".submenu");
+        await setFocusState(ul.firstElementChild);
     }
 
     /**
