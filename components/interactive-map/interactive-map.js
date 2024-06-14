@@ -1,6 +1,7 @@
 import {CHANGE_TYPES} from "../../src/managers/data-manager/data-manager-types.js";
 import {createImageMap, createStandardMap, isValidCoordinates} from "./interactive-map-utils.js";
 import {MAP_SELECTION_MODE} from "./interactive-map-selection-modes.js";
+import "./../expanding-input/expanding-input.js";
 
 export class InteractiveMap extends HTMLElement {
     #map;
