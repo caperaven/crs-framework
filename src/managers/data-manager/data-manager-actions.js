@@ -226,7 +226,7 @@ class DataManagerActions {
 
     static async request_records(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
-        let eventsRequired  = await crs.process.getValue(step.args.events_required ?? true, context, process, item);
+        let eventsRequired = await crs.process.getValue(step.args.events_required ?? true, context, process, item);
 
         if (manager == null) return;
 
@@ -400,8 +400,9 @@ class DataManagerActions {
 
             // Build array of dirty indexes using index and records.length
             const indexes = [];
-            for (let i = index; i <= dataManager.count; i++) {
-                indexes.push(i);
+            for (let i = 0; i < records.length; i++) {
+                const newRecordIndex = i + index;
+                indexes.push(newRecordIndex);
             }
 
             await dataManager.setDirtyIndexes(indexes, false);
@@ -539,7 +540,6 @@ class DataManagerActions {
             changes: result.changes
         })
     }
-
 
 
     /**
@@ -1173,10 +1173,10 @@ class DataManagerActions {
 
         const target = await crs.process.getValue(step.args.target, context, process, item);
 
-        const updated = globalThis.dataManagers[manager].getUpdated();
+        const updated = await globalThis.dataManagers[manager].getUpdated();
 
-        if (target != null) {
-            await crs.process.setValue(target, updated, context, process, item);
+        if (step.args.target != null) {
+            await crs.process.setValue(step.args.target, updated, context, process, item);
         }
 
         return updated;
@@ -1186,12 +1186,10 @@ class DataManagerActions {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
         if (manager == null) return;
 
-        const target = await crs.process.getValue(step.args.target, context, process, item);
+        const created = await globalThis.dataManagers[manager].getCreated();
 
-        const created = globalThis.dataManagers[manager].getCreated();
-
-        if (target != null) {
-            await crs.process.setValue(target, created, context, process, item);
+        if (step.args.target != null) {
+            await crs.process.setValue(step.args.target, created, context, process, item);
         }
 
         return created;

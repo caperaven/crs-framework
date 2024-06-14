@@ -32,9 +32,8 @@ export class InteractiveMapActions {
 
     static async initialize(step, context, process, item) {
         const instance = await crs.dom.get_element(step, context, process, item);
-        const defaultLayer = await crs.process.getValue(step.args.default_layer || "default", context, process, item);
-        await instance.initialize();
-        instance.defaultLayer = defaultLayer;
+        const maxShapes = await crs.process.getValue(step.args.max_shapes, context, process, item);
+        await instance.initialize(maxShapes)
     }
 
     static async set_colors(step, context, process, item) {
@@ -138,7 +137,6 @@ export class InteractiveMapActions {
         }
     }
 
-
     static async redraw_record(step, context, process, item) {
         const instance = await crs.dom.get_element(step, context, process, item);
         const layer = await crs.process.getValue(step.args.layer, context, process, item);
@@ -204,9 +202,10 @@ export class InteractiveMapActions {
         const toolbar = document.createElement("interactive-map-draw-toolbar");
 
         instance.querySelector("#drawing-tools").appendChild(toolbar);
-
         await toolbar.setInstance(instance);
+        return toolbar;
     }
+
 
     static async clear_layers(step, context, process, item) {
         const instance = await crs.dom.get_element(step, context, process, item);
@@ -409,13 +408,20 @@ class ShapeFactory {
 
     static async add_point(map, layer, data) {
 
+        const iconName = data.options?.iconName ?? "location-pin";
+        const color = data.options?.color ?? "#E00000";
+
         const customIcon = L.divIcon({
             className: 'marker',
-            html: `<div class="point">${data.options.iconName}</div>`,
-            iconSize: [32, 32], // Size of the icon
-            iconAnchor: [16, 32] // Point of the icon which will correspond to marker's location
+            html: `<div class="point">${iconName}</div>`,
+            iconSize: [48, 48], // Size of the icon
+            iconAnchor: [24, 48] // Point of the icon which will correspond to marker's location
         });
 
-        return L.marker(data.coordinates, {icon: customIcon, ...data.options}).addTo(layer);
+        const marker = L.marker(data.coordinates, {icon: customIcon, ...data.options}).addTo(layer);
+
+        const icon = marker.getElement().firstChild;
+        icon.style.color = color;
+        return marker;
     }
 }

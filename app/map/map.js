@@ -2,21 +2,43 @@ import "./../../components/interactive-map/interactive-map-actions.js";
 import "./../../components/interactive-map/interactive-map.js";
 import "../../components/toast-notification/toast-notification-actions.js";
 import "../../src/managers/data-manager/data-manager-actions.js";
+import "../../components/expanding-input/expanding-input.js";
 
 export default class Map extends crsbinding.classes.ViewBase {
 
+    #toastHandler = this.#toast.bind(this);
+
     async connectedCallback() {
+        globalThis.translations = globalThis.translations || {};
+        globalThis.translations.interactiveMap = {
+            enterCoordinates: "Enter co-ordinates here",
+            invalidCoordinates: "Please enter valid GPS co-ordinates",
+            maxShapesReached: "Maximum number of shapes reached. Please delete a shape before adding a new one."
+        }
+        await crs.call("toast_notification", "enable", { position: "bottom-center", margin: 10 });
+
+        await crsbinding.events.emitter.on("toast", this.#toastHandler);
+
         await super.connectedCallback();
+
         await crs.call("data_manager", "register", {
             manager: "my_data",
             id_field: "id",
             type: "memory",
         });
 
-
         this.setProperty("map", "#openstreetmap");
 
         await this.mapReady();
+    }
+
+    async #toast(event) {
+        await crs.call("toast_notification", "show", { message: event.message, severity: event.type});
+    }
+
+    disconnectedCallback() {
+        crsbinding.events.emitter.remove("toast", this.#toastHandler);
+        super.disconnectedCallback();
     }
 
     async clear() {
@@ -27,7 +49,7 @@ export default class Map extends crsbinding.classes.ViewBase {
 
     async mapReady() {
         requestAnimationFrame(async () => {
-            await crs.call("interactive_map", "initialize", { element: "#openstreetmap"});
+            await crs.call("interactive_map", "initialize", { element: "#openstreetmap",  "max_shapes": 2 });
         });
     }
 
@@ -78,8 +100,9 @@ export default class Map extends crsbinding.classes.ViewBase {
                         fillColor: `#${Math.floor(Math.random()*16777215).toString(16)}`,
                         color: `#${Math.floor(Math.random()*16777215).toString(16)}`,
                         weight: Math.floor(Math.random() * 10),
-                        dashArray: '10'
-                    }
+                        dashArray: '10',
+                    },
+                    "readonly": false,
                 },
                 "geometry": {
                     "type": "Polygon",

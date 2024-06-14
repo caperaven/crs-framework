@@ -1,0 +1,56 @@
+@import "/styles/lib/buttons.css";
+@import "/styles/lib/input.css";
+
+:host {
+    display: inline-block;
+    height: 2rem;
+}
+
+:host(:focus){
+    border: none !important;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.input-container {
+    display: none;
+    height: 2rem;
+}
+
+:host([data-expanded="true"]) .input-container {
+    display: flex;
+}
+
+:host([data-expanded="true"]) [data-id="expand"] {
+    display: none;
+}
+
+input {
+ border-radius: var(--radius) 0 0 var(--radius);
+}
+
+input:valid {
+    border: var(--border);
+    background-color: var(--cl-primary-alt);
+}
+
+button {
+    height: 2rem;
+    width: 2rem;
+    margin: 0;
+    border-radius: var(--radius);
+}
+
+button[data-action="submit"] {
+    border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+button[data-action="submit"] {
+    border: var(--border);
+}
+
+label {
+    height: 2rem;
+}

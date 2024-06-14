@@ -244,7 +244,8 @@ export class DataManagerMemoryProvider extends BaseDataManager {
 
     async getUpdated() {
         const updated = [];
-        for (const index in this.#dirtyLookup) {
+        const keys = Object.keys(this.#dirtyLookup);
+        for (const index of keys) {
             if (this.#dirtyLookup[index] === true) {
                 updated.push(this.#records[index]);
             }
@@ -254,7 +255,8 @@ export class DataManagerMemoryProvider extends BaseDataManager {
 
     async getCreated() {
         const created = [];
-        for (const index in this.#dirtyLookup) {
+        const keys = Object.keys(this.#dirtyLookup);
+        for (const index of keys) {
             if (this.#dirtyLookup[index] === false) {
                 created.push(this.#records[index]);
             }

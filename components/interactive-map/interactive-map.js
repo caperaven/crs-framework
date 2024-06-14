@@ -1,5 +1,5 @@
 import {CHANGE_TYPES} from "../../src/managers/data-manager/data-manager-types.js";
-import {createImageMap, createStandardMap} from "./interactive-map-utils.js";
+import {createImageMap, createStandardMap, isValidCoordinates} from "./interactive-map-utils.js";
 import {MAP_SELECTION_MODE} from "./interactive-map-selection-modes.js";
 
 export class InteractiveMap extends HTMLElement {
@@ -15,6 +15,10 @@ export class InteractiveMap extends HTMLElement {
         [CHANGE_TYPES.refresh]: this.#refresh,
         [CHANGE_TYPES.selected]: this.#selectionChanged
     };
+
+    #coordinateInput;
+    #coordinateSubmitHandler;
+    #maxShapes;
     #selectionProvider;
 
 
@@ -30,15 +34,26 @@ export class InteractiveMap extends HTMLElement {
         return this.#activeLayer;
     }
 
+    get maxShapes() {
+        return this.#maxShapes || 0;
+    }
+
     constructor() {
         super();
     }
 
     async connectedCallback() {
         this.innerHTML = await fetch(this.html).then(result => result.text());
+        await crsbinding.translations.add(globalThis.translations.interactiveMap, "interactiveMap");
     }
 
     async disconnectedCallback() {
+        if (this.#coordinateInput != null) {
+            this.#coordinateInput.removeEventListener("submit", this.#coordinateSubmitHandler);
+            this.#coordinateInput = null;
+            this.#coordinateSubmitHandler = null;
+        }
+
         await crs.call("data_manager", "remove_change", {
             manager: this.dataset.manager,
             callback: this.#dataManagerChangedHandler
@@ -67,13 +82,12 @@ export class InteractiveMap extends HTMLElement {
         this.#map = null;
     }
 
-    async initialize() {
+    async initialize(maxShapes = null) {
         if (this.#map != null || this.dataset.loading != null) return;
         await crs.call("component", "notify_loading", {element: this});
         await crs.call("interactive_map", "initialize_lib", {});
         await this.#setSelectionMode();
-
-
+        this.#maxShapes = maxShapes;
 
         const container = this.querySelector("#map");
 
@@ -100,6 +114,20 @@ export class InteractiveMap extends HTMLElement {
             await crs.call("interactive_map", "show_drawing_tools", {element: this});
         }
 
+        if (this.dataset.hideSearchTools !== "true") {
+            this.#coordinateInput = document.createElement("expanding-input");
+            this.#coordinateInput.dataset.placeholder = await crsbinding.translations.get("interactiveMap.enterCoordinates")
+            this.#coordinateInput.dataset.icon = "add"
+            this.querySelector("#search-tools").appendChild(this.#coordinateInput);
+            this.#coordinateSubmitHandler = this.#coordinateSubmit.bind(this);
+            this.#coordinateInput.addEventListener("submit", this.#coordinateSubmitHandler);
+        }
+
+        L.control.zoom({
+            position: 'bottomleft'
+        }).addTo(this.#map);
+
+
         await crs.call("dom_observer", "observe_resize", {
             element: this,
             callback: (value) => {
@@ -108,6 +136,34 @@ export class InteractiveMap extends HTMLElement {
         });
 
         await crs.call("component", "notify_ready", {element: this});
+    }
+
+    async #coordinateSubmit(event) {
+        if (isValidCoordinates(event.detail)) {
+            const parts = event.detail.split(",");
+            const coordinates = [parseFloat(parts[0]), parseFloat(parts[1])];
+
+            const shape = await crs.call("interactive_map", "add_shape", {
+                element: this,
+                layer: this.#activeLayer,
+                data: {
+                    coordinates: coordinates,
+                    type: "point"
+                }
+            });
+
+            await crs.call("interactive_map", "set_mode", {
+                element: this,
+                mode: "draw-point",
+                shape: shape
+            });
+
+            await crs.call("interactive_map", "fit_bounds", {element: this, layer: this.#activeLayer});
+            
+        }
+        else {
+            await crsbinding.events.emitter.emit("toast", {message: await crsbinding.translations.get("interactiveMap.invalidCoordinates"), type: "error"});
+        }
     }
 
     /**
@@ -177,7 +233,7 @@ export class InteractiveMap extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #deleteRecord(args) {
-        await crs.call("interactive_map", "delete_record", {
+        await crs.call("interactive_map", "remove_record", {
             element: this,
             index: args.index,
             layer: this.#activeLayer

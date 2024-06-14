@@ -66,6 +66,7 @@ export default class DrawPolyBase {
 
     async dispose() {
         if (this.#shape != null) {
+            this.#shape.remove();
             this.#shape = null;
         }
 
@@ -102,14 +103,20 @@ export default class DrawPolyBase {
     async cancel() {
         if (this.#shape != null) {
             const index = getShapeIndex(this.#shape);
-            await crs.call("data_manager", "set_selected", {manager: this.#instance.dataset.manager, indexes: [index], selected: false});
-           // Remove temp shape and also redraw the original shape if editing was true
+            if (index != null) {
+                await crs.call("data_manager", "set_selected", {
+                    manager: this.#instance.dataset.manager,
+                    indexes: [index],
+                    selected: false
+                });
+                // Remove temp shape and also redraw the original shape if editing was true
 
-            await crs.call("interactive_map", "redraw_record", {
-                element: this.#instance,
-                index: index,
-                layer: this.#instance.activeLayer
-            });
+                await crs.call("interactive_map", "redraw_record", {
+                    element: this.#instance,
+                    index: index,
+                    layer: this.#instance.activeLayer
+                });
+            }
         }
     }
 
@@ -139,11 +146,22 @@ export default class DrawPolyBase {
                 await crs.call("data_manager", "set_selected", {manager: this.#instance.dataset.manager, indexes: [index], selected: false});
             }
             else {
-                await crs.call("data_manager", "append", {
-                    records: [{
+
+                let record;
+                if ( this.#instance.dataset.format === "geojson") {
+                    record = {
+                        geographicLocation: this.#shape.toGeoJSON()
+                    }
+                }
+                else {
+                    record =  {
                         coordinates: latLngsToCoordinates(this.#shape),
                         type: this.shapeKey
-                    }],
+                    }
+                }
+
+                await crs.call("data_manager", "append", {
+                    records: [record],
                     manager: this.#instance.dataset.manager,
                     is_dirty: true
                 });
