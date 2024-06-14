@@ -21,10 +21,7 @@
     }
 
     .popup {
-        margin: 0;
-        border: var(--border);
         background: var(--grey-surface);
-        box-shadow: var(--drop-shadow);
         width: max-content;
         height: var(--height);
         min-width: 12.5rem;
@@ -34,24 +31,51 @@
         grid-template-rows: auto 1fr;
     }
 
+    hr,
+    .popup,
+    .submenu {
+        border: var(--border);
+    }
+
+    .popup,
+    .submenu {
+        box-shadow: var(--drop-shadow-large);
+    }
+
     #btnClose {
         border-radius: 0 0.5rem 0 0;
     }
 
     ul {
-        position: relative;
-        margin: 0;
         padding: 0;
         list-style: none;
-        background: var(--window);
+    }
+
+    ul,
+    ul[data-no-content="true"] ~ .no-content {
+        border-radius: 0 0 0.25rem 0.25rem;
+    }
+
+    ul, li {
+        position: relative;
     }
 
     ul[role="menu"] {
         overflow: auto;
+        pointer-events: none;
+    }
+
+    ul, .submenu,
+    ul[data-no-content="true"] ~ .no-content {
+        background: var(--window);
+    }
+
+    ul, .popup,
+    #no-result-header {
+        margin: 0;
     }
 
     hr {
-        border: var(--border);
         margin: var(--half-margin);
     }
 
@@ -63,19 +87,37 @@
         margin-bottom: var(--half-margin);
     }
 
-    li {
-        height: 2rem;
-        margin: 0 var(--half-margin);
-        --cl-icon: black;
-        position: relative;
-        display: flex;
-        align-items: center;
-        cursor: pointer;
-        user-select: none;
-        border-radius: 0.25rem;
+    li:not(li[data-icon]) {
+        padding-left: var(--margin);
     }
 
-    li[hidden] {
+    li {
+        height: 2rem;
+        padding: 0 var(--half-margin);
+        --cl-icon: black;
+        cursor: pointer;
+        user-select: none;
+        margin: 0.25rem;
+        pointer-events: auto;
+    }
+
+    li,
+    .parent-menu-item:after,
+    ul[data-no-content="true"] ~ .no-content {
+        display: flex;
+    }
+
+    li,
+    .parent-menu-item:after {
+        align-items: center;
+    }
+
+    li > *:not(ul) {
+        pointer-events: none;
+    }
+
+    li[hidden], #symbols, .submenu,
+    .no-content {
         display: none;
     }
 
@@ -91,7 +133,8 @@
         color: var(--cl-icon);
         height: 1.25rem;
         width: 1.25rem;
-        margin-left: 0.5rem;
+        margin-left: 0;
+        padding-left: 0.25rem;
     }
 
     li[aria-selected="true"]::after {
@@ -100,6 +143,7 @@
         position: absolute;
         right: 0.5rem;
         color: var(--blue);
+        font-size: 1rem;
     }
 
     [aria-hidden="true"] {
@@ -114,9 +158,6 @@
         cursor: nwse-resize;
     }
 
-    #symbols {
-        display: none;
-    }
 
     filter-header {
         --close-display: inline-block;
@@ -125,19 +166,49 @@
     .submenu {
         position: absolute;
         top: 0;
-        left: 100%;
-        display: none;
-        border: var(--border);
-        background: var(--window);
-        box-shadow: var(--drop-shadow);
         width: max-content;
         height: max-content;
         min-width: 12.5rem;
+        z-index: 1;
+        cursor: default;
+    }
+
+    .submenu, li {
         border-radius: var(--radius);
+    }
+
+    .submenu[data-on-edge = "false"] {
+        left: 100%;
+    }
+
+    .submenu[data-on-edge = "true"] {
+        right: 100%;
     }
 
     li[aria-expanded="true"] > .submenu {
         display: block;
+    }
+
+    li[aria-expanded="true"] {
+        background: var(--blue-s2);
+    }
+
+    li:focus, li[aria-expanded="true"]:focus {
+        outline: none;
+        background: var(--grey-s3);
+    }
+
+    li[aria-expanded="true"]:focus {
+        background: var(--blue-s2);
+    }
+
+    .popup[data-keyboard = "true"] > * li:focus {
+        border-left: var(--radius) solid var(--blue);
+        padding-left: 0.25rem !important;
+    }
+
+    .popup[data-keyboard = "true"] > * li[data-icon]:focus::before {
+        padding-left: 0 !important;
     }
 
     .hierarchy {
@@ -157,9 +228,24 @@
         right: var(--padding);
         top: 0;
         height: 100%;
-        display: flex;
-        align-items: center;
         justify-content: center;
+    }
+
+    #no-result-header {
+        font-size: 1rem;
+        color: var(--grey-s1);
+    }
+
+    #no-result-info {
+        font-size: 1rem;
+        color: var(--grey-s1);
+        margin: 0.25rem 0.25rem 0.25rem 0;
+    }
+
+    ul[data-no-content="true"] ~ .no-content{
+        flex-direction: column;
+        padding: 0.5rem;
+        border-top: 0.125rem solid var(--blue);
     }
 </style>
 
@@ -170,12 +256,15 @@
     </symbol>
 </svg>
 
-<div class="back"></div>
-
-<div class="popup" ref="popup">
-    <filter-header for="ul"></filter-header>
-    <ul ref="container" role="menu" tabindex="0" class="narrow-scrollbar"></ul>
+<div class="popup" data-ignore-click="true" ref="popup" tabindex="-1">
+    <filter-header data-ignore-click="true" for="ul" ref="filter"></filter-header>
+    <ul id="list-container" ref="container" role="menu" tabindex="-1" class="narrow-scrollbar" data-closable="true"></ul>
+    <div class="no-content">
+        <h2 id="no-result-header">&{contextMenu.labels.noResultsFound}</h2>
+        <p id="no-result-info">&{contextMenu.labels.noResultsMessage}</p>
+    </div>
     <svg id="resize" width="16" height="16">
         <use href="#resize-handle"></use>
     </svg>
 </div>
+
