@@ -133,7 +133,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
 
         const ul = element.querySelector(".submenu");
 
-        await setFocusState(ul.firstElementChild);
+        await setFocusState(ul.firstChild);
         await assertViewportBoundary(ul)
     }
 
