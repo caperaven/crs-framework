@@ -100,6 +100,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
             this.groupHeader.textContent = element.getAttribute("aria-label");
 
             await this.#toggleHeaderType(true)
+
             element.parentElement.classList.add("child-expanded")
             await this.#handleButtonState();
         }

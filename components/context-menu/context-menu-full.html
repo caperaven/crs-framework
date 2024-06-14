@@ -46,6 +46,7 @@
         overflow-y: auto;
         border: none;
         height: 100%;
+        width: 100%;
         background: none;
     }
 
@@ -126,11 +127,6 @@
     }
 
     .submenu {
-        position: absolute;
-        top: 0;
-        left:0;
-        right: 0;
-        bottom: 0;
         border: var(--border);
     }
 
@@ -142,6 +138,17 @@
     .parent-menu-item[aria-expanded="true"] > .submenu,
     #btnBack {
         border: none;
+    }
+
+    .parent-menu-item[aria-expanded="true"] >:not(ul),
+    .parent-menu-item[aria-expanded="true"]:before,
+    .parent-menu-item[aria-expanded="true"]:after {
+        display: none;
+
+    }
+
+    .parent-menu-item[aria-expanded="true"] {
+        padding: 0;
     }
 
     .parent-menu-item:after {

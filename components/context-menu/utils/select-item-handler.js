@@ -43,7 +43,6 @@ async function expandAndCollapseSubmenu(li) {
 
     await collapseOpenedListItems(li);
     await toggleExpansionState(li);
-    await assertViewportBoundary(li);
 }
 
 async function collapseOpenedListItems(selectedLi) {
@@ -65,23 +64,5 @@ export async function toggleExpansionState(li, filterHeader, isMobile,groupHeade
     ul.dataset.onEdge = "false";
 }
 
-async function assertViewportBoundary(li) {
-    const ul = li.querySelector(".submenu");
-    const { left, width, height,top, bottom } = ul.getBoundingClientRect();
 
-    // sets the first element in the submenu/ul to be focused when the submenu/ul is opened
-    await setFocusState(ul.firstChild);
-
-    //Checks if the available space is less than the width of the submenu/ul
-    ul.dataset.onEdge = window.innerWidth - left < width;
-
-    //Checks if the available space is less than the height of the submenu/ul and repositions the submenu/ul
-    const hasExceededViewportBottomEdge = window.innerHeight - top > height;
-    if (hasExceededViewportBottomEdge === false){
-        const parentUl = ul.parentElement.parentElement;
-        const parentUlBottom = parentUl.getBoundingClientRect().bottom;
-
-        ul.style.top = `${parentUlBottom - bottom}px`;
-    }
-}
 

@@ -127,6 +127,8 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         }
 
         await handleSelection(element, this.#options, this);
+        await assertViewportBoundary(element)
+
     }
 
     /**
@@ -241,3 +243,25 @@ class ContextMenu extends crsbinding.classes.BindableElement {
 }
 
 customElements.define("context-menu", ContextMenu);
+
+async function assertViewportBoundary(li) {
+    if (li.getAttribute("aria-expanded") !== "true") return;
+
+    const ul = li.querySelector(".submenu");
+    const { left, width, height,top, bottom } = ul.getBoundingClientRect();
+
+    // sets the first element in the submenu/ul to be focused when the submenu/ul is opened
+    await setFocusState(ul.firstChild);
+
+    //Checks if the available space is less than the width of the submenu/ul
+    ul.dataset.onEdge = window.innerWidth - left < width;
+
+    //Checks if the available space is less than the height of the submenu/ul and repositions the submenu/ul
+    const hasExceededViewportBottomEdge = window.innerHeight - top > height;
+    if (hasExceededViewportBottomEdge === false){
+        const parentUl = ul.parentElement.parentElement;
+        const parentUlBottom = parentUl.getBoundingClientRect().bottom;
+
+        ul.style.top = `${parentUlBottom - bottom}px`;
+    }
+}
