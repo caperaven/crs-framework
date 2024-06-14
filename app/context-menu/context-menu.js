@@ -43,7 +43,7 @@ export default class ContextMenu extends crsbinding.classes.ViewBase {
         globalThis.translations.contextMenu = {
             labels: {
                 noResultsFound: "No results found",
-                tryADifferentSearchTerm: "Try a different search term"
+                noResultsMessage: "Try a different search term"
             }
         };
     }
