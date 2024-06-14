@@ -112,16 +112,7 @@ export class InteractiveMap extends HTMLElement {
         await this.#hookDataManager();
 
         if (this.dataset.hideDrawingTools !== "true") {
-            await crs.call("interactive_map", "show_drawing_tools", {element: this});
-        }
-
-        if (this.dataset.hideSearchTools !== "true") {
-            this.#coordinateInput = document.createElement("expanding-input");
-            this.#coordinateInput.dataset.placeholder = await crsbinding.translations.get("interactiveMap.enterCoordinates")
-            this.#coordinateInput.dataset.icon = "add"
-            this.querySelector("#search-tools").appendChild(this.#coordinateInput);
-            this.#coordinateSubmitHandler = this.#coordinateSubmit.bind(this);
-            this.#coordinateInput.addEventListener("submit", this.#coordinateSubmitHandler);
+            this.#addDrawingTools();
         }
 
         L.control.zoom({
@@ -314,6 +305,17 @@ export class InteractiveMap extends HTMLElement {
         }
 
         this.#activeLayer = L.geoJSON(null, defaultLayerOptions).addTo(this.#map);
+    }
+
+    async #addDrawingTools() {
+        await crs.call("interactive_map", "show_drawing_tools", {element: this});
+
+        this.#coordinateInput = document.createElement("expanding-input");
+        this.#coordinateInput.dataset.placeholder = await crsbinding.translations.get("interactiveMap.enterCoordinates")
+        this.#coordinateInput.dataset.icon = "add"
+        this.querySelector("#search-tools").appendChild(this.#coordinateInput);
+        this.#coordinateSubmitHandler = this.#coordinateSubmit.bind(this);
+        this.#coordinateInput.addEventListener("submit", this.#coordinateSubmitHandler);
     }
 }
 
