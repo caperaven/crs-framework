@@ -48,13 +48,12 @@ export class KeyboardInputManager {
      * @returns {Promise<void>}
      */
     async #keySelection(event) {
-        const key = event.key;
+        let key = event.key;
         const element = event.composedPath()[0]
         this.#contextMenu.popup.dataset.keyboard = "true";
 
         if (key === 'Tab' && event.shiftKey) {
-            await this.#shiftTab(event);
-            return;
+           key = "ArrowLeft";
         }
 
         if (this.#actions[key] != null) {
@@ -62,17 +61,6 @@ export class KeyboardInputManager {
             await this.#actions[key](element);
         }
 
-    }
-
-    /**
-     * @method #shiftTab - Handles the shift tab event.
-     * @param event - the event object.
-     * @returns {Promise<void>}
-     */
-    async #shiftTab(event) {
-        event.preventDefault();
-
-        await this.#arrowLeft(event.composedPath()[0]);
     }
 
     /**

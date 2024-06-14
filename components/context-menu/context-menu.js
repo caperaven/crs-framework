@@ -108,6 +108,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         this.#keyboardInputManager = null;
         this.popup = null;
         this.container = null;
+        this.filter = null;
         await super.disconnectedCallback();
     }
 
