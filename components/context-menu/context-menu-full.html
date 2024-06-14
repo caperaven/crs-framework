@@ -4,8 +4,6 @@
         --icon-font: "";
         --height: 100%;
 
-        display: flex;
-        justify-content: center;
         position: fixed;
         top: 0;
         left: 0;
@@ -17,12 +15,9 @@
         background: #00000030;
     }
 
-
-
     .popup {
         width: 100%;
         height: 100%;
-        border-radius: var(--radius);
         overflow: hidden;
         display: flex;
         flex-direction: column;
@@ -37,7 +32,6 @@
         list-style: none;
         border-radius: 0 0 0.5rem 0.5rem;
         overflow-y: auto;
-        border: none;
         max-height: 100%;
         width: 100%;
         background: var(--window);
@@ -52,6 +46,7 @@
 
     ul[data-no-content="true"] ~ .no-content {
         background: var(--window);
+        display: flex;
     }
 
 
@@ -72,13 +67,10 @@
         border: none;
     }
 
-    li, .parent-menu-item:after,
-    .toolbar, ul[data-no-content="true"] ~ .no-content {
+    li,
+    .parent-menu-item:after
+     {
         display: flex;
-    }
-
-    li, .parent-menu-item:after,
-    .toolbar {
         align-items: center;
     }
 
@@ -87,7 +79,7 @@
     }
 
     li[hidden], .submenu,
-    .no-content, #span-border[data-visible = "false"],
+    .no-content,
     #btnBack[data-visible = "false"] {
         display: none;
     }
@@ -130,15 +122,14 @@
         border: none;
     }
 
+    .parent-menu-item[aria-expanded="true"] {
+         padding: 0;
+     }
+
     .parent-menu-item[aria-expanded="true"] >:not(ul),
     .parent-menu-item[aria-expanded="true"]:before,
     .parent-menu-item[aria-expanded="true"]:after {
         display: none;
-
-    }
-
-    .parent-menu-item[aria-expanded="true"] {
-        padding: 0;
     }
 
     .parent-menu-item:after {
@@ -160,9 +151,12 @@
         border-right: none;
         border-top-left-radius: var(--radius);
         background: transparent;
+        position: relative;
     }
 
     .toolbar {
+        display: flex;
+        align-items: center;
         flex-direction: row;
         height: 2.5rem;
         border: var(--border);
@@ -171,13 +165,16 @@
         background: var(--grey-surface)
     }
 
-    #span-border {
+    #btnBack::after {
+        position: absolute;
+        content: "";
+        top: 0.25rem;
+        right: 0;
+        bottom: 0.25rem;
         width: 0.0625rem;
-        height: 2rem;
         background: var(--grey-s2);
     }
 
-    #span-border[data-visible = "true"],
     #btnBack[data-visible = "true"] {
         display: inline;
     }
@@ -231,7 +228,6 @@
 <div class="popup">
     <div class="toolbar">
         <button id="btnBack" ref="btnBack" data-visible = "false">arrow-left</button>
-        <span id="span-border" ref="spanBorder" data-visible = "false"></span>
         <filter-header id="filter-header" for="ul"></filter-header>
         <span id="group-header" aria-hidden="true" ref="groupHeader"></span>
     </div>

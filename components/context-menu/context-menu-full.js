@@ -139,7 +139,6 @@ class ContextMenu extends crsbinding.classes.BindableElement {
      */
     async #toggleBackButtonVisible(isVisible) {
         this.btnBack.dataset.visible = isVisible;
-        this.spanBorder.dataset.visible = isVisible;
     }
 
     /**
