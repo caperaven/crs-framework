@@ -72,6 +72,9 @@ export default class Map extends crsbinding.classes.ViewBase {
         for (const shape of shapes) {
             data.push({
                 id: data.length,
+                name: `Shape ${data.length}`,
+                age: Math.floor(Math.random() * 100),
+                address: `Address ${data.length}`,
                 geographicLocation: shape
             });
         }
@@ -101,6 +104,11 @@ export default class Map extends crsbinding.classes.ViewBase {
                         color: `#${Math.floor(Math.random()*16777215).toString(16)}`,
                         weight: Math.floor(Math.random() * 10),
                         dashArray: '10',
+                    },
+                    "popupDefinition": {
+                        "title": "Reference Entity",
+                        "highlightColor": "red",
+                        "fields": ["name", "age", "$seperator","address"]
                     },
                     "readonly": false,
                 },

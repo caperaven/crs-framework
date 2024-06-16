@@ -25,15 +25,19 @@ export class DataManagerMemoryProvider extends BaseDataManager {
      */
     async setRecords(records) {
         this.#records = records;
+        this.#dirtyLookup = {};
         await super.setRecords(records);
     }
 
     /**
      * @method append - This method is called to append records to the data manager.
-     * @param record
+     * @param records
      */
-    async append(...record) {
-        this.#records.push(...record);
+    async append(records) {
+        for (const record of records) {
+            record._index = this.#records.length;
+            this.#records.push(record);
+        }
         this.count = this.#records.length;
     }
 

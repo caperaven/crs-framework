@@ -1,9 +1,16 @@
 import {getShapeProperty} from "../interactive-map-utils.js";
+import {CHANGE_TYPES} from "../../../src/managers/data-manager/data-manager-types.js";
 
 export class InteractiveMapDrawToolbar extends crsbinding.classes.BindableElement {
     #instance = null;
     #modeChangedEventHandler = this.onModeChanged.bind(this);
-    #selectionChangedEventHandler = this.onSelectionChanged.bind(this);
+    #dataManagerChangedHandler = this.#dataManagerChanged.bind(this);
+
+    #changeEventMap = {
+        [CHANGE_TYPES.add]: this.#setMaxReached,
+        [CHANGE_TYPES.refresh]: this.#setMaxReached,
+        [CHANGE_TYPES.selected]: this.#onSelectionChanged
+    };
 
     #createModes = ["draw-point", "draw-polyline", "draw-polygon"];
 
@@ -25,9 +32,6 @@ export class InteractiveMapDrawToolbar extends crsbinding.classes.BindableElemen
         this.#instance.removeEventListener("mode-changed", this.#modeChangedEventHandler);
         this.#modeChangedEventHandler = null;
 
-        this.#instance.removeEventListener("selection-changed", this.#selectionChangedEventHandler);
-        this.#selectionChangedEventHandler = null;
-
         this.#instance = null;
 
         await super.disconnectedCallback();
@@ -36,20 +40,34 @@ export class InteractiveMapDrawToolbar extends crsbinding.classes.BindableElemen
     async setInstance(instance) {
         this.#instance = instance;
         this.#instance.addEventListener("mode-changed", this.#modeChangedEventHandler);
-        this.#instance.addEventListener("selection-changed", this.#selectionChangedEventHandler);
+        await this.#hookDataManager();
     }
 
     async onModeChanged(event) {
         if (event.detail == null) return;
         this.setProperty("mode", event.detail.mode);
+        await this.#setMaxReached();
+    }
+
+    async #hookDataManager() {
+        await crs.call("data_manager", "on_change", {
+            manager: this.#instance.dataset.manager,
+            callback: this.#dataManagerChangedHandler
+        });
+    }
+
+    async #dataManagerChanged(args) {
+        await this.#changeEventMap[args.action]?.call(this, args);
+    }
+    async #onSelectionChanged(args) {
+        this.setProperty("selectedIndex", args.index?.[0]);
+    }
+
+    async #setMaxReached() {
         if (this.#instance.maxShapes > 0) {
             const maxReached = await this.#evaluateIfMaxShapesReached();
             maxReached ? this.classList.add("max-reached") : this.classList.remove("max-reached");
         }
-    }
-
-    async onSelectionChanged(event) {
-        this.setProperty("selectedIndex", event.detail.index);
     }
 
     async setMode(mode) {
@@ -58,7 +76,7 @@ export class InteractiveMapDrawToolbar extends crsbinding.classes.BindableElemen
         if (this.#instance.maxShapes > 0 && this.#createModes.indexOf(mode) !== -1) {
             const maxReached = await this.#evaluateIfMaxShapesReached();
             if (maxReached === true) {
-                await crsbinding.events.emitter.emit("toast", {type: "error", message: crsbinding.translations.get("interactiveMap.maxShapesReached")});
+                await crsbinding.events.emitter.emit("toast", {type: "error", message: await crsbinding.translations.get("interactiveMap.maxShapesReached")});
                 return;
             }
         }
@@ -109,9 +127,9 @@ export class InteractiveMapDrawToolbar extends crsbinding.classes.BindableElemen
 
         let count = 0;
         for (const record of records) {
-            if (getShapeProperty(record, "readonly") !== true) {
-                count++;
-            }
+            const readOnly = record.geographicLocation?.properties?.readonly ?? record.readonly
+            if (readOnly === true) continue;
+            count++;
         }
 
         return count >= this.#instance.maxShapes;

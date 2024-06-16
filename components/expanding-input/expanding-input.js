@@ -5,7 +5,8 @@ export default class ExpandingInput extends HTMLElement {
     #input;
     #actions = {
         expand: this.#expand.bind(this),
-        submit: this.#submit.bind(this)
+        submit: this.#submit.bind(this),
+        clear: this.#clear.bind(this)
     }
 
     get value() {
@@ -32,7 +33,7 @@ export default class ExpandingInput extends HTMLElement {
         if(this.dataset.icon) {
             const buttons = this.shadowRoot.querySelectorAll("button");
             buttons[0].innerHTML = this.dataset.icon;
-            buttons[1].innerHTML = this.dataset.icon;
+            buttons[2].innerHTML = this.dataset.icon;
         }
 
         this.#input.placeholder = this.dataset.placeholder ?? "";
@@ -69,6 +70,12 @@ export default class ExpandingInput extends HTMLElement {
         if (event.key === "Enter" && this.#input.value !== "") {
             await this.#submit();
         }
+    }
+
+    async #clear() {
+        this.#input.value = "";
+        this.dataset.expanded = "false";
+        await this.#submit()
     }
 
 }

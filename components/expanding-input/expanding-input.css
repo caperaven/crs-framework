@@ -4,9 +4,10 @@
 :host {
     display: inline-block;
     height: 2rem;
+    position: relative;
 }
 
-:host(:focus){
+:host(:focus) {
     border: none !important;
 }
 
@@ -28,7 +29,8 @@
 }
 
 input {
- border-radius: var(--radius) 0 0 var(--radius);
+    border-radius: var(--radius) 0 0 var(--radius);
+    padding-right: 2rem;
 }
 
 input:valid {
@@ -41,14 +43,25 @@ button {
     width: 2rem;
     margin: 0;
     border-radius: var(--radius);
+    background: var(--cl-primary-alt);
 }
 
 button[data-action="submit"] {
+    background: var(--grey-s3);
     border-radius: 0 var(--radius) var(--radius) 0;
 }
 
 button[data-action="submit"] {
     border: var(--border);
+}
+
+button[data-action="clear"] {
+    position: absolute;
+    top: 0;
+    right: 2rem;
+    background: none;
+    color: var(--grey-s1);
+    font-size: 1rem;
 }
 
 label {

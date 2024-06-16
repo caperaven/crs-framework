@@ -394,7 +394,7 @@ class DataManagerActions {
 
         const dataManager = globalThis.dataManagers[manager];
         const index = dataManager.count;
-        await dataManager.append(...records);
+        await dataManager.append(records);
 
         if (isDirty === true) {
 
@@ -711,6 +711,18 @@ class DataManagerActions {
         })
     }
 
+    static async filter_indexes(step, context, process, item) {
+        const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return;
+        const indexes = await crs.process.getValue(step.args.indexes, context, process, item);
+        const dataManager = globalThis.dataManagers[manager];
+        dataManager.filter = indexes;
+        await dataManager.notifyChanges({
+            action: CHANGE_TYPES.filter,
+            indexes: indexes
+        })
+    }
+
     /**
      * @method filter_selected - show only selected records in a data manager or those not selected.
      * the selected property is used to determine if you want to show the selected or the non selected values.
@@ -937,6 +949,23 @@ class DataManagerActions {
         }
 
         return globalThis.dataManagers[manager].getById(id);
+    }
+
+    static async get_filtered(step, context, process, item) {
+        const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return;
+
+        if (globalThis.dataManagers[manager] == null) {
+            return null;
+        }
+
+        const records = await globalThis.dataManagers[manager].getAll();
+        if (globalThis.dataManagers[manager].filter == null) {
+            return records;
+        }
+        else {
+            return records.filter((record, index) => globalThis.dataManagers[manager].filter.includes(index));
+        }
     }
 
     /**
@@ -1170,8 +1199,6 @@ class DataManagerActions {
     static async get_updated(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
         if (manager == null) return;
-
-        const target = await crs.process.getValue(step.args.target, context, process, item);
 
         const updated = await globalThis.dataManagers[manager].getUpdated();
 

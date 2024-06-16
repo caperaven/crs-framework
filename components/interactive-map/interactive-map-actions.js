@@ -77,6 +77,7 @@ export class InteractiveMapActions {
 
         if (instance.currentMode != null) {
             await instance.currentMode.cancel();
+            await crs.call("data_manager", "set_selected", {manager: instance.dataset.manager, indexes: [], selected: false, deselect_others:true});
             await crs.call("interactive_map", "set_mode", {element: instance, mode: "none"});
         }
     }
@@ -96,7 +97,10 @@ export class InteractiveMapActions {
         const padding = await crs.process.getValue(step.args.padding || [30, 30], context, process, item);
         const map = instance.map;
 
-        if (padding != null) {
+        let layerCount = 0;
+        map.eachLayer(function(){ layerCount += 1; });
+
+        if (padding != null && layerCount > 0) {
             map.fitBounds(layer.getBounds(), { padding: padding });
         }
     }
@@ -118,21 +122,16 @@ export class InteractiveMapActions {
         const records = await crs.process.getValue(step.args.records, context, process, item);
         const layer = await crs.process.getValue(step.args.layer, context, process, item);
         const instance = await crs.dom.get_element(step, context, process, item);
-        const index = await crs.process.getValue(step.args.index ?? 0, context, process, item);
 
-        for (let i = 0; i < records.length; i++) {
-
-            const record = records[i];
+        for (const record of records) {
             if (record.geographicLocation != null)  {
                 record.geographicLocation.properties = record.geographicLocation.properties || {};
-                record.geographicLocation.properties.index = index + i;
                 // Add shape via geojson
                 layer.addData(record.geographicLocation);
             }
             else {
                 record.options = record.options || {};
-                record.options.index = index + i;
-                await ShapeFactory[`add_${record.type}`](instance.map, layer, record);
+                await ShapeFactory[`add_${record.type}`](instance.map, record, layer);
             }
         }
     }
@@ -152,8 +151,7 @@ export class InteractiveMapActions {
             await crs.call("interactive_map", "add_records", {
                 element: instance,
                 records: [record],
-                layer: layer,
-                index: index
+                layer: layer
             });
         }
     }
@@ -161,6 +159,10 @@ export class InteractiveMapActions {
     static async remove_record(step, context, process, item) {
         const layer = await crs.process.getValue(step.args.layer, context, process, item);
         const index = await crs.process.getValue(step.args.index, context, process, item);
+
+        if (index == null) {
+            throw new Error("Index is required to remove a record");
+        }
 
         const shape = await crs.call("interactive_map", "find_shape_by_index", {layer: layer, index: index});
         layer.removeLayer(shape);
@@ -172,7 +174,7 @@ export class InteractiveMapActions {
         const layer = await crs.process.getValue(step.args.layer, context, process, item);
         const data = await crs.process.getValue(step.args.data, context, process, item);
 
-        const shape = await ShapeFactory[`add_${data.type}`](map, layer, data);
+        const shape = await ShapeFactory[`add_${data.type}`](map, data, layer);
         return shape;
     }
 
@@ -230,51 +232,6 @@ export class InteractiveMapActions {
         });
     }
 
-    static async remove_selected(step, context, process, item) {
-        const instance = await crs.dom.get_element(step, context, process, item);
-
-        if (instance.selectedShape != null) {
-            await crs.call("interactive_map", "remove_layer_if_exists", {
-                layer: instance.selectedShape,
-                element: instance
-            });
-            instance.selectedShape = null;
-            await crs.call("interactive_map", "set_mode", {element: instance, mode: "none"});
-        }
-    }
-
-    static async remove_layer_if_exists(step, context, process, item) {
-        const instance = await crs.dom.get_element(step, context, process, item);
-        const map = instance.map;
-
-        if (map == null) return false;
-
-        const target = await crs.process.getValue(step.args.target, context, process, item);
-        let layer = await crs.process.getValue(step.args.layer, context, process, item);
-
-        if (typeof layer === "string") {
-            const layers = map._layers;
-            layer = Object.values(layers).find(_ => _.layer_name === layer);
-        }
-
-        let result = false;
-
-        if (layer != null) {
-            if (layer._eventParents != null) {
-                const keys = Object.keys(layer._eventParents);
-                map.removeLayer(map._layers[keys[0]]);
-            }
-            map.removeLayer(layer);
-            result = true;
-        }
-
-        if (target != null) {
-            await crs.process.setValue(step.args.target, result, context, process, item);
-        }
-
-        return result;
-    }
-
     static async get_layer_geo_json(step, context, process, item) {
         const instance = await crs.dom.get_element(step, context, process, item);
         const layerName = await crs.process.getValue(step.args.layer, context, process, item);
@@ -314,7 +271,8 @@ export class InteractiveMapActions {
         if (data.length === 0) return data;
         const colorsLength = Object.keys(COLORS).length;
         let index = 0;
-        data.forEach((item) => {
+
+        for (const item of data) {
             let source;
             if(item[featurePath].type === "FeatureCollection") {
                 // If it comes from server as feature collection we need to get the first feature. The server does not support multiple features in a collection
@@ -325,31 +283,34 @@ export class InteractiveMapActions {
             }
 
             source.properties = source.properties ?? {};
-            source.properties.fillColor = COLORS[index].fillColor || COLORS[index].fillColor;
-            source.properties.color = COLORS[index].color;
+            source.properties.style = source.properties.style ?? {};
+            source.properties.style.fillColor = COLORS[index].fillColor || COLORS[index].fillColor;
+            source.properties.style.color = COLORS[index].color;
 
             index ++;
 
             if(index >= colorsLength) {
                 index = 0;
             }
-        });
+        }
         return data;
     }
 
     static async assign_properties_to_geo_data(step, context, process, item) {
-        const data = await crs.process.getValue(step.args.data ?? [], context, process, item);
+        let data = await crs.process.getValue(step.args.data ?? [], context, process, item);
         const featurePath = await crs.process.getValue(step.args.feature_path || "geographicLocation", context, process, item);
         const properties = await crs.process.getValue(step.args.properties, context, process, item);
 
         const keys = Object.keys(properties);
         let values = {};
 
+        if (Array.isArray(data) === false) { data = [data]; }
+
         for (const key of keys) {
             values[key] = await crs.process.getValue(properties[key], context, process, item);
         }
 
-        data.forEach((item) => {
+        for (const item of data) {
             let source;
             if(item[featurePath].type === "FeatureCollection") {
                 // If it comes from server as feature collection we need to get the first feature. The server does not support multiple features in a collection
@@ -362,9 +323,9 @@ export class InteractiveMapActions {
             source.properties = source.properties ?? {};
 
             for (const key of keys) {
-                source.properties[key] = values[key];
+                source.properties[key] = structuredClone(values[key]);
             }
-        });
+        }
         return data;
     }
 }
@@ -391,37 +352,44 @@ async function getColorData(step, context, process, item, map) {
     }
 }
 
-
-
-
 crs.intent.interactive_map = InteractiveMapActions;
 
 
-class ShapeFactory {
-    static async add_polygon(map, layer, data) {
-        return L.polygon(data.coordinates, data.options).addTo(layer);
+export class ShapeFactory {
+    static add_polygon(map, data, layer = null) {
+        const shape =  L.polygon(data.coordinates, data.options);
+        if (layer != null) {
+            shape.addTo(layer);
+        }
+
+        return shape;
     }
 
-    static async add_polyline(map, layer, data) {
-        return L.polyline(data.coordinates, data.options).addTo(layer);
+    static add_polyline(map, data, layer = null) {
+        const shape =  L.polyline(data.coordinates, data.options);
+        if (layer != null) {
+            shape.addTo(layer);
+        }
+        return shape;
     }
 
-    static async add_point(map, layer, data) {
-
+    static add_point(map, data, layer = null) {
         const iconName = data.options?.iconName ?? "location-pin";
         const color = data.options?.color ?? "#E00000";
 
         const customIcon = L.divIcon({
             className: 'marker',
-            html: `<div class="point">${iconName}</div>`,
+            html: `<div style="color: ${color}" class="point">${iconName}</div>`,
             iconSize: [48, 48], // Size of the icon
             iconAnchor: [24, 48] // Point of the icon which will correspond to marker's location
         });
 
-        const marker = L.marker(data.coordinates, {icon: customIcon, ...data.options}).addTo(layer);
+        const marker = L.marker(data.coordinates, {icon: customIcon});
 
-        const icon = marker.getElement().firstChild;
-        icon.style.color = color;
+        if (layer != null) {
+            marker.addTo(layer);
+        }
+
         return marker;
     }
 }

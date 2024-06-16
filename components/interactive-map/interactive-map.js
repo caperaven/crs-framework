@@ -1,25 +1,25 @@
 import {CHANGE_TYPES} from "../../src/managers/data-manager/data-manager-types.js";
-import {createImageMap, createStandardMap, isValidCoordinates} from "./interactive-map-utils.js";
+import {addDynamicPopup, createImageMap, createStandardMap, isValidCoordinates} from "./interactive-map-utils.js";
 import {MAP_SELECTION_MODE} from "./interactive-map-selection-modes.js";
 import "./../expanding-input/expanding-input.js";
+import {ShapeFactory} from "./interactive-map-actions.js";
 
 export class InteractiveMap extends HTMLElement {
     #map;
-    #layerLookupTable = {};
     #dataManagerChangedHandler = this.#dataManagerChanged.bind(this);
     #activeLayer
     #changeEventMap = {
         [CHANGE_TYPES.add]: this.#addRecord,
         [CHANGE_TYPES.update]: this.#updateRecord,
         [CHANGE_TYPES.delete]: this.#deleteRecord,
-        [CHANGE_TYPES.filter]: this.#filterRecords,
         [CHANGE_TYPES.refresh]: this.#refresh,
-        [CHANGE_TYPES.selected]: this.#selectionChanged
+        [CHANGE_TYPES.selected]: this.#selectionChanged,
+        [CHANGE_TYPES.filter]: this.#filterChanged
     };
 
     #coordinateInput;
     #coordinateSubmitHandler;
-    #maxShapes;
+    #filterValue;
     #selectionProvider;
 
 
@@ -36,7 +36,7 @@ export class InteractiveMap extends HTMLElement {
     }
 
     get maxShapes() {
-        return this.#maxShapes || 0;
+        return this.dataset.maxShapes ?? 0;
     }
 
     constructor() {
@@ -67,7 +67,7 @@ export class InteractiveMap extends HTMLElement {
             this.currentMode = null;
         }
 
-        this.#selectionProvider.dispose();
+        this.#selectionProvider?.dispose();
         this.#selectionProvider = null;
 
         if (this.#map == null) return; // If map was never initialized, return
@@ -83,12 +83,11 @@ export class InteractiveMap extends HTMLElement {
         this.#map = null;
     }
 
-    async initialize(maxShapes = null) {
+    async initialize() {
         if (this.#map != null || this.dataset.loading != null) return;
         await crs.call("component", "notify_loading", {element: this});
         await crs.call("interactive_map", "initialize_lib", {});
         await this.#setSelectionMode();
-        this.#maxShapes = maxShapes;
 
         const container = this.querySelector("#map");
 
@@ -131,6 +130,8 @@ export class InteractiveMap extends HTMLElement {
     }
 
     async #coordinateSubmit(event) {
+        if (event.detail == null || event.detail === "") return;
+
         if (isValidCoordinates(event.detail)) {
             const parts = event.detail.split(",");
             const coordinates = [parseFloat(parts[0]), parseFloat(parts[1])];
@@ -151,10 +152,12 @@ export class InteractiveMap extends HTMLElement {
             });
 
             await crs.call("interactive_map", "fit_bounds", {element: this, layer: this.#activeLayer});
-            
-        }
-        else {
-            await crsbinding.events.emitter.emit("toast", {message: await crsbinding.translations.get("interactiveMap.invalidCoordinates"), type: "error"});
+
+        } else {
+            await crsbinding.events.emitter.emit("toast", {
+                message: await crsbinding.translations.get("interactiveMap.invalidCoordinates"),
+                type: "error"
+            });
         }
     }
 
@@ -197,10 +200,24 @@ export class InteractiveMap extends HTMLElement {
     async #addRecord(args) {
         // Assign indexes to the records
 
+        for (const item of args.models) {
+            if (item.geographicLocation != null) {
+                if (item.geographicLocation.type === "FeatureCollection") {
+                    item.geographicLocation = item.geographicLocation.features[0]
+                }
+                item.geographicLocation.properties = item.geographicLocation.properties || {};
+                item.geographicLocation.properties.id = item.id;
+                item.geographicLocation.properties.index = item._index;
+            } else {
+                item.options = item.options || {};
+                item.options.id = item.id;
+                item.options.index = item._index;
+            }
+        }
+
         await crs.call("interactive_map", "add_records", {
             element: this,
             records: args.models,
-            index: args.index,
             layer: this.#activeLayer
         });
     }
@@ -225,30 +242,38 @@ export class InteractiveMap extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #deleteRecord(args) {
-        await crs.call("interactive_map", "remove_record", {
-            element: this,
-            index: args.index,
-            layer: this.#activeLayer
-        });
+        for (const index of args.indexes) {
+            await crs.call("interactive_map", "remove_record", {
+                element: this,
+                index: index,
+                layer: this.#activeLayer
+            });
+        }
     }
 
-    /**
-     * @method #filterRecords - the data manager performed a filter operation and these are the records you need to show
-     * @param args {Object} - arguments from the data manager change event
-     * @returns {Promise<void>}
-     */
-    async #filterRecords(args) {
+    async filterIndexes(indexes) {
+        this.#filterValue = indexes;
+        await this.#refresh();
     }
 
+    async #filterChanged() {
+        return this.#refresh();
+    }
 
-    async #refresh(args) {
+    async #refresh() {
+        // If editing mode we want to dispose it when new data is coming in
+        if (this.currentMode?.editing === true) {
+           await crs.call("interactive_map", "cancel_mode", {element: this});
+        }
+
         await crs.call("interactive_map", "clear_layer", {element: this, layer: this.#activeLayer});
-        let data = await crs.call("data_manager", "get_all", {manager: this.dataset.manager});
+        const data = await crs.call("data_manager", "get_filtered", {manager: this.dataset.manager});
 
         if (data?.length > 0) {
             // For now we are assuming geo data here. We will need to add support for other types of data in future
 
             for (const item of data) {
+
                 if (item.geographicLocation != null) {
                     if (item.geographicLocation.type === "FeatureCollection") {
                         item.geographicLocation = item.geographicLocation.features[0]
@@ -264,7 +289,6 @@ export class InteractiveMap extends HTMLElement {
                 records: data,
                 layer: this.#activeLayer
             });
-
 
             await crs.call("interactive_map", "fit_bounds", {element: this, layer: this.#activeLayer});
         }
@@ -285,9 +309,25 @@ export class InteractiveMap extends HTMLElement {
 
     async #createDefaultLayer() {
         const defaultLayerOptions = {
-            pointToLayer: (feature, latlng) => {
+            onEachFeature: async (feature, layer) => {
+                const record = await crs.call("data_manager", "get", {manager: this.dataset.manager, index: feature.properties.index});
+                const popupDefinition = feature.properties?.popupDefinition
+                if (popupDefinition != null) {
 
-                return createDefaultPoint( feature,[latlng.lat, latlng.lng], {});
+                    layer.on('click', function (e) {
+                        if (this.currentMode == null) {
+                            addDynamicPopup(layer, popupDefinition, record);
+                        }
+                    });
+                }
+                layer.options.readonly = record.geographicLocation?.properties?.readonly
+            },
+            pointToLayer: (feature, latlng) => {
+                const data = {
+                    options: feature.properties?.style || {},
+                    coordinates: [latlng.lat, latlng.lng]
+                }
+                return ShapeFactory.add_point(this.#map, data)
             },
             style: (feature) => {
                 const style = feature.properties?.style || {};
@@ -317,22 +357,6 @@ export class InteractiveMap extends HTMLElement {
         this.#coordinateSubmitHandler = this.#coordinateSubmit.bind(this);
         this.#coordinateInput.addEventListener("submit", this.#coordinateSubmitHandler);
     }
-}
-
-function createDefaultPoint(feature, coordinates, options = {}) {
-    const iconName = feature.properties?.icon || "location-pin";
-    const color = feature.properties?.color || "red";
-
-    const style = `style="color: ${color};"`
-    const html = `<div class="point" ${style}>${iconName}</div>`;
-    const customIcon = L.divIcon({
-        className: 'marker',
-        html: html,
-        iconSize: [32, 32], // Size of the icon
-        iconAnchor: [16, 32] // Point of the icon which will correspond to marker's location
-    });
-    const marker = L.marker(coordinates, {icon: customIcon, ...options});
-    return marker;
 }
 
 customElements.define("interactive-map", InteractiveMap);

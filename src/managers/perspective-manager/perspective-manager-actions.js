@@ -134,8 +134,8 @@ export async function notifyPerspectiveChanged(perspective) {
     if (globalThis.dataManagers == null) return;
 
     for (const key of Object.keys(globalThis.dataManagers)) {
-        const dataManager = globalThis.dataManagers[key];
-        if (dataManager.perspective === perspective) {
+        if (key === perspective) {
+            const dataManager = globalThis.dataManagers[key];
             await dataManager.perspectiveChanged();
         }
     }

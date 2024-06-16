@@ -1,3 +1,5 @@
+import {getShapeIndex} from "../interactive-map-utils.js";
+
 export default class SelectionEditProvider {
     #instance;
     #shapeCache = [];
@@ -26,12 +28,12 @@ export default class SelectionEditProvider {
         });
 
         // Show the selected shapes
-        indexes.forEach(index => {
-            const layer = this.#shapeCache.find(layer => layer.feature.properties.index === index);
-            if (layer) {
-                this.#instance.activeLayer.addLayer(layer);
+        for (const index of indexes) {
+            const shape = this.#shapeCache.find(shape => getShapeIndex(shape) === index);
+            if (shape) {
+                this.#instance.activeLayer.addLayer(shape);
             }
-        });
+        }
 
         await crs.call("interactive_map", "fit_bounds", { element: this.#instance, layer: this.#instance.activeLayer });
     }

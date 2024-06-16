@@ -17,7 +17,7 @@ export default class SelectionEditProvider {
         const indexes = await crs.call("data_manager", "get_selected_indexes", { manager: this.#instance.dataset.manager });
         if (indexes.length === 0) {
             // If no shapes are selected, do nothing
-            this.#instance.dispatchEvent(new CustomEvent("selection-changed", { detail: { index: null }}));
+            this.#instance.dispatchEvent(new CustomEvent("data-changed", { detail: { index: null }}));
             return;
         }
 
@@ -35,7 +35,7 @@ export default class SelectionEditProvider {
             });
         }
 
-        this.#instance.dispatchEvent(new CustomEvent("selection-changed", { detail: { index: firstIndex }}));
+        this.#instance.dispatchEvent(new CustomEvent("data-changed", { detail: { index: firstIndex }}));
     }
 
     async clear() {

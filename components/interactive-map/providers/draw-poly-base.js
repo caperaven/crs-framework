@@ -39,6 +39,10 @@ export default class DrawPolyBase {
         throw new Error("Not implemented");
     }
 
+    get editing () {
+        return true;
+    }
+
     get minPoints() {
         return 3;
     }
@@ -250,6 +254,7 @@ export default class DrawPolyBase {
 
 
     async #click(event) {
+        event.originalEvent.stopPropagation();
         if (this.#disableNewPoints === true) {
             return;
         }
