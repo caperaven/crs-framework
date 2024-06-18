@@ -169,10 +169,8 @@ class ContextMenu extends crsbinding.classes.BindableElement {
      * @returns {Promise<void>}
      */
     async #setFixedLayout( at, anchor) {
-        const ul = this.shadowRoot.querySelector(".popup");
-
         await crs.call("fixed_layout", "set", {
-            element: ul,
+            element: this,
             target: this.#target,
             point: this.#point,
             at: this.#at || at,
