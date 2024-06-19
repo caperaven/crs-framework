@@ -58,10 +58,9 @@ export default class DrawPoint {
                     layer: this.#instance.activeLayer
                 });
             }
+            this.#point.remove();
+            this.#point = null;
         }
-
-        this.#point.remove();
-        this.#point = null;
     }
 
     async accept() {

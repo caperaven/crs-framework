@@ -394,19 +394,7 @@ class DataManagerActions {
 
         const dataManager = globalThis.dataManagers[manager];
         const index = dataManager.count;
-        await dataManager.append(records);
-
-        if (isDirty === true) {
-
-            // Build array of dirty indexes using index and records.length
-            const indexes = [];
-            for (let i = 0; i < records.length; i++) {
-                const newRecordIndex = i + index;
-                indexes.push(newRecordIndex);
-            }
-
-            await dataManager.setDirtyIndexes(indexes, false);
-        }
+        await dataManager.append(records, isDirty);
 
         await dataManager.notifyChanges({
             action: CHANGE_TYPES.add,
@@ -940,15 +928,24 @@ class DataManagerActions {
         const index = await crs.process.getValue(step.args.index, context, process, item);
         const id = await crs.process.getValue(step.args.id, context, process, item);
 
-        if (index != null) {
-            return globalThis.dataManagers[manager].getByIndex(index);
-        }
-
         if (globalThis.dataManagers[manager] == null) {
             return null;
         }
 
-        return globalThis.dataManagers[manager].getById(id);
+
+        let value = null;
+        if (index != null) {
+            value = await globalThis.dataManagers[manager].getByIndex(index);
+        }
+        else if (id != null) {
+            value = globalThis.dataManagers[manager].getById(id);
+        }
+
+        if (step.args.target) {
+            await crs.process.setValue(step.args.target, value, context, process, item);
+        }
+
+        return value;
     }
 
     static async get_filtered(step, context, process, item) {
@@ -1228,15 +1225,6 @@ class DataManagerActions {
         if (manager == null) return;
 
         return globalThis.dataManagers[manager].clearDirty();
-    }
-
-    static async clear_dirty_indexes(step, context, process, item) {
-        const manager = await crs.process.getValue(step.args.manager, context, process, item);
-        if (manager == null) return;
-
-        const indexes = await crs.process.getValue(step.args.indexes, context, process, item);
-
-        return globalThis.dataManagers[manager].clearDirtyIndexes(indexes);
     }
 }
 

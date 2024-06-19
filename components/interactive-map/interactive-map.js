@@ -352,7 +352,8 @@ export class InteractiveMap extends HTMLElement {
 
         this.#coordinateInput = document.createElement("expanding-input");
         this.#coordinateInput.dataset.placeholder = await crsbinding.translations.get("interactiveMap.enterCoordinates")
-        this.#coordinateInput.dataset.icon = "add"
+        this.#coordinateInput.dataset.icon = "search"
+        this.#coordinateInput.dataset.submitIcon = "add"
         this.querySelector("#search-tools").appendChild(this.#coordinateInput);
         this.#coordinateSubmitHandler = this.#coordinateSubmit.bind(this);
         this.#coordinateInput.addEventListener("submit", this.#coordinateSubmitHandler);

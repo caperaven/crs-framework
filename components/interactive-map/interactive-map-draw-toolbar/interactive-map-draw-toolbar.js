@@ -60,7 +60,8 @@ export class InteractiveMapDrawToolbar extends crsbinding.classes.BindableElemen
         await this.#changeEventMap[args.action]?.call(this, args);
     }
     async #onSelectionChanged(args) {
-        this.setProperty("selectedIndex", args.index?.[0]);
+        const index =  args.changes ? args.index[0] : null;
+        this.setProperty("selectedIndex", index);
     }
 
     async #setMaxReached() {

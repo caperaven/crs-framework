@@ -33,7 +33,7 @@ export default class ExpandingInput extends HTMLElement {
         if(this.dataset.icon) {
             const buttons = this.shadowRoot.querySelectorAll("button");
             buttons[0].innerHTML = this.dataset.icon;
-            buttons[2].innerHTML = this.dataset.icon;
+            buttons[2].innerHTML = this.dataset.submitIcon ?? this.dataset.icon;
         }
 
         this.#input.placeholder = this.dataset.placeholder ?? "";

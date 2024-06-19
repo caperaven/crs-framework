@@ -1,4 +1,5 @@
 import {BaseDataManager} from "./data-manager-base.js";
+import {DIRTY_TYPES} from "./data-manager-dirty-types.js";
 
 /**
  * @class DataManagerMemoryProvider - This class is used to provide a memory based data manager.
@@ -33,11 +34,17 @@ export class DataManagerMemoryProvider extends BaseDataManager {
      * @method append - This method is called to append records to the data manager.
      * @param records
      */
-    async append(records) {
+    async append(records, isDirty = false) {
         for (const record of records) {
             record._index = this.#records.length;
+
+            if (isDirty === true) {
+                this.#dirtyLookup[record._index] = DIRTY_TYPES.CREATED;
+            }
+
             this.#records.push(record);
         }
+
         this.count = this.#records.length;
     }
 
@@ -149,7 +156,7 @@ export class DataManagerMemoryProvider extends BaseDataManager {
         }
 
         if (isDirty === true) {
-            this.#dirtyLookup[index] = true;
+            this.#dirtyLookup[index] = DIRTY_TYPES.UPDATED;
         }
         else {
             delete this.#dirtyLookup[index];
@@ -170,11 +177,11 @@ export class DataManagerMemoryProvider extends BaseDataManager {
 
         const keys = Object.keys(changes);
         for (const key of keys) {
-
+            record[key] = changes[key];
         }
 
         if (isDirty === true) {
-            this.#dirtyLookup[index] = true;
+            this.#dirtyLookup[index] = DIRTY_TYPES.UPDATED;
         }
         else {
             delete this.#dirtyLookup[index];
@@ -240,17 +247,11 @@ export class DataManagerMemoryProvider extends BaseDataManager {
         this.selectedCount = selected == true ? this.#records.length : 0;
     }
 
-    async setDirtyIndexes(indexes, isUpdate) {
-        for (const index of indexes) {
-            this.#dirtyLookup[index] = isUpdate;
-        }
-    }
-
     async getUpdated() {
         const updated = [];
         const keys = Object.keys(this.#dirtyLookup);
         for (const index of keys) {
-            if (this.#dirtyLookup[index] === true) {
+            if (this.#dirtyLookup[index] === DIRTY_TYPES.UPDATED) {
                 updated.push(this.#records[index]);
             }
         }
@@ -261,7 +262,7 @@ export class DataManagerMemoryProvider extends BaseDataManager {
         const created = [];
         const keys = Object.keys(this.#dirtyLookup);
         for (const index of keys) {
-            if (this.#dirtyLookup[index] === false) {
+            if (this.#dirtyLookup[index] === DIRTY_TYPES.CREATED) {
                 created.push(this.#records[index]);
             }
         }
@@ -278,6 +279,3 @@ export class DataManagerMemoryProvider extends BaseDataManager {
         }
     }
 }
-
-
-
