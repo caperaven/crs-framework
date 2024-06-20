@@ -25,6 +25,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     #filterHeader;
     #keyboardInputManager;
     #isHierarchical = false;
+    #disposing = false;
 
     get shadowDom() {
         return true;
@@ -80,6 +81,12 @@ class ContextMenu extends crsbinding.classes.BindableElement {
      * @returns {Promise<void>}
      */
     async disconnectedCallback() {
+        if(this.#disposing === true) return;
+        // We are adding disposing pattern as the context menu can be closed from two places.
+        // 1. The user clicks outside the context menu and...
+        // 2. The user clicks another element that has a context menu.
+        // In both cases, the context menu is closed and the disconnectedCallback is called.
+        this.#disposing = true
         await crs.call("dom_interactive", "disable_resize", {
             element: this.popup
         });
@@ -110,6 +117,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         this.container = null;
         this.filter = null;
         await super.disconnectedCallback();
+        this.#disposing = null;
     }
 
     /**
