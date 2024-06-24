@@ -14,6 +14,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     #at;
     #anchor;
     #target;
+    #callback;
     #clickHandler = this.#click.bind(this);
     #context;
     #process;
@@ -33,6 +34,10 @@ class ContextMenu extends crsbinding.classes.BindableElement {
 
     get html() {
         return import.meta.url.replace(".js", ".html");
+    }
+
+    get callback() {
+        return this.#callback;
     }
 
     async connectedCallback() {
@@ -81,12 +86,6 @@ class ContextMenu extends crsbinding.classes.BindableElement {
      * @returns {Promise<void>}
      */
     async disconnectedCallback() {
-        if(this.#disposing === true) return;
-        // We are adding disposing pattern as the context menu can be closed from two places.
-        // 1. The user clicks outside the context menu and...
-        // 2. The user clicks another element that has a context menu.
-        // In both cases, the context menu is closed and the disconnectedCallback is called.
-        this.#disposing = true
         await crs.call("dom_interactive", "disable_resize", {
             element: this.popup
         });
@@ -104,9 +103,13 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         this.#point = null;
         this.#at = null;
         this.#anchor = null;
+        if (this.#target != null) {
+            delete this.#target.dataset.active;
+        }
         this.#target = null;
         this.#context = null;
         this.#process = null;
+        this.#callback = null;
         this.#item = null;
         this.#margin = null;
         this.#templates = null;
@@ -117,7 +120,6 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         this.container = null;
         this.filter = null;
         await super.disconnectedCallback();
-        this.#disposing = null;
     }
 
     /**
@@ -151,7 +153,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
      * @returns {Promise<void>}
      */
     async #filterClose(event) {
-        await crs.call("context_menu", "close");
+        await this.remove();
     }
 
     /**
@@ -239,6 +241,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         this.#margin = args.margin;
         this.#templates = args.templates;
         this.#filtering = args.filtering ?? true;
+        this.#callback = args.callback;
 
         if (typeof args.height == "number") {
             args.height = `${args.height}px`
