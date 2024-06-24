@@ -1217,7 +1217,6 @@ class DataManagerActions {
         }
 
         return created;
-
     }
 
     static async clear_dirty(step, context, process, item) {

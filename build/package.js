@@ -108,6 +108,9 @@ export async function packageFolder(source, target, minified) {
  */
 export async function packageFile(sourceFile, targetFile, loader, format, minified) {
     const src = await Deno.readTextFile(sourceFile);
+    if(sourceFile.indexOf("context-menu-full.js") > -1) {
+        minified = false;
+    }
     const result = await esbuild.transform(src, { loader: loader, minify: minified, format: format });
     await Deno.writeTextFile(targetFile, result.code);
 
