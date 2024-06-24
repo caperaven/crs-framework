@@ -1193,6 +1193,30 @@ class DataManagerActions {
         return globalThis.dataManagers[manager].isAllSelected;
     }
 
+    /**
+     * @method get_updated - Get the updated records in a data manager based on the dirty flag.
+     * @param step - The step that contains the action to perform
+     * @param context - The context of the process
+     * @param process - The process
+     * @param item - Current item in a process loop
+     * @param step.args.manager - The name of the data manager. You will use this when performing operations on the data manager.
+     * @param [step.args.target] - The target to set the updated records to
+     * @returns {Promise<void>}
+     *
+     * @example <caption>javascript example</caption>
+     * const updated = await crs.call("data_manager", "get_updated" {
+     *   manager: "my_data_manager"
+     * });
+     *
+     * @example <caption>json example</caption>
+     * {
+     *  "type": "data_manager",
+     *  "action": "get_updated",
+     *  "args": {
+     *    "manager": "my_data_manager"
+     *  }
+     * }
+     */
     static async get_updated(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
         if (manager == null) return;
@@ -1206,6 +1230,30 @@ class DataManagerActions {
         return updated;
     }
 
+    /**
+     * @method get_created - Get the created records in a data manager based on the dirty flag.
+     * @param step - The step that contains the action to perform
+     * @param context - The context of the process
+     * @param process - The process
+     * @param item - Current item in a process loop
+     * @param step.args.manager - The name of the data manager. You will use this when performing operations on the data manager.
+     * @param [step.args.target] - The target to set the created records to
+     * @returns {Promise<void>}
+     *
+     * @example <caption>javascript example</caption>
+     * const created = await crs.call("data_manager", "get_created" {
+     *  manager: "my_data_manager"
+     * });
+     *
+     * @example <caption>json example</caption>
+     * {
+     *   "type": "data_manager",
+     *   "action": "get_created",
+     *   "args": {
+     *     "manager": "my_data_manager"
+     *   }
+     * }
+     */
     static async get_created(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
         if (manager == null) return;
@@ -1219,6 +1267,29 @@ class DataManagerActions {
         return created;
     }
 
+    /**
+     * @method clear_dirty - Clear the dirty flag on all records in a data manager.
+     * @param step - The step that contains the action to perform
+     * @param context - The context of the process
+     * @param process - The process
+     * @param item - Current item in a process loop
+     * @param step.args.manager - The name of the data manager. You will use this when performing operations on the data manager.
+     * @returns {Promise<void>}
+     *
+     * @example <caption>javascript example</caption>
+     * await crs.call("data_manager", "clear_dirty" {
+     *  manager: "my_data_manager"
+     * });
+     *
+     * @example <caption>json example</caption>
+     * {
+     *  "type": "data_manager",
+     *  "action": "clear_dirty",
+     *  "args": {
+     *   "manager": "my_data_manager"
+     *   }
+     *  }
+     */
     static async clear_dirty(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
         if (manager == null) return;
