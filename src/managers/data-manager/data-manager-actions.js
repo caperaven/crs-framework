@@ -948,6 +948,19 @@ class DataManagerActions {
         return value;
     }
 
+    /**
+     * @deprecated
+     * @method get_filtered - Get a filtered list of records from a data manager.
+     * @TODO - This is to be removed and replaced with a fuzzy filter on the perspective manager.
+     * The fuzzy filter will support * as the field to filter on.
+     * The implementation of the fuzzy filter must be done on the process-api data-processing
+     *
+     * @param step
+     * @param context
+     * @param process
+     * @param item
+     * @returns {Promise<*|null>}
+     */
     static async get_filtered(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
         if (manager == null) return;
