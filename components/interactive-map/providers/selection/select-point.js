@@ -5,6 +5,7 @@ export default class SelectPoint {
     async initialize(map, point, element) {
         this.#map = map;
 
+        debugger;
         if (point != null) {
             this.#point = point;
             this.#point.dragging.enable();

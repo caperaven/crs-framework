@@ -1,5 +1,3 @@
-<h1>Map</h1>
-
 <style>
     form {
         border: var(--border);
@@ -43,13 +41,12 @@
 <div class="container">
     <div class="toolbar">
         <button click.call="setLayerGeoJson">Set Random Data</button>
-        <button click.call="getLayerGeoJson">Get GeoJson</button>
         <button click.call="clear">Clear all</button>
     </div>
 
-    <div class="flex vertical" id="maps-container">
-        <interactive-map id="openstreetmap" data-provider="openstreetmap" data-manager="my_data" class="flex" data-fill-color="#ff0000" data-stroke-color="#cc0000"></interactive-map>
 
+    <div class="flex vertical" id="maps-container">
+        <interactive-map id="openstreetmap" data-provider="openstreetmap" data-path="geographicLocation" data-manager="my_data" data-selection-mode="edit" class="flex" data-fill-color="#ff0000" data-stroke-color="#cc0000"></interactive-map>
     </div>
 </div>
 
