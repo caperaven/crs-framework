@@ -32,13 +32,19 @@ export default class Map extends crsbinding.classes.ViewBase {
         await this.mapReady();
     }
 
-    async #toast(event) {
-        await crs.call("toast_notification", "show", { message: event.message, severity: event.type});
+    async disconnectedCallback() {
+        await crs.call("toast_notification", "disable");
+        await crs.call("data_manager", "unregister", {
+            manager: "my_data"
+        });
+        await crsbinding.events.emitter.remove("toast", this.#toastHandler);
+        this.#toastHandler = null;
+
+        super.disconnectedCallback();
     }
 
-    disconnectedCallback() {
-        crsbinding.events.emitter.remove("toast", this.#toastHandler);
-        super.disconnectedCallback();
+    async #toast(event) {
+        await crs.call("toast_notification", "show", { message: event.message, severity: event.type});
     }
 
     async clear() {
@@ -53,18 +59,9 @@ export default class Map extends crsbinding.classes.ViewBase {
         });
     }
 
-    async getLayerGeoJson() {
-        const geoJson =  await crs.call("interactive_map", "get_layer_geo_json", {
-            element: "#openstreetmap",
-            layer: "default"
-        });
-
-        console.log(geoJson);
-    }
-
     async setLayerGeoJson() {
-        const polygons =  await this.generateRandomPolygonsGeoJson(2);
-        const points = await this.generateRandomPointsGeoJson(2);
+        const polygons =  await this.#generateRandomPolygonsGeoJson(2);
+        const points = await this.#generateRandomPointsGeoJson(2);
 
         const shapes = [...polygons, ...points];
 
@@ -87,7 +84,7 @@ export default class Map extends crsbinding.classes.ViewBase {
         })
     }
 
-    async generateRandomPolygonsGeoJson(count) {
+    async #generateRandomPolygonsGeoJson(count) {
         // Create a random geojson polygons object for the the provided count
 
         const data = [];
@@ -146,7 +143,7 @@ export default class Map extends crsbinding.classes.ViewBase {
         return data;
     }
 
-    async generateRandomPointsGeoJson(count) {
+    async #generateRandomPointsGeoJson(count) {
         // Create a random geojson points object for the the provided count
 
         const data = [];
