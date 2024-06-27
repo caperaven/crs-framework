@@ -14,13 +14,20 @@ import "../../packages/crs-process-api/action-systems/css-grid-actions.js";
  */
 export async function create_sla_grid(data,slaGridContainer, slaVisualization) {
     const element = slaGridContainer
-    const slaVisualizationPhase = element.dataset.phase; // refactor for phase
-    slaVisualization.shadowRoot.querySelector("#measurement-name").style.opacity = 1;
+    const slaVisualizationPhase = slaVisualization.dataset.phase; // refactor for phase
+    slaVisualization.shadowRoot.querySelector("#measurement-name").style.display = "flex"
+    if (slaVisualizationPhase === "runtime"){
+        slaVisualization.shadowRoot.querySelector("#sla-legend").style.display = "flex"
+    }
+
 
     createInitialGrid(element);
 
     // Generate the grid template array
-    element.style.gridTemplate = generateGridTemplateArray(data.statuses, data.sla, slaVisualizationPhase).join('\n'); // refactor for phase
+    // console.log(generateGridTemplateArray(data.statuses, data.sla, slaVisualizationPhase).join('\n'))
+
+
+    element.style.gridTemplate = generateGridTemplateArray(data.statuses, data.sla, slaVisualizationPhase).join(' '); // refactor for phase
     // element.dataset.workOrderStatus = data.workOrder.currentStatus; // Remove or num chucks
 
     createStatusLabels(element, data.statuses);
@@ -62,14 +69,15 @@ function createStatusLabels(element, statuses) {
     statusBackground.appendChild(statusHeader);
 
     for(const status of statuses) {
-        if (status.id === -1) {
+        if (status.index === -1) {
             continue;
         }
         const statusLabel = document.createElement("div");
-        statusLabel.id = `status_${status.id}`;
+        statusLabel.id = `status_${status.index}`;
+        statusLabel.dataset.statusOrder = status.order;
         statusLabel.classList.add("status-label");
-        statusLabel.style.gridArea = `status_${status.id}`;
-        statusLabel.textContent = status.name;
+        statusLabel.style.gridArea = `status_${status.index}`;
+        statusLabel.textContent = status.description;
         element.appendChild(statusLabel);
     }
 }
@@ -80,21 +88,21 @@ function createStatusLabels(element, statuses) {
  * @param statuses {[Object]} - the array of status objects
  */
 function createRowElements(element, statuses) {
-    let index = 1;
+    let indexCount = 1;
 
     for (let i = statuses.length - 1; i >= 0; i--) {
         const status = statuses[i];
         const div = document.createElement("div");
-        div.dataset.status = status.id;
-        div.dataset.id = status.name;
-        div.style.gridRow = index;
+        div.dataset.status = status.index;
+        div.dataset.id = status.description;
+        div.style.gridRow = indexCount;
         div.classList.add("status-row");
         element.appendChild(div);
-        if (index === statuses.length) {
+        if (indexCount === statuses.length) {
             div.classList.add("sla-footer-border");
         }
 
-        index++;
+        indexCount++;
     }
 }
 
@@ -130,8 +138,8 @@ function createSlaLayers(element, slaCollection) {
  * @returns {[string]} - the generated grid template array
  */
 function generateGridTemplateArray(dataStatuses, dataSla, visualizationPhase) { // refactor for phase
-    dataStatuses.unshift({id: -1});
-    dataStatuses.push({id: -1});
+    //update the dataStatuses array
+    dataStatuses = updateStatusData(dataStatuses);
 
     // Create the grid template array
     // Loop through the statuses and sla to create the grid template array
@@ -143,7 +151,7 @@ function generateGridTemplateArray(dataStatuses, dataSla, visualizationPhase) { 
     const gridTemplateArray = reversedStatuses.map(status => {
         let rowHeight = statusCount === 1 && visualizationPhase === "runtime" ? "3fr" : "1fr"; // refactor for phase
         statusCount++;
-        let row = status.id === -1 ? "." : `status_${status.id}`;
+        let row = status.index === -1 ? "." : `status_${status.index}`;
         let slaArray = dataSla.map(sla => ` sla_${sla.id}`);
         return `"${row + slaArray.join('')}"${rowHeight}`;
     });
@@ -157,4 +165,64 @@ function generateGridTemplateArray(dataStatuses, dataSla, visualizationPhase) { 
     gridTemplateArray.push(columnWidth);
 
     return gridTemplateArray;
+}
+
+// function updateStatusData(dataStatuses) {
+//     let result = [];
+//     dataStatuses.unshift({index: -1});
+//     for (let i = 0; i < dataStatuses.length; i++) {
+//         const status = dataStatuses[i];
+//         status.index = i;
+//         result.push(status);
+//     }
+//     dataStatuses.push({index: -1});
+//
+//     return result;
+// }
+
+// function updateStatusData(dataStatuses) {
+//     // if dataStatuses is not empty , else return empty array
+//     // Remove previous unshifted element if present
+//     if(dataStatuses.length !== 0 && dataStatuses !== undefined) {
+//         if (dataStatuses.length > 0 && dataStatuses[0].code === -1) {
+//             dataStatuses.shift();
+//         }
+//
+//         // Remove previous pushed element if present
+//         if (dataStatuses.length > 0 && dataStatuses[dataStatuses.length - 1].code === -1) {
+//             dataStatuses.pop();
+//         }
+//
+//         // Add the new elements
+//         dataStatuses.unshift({code: -1});
+//         dataStatuses.push({code: -1});
+//         return dataStatuses;
+//     }
+//     return [];
+// }
+
+function updateStatusData(dataStatuses) {
+    // Remove previous unshifted element if present
+    if (dataStatuses[0].code === -1 || dataStatuses[0].index === -1) {
+        dataStatuses.shift();
+    }
+
+    // Remove previous pushed element if present
+    if (dataStatuses[dataStatuses.length - 1].code === -1 || dataStatuses[dataStatuses.length - 1].index === -1) {
+        dataStatuses.pop();
+    }
+
+    // Add the new elements
+    dataStatuses.unshift({code: -1});
+    dataStatuses.push({code: -1});
+
+    // Create the result array with updated indexes
+    let result = [];
+    for (let i = 0; i < dataStatuses.length; i++) {
+        const status = dataStatuses[i];
+        status.index = i;
+        result.push(status);
+    }
+
+    return result;
 }

@@ -1,0 +1,42 @@
+.measurement-info{
+    display: flex;
+    flex-direction: column;
+    color: var(--grey-s1);
+    justify-content: space-evenly;
+    border: var(--border);
+    border-radius: var(--radius);
+    width: 150px;
+    height: max-content;
+    background: var(--window);
+    font-size: 0.75rem;
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+    z-index: 999999;
+}
+
+/*.show-info {*/
+/*    display: flex;*/
+/*}*/
+
+.measurement-info h4 {
+    color: var(--grey-s1);
+    font-size: 1rem;
+    margin: 0.25rem;
+    border-bottom: var(--border);
+}
+
+.measurement-content {
+    color: var(--cl-text);
+    margin: 0.25rem 0;
+}
+
+.measurement-status-info, .measurement-duration-info, .measurement-trigger-info{
+    border-bottom: var(--border);
+    padding: 0.25rem;
+}
+
+.measurement-status-info div, .measurement-duration-info div, .measurement-trigger-info div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

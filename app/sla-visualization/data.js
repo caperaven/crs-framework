@@ -9,47 +9,47 @@ const data1 = {
     "statuses": [
         {
             "id": 1,
-            "name": "Awaiting Approval"
+            "description": "Awaiting Approval"
         },
         {
             "id": 2,
-            "name": "To Be Inspected"
+            "description": "To Be Inspected"
         },
         {
             "id": 3,
-            "name": "Approved"
+            "description": "Approved"
         },
         {
             "id": 4,
-            "name": "Awaiting Labour"
+            "description": "Awaiting Labour"
         },
         {
             "id": 5,
-            "name": "Awaiting Spares"
+            "description": "Awaiting Spares"
         },
         {
             "id": 6,
-            "name": "In Progress"
+            "description": "In Progress"
         },
         {
             "id": 7,
-            "name": "Complete/Awaiting Feedback"
+            "description": "Complete/Awaiting Feedback"
         },
         {
             "id": 8,
-            "name": "Complete/Awaiting Costs"
+            "description": "Complete/Awaiting Costs"
         },
         {
             "id": 9,
-            "name": "Completed"
+            "description": "Completed"
         },
         {
             "id": 10,
-            "name": "Closed"
+            "description": "Closed"
         },
         {
             "id": 11,
-            "name": "Cancelled"
+            "description": "Cancelled"
         }
     ],
     "sla": [
@@ -221,51 +221,150 @@ const data1 = {
 }
 
 const data2 = {
-    "currentStatus": "Cancelled",
+    "currentStatus": "Approved",
     "statuses": [
         {
-            "id": 1,
-            "name": "Awaiting Approval"
-        },
-        {
-            "id": 2,
-            "name": "To Be Inspected"
-        },
-        {
-            "id": 3,
-            "name": "Approved"
-        },
-        {
-            "id": 4,
-            "name": "Awaiting Labour"
-        },
-        {
-            "id": 5,
-            "name": "Awaiting Spares"
-        },
-        {
-            "id": 6,
-            "name": "In Progress"
-        },
-        {
-            "id": 7,
-            "name": "Complete/Awaiting Feedback"
-        },
-        {
-            "id": 8,
-            "name": "Complete/Awaiting Costs"
-        },
-        {
-            "id": 9,
-            "name": "Completed"
-        },
-        {
+            "code": "AA",
+            "description": "Awaiting Approval",
+            "sequenceNumber": 0,
+            "baseStatus": "AwaitingApproval",
+            "applyStatusRestrictions": false,
             "id": 10,
-            "name": "Closed"
+            "version": 1,
+            "additionalInfo": {
+                "class": "DomainDynamicRecord"
+            },
+            "translation_description": "Awaiting Approval"
         },
         {
+            "code": "*1019",
+            "description": "To be Inspected",
+            "sequenceNumber": 1,
+            "baseStatus": "AwaitingApproval",
+            "applyStatusRestrictions": false,
+            "id": 5000001019,
+            "version": 2,
+            "additionalInfo": {
+                "class": "DomainDynamicRecord"
+            },
+            "translation_description": "To be Inspected"
+        },
+        {
+            "code": "AP",
+            "description": "Approved",
+            "sequenceNumber": 0,
+            "baseStatus": "Approved",
+            "applyStatusRestrictions": false,
             "id": 11,
-            "name": "Cancelled"
+            "version": 1,
+            "additionalInfo": {
+                "class": "DomainDynamicRecord"
+            },
+            "translation_description": "Approved"
+        },
+        {
+            "code": "AL",
+            "description": "Awaiting Labour",
+            "sequenceNumber": 1,
+            "baseStatus": "Approved",
+            "applyStatusRestrictions": false,
+            "id": 5000001001,
+            "version": 1,
+            "additionalInfo": {
+                "class": "DomainDynamicRecord"
+            },
+            "translation_description": "Awaiting Labour"
+        },
+        {
+            "code": "AS",
+            "description": "Awaiting Spares",
+            "sequenceNumber": 2,
+            "baseStatus": "Approved",
+            "applyStatusRestrictions": false,
+            "id": 5000001002,
+            "version": 1,
+            "additionalInfo": {
+                "class": "DomainDynamicRecord"
+            },
+            "translation_description": "Awaiting Spares"
+        },
+        {
+            "code": "IP",
+            "description": "In Progress",
+            "sequenceNumber": 3,
+            "baseStatus": "Approved",
+            "applyStatusRestrictions": false,
+            "id": 5000001003,
+            "version": 1,
+            "additionalInfo": {
+                "class": "DomainDynamicRecord"
+            },
+            "translation_description": "In Progress"
+        },
+        {
+            "code": "AF",
+            "description": "Complete/Awaiting Feedback",
+            "sequenceNumber": 4,
+            "baseStatus": "Approved",
+            "applyStatusRestrictions": false,
+            "id": 5000001004,
+            "version": 1,
+            "additionalInfo": {
+                "class": "DomainDynamicRecord"
+            },
+            "translation_description": "Complete/Awaiting Feedback"
+        },
+        {
+            "code": "AC",
+            "description": "Complete/Awaiting Costs",
+            "sequenceNumber": 5,
+            "baseStatus": "Approved",
+            "applyStatusRestrictions": false,
+            "id": 5000001005,
+            "version": 1,
+            "additionalInfo": {
+                "class": "DomainDynamicRecord"
+            },
+            "translation_description": "Complete/Awaiting Costs"
+        },
+        {
+            "code": "CP",
+            "description": "Completed",
+            "sequenceNumber": 0,
+            "baseStatus": "Completed",
+            "applyStatusRestrictions": false,
+            "id": 12,
+            "version": 1,
+            "additionalInfo": {
+                "class": "DomainDynamicRecord"
+            },
+            "translation_description": "Completed"
+        },
+        {
+            "code": "CL",
+            "description": "Closed",
+            "sequenceNumber": 0,
+            "baseStatus": "Closed",
+            "applyStatusRestrictions": false,
+            "id": 13,
+            "version": 1,
+            "additionalInfo": {
+                "class": "DomainDynamicRecord"
+            },
+            "translation_description": "Closed"
+        },
+        {
+            "code": "CA",
+            "description": "Cancelled",
+            "sequenceNumber": 0,
+            "baseStatus": "Cancelled",
+            "applyStatusRestrictions": false,
+            "id": 14,
+            "version": 1,
+            "additionalInfo": {
+                "class": "DomainDynamicRecord"
+            },
+            "translation_description": "Cancelled"
         }
     ],
     "sla": [
@@ -277,10 +376,11 @@ const data2 = {
             "measurements": [
                 {
                     "id": "1001",
+                    "version": 1,
                     "code": "Response Time",
                     "description": "something",
-                    "start_status": 1,
-                    "end_status": 3,
+                    "start_status": "AA",
+                    "end_status": "AP",
                     "progress": 25,
                     "status": "active",
                     "duration": "27:00",
@@ -299,10 +399,11 @@ const data2 = {
                 },
                 {
                     "id": "777",
+                    "version": 1,
                     "code": "Inspection",
                     "description": "something else",
-                    "start_status": 1,
-                    "end_status": 3,
+                    "start_status": "AL",
+                    "end_status": "AS",
                     "progress": 100,
                     "status": "active",
                     "duration": "27:00",
@@ -321,10 +422,11 @@ const data2 = {
                 },
                 {
                     "id": "1002",
+                    "version": 1,
                     "code": "Maintenance",
                     "description": "something",
-                    "start_status": 3,
-                    "end_status": 6,
+                    "start_status": "IP",
+                    "end_status": "AC",
                     "progress": 50,
                     "status": "active",
                     "duration": "10:00",
@@ -343,10 +445,11 @@ const data2 = {
                 },
                 {
                     "id": "1003",
+                    "version": 1,
                     "code": "Completion",
                     "description": "something",
-                    "start_status": 7,
-                    "end_status": 10,
+                    "start_status": "AP",
+                    "end_status": "CP",
                     "progress": 75,
                     "status": "active",
                     "duration": "50:00",

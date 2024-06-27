@@ -30,9 +30,14 @@ export class SlaVisualizationActions {
      * 3. create sla layer and set it's area to the relevant sla area
      */
     static async initialize(step, context, process, item) {
+        const element = await crs.dom.get_element(step, context, process, item);
+
+        if(element.initialized === true) {
+            return;
+        }
+
         const statuses = await crs.process.getValue(step.args.statuses, context, process, item);
         const currentStatus = await crs.process.getValue(step.args.currentStatus, context, process, item);
-        const element = await crs.dom.get_element(step.args.element, context, process, item);
 
         await element.initialize(statuses, currentStatus);
     }

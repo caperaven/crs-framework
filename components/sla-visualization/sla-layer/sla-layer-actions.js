@@ -42,7 +42,9 @@ export class SlaLayerActions{
             // in the sla data, based on the workOrder.statusDescription, call function:
             // showCurrentWorkOrderStatus(workOrder.statusDescription, element);
             await showCurrentStatus(slaData.currentStatus, parentElement);
-            element.dataset.activeRow = parentElement.querySelector(".active-status-row").dataset.status;
+            if (parentPhase === "runtime") {
+                element.dataset.activeRow = parentElement.querySelector(".active-status-row")?.dataset.status || "";
+            }
 
             // Added to wait for the measurements to be created before creating the headers.
             // Timing issues occur when the headers are created before the measurements are created.
@@ -127,11 +129,11 @@ function createStatusLookupTable(statusData) {
     for (let i = 0; i < statusData.length; i++) {
         const status = statusData[i];
 
-        if (status.id === -1) {
-            lookupTable[status.id] = -1
+        if (status.code === -1) {
+            lookupTable[status.code] = -1
         }
         else {
-            lookupTable[status.id] = index;
+            lookupTable[status.code] = index;
             index--;
         }
     }
@@ -169,7 +171,7 @@ function createMeasurementsMatrix(statusData, slaItemData) {
     for (let i = 0; i < numberOfColumns; i++) {
         matrix[0][i] = "header";
         // matrix[numberOfRows - 1][i] = `f_${slaItemData.measurements[i].id}`;
-        matrix[numberOfRows - 1][i] = slaItemData.measurements[i] ? `f_${slaItemData.measurements[i].id}` : `f_${slaItemData.measurements[0].id}`;
+        matrix[numberOfRows - 1][i] = slaItemData.measurements[i] ? `f_${slaItemData.measurements[i].id}` : `.`;
 
     }
 
@@ -247,7 +249,7 @@ function matrixToTemplate(matrix, slaLayerElement) {
         result.push(rowStr);
     }
 
-    result.push(`/ ${columns.join(" ")}`);
+    result.push(` / ${columns.join(" ")}`);
     return result.join("\n");
 }
 
@@ -286,6 +288,9 @@ async function showCurrentStatus(currentStatus, parentElement) {
     for (const statusRow of statusRows) {
         if (statusRow.dataset.id === currentStatus) {
             statusRow.classList.add("active-status-row");
+        }
+        else {
+
         }
     }
 

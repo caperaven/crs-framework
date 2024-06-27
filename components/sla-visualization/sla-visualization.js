@@ -8,32 +8,55 @@ import "../../packages/crs-process-api/action-systems/no-content-actions.js";
  *
  *
  **/
-export class SlaVisualization extends crsbinding.classes.BindableElement {
+export class SlaVisualization extends HTMLElement {
     #dataManagerChangedHandler = this.#dataManagerChanged.bind(this);
-    // #selectionChanged = this.#selectionChanged.bind(this);
     #changeEventMap = {
-        [CHANGE_TYPES.refresh]: this.#refresh,
-        [CHANGE_TYPES.selected]: this.#selectionChanged
+        [CHANGE_TYPES.refresh]: this.#refresh
     };
 
+    #isInitialized = false;
     #statuses;
+    #selectedMeasurement;
     #currentStatus;
     #container;
     #selectionChangedHandler = this.#selectionChanged.bind(this);
-
-    get shadowDom() {
-        return true;
-    }
 
     get html() {
         return import.meta.url.replace(".js", ".html");
     }
 
+    get selectedMeasurements() {
+        return this.#selectedMeasurement;
+    }
+
+    set selectedMeasurements(newValue) {
+        this.#selectedMeasurement = newValue;
+        this.dispatchEvent(new CustomEvent("selectedMeasurementsChange", {detail: {selected: newValue}}));
+    }
+
+    get currentStatus() {
+        return this.#currentStatus;
+    }
+
+    set currentStatus(newValue) {
+        this.#currentStatus = newValue;
+    }
+
+    get initialized() {
+        return this.#isInitialized;
+    }
+
+    constructor() {
+        super();
+        this.attachShadow({ mode: "open" });
+    }
+
     async connectedCallback() {
-        await super.connectedCallback();
-        await this.#hookDataManager();
+        const html = await fetch(import.meta.url.replace(".js", ".html")).then(result => result.text());
+        this.shadowRoot.innerHTML = html;
         this.#container = this.shadowRoot.querySelector("#sla-grid-container");
         this.addEventListener("measurement-selected", this.#selectionChangedHandler);
+        await this.render();
     }
 
     async disconnectedCallback() {
@@ -45,43 +68,52 @@ export class SlaVisualization extends crsbinding.classes.BindableElement {
         this.#container = null;
         this.removeEventListener("measurement-selected", this.#selectionChangedHandler);
         this.#selectionChangedHandler = null;
-        await super.disconnectedCallback();
+        this.#selectedMeasurement = null;
     }
 
-    async initialize(statuses, currentStatus) {
-        await crs.call("component", "notify_loading", {element: this});
+    async initialize(statuses, currenStatus) {
         this.#statuses = statuses;
-        this.#currentStatus = currentStatus;
-
+        this.#currentStatus = currenStatus
+        this.#isInitialized = true;
         await crs.call("component", "notify_ready", { element: this });
     }
 
     async render() {
-        const data = await crs.call("data_manager", "get_all", { manager: this.dataset.manager });
+        let data = await crs.call("data_manager", "get_all", { manager: this.dataset.manager });
 
         this.#container.innerHTML = "";
 
-        if (data?.length > 0) {
+
+        // take the #status, loop through them and assign a property to each of them called status order with a value from 1 to the number of statuses
+        this.#statuses.forEach((status, index) => {
+            status.order = index + 1;
+        });
+
+
+        if (data[0]?.measurements?.length > 0) {
             this.#container.style.justifyContent = "";
             const slaData = {
                 sla: data,
                 statuses: this.#statuses,
-                currentStatus: this.#currentStatus
+                currentStatus: this.#currentStatus || "",
             }
 
             await create_sla_grid(slaData, this.#container, this);
             await crs.call("sla_layer", "create_all_sla", { parent: this.#container, data: slaData , parentPhase: this.dataset.phase}); // refactor for phase
-            await this.#updateSlaLegend();
+            if (this.dataset.phase === "runtime") {
+                await this.#updateSlaLegend();
+            }
         }
         else{
+            this.shadowRoot.querySelector("#sla-legend").style.display = "none";
             this.#container.style.justifyContent = "center";
-            return await crs.call("no_content", "show", { parent: this.#container });
+            this.#container.style.display = "flex";
+            await crs.call("no_content", "show", { parent: this.#container });
         }
     }
 
     async #selectionChanged(args){
-        console.log("Selected changed: ", args);
-        await crs.call("data_manager", "set_selected", {manager: this.dataset.manager, ids: args.detail.selected});
+        this.selectedMeasurements = args.detail.selected;
     }
 
     async #hookDataManager(){
@@ -96,14 +128,20 @@ export class SlaVisualization extends crsbinding.classes.BindableElement {
     }
 
     async #refresh(args){
-        // ToDo: Implement clear existing sla's and recreate them
-            await crs.call("sla_visualization", "render", {
-                element: this
-            });
+        await crs.call("sla_visualization", "render", {
+            element: this,
+            statuses: this.#statuses,
+            currentStatus: this.#currentStatus
+        });
     }
 
     async enable() {
+        await this.#hookDataManager();
         await crs.call("data_manager", "request_records", {manager: this.dataset.manager});
+    }
+
+    async disable() {
+        await crs.call("data_manager", "remove_change", {manager: this.dataset.manager, callback: this.#dataManagerChangedHandler});
     }
 
     async #updateSlaLegend() {

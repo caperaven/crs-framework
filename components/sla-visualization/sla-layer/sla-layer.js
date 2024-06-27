@@ -5,23 +5,24 @@
  *
  **/
 
-export class SlaLayer extends crsbinding.classes.BindableElement {
-
-    get shadowDom() {
-        return true;
-    }
+export class SlaLayer extends HTMLElement {
 
     get html() {
         return import.meta.url.replace(".js", ".html");
     }
 
+    constructor() {
+        super();
+        this.attachShadow({ mode: "open" });
+    }
+
     async connectedCallback() {
-        await super.connectedCallback();
+        const html = await fetch(import.meta.url.replace(".js", ".html")).then(result => result.text());
+        this.shadowRoot.innerHTML = html;
         this.dispatchEvent(new CustomEvent("loading"));
     }
 
     async disconnectedCallback() {
-        await super.disconnectedCallback();
     }
 }
 

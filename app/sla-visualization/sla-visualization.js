@@ -26,14 +26,14 @@ export default class SlaVisualization extends crsbinding.classes.ViewBase {
             id_field: "id",
             type: "memory",
             request_callback: async () => {
-                return data1.sla
+                return data2.sla
             }
         });
 
         await crs.call("sla_visualization", "initialize", {
-            element: document.querySelector("sla-visualization#runtime"),
-            statuses: data1.statuses,
-            currentStatus: data1.currentStatus,
+            element: document.querySelector("sla-visualization"),
+            statuses: data2.statuses,
+            currentStatus: data2.currentStatus,
         })
     }
 
@@ -42,9 +42,13 @@ export default class SlaVisualization extends crsbinding.classes.ViewBase {
     }
 
     async initializeRuntime() {
-        const slaVisualization = document.querySelector("sla-visualization#runtime");
+        const slaVisualization = document.querySelector("sla-visualization");
         slaVisualization.enable();
 
+    }
+
+    async logSelection() {
+       console.log(this.getProperty("mySelection"))
     }
 
     async initializeSetup() {

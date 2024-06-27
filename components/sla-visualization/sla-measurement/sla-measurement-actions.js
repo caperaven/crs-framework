@@ -76,11 +76,13 @@ export class SlaMeasurementActions {
      * @param context {Object} - The context object
      * @param process {Object} - The process object
      * @param item {Object} - The item object if in a loop
-     * @return {Promise<void>}
+     * @return {Promise<Node>}
      */
     static async display_measurement_info(step, context, process, item) {
         const element = await crs.dom.get_element(step.args.element, context, process, item);
         const type = await crs.process.getValue(step.args.type, context, process, item);
+        const parent = await crs.dom.get_element(step.args.parent, context, process, item);
+
         const measurementData = {
             code: element.dataset.code,
             startStatus: element.getAttribute("data-start-status-name", ""),
@@ -92,40 +94,46 @@ export class SlaMeasurementActions {
             NumOfTriggers: element.shadowRoot.querySelectorAll(".measurement-trigger-indicator").length
         }
 
-        if (element.dataset.parentPhase === "runtime" || element.dataset.parentPhase === "setup") {
-            let templateSelector, backgroundStyle;
+        let templateSelector, backgroundStyle;
 
-            if (element.dataset.parentPhase === "runtime") {
-                templateSelector = "template.runtime-measurement-info-template";
-            }
-            else if (element.dataset.parentPhase === "setup") {
-                templateSelector = "template.setup-measurement-info-template";
-                backgroundStyle = type === "mouseenter" ? "#075E96" : "var(--blue)";
-            }
-
-            const measurementInfoTemplate = element.shadowRoot.querySelector(templateSelector);
-            const measurementInfo = measurementInfoTemplate.content.cloneNode(true);
-
-            await crsbinding.staticInflationManager.inflateElement(measurementInfo.firstElementChild, measurementData);
-            element.shadowRoot.appendChild(measurementInfo);
-
-            const measurementInfoElement = element.shadowRoot.querySelector(".measurement-info");
-            measurementInfoElement.style.display = type === "mouseenter" ? "flex" : "none";
-            element.style.background = backgroundStyle;
-
-            await crs.call("fixed_layout", "set", {
-                element: measurementInfoElement,
-                target: element,
-                point: "top",
-                at: "right",
-                anchor: "top",
-                margin: 0
-            })
+        if (element.dataset.parentPhase === "runtime") {
+            templateSelector = "template.runtime-measurement-info-template";
+        }
+        else if (element.dataset.parentPhase === "setup") {
+            templateSelector = "template.setup-measurement-info-template";
+            backgroundStyle = type === "mouseenter" ? "#075E96" : "var(--blue)"; // Add class .selected
         }
 
+        const measurementInfoTemplate = element.shadowRoot.querySelector(templateSelector).content.firstElementChild.cloneNode(true);
 
-        // call function that positions tooltip correctly ToDo: AW : Implement this function
+        await crsbinding.staticInflationManager.inflateElement(measurementInfoTemplate, measurementData);
 
+        // Create a <link> element and add to header for measurement-info
+        // We should do this when the connectedCallback of the main sla-component fires.
+        const link = document.createElement("link");
+        const baseUrl = window.location.origin + window.location.pathname.split("/").slice(0, -1).join("/");
+        link.rel = "stylesheet";
+        link.href = `${baseUrl}/packages/crs-framework/components/sla-visualization/sla-measurement/sla-measurement-info.css`;
+        document.head.appendChild(link);
+        document.body.appendChild(measurementInfoTemplate);
+
+        // measurementInfoTemplate.style.display = type === "mouseenter" ? "flex" : "none";
+        // element.style.background = backgroundStyle;
+
+        // rather toggle the display style by adding a class
+        // measurementInfoTemplate.classList.add("show-info");
+
+        await crs.call("fixed_layout", "set", {
+            element: measurementInfoTemplate,
+            target: element,
+            container: parent.parentElement,
+            at: "right",
+            anchor: "top",
+            margin: 0
+        });
+
+        measurementInfoTemplate.style.zIndex = 999999
+        return measurementInfoTemplate;
     }
 
     /**
@@ -208,14 +216,14 @@ function onSlaMeasurementLoading(slaMeasurementElement, callback) {
 
 // Function to add start_status_name and end_status_name properties to measurement object
 async function addStatusNames(measurement, measurementDataStatuses) {
-    const startStatus = measurementDataStatuses.find(status => status.id === measurement.start_status);
-    const endStatus = measurementDataStatuses.find(status => status.id === measurement.end_status);
+    const startStatus = measurementDataStatuses.find(status => status.code === measurement.start_status);
+    const endStatus = measurementDataStatuses.find(status => status.code === measurement.end_status);
 
     if (startStatus) {
-        measurement.start_status_name = startStatus.name;
+        measurement.start_status_name = startStatus.order;
     }
     if (endStatus) {
-        measurement.end_status_name = endStatus.name;
+        measurement.end_status_name = endStatus.order;
     }
 }
 
@@ -224,6 +232,7 @@ async function createMeasurementElement(measurement, parentElement, parentPhase)
     const element = document.createElement("sla-measurement");
     element.id = measurement.id;
     element.dataset.code = measurement.code;
+    element.dataset.version = measurement.version;
     element.setAttribute("data-progress", measurement.progress);
     element.setAttribute("data-state", measurement.state);
     element.setAttribute("data-duration", measurement.duration);
@@ -263,9 +272,10 @@ async function updateProgressStyles(element, measurementData) {
     progressBar.style.height = `${Math.min(measurementData.progress, 100) - 7}%`;
     element.dataset.progress = `${measurementData.progress}%`;
 
-    if (measurementData.progress > 100) {
-        element.classList.add("measurement-overdue-state");
-        element.dataset.state = "overdue";
+    if (measurementData.progress > 100 ) {
+        if(measurementData.start_status_name >= parseInt(element.dataset.activeRow) || measurementData.end_status_name <= parseInt(element.dataset.activeRow))
+            element.classList.add("measurement-overdue-state");
+            element.dataset.state = "overdue";
     } else if (measurementData.progress >= 80 && measurementData.progress <= 99) {
         element.dataset.state = "warning"
         element.classList.add("measurement-warning-state");
@@ -303,8 +313,9 @@ async function createTriggerIndicators(element, measurementData) {
  */
 async function updateStatus(element, measurementData) {
     if (element.dataset.parentPhase === "runtime") {
-        if (element.dataset.activeRow < measurementData.start_status || element.dataset.activeRow > measurementData.end_status) {
+        if (parseInt(element.dataset.activeRow) < measurementData.start_status_name || parseInt(element.dataset.activeRow) > measurementData.end_status_name) {
             element.dataset.state = "inactive";
+            element.classList.add("measurement-inactive-state");
         }
         else {
             element.dataset.state = "active";
@@ -312,6 +323,8 @@ async function updateStatus(element, measurementData) {
     }
 
     await updateProgressStyles(element, measurementData);
+
+    //ToDo AW - Better names for start_status_name because they became numbers
 }
 
 

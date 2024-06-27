@@ -3,7 +3,11 @@
 
 :host {
     height: 100%;
-    width: 100%;
+    /*width: 100%;*/
+    width: fit-content;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 #sla-grid-container {
     display: none;
@@ -11,7 +15,8 @@
     height: 100%;
     width: 100%;
     border: var(--border);
-    overflow: auto;
+    /*overflow: auto;*/
+    overflow-x: auto;
     /*!*gap: 0.5rem;*! causes uneven rows*/
     padding: 1rem 0;
     grid-column-gap: 0.5rem;
@@ -76,11 +81,12 @@
 }
 
 #measurement-name{
-    opacity: 0;
+    /*opacity: 0;*/
+    display: none;
     /*position: sticky;*/
     /*left: 50%;*/
     /*bottom: 0;*/
-    display: flex;
+    /*display: flex;*/
     justify-content: center;
     padding: 0.5rem;
     font-size: 1rem;
@@ -89,9 +95,9 @@
 }
 
 
-:host([data-phase="setup"]) {
-    background-color: var(--grey-s4)
-}
+/*:host([data-phase="setup"]) {*/
+/*    background-color: var(--grey-s4)*/
+/*}*/
 
 :host([data-phase="setup"]) .active-status-label {
    color: var(--grey-s1);
@@ -103,8 +109,12 @@
     z-index: 0;
 }
 
+:host([data-phase="setup"]) #sla-legend {
+    display: none;
+}
+
 :host([data-phase="runtime"]) #sla-legend {
-    display: flex;
+    display: none;
     flex-direction: row;
     list-style-type: none;
     color: var(--grey-s1);

@@ -2,31 +2,33 @@
 // import "./../../dialogs/dialogs-actions.js";
 // import "./../../context-menu/context-menu-actions.js";
 
-class SlaMeasurement extends crsbinding.classes.BindableElement {
+class SlaMeasurement extends HTMLElement {
     // ToDo: AW - See if we can use this convention instead of all the handlers
     // #mouseEventHandlers = {
     //     "mouseenter": this.#mouseEnter.bind(this),
     //     "mouseleave": this.#mouseLeave.bind(this)
     // }
 
-    #mouseEventHandler = this.#mouseEvent.bind(this);
+    #mouseEnterEventHandler = this.#mouseEnterEvent.bind(this);
+    #mouseLeaveEventHandler = this.#mouseLeaveEvent.bind(this);
     #clickHandler = this.#click.bind(this);
     #contextMenuHandler = this.#contextMenu.bind(this);
-
-    get shadowDom() {
-        return true;
-    }
+    #measurementInfoElement;
 
     get html() {
         return import.meta.url.replace(".js", ".html");
     }
 
+    constructor() {
+        super();
+        this.attachShadow({ mode: "open" });
+    }
+
     async connectedCallback() {
-        await super.connectedCallback();
-        // this.shadowRoot.innerHTML = await fetch(import.meta.url.replace(".js", ".html")).then(response => response.text());
+        this.shadowRoot.innerHTML = await fetch(import.meta.url.replace(".js", ".html")).then(response => response.text());
         await this.load();
-        this.addEventListener("mouseenter", this.#mouseEventHandler);
-        this.addEventListener("mouseleave", this.#mouseEventHandler);
+        this.addEventListener("mouseenter", this.#mouseEnterEventHandler);
+        this.addEventListener("mouseleave", this.#mouseLeaveEventHandler);
         this.addEventListener("click", this.#clickHandler);
         this.addEventListener("contextmenu", this.#contextMenuHandler);
     }
@@ -34,7 +36,6 @@ class SlaMeasurement extends crsbinding.classes.BindableElement {
     async load() {
         return new Promise(resolve => {
             requestAnimationFrame(async () => {
-
                 this.dataset.status = "loading";
                 this.dispatchEvent(new CustomEvent("loading-measurement"));
                 resolve();
@@ -43,24 +44,33 @@ class SlaMeasurement extends crsbinding.classes.BindableElement {
     }
 
     async disconnectedCallback() {
-        await super.disconnectedCallback();
-        this.removeEventListener("mouseenter", this.#mouseEventHandler);
-        this.removeEventListener("mouseleave", this.#mouseEventHandler);
+        this.removeEventListener("mouseenter", this.#mouseEnterEventHandler);
+        this.removeEventListener("mouseleave", this.#mouseLeaveEventHandler);
         this.removeEventListener("click", this.#clickHandler);
         this.removeEventListener("contextmenu", this.#contextMenuHandler);
-        this.#mouseEventHandler = null;
+        this.#mouseEnterEventHandler = null;
+        this.#mouseLeaveEventHandler = null;
         this.#clickHandler = null;
         this.#contextMenuHandler = null;
+        this.#measurementInfoElement = null;
     }
 
-    async #mouseEvent(event) {
+    async #mouseEnterEvent(event) {
         const parent = event.composedPath()[0].getRootNode().host;
 
-        await crs.call("sla_measurement", "display_measurement_info", {
-            element: event.composedPath()[0],
-            type: event.type
-        });
+        if(event.type === "mouseenter") {
+            this.#measurementInfoElement = await crs.call("sla_measurement", "display_measurement_info", {
+                element: this,
+                type: event.type,
+                parent: parent
+            });
+        }
+    }
 
+    async #mouseLeaveEvent(event) {
+        requestAnimationFrame(()=> {
+            this.#measurementInfoElement?.remove();
+        });
 
     }
 
@@ -74,12 +84,13 @@ class SlaMeasurement extends crsbinding.classes.BindableElement {
                 measurementParent: parentElement
             });
 
-            // console.log("Element: ", element);
             const selectedElements = parentElement.shadowRoot.querySelectorAll("sla-measurement[data-selected='true']")
-            const selectedIds = Array.from(selectedElements).map(element => element.id);
-            this.shadowRoot.dispatchEvent(new CustomEvent("measurement-selected", {detail: {selected: selectedIds}, bubbles: true,
+            const selectedMeasurements = Array.from(selectedElements).map(element => ({
+                id: parseInt(element.id),
+                version: parseInt(element.dataset.version) || 1
+            }));
+            this.shadowRoot.dispatchEvent(new CustomEvent("measurement-selected", {detail: {selected: selectedMeasurements}, bubbles: true,
                 composed: true}));
-            // await crs.call("data_manager", "set_selected", {manager: this.dataset.manager, ids: [selectedElements]});
         }
 
     }
