@@ -50,4 +50,7 @@
     border: 1px solid var(--blue);
     border-radius: var(--radius);
     pointer-events: none;
+    padding: 0.25rem;
+    display: flex;
+    justify-self: center;
 }

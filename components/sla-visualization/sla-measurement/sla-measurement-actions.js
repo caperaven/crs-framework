@@ -110,6 +110,7 @@ export class SlaMeasurementActions {
 
         // Create a <link> element and add to header for measurement-info
         // We should do this when the connectedCallback of the main sla-component fires.
+
         const link = document.createElement("link");
         const baseUrl = window.location.origin + window.location.pathname.split("/").slice(0, -1).join("/");
         link.rel = "stylesheet";
@@ -220,10 +221,12 @@ async function addStatusNames(measurement, measurementDataStatuses) {
     const endStatus = measurementDataStatuses.find(status => status.code === measurement.end_status);
 
     if (startStatus) {
-        measurement.start_status_name = startStatus.order;
+        measurement.start_status_name = startStatus.description;
+        measurement.start_status_order = startStatus.order;
     }
     if (endStatus) {
-        measurement.end_status_name = endStatus.order;
+        measurement.end_status_name = endStatus.description;
+        measurement.end_status_order = endStatus.order;
     }
 }
 
@@ -273,7 +276,7 @@ async function updateProgressStyles(element, measurementData) {
     element.dataset.progress = `${measurementData.progress}%`;
 
     if (measurementData.progress > 100 ) {
-        if(measurementData.start_status_name >= parseInt(element.dataset.activeRow) || measurementData.end_status_name <= parseInt(element.dataset.activeRow))
+        if(measurementData.start_status_order >= parseInt(element.dataset.activeRow) || measurementData.end_status_order <= parseInt(element.dataset.activeRow))
             element.classList.add("measurement-overdue-state");
             element.dataset.state = "overdue";
     } else if (measurementData.progress >= 80 && measurementData.progress <= 99) {
@@ -313,7 +316,7 @@ async function createTriggerIndicators(element, measurementData) {
  */
 async function updateStatus(element, measurementData) {
     if (element.dataset.parentPhase === "runtime") {
-        if (parseInt(element.dataset.activeRow) < measurementData.start_status_name || parseInt(element.dataset.activeRow) > measurementData.end_status_name) {
+        if (parseInt(element.dataset.activeRow) < measurementData.start_status_order || parseInt(element.dataset.activeRow) > measurementData.end_status_order) {
             element.dataset.state = "inactive";
             element.classList.add("measurement-inactive-state");
         }

@@ -1,6 +1,3 @@
-@import "./../../styles/lib/narrow-scrollbar.css";
-
-
 :host {
     height: 100%;
     /*width: 100%;*/
@@ -78,6 +75,7 @@
     font-size: 1rem;
     font-weight: bold;
     color: var(--cl-text);
+    rotate: 180deg;
 }
 
 #measurement-name{

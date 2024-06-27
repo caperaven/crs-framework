@@ -63,6 +63,7 @@ export class SlaVisualization extends HTMLElement {
         await crs.call("data_manager", "remove_change", {manager: this.dataset.manager, callback: this.#dataManagerChangedHandler});
         this.#dataManagerChangedHandler = null;
         this.#changeEventMap = null;
+        this.#isInitialized = null;  // toDo: Ask Gerhard if this is correct
         this.#statuses = null;
         this.#currentStatus = null;
         this.#container = null;

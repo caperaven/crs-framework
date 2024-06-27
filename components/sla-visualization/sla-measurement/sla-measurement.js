@@ -1,13 +1,6 @@
-// import { loadHTML } from "./../../../dist/src/load-resources.js";
-// import "./../../dialogs/dialogs-actions.js";
-// import "./../../context-menu/context-menu-actions.js";
+import "./../../context-menu/context-menu-actions.js";
 
 class SlaMeasurement extends HTMLElement {
-    // ToDo: AW - See if we can use this convention instead of all the handlers
-    // #mouseEventHandlers = {
-    //     "mouseenter": this.#mouseEnter.bind(this),
-    //     "mouseleave": this.#mouseLeave.bind(this)
-    // }
 
     #mouseEnterEventHandler = this.#mouseEnterEvent.bind(this);
     #mouseLeaveEventHandler = this.#mouseLeaveEvent.bind(this);
@@ -106,10 +99,10 @@ class SlaMeasurement extends HTMLElement {
                 icon_font_family: "crsfrw",
                 at: 'bottom',
                 height: "max-content",
+                filtering: false,
                 options: [
-                    { id: "item1", title: "Edit", tags: "edit", icon: "edit", selected: true,  type: "console", action: "log", args: { message: "Edit "}, attributes: { "aria-hidden.if": "status == 'b'" } },
-                    { id: "item3", title: "Delete", tags: "delete", icon: "delete", icon_color: "var(--red)", type: "sla_measurement", action: "remove_measurement", args: { element: this.getRootNode().host.getRootNode().host} },
-                    { title: "-" }
+                    { id: "item1", title: "Edit", tags: "edit", icon: "edit", type: "console", action: "log", args: { message: "Edit "}, attributes: { "aria-hidden.if": "status == 'b'" } },
+                    { id: "item3", title: "Delete", tags: "delete", icon: "delete", icon_color: "var(--red)", type: "sla_measurement", action: "remove_measurement", args: { element: this} }
                 ],
             });
         }

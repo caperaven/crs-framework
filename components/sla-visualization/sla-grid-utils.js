@@ -77,7 +77,9 @@ function createStatusLabels(element, statuses) {
         statusLabel.dataset.statusOrder = status.order;
         statusLabel.classList.add("status-label");
         statusLabel.style.gridArea = `status_${status.index}`;
-        statusLabel.textContent = status.description;
+        if (status.code !== -1){
+            statusLabel.textContent =`[${status.code}] ${status.description}`;
+        }
         element.appendChild(statusLabel);
     }
 }
@@ -166,40 +168,6 @@ function generateGridTemplateArray(dataStatuses, dataSla, visualizationPhase) { 
 
     return gridTemplateArray;
 }
-
-// function updateStatusData(dataStatuses) {
-//     let result = [];
-//     dataStatuses.unshift({index: -1});
-//     for (let i = 0; i < dataStatuses.length; i++) {
-//         const status = dataStatuses[i];
-//         status.index = i;
-//         result.push(status);
-//     }
-//     dataStatuses.push({index: -1});
-//
-//     return result;
-// }
-
-// function updateStatusData(dataStatuses) {
-//     // if dataStatuses is not empty , else return empty array
-//     // Remove previous unshifted element if present
-//     if(dataStatuses.length !== 0 && dataStatuses !== undefined) {
-//         if (dataStatuses.length > 0 && dataStatuses[0].code === -1) {
-//             dataStatuses.shift();
-//         }
-//
-//         // Remove previous pushed element if present
-//         if (dataStatuses.length > 0 && dataStatuses[dataStatuses.length - 1].code === -1) {
-//             dataStatuses.pop();
-//         }
-//
-//         // Add the new elements
-//         dataStatuses.unshift({code: -1});
-//         dataStatuses.push({code: -1});
-//         return dataStatuses;
-//     }
-//     return [];
-// }
 
 function updateStatusData(dataStatuses) {
     // Remove previous unshifted element if present

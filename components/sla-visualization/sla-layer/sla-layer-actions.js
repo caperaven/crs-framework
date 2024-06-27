@@ -289,9 +289,6 @@ async function showCurrentStatus(currentStatus, parentElement) {
         if (statusRow.dataset.id === currentStatus) {
             statusRow.classList.add("active-status-row");
         }
-        else {
-
-        }
     }
 
 }
