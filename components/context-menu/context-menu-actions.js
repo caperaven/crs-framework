@@ -101,6 +101,8 @@ export class ContextMenuActions {
         const templates = await crs.process.getValue(step.args.templates, context, process, item);
         const filtering = await crs.process.getValue(step.args.filtering, context, process, item) ?? true;
 
+        await this.close(step, context, process, item);
+
         if (target != null) {
             target.dataset.active = true;
         }
@@ -118,6 +120,16 @@ export class ContextMenuActions {
         });
 
         document.body.appendChild(instance);
+    }
+
+    /**
+     * @method close - Close a context menu
+     */
+    static async close() {
+        const instance = document.querySelector("context-menu");
+        if (instance != null) {
+            instance.remove();
+        }
     }
 }
 

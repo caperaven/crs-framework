@@ -10,8 +10,9 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     #item;
     #templates;
     #clickHandler = this.#click.bind(this);
-    #filterCloseHandler = this.#filterClose.bind(this);
+    #closeHandler = this.#closeContextMenu.bind(this);
     #filterHeader;
+    #callback;
 
     get shadowDom() {
         return true;
@@ -21,8 +22,12 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         return import.meta.url.replace(".js", ".html");
     }
 
+    get callback() {
+        return this.#callback;
+    }
+
     async connectedCallback() {
-        super.connectedCallback();
+        await super.connectedCallback();
     }
 
     async preLoad() {
@@ -37,7 +42,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
                 await buildElements.call(this, this.#options, this.#templates, this.#context, this.container);
 
                 this.#filterHeader = this.shadowRoot.querySelector("filter-header");
-                this.#filterHeader.addEventListener("close", this.#filterCloseHandler);
+                this.#filterHeader.addEventListener("close", this.#closeHandler);
                 this.#filterHeader.container = this.container;
 
                 await crs.call("component", "notify_ready", {element: this});
@@ -49,7 +54,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
 
     async disconnectedCallback() {
         this.removeEventListener("click", this.#clickHandler);
-        this.#filterHeader.removeEventListener("close", this.#filterCloseHandler);
+        this.#filterHeader.removeEventListener("close", this.#closeHandler);
 
         this.#options = null;
         this.#target = null;
@@ -62,14 +67,16 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         this.container = null;
         this.#filterHeader.container = null;
         this.#filterHeader = null;
-        super.disconnectedCallback();
+        this.#closeHandler = null;
+        this.#callback = null;
+        await super.disconnectedCallback();
     }
 
     /**
-     * @method #filterClose - Closes the context menu.
+     * @method #closeContextMenu - Closes the context menu.
      * @returns {Promise<void>}
      */
-    async #filterClose() {
+    async #closeContextMenu() {
         await crs.call("context_menu", "close");
     }
 
@@ -80,7 +87,6 @@ class ContextMenu extends crsbinding.classes.BindableElement {
      */
     async #click(event) {
         const element = event.composedPath()[0];
-        const className = element.className;
 
         if ( element.id === "input-filter" || element.dataset.ignoreClick === "true") return;
 
@@ -89,7 +95,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         }
 
         if (element.parentElement?.dataset.closable == null) {
-            await this.#filterClose();
+            await this.#closeContextMenu();
             return;
         }
 
@@ -124,7 +130,6 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         this.btnBack.dataset.visible = subGroups.length > 0;
     }
 
-
     /**
      * @method #closeSubGroup - Closes the sub group by removing the aria-expanded attribute.
      * @returns {Promise<void>}
@@ -157,6 +162,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         this.#process = args.process;
         this.#item = args.item;
         this.#templates = args.templates;
+        this.#callback = args.callback;
 
         if (args.style != null) {
             for (const key of Object.keys(args.style)) {

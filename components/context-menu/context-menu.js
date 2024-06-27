@@ -22,11 +22,10 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     #margin;
     #templates;
     #filtering;
-    #filterCloseHandler = this.#filterClose.bind(this);
+    #closeHandler = this.#closeContextMenu.bind(this);
     #filterHeader;
     #keyboardInputManager;
     #isHierarchical = false;
-    #disposing = false;
 
     get shadowDom() {
         return true;
@@ -91,13 +90,13 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         });
 
         if (this.#filtering !== false) {
-            this.#filterHeader.removeEventListener("close", this.#filterCloseHandler);
+            this.#filterHeader.removeEventListener("close", this.#closeHandler);
         }
 
         globalThis.removeEventListener("click", this.#clickHandler);
         this.#filtering = null;
         this.#filterHeader = null;
-        this.#filterCloseHandler = null;
+        this.#closeHandler = null;
         this.#clickHandler = null;
         this.#options = null;
         this.#point = null;
@@ -133,7 +132,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         if (element.id === "input-filter" || element.dataset.ignoreClick === "true") return;
 
         if (element.parentElement?.dataset.closable == null) {
-            await this.#filterClose();
+            await this.#closeContextMenu();
             return;
         }
 
@@ -148,12 +147,12 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     }
 
     /**
-     * @method #filterClose - Closes the context menu.
-     * @param event
+     * @method #closeContextMenu - Closes the context menu.
+     * @param event - The event that triggered the close.
      * @returns {Promise<void>}
      */
-    async #filterClose(event) {
-        await this.remove();
+    async #closeContextMenu() {
+        await crs.call("context_menu", "close");
     }
 
     /**
@@ -196,7 +195,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     async #setFilterState() {
         this.#filterHeader = this.shadowRoot.querySelector("filter-header");
         if (this.#filtering !== false) {
-            this.#filterHeader.addEventListener("close", this.#filterCloseHandler);
+            this.#filterHeader.addEventListener("close", this.#closeHandler);
         } else {
             this.#filterHeader.parentElement.removeChild(this.#filterHeader);
         }
