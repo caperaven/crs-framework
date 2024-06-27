@@ -101,9 +101,7 @@ export class ContextMenuActions {
         const templates = await crs.process.getValue(step.args.templates, context, process, item);
         const filtering = await crs.process.getValue(step.args.filtering, context, process, item) ?? true;
 
-        if (globalThis.contextMenu != null) {
-            await this.close();
-        }
+        await this.close(step, context, process, item);
 
         if (target != null) {
             target.dataset.active = true;
@@ -115,58 +113,23 @@ export class ContextMenuActions {
         const instance = document.createElement("context-menu");
         instance.setOptions({
             options, templates, point, target, at,
-            anchor, context, margin, height, filtering,
+            anchor, context, margin, height, filtering, callback,
             style: {
                 "--icon-font": icon_font_family
             }
         });
 
         document.body.appendChild(instance);
-
-
-        let callbackFn = null;
-        if (callback != null) {
-            callbackFn = (event) => {
-                callback(event);
-            }
-
-            instance.addEventListener("change", callbackFn);
-        }
-
-        const closeFn = async () => {
-            // When closing the context menu we need to remove the event listener for the close event.
-            instance.removeEventListener("close", closeFn);
-
-            if (target != null) {
-                // We need to remove the active attribute from the target element if it exists.
-                delete target.dataset.active;
-            }
-
-            if (callbackFn != null) {
-                // We need to remove the event listener for the change event if it exists.
-                // We do this on the close as we can't be sure the change event will fire.
-                // The user can click away from the context menu.
-                instance.removeEventListener("change", callbackFn);
-            }
-        }
-
-        instance.addEventListener("close", closeFn);
-
-        globalThis.contextMenu = instance;
     }
 
     /**
-     * @method close - Closes the context menu.
-     * There is only one context menu open at any time so this will close the current context menu.
-     * @returns {Promise<void>}
+     * @method close - Close a context menu
      */
     static async close() {
-        if (globalThis.contextMenu == null) return;
-
-        globalThis.contextMenu.dispatchEvent(new CustomEvent("close"));
-
-        globalThis.contextMenu.parentElement.removeChild(globalThis.contextMenu);
-        delete globalThis.contextMenu;
+        const instance = document.querySelector("context-menu");
+        if (instance != null) {
+            instance.remove();
+        }
     }
 }
 
