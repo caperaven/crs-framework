@@ -57,6 +57,9 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         this.#filterHeader.removeEventListener("close", this.#closeHandler);
 
         this.#options = null;
+        if (this.#target != null) {
+            delete this.#target.dataset.active;
+        }
         this.#target = null;
         this.#context = null;
         this.#process = null;
