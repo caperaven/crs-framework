@@ -14,6 +14,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     #at;
     #anchor;
     #target;
+    #callback;
     #clickHandler = this.#click.bind(this);
     #context;
     #process;
@@ -21,7 +22,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     #margin;
     #templates;
     #filtering;
-    #filterCloseHandler = this.#filterClose.bind(this);
+    #closeHandler = this.#closeContextMenu.bind(this);
     #filterHeader;
     #keyboardInputManager;
     #isHierarchical = false;
@@ -32,6 +33,10 @@ class ContextMenu extends crsbinding.classes.BindableElement {
 
     get html() {
         return import.meta.url.replace(".js", ".html");
+    }
+
+    get callback() {
+        return this.#callback;
     }
 
     async connectedCallback() {
@@ -85,21 +90,25 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         });
 
         if (this.#filtering !== false) {
-            this.#filterHeader.removeEventListener("close", this.#filterCloseHandler);
+            this.#filterHeader.removeEventListener("close", this.#closeHandler);
         }
 
         globalThis.removeEventListener("click", this.#clickHandler);
         this.#filtering = null;
         this.#filterHeader = null;
-        this.#filterCloseHandler = null;
+        this.#closeHandler = null;
         this.#clickHandler = null;
         this.#options = null;
         this.#point = null;
         this.#at = null;
         this.#anchor = null;
+        if (this.#target != null) {
+            delete this.#target.dataset.active;
+        }
         this.#target = null;
         this.#context = null;
         this.#process = null;
+        this.#callback = null;
         this.#item = null;
         this.#margin = null;
         this.#templates = null;
@@ -123,7 +132,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         if (element.id === "input-filter" || element.dataset.ignoreClick === "true") return;
 
         if (element.parentElement?.dataset.closable == null) {
-            await this.#filterClose();
+            await this.#closeContextMenu();
             return;
         }
 
@@ -138,11 +147,11 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     }
 
     /**
-     * @method #filterClose - Closes the context menu.
-     * @param event
+     * @method #closeContextMenu - Closes the context menu.
+     * @param event - The event that triggered the close.
      * @returns {Promise<void>}
      */
-    async #filterClose(event) {
+    async #closeContextMenu() {
         await crs.call("context_menu", "close");
     }
 
@@ -169,10 +178,8 @@ class ContextMenu extends crsbinding.classes.BindableElement {
      * @returns {Promise<void>}
      */
     async #setFixedLayout( at, anchor) {
-        const ul = this.shadowRoot.querySelector(".popup");
-
         await crs.call("fixed_layout", "set", {
-            element: ul,
+            element: this,
             target: this.#target,
             point: this.#point,
             at: this.#at || at,
@@ -188,7 +195,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     async #setFilterState() {
         this.#filterHeader = this.shadowRoot.querySelector("filter-header");
         if (this.#filtering !== false) {
-            this.#filterHeader.addEventListener("close", this.#filterCloseHandler);
+            this.#filterHeader.addEventListener("close", this.#closeHandler);
         } else {
             this.#filterHeader.parentElement.removeChild(this.#filterHeader);
         }
@@ -233,6 +240,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         this.#margin = args.margin;
         this.#templates = args.templates;
         this.#filtering = args.filtering ?? true;
+        this.#callback = args.callback;
 
         if (typeof args.height == "number") {
             args.height = `${args.height}px`

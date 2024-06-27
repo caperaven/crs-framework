@@ -13,9 +13,9 @@ export async function handleSelection(li, options, component) {
     }
 
     component.dataset.value = option.id;
-    component.dispatchEvent(new CustomEvent("change", {detail: option}));
+    component.callback?.({detail: option});
 
-    await crs.call("context_menu", "close");
+    component.remove();
 }
 
 export async function setFocusState(li) {
