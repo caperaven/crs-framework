@@ -6,11 +6,13 @@ export default class ContextMenu extends crsbinding.classes.ViewBase {
     async connectedCallback() {
         await super.connectedCallback();
         this._element.addEventListener('contextmenu', this.#handler);
+        await this.initialiseTranslations();
     }
 
     async disconnectedCallback() {
         this._element.removeEventListener('contextmenu', this.#handler);
         this.#handler = null;
+        globalThis.translations.contextMenu = null;
         await super.disconnectedCallback();
     }
 
@@ -36,6 +38,15 @@ export default class ContextMenu extends crsbinding.classes.ViewBase {
         }, { status: "a" });
     }
 
+    async initialiseTranslations() {
+        globalThis.translations = {};
+        globalThis.translations.contextMenu = {
+            labels: {
+                noResultsFound: "No results found",
+                noResultsMessage: "Try a different search term"
+            }
+        };
+    }
     async showHierarchy(event) {
         await crs.call("context_menu", "show", {
             element: event.target,
@@ -45,12 +56,26 @@ export default class ContextMenu extends crsbinding.classes.ViewBase {
                         { id: "sub item 1", tags: "sub item 1", title: "sub item 1", children: [
                                 { id: "sub item child 1", tags: "sub item child 1", title: "sub item child 1", icon: "date-and-time"},
                                 { id: "sub item child 2", tags: "sub item child 2", title: "sub item child 2", icon: "condition" },
-                                { id: "sub item child 3", tags: "sub item child 3", title: "sub item child 3" }]
-                        },
-                        { id: "sub item 2", tags: "sub item 2",  title: "sub item 1", icon: "calendar" },
-                        { id: "sub item 3", tags: "sub item 3", title: "sub item 1" }]
+                                { id: "sub item child 3", tags: "sub item child 3", title: "sub item child 3" }]},
+                        { id: "sub item 2", tags: "sub item 2", title: "sub item 2", children: [
+                                { id: "sub item child 2.1", tags: "sub item child 1", title: "sub item child 1", icon: "date-and-time"},
+                                { id: "sub item child 2.2", tags: "sub item child 2", title: "sub item child 2", icon: "condition" },
+                                { id: "sub item child 2.3", tags: "sub item child 3", title: "sub item child 3" }]},
+                        { id: "sub item 2", tags: "sub item 2",  title: "sub item 2", icon: "calendar" },
+                        { id: "sub item 3", tags: "sub item 3", title: "sub item 3" },
+                        { id: "sub item 4", title: "sub Item 4", tags: "item 4" },
+                        { id: "sub item 5", title: "sub Item 5", tags: "item 5" },
+                        { id: "sub item 6", title: "sub Item 6", tags: "item 6" },
+                        { id: "sub item 7", title: "sub Item 7", tags: "item 7" },
+                        { id: "sub item 8", title: "sub Item 8", tags: "item 8" },
+
+                    ]
                 },
-                { id: "item2", title: "Item 2", tags: "item 2" },
+                { id: "item2", title: "Item 2", tags: "item 2", children: [ { id: "sub item 2", tags: "sub item 2", title: "sub item 2", children: [
+                            { id: "sub item child 2.1", tags: "sub item child 1", title: "sub item child 1", icon: "date-and-time"},
+                            { id: "sub item child 2.2", tags: "sub item child 2", title: "sub item child 2", icon: "condition" },
+                            { id: "sub item child 2.3", tags: "sub item child 3", title: "sub item child 3" }]
+                    },]},
                 { id: "item3", title: "Item 3", tags: "item 3" },
                 { id: "item4", title: "Item 4", tags: "item 4" },
                 { id: "item5", title: "Item 5", tags: "item 5" },
@@ -76,6 +101,26 @@ export default class ContextMenu extends crsbinding.classes.ViewBase {
              */
 
             options: [
+                { id: "item0", tags: "master item", title: "Master Item", icon: "browse", icon_color: "#ff9000", children: [
+                        { id: "sub item 1", tags: "sub item 1", title: "sub item 1", children: [
+                                { id: "sub item 0", tags: "sub item 1", title: "sub item 1", children: [
+                                        { id: "sub item child 1", tags: "sub item child 1", title: "sub item child 1", icon: "date-and-time"},
+                                        { id: "sub item child 2", tags: "sub item child 2", title: "sub item child 2", icon: "condition" },
+                                        { id: "sub item child 3", tags: "sub item child 3", title: "sub item child 3" }]},
+                                { id: "sub item 1", tags: "sub item 1", title: "sub item 1", children: [
+                                        { id: "sub item child 1", tags: "sub item child 1", title: "sub item child 1", icon: "date-and-time"},
+                                        { id: "sub item child 2", tags: "sub item child 2", title: "sub item child 2", icon: "condition" },
+                                        { id: "sub item child 3", tags: "sub item child 3", title: "sub item child 3" }]},
+                                { id: "sub item child 1", tags: "sub item child 1", title: "sub item child 1", icon: "date-and-time"},
+                                { id: "sub item child 2", tags: "sub item child 2", title: "sub item child 2", icon: "condition" }]
+                        },
+                        { id: "sub item 2", tags: "sub item 2", title: "sub item 2", children: [
+                                { id: "sub item child 1", tags: "sub item child 1", title: "sub item child 1", icon: "date-and-time"},
+                                { id: "sub item child 2", tags: "sub item child 2", title: "sub item child 2", icon: "condition" },
+                                { id: "sub item child 3", tags: "sub item child 3", title: "sub item child 3" }]
+                        },
+                        { id: "sub item 2", tags: "sub item 2",  title: "sub item 1", icon: "calendar" },
+                        { id: "sub item 3", tags: "sub item 3", title: "sub item 1" }]},
                 { id: "item1", title: "&{approved}", tags: "approved", icon: "approved", icon_color: "#ff0090", type: "console", action: "log", args: { message: "Approved "}, attributes: { "aria-hidden.if": "status == 'b'" } },
                 { id: "item2", title: "Browse", tags: "browse", icon: "browse", type: "console", action: "log", args: { message: "Browse "}, styles: { "background": "green"} },
                 { id: "item3", title: "Calendar", tags: "calendar", icon: "calendar", type: "console", action: "log", args: { message: "Calendar "} },

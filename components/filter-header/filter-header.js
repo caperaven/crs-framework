@@ -33,10 +33,12 @@ class FilterHeader extends crsbinding.classes.BindableElement {
             return this.dispatchEvent(new CustomEvent("focus-out"));
         }
 
-        await crs.call("dom_collection", "filter_children", {
+        const remainingItems = await crs.call("dom_collection", "filter_children", {
             filter: event.target.value.toLowerCase(),
-            element: this.#container
-        })
+            element: this.#container,
+            hierarchical: true
+        });
+        this.#container.dataset.noContent = remainingItems === 0;
     }
 
     async clear() {

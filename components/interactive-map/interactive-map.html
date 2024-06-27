@@ -1,35 +1,34 @@
-<link rel="stylesheet" href="../../packages/leaflet/leaflet.css">
-
 <style>
-    :host {
+    interactive-map {
         display: block;
         position: relative;
         height: 100%;
         width: 100%;
+        overflow: hidden;
     }
 
-    #map {
+    interactive-map #map {
         height: 100%;
         width: 100%;
         cursor: default;
     }
 
-    .point {
+    interactive-map .point {
         font-family: crsfrw;
-        font-size: 2rem;
+        font-size: 3rem;
         font-weight: 500;
         color: #E00000;
-        text-shadow: 0px 0px 5px white;
+        text-shadow: -1px -1px 0 #fff, -1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff;
         /*This is important for vertical centering of icon*/
-        line-height: 2rem;
-        min-width: 2rem;
+        line-height: 3rem;
+        min-width: 3rem;
     }
 
-    .point.selected {
+    interactive-map .point.selected {
         color: var(--cl-primary);
     }
 
-    .handle[data-type="draghandle"] {
+    interactive-map .handle[data-type="draghandle"] {
         background: var(--cl-primary-alt);
         border: var(--border);
         height: 1rem;
@@ -39,7 +38,7 @@
         box-sizing: border-box;
     }
 
-    .handle[data-type="subdivide"] {
+    interactive-map .handle[data-type="subdivide"] {
         background: var(--cl-primary-alt);
         border: var(--border);
         height: 0.75rem;
@@ -50,20 +49,153 @@
         box-sizing: border-box;
     }
 
-    .leaflet-control-zoom {
+    interactive-map .leaflet-control-zoom {
         display: flex;
         flex-direction: row-reverse;
     }
 
     /* Make the slotted drawing tools appear at the top right of the map */
-    ::slotted([slot="drawing-tools"]) {
+    interactive-map #drawing-tools {
         margin: var(--margin);
         position: absolute;
         top: 0;
         right: 0;
-        z-index: 1000;
+        z-index: 401;
     }
+
+    interactive-map #search-tools {
+        box-shadow: var(--drop-shadow);
+        margin: var(--margin);
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 401;
+    }
+
+    interactive-map [aria-hidden="true"] {
+        display: unset !important;
+    }
+
+    interactive-map .leaflet-control-attribution a {
+        display: unset  !important;
+        font-size: unset  !important;
+    }
+
+    .leaflet-control-zoom-in::after, .leaflet-control-zoom-out::after {
+        font-family: crsfrw;
+        background: var(--cl-primary-alt);
+        height: 1rem;
+        width:  1rem;
+        font-weight: normal;
+    }
+
+    .leaflet-control-zoom-in, .leaflet-control-zoom-out {
+        border-radius: 0 !important;
+        border:none !important;
+        background: transparent !important;
+    }
+
+    .leaflet-control-zoom-in::after {
+        content: "zoom-in";
+    }
+
+    .leaflet-control-zoom-out::after {
+        content: "zoom-out";
+    }
+
+    .leaflet-control-zoom-in span {
+        display: none !important;
+    }
+
+    .leaflet-control-zoom-out span {
+        display: none !important;
+    }
+
+    .leaflet-control-zoom {
+        bottom: 0;
+        background: var(--cl-primary-alt);
+        border: var(--radius);
+    }
+
+    .leaflet-touch .leaflet-control-layers, .leaflet-touch .leaflet-bar {
+        border: var(--border);
+        border-radius: 0.5rem;
+        box-shadow: var(--drop-shadow);
+    }
+
+    .leaflet-popup-content {
+        margin: 0;
+
+    }
+
+    .leaflet-popup-content table {
+        padding: 0.5rem;
+    }
+
+    .leaflet-popup-content hr {
+        display: block;
+        height: 1px;
+        border: 0;
+        border-top: var(--border);
+        padding: 0;
+        margin: 0;
+    }
+
+    .leaflet-popup-content-wrapper, .leaflet-popup-tip {
+        /*background: none;*/
+        overflow: hidden;
+    }
+
+    .leaflet-popup-content h3 {
+        padding: var(--half-padding) 1.5rem var(--half-padding) var(--padding) ;
+        margin: 0;
+        font-size: small;
+        font-weight: bold;
+        color: var(--grey-s1);
+        background: var(--grey-s3);
+        border-bottom: var(--border);
+        position: relative;
+    }
+
+    .leaflet-popup-content h3:before {
+        content: "";
+        background: var(--blue);
+        width: 5px;
+        height: 100%;
+        position: absolute;
+        left: -1px;
+        top: 0;
+    }
+
+    .leaflet-popup-content h3.info:before {
+        background: var(--cl-primary);
+    }
+
+    .leaflet-popup-content h3.warning:before {
+        background: var(--orange);
+    }
+
+    .leaflet-popup-content h3.error:before {
+        background: var(--red);
+    }
+
+    .leaflet-popup-content h3.success:before {
+        background: var(--green);
+    }
+
+    .leaflet-popup-content .map-popup-label {
+        text-transform: capitalize;
+    }
+
+    .leaflet-popup-content td{
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 12rem;
+    }
+
 
 </style>
 <div id="map"></div>
-<slot name="drawing-tools"></slot>
+<div id="drawing-tools"></div>
+<div id="search-tools"></div>
