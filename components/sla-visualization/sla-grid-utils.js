@@ -20,18 +20,23 @@ export async function create_sla_grid(data,slaGridContainer, slaVisualization) {
         slaVisualization.shadowRoot.querySelector("#sla-legend").style.display = "flex"
     }
 
+    //update the dataStatuses array
+    const statuses = updateStatusData(data.statuses);
+
+    const reversedStatuses = [...statuses].reverse();
+
+    reversedStatuses.unshift({ code: -1, index: -1 });
+    reversedStatuses.push({ code: -1, index: -1 });
+
 
     createInitialGrid(element);
 
     // Generate the grid template array
-    // console.log(generateGridTemplateArray(data.statuses, data.sla, slaVisualizationPhase).join('\n'))
-
-
-    element.style.gridTemplate = generateGridTemplateArray(data.statuses, data.sla, slaVisualizationPhase).join(' '); // refactor for phase
+    element.style.gridTemplate = generateGridTemplateArray(reversedStatuses, data.sla, slaVisualizationPhase).join(' '); // refactor for phase
     // element.dataset.workOrderStatus = data.workOrder.currentStatus; // Remove or num chucks
 
-    createStatusLabels(element, data.statuses);
-    createRowElements(element, data.statuses);
+    createStatusLabels(element, reversedStatuses);
+    createRowElements(element, reversedStatuses);
     createSlaLayers(element, data.sla);
 }
 
@@ -68,6 +73,7 @@ function createStatusLabels(element, statuses) {
     statusHeader.textContent = "Status";
     statusBackground.appendChild(statusHeader);
 
+
     for(const status of statuses) {
         if (status.index === -1) {
             continue;
@@ -91,6 +97,7 @@ function createStatusLabels(element, statuses) {
  */
 function createRowElements(element, statuses) {
     let indexCount = 1;
+
 
     for (let i = statuses.length - 1; i >= 0; i--) {
         const status = statuses[i];
@@ -134,26 +141,20 @@ function createSlaLayers(element, slaCollection) {
 // Function to generate the grid template string
 /**
  * @method generateGridTemplateArray - generates the grid template array for the sla visualization
- * @param dataStatuses {[Object]} - the array of status objects
+ * @param dataStatusesMap {[Object]} - the array of status objects
  * @param dataSla {[Object]} - the array of sla objects
  * @param visualizationPhase {string} - the phase of the visualization
  * @returns {[string]} - the generated grid template array
  */
-function generateGridTemplateArray(dataStatuses, dataSla, visualizationPhase) { // refactor for phase
-    //update the dataStatuses array
-    dataStatuses = updateStatusData(dataStatuses);
+function generateGridTemplateArray(statuses, dataSla, visualizationPhase) { // refactor for phase
 
-    // Create the grid template array
-    // Loop through the statuses and sla to create the grid template array
-    // For example : '". status_1 status_2 status_3" 2rem'
-    const reversedStatuses = [...dataStatuses].reverse();
 
     let statusCount = 1;
 
-    const gridTemplateArray = reversedStatuses.map(status => {
+    const gridTemplateArray = statuses.map(status => {
         let rowHeight = statusCount === 1 && visualizationPhase === "runtime" ? "3fr" : "1fr"; // refactor for phase
         statusCount++;
-        let row = status.index === -1 ? "." : `status_${status.index}`;
+        let row = status.code === -1 ? "." : `status_${status.index}`;
         let slaArray = dataSla.map(sla => ` sla_${sla.id}`);
         return `"${row + slaArray.join('')}"${rowHeight}`;
     });
@@ -170,24 +171,14 @@ function generateGridTemplateArray(dataStatuses, dataSla, visualizationPhase) { 
 }
 
 function updateStatusData(dataStatuses) {
-    // Remove previous unshifted element if present
-    if (dataStatuses[0].code === -1 || dataStatuses[0].index === -1) {
-        dataStatuses.shift();
-    }
-
-    // Remove previous pushed element if present
-    if (dataStatuses[dataStatuses.length - 1].code === -1 || dataStatuses[dataStatuses.length - 1].index === -1) {
-        dataStatuses.pop();
-    }
-
-    // Add the new elements
-    dataStatuses.unshift({code: -1});
-    dataStatuses.push({code: -1});
-
+    const keys = Object.keys(dataStatuses);
     // Create the result array with updated indexes
     let result = [];
-    for (let i = 0; i < dataStatuses.length; i++) {
-        const status = dataStatuses[i];
+    for (let i = 0; i < keys.length; i++) {
+        const status = dataStatuses[keys[i]];
+        if (status.code === -1) {
+            continue;
+        }
         status.index = i;
         result.push(status);
     }

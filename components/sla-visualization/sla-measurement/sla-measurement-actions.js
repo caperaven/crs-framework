@@ -217,8 +217,8 @@ function onSlaMeasurementLoading(slaMeasurementElement, callback) {
 
 // Function to add start_status_name and end_status_name properties to measurement object
 async function addStatusNames(measurement, measurementDataStatuses) {
-    const startStatus = measurementDataStatuses.find(status => status.code === measurement.start_status);
-    const endStatus = measurementDataStatuses.find(status => status.code === measurement.end_status);
+    const startStatus = measurementDataStatuses[measurement.start_status];
+    const endStatus = measurementDataStatuses[measurement.end_status];
 
     if (startStatus) {
         measurement.start_status_name = startStatus.description;

@@ -14,7 +14,7 @@ export class SlaVisualization extends HTMLElement {
         [CHANGE_TYPES.refresh]: this.#refresh
     };
 
-    #isInitialized = false;
+    #currentStatusIndex;
     #statuses;
     #selectedMeasurement;
     #currentStatus;
@@ -42,10 +42,6 @@ export class SlaVisualization extends HTMLElement {
         this.#currentStatus = newValue;
     }
 
-    get initialized() {
-        return this.#isInitialized;
-    }
-
     constructor() {
         super();
         this.attachShadow({ mode: "open" });
@@ -56,14 +52,12 @@ export class SlaVisualization extends HTMLElement {
         this.shadowRoot.innerHTML = html;
         this.#container = this.shadowRoot.querySelector("#sla-grid-container");
         this.addEventListener("measurement-selected", this.#selectionChangedHandler);
-        await this.render();
     }
 
     async disconnectedCallback() {
         await crs.call("data_manager", "remove_change", {manager: this.dataset.manager, callback: this.#dataManagerChangedHandler});
         this.#dataManagerChangedHandler = null;
         this.#changeEventMap = null;
-        this.#isInitialized = null;  // toDo: Ask Gerhard if this is correct
         this.#statuses = null;
         this.#currentStatus = null;
         this.#container = null;
@@ -73,9 +67,18 @@ export class SlaVisualization extends HTMLElement {
     }
 
     async initialize(statuses, currenStatus) {
-        this.#statuses = statuses;
+        this.#statuses = {};
         this.#currentStatus = currenStatus
-        this.#isInitialized = true;
+        let index = 0;
+        for (const status of statuses) {
+            if(status.description === this.#currentStatus){
+                // TODO BUG DESCRIPTIONS CAN BE THE SAME
+                this.#currentStatusIndex = index;
+            }
+            status.order = index++;
+            this.#statuses[status.code] = status;
+        }
+
         await crs.call("component", "notify_ready", { element: this });
     }
 
@@ -83,12 +86,6 @@ export class SlaVisualization extends HTMLElement {
         let data = await crs.call("data_manager", "get_all", { manager: this.dataset.manager });
 
         this.#container.innerHTML = "";
-
-
-        // take the #status, loop through them and assign a property to each of them called status order with a value from 1 to the number of statuses
-        this.#statuses.forEach((status, index) => {
-            status.order = index + 1;
-        });
 
 
         if (data[0]?.measurements?.length > 0) {
@@ -102,7 +99,7 @@ export class SlaVisualization extends HTMLElement {
             await create_sla_grid(slaData, this.#container, this);
             await crs.call("sla_layer", "create_all_sla", { parent: this.#container, data: slaData , parentPhase: this.dataset.phase}); // refactor for phase
             if (this.dataset.phase === "runtime") {
-                await this.#updateSlaLegend();
+                await this.#updateSlaLegend(data);
             }
         }
         else{
@@ -111,6 +108,8 @@ export class SlaVisualization extends HTMLElement {
             this.#container.style.display = "flex";
             await crs.call("no_content", "show", { parent: this.#container });
         }
+
+
     }
 
     async #selectionChanged(args){
@@ -145,8 +144,9 @@ export class SlaVisualization extends HTMLElement {
         await crs.call("data_manager", "remove_change", {manager: this.dataset.manager, callback: this.#dataManagerChangedHandler});
     }
 
-    async #updateSlaLegend() {
-        const slaList = this.#container.querySelectorAll("sla-layer");
+    async #updateSlaLegend(data) {
+
+        // USE THE DATA
         const legend = this.shadowRoot.querySelector("#sla-legend");
 
         // Initialize the counts for each state
@@ -157,48 +157,25 @@ export class SlaVisualization extends HTMLElement {
             overdue: 0
         };
 
-        // Iterate through each sla-layer
-        for (const sla of slaList) {
-            // Get the measurements within the sla-layer
-            const measurementsList = sla.shadowRoot.querySelectorAll("sla-measurement");
 
-            // Iterate through each measurement
-            for (const measurement of measurementsList) {
-                // Get the state of the measurement
-                const state = measurement.dataset.state;
 
-                // Increase the count for the respective state
-                if (stateCounts.hasOwnProperty(state)) {
-                    stateCounts[state]++;
-                } else {
-                    console.warn(`Unexpected state: ${state}`);
+        for (const sla of data) {
+            for (const measure of sla.measurements) {
+                if (this.#currentStatusIndex < measure.start_status_order || this.#currentStatusIndex > measure.end_status_order) {
+                    stateCounts.inactive++;
+                }
+                else {
+                    stateCounts.active++;
                 }
             }
         }
 
-        // Use the state counts as needed
-        console.log(stateCounts);
-        // Mapping from state keys to HTML element IDs
-        const mapping = {
-            active: 'in-range',
-            inactive: 'out-of-range',
-            warning: 'warning',
-            overdue: 'overdue'
-        };
+        // Important note we use the indexes of the stateCount to match to the UI. This makes it faster to update the UI
 
-        // Update the legend with the state counts
-        for (const state in stateCounts) {
-            if (stateCounts.hasOwnProperty(state)) {
-                const count = stateCounts[state];
-                const elementId = mapping[state];
-                const listItem = legend.querySelector(`#${elementId}`);
-                if (listItem) {
-                    const span = listItem.querySelector('span');
-                    if (span) {
-                        span.textContent = count;
-                    }
-                }
-            }
+        const listItems = legend.querySelectorAll("li span");
+        const stateKeys = Object.keys(stateCounts);
+        for (let i = 0; i < listItems.length; i++) {
+            listItems[i].textContent = stateCounts[stateKeys[i]];
         }
     }
 

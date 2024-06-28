@@ -36,6 +36,8 @@ export class SlaVisualizationActions {
             return;
         }
 
+        element.initialized = true;
+
         const statuses = await crs.process.getValue(step.args.statuses, context, process, item);
         const currentStatus = await crs.process.getValue(step.args.currentStatus, context, process, item);
 

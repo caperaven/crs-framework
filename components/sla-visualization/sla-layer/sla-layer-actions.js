@@ -112,7 +112,16 @@ async function createSlaGrid(slaLayerElement, slaItemData, statusData) {
      */
     const statusLookupTable = createStatusLookupTable(statusData);
     const matrix = createMeasurementsMatrix(statusData, slaItemData);
-    populateMeasurementsMatrix(matrix, statusLookupTable, slaItemData);
+    debugger;
+    const keys = Object.keys(statusData).reverse();
+    for (let i = 0; i < keys.length; i++) {
+        const status = statusData[keys[i]];
+        status.index = i; // Assign index to status
+    }
+
+
+
+    populateMeasurementsMatrix(matrix, statusData, slaItemData);
     slaLayerElement.style.gridTemplate = matrixToTemplate(matrix, slaLayerElement);
 }
 
@@ -123,22 +132,51 @@ async function createSlaGrid(slaLayerElement, slaItemData, statusData) {
  */
 function createStatusLookupTable(statusData) {
     // create a dictionary where the key is the status id and the value is the index in the grid.
-    const lookupTable = {};
-    let index = statusData.length - 2;
+    // const lookupTable = {};
+    // let index = statusData.length - 2;
+    //
+    // for (let i = 0; i < statusData.length; i++) {
+    //     const status = statusData[i];
+    //
+    //     if (status.code === -1) {
+    //         lookupTable[status.code] = -1
+    //     }
+    //     else {
+    //         lookupTable[status.code] = index;
+    //         index--;
+    //     }
+    // }
+    //
+    // return lookupTable;
 
-    for (let i = 0; i < statusData.length; i++) {
-        const status = statusData[i];
 
-        if (status.code === -1) {
-            lookupTable[status.code] = -1
-        }
-        else {
-            lookupTable[status.code] = index;
-            index--;
-        }
-    }
+    // const keys = Object.keys(statusData);
+    // const statuses = statusData
+    //
+    //
+    //
+    // for(const key of keys) {
+    //     if (statuses[key].code === -1) {
+    //         statuses[key].index = -1;
+    //     }
+    //     statuses[key].index = keys.length - statuses[key].order;
+    //
+    //     // statusData[key].index = keys.length - statusData[key].order;
+    // }
+    //
+    // statuses['-1'] = { code: -1, index: -1 };
+    // statuses['-2'] = { code: -1, index: -1 };
+    //
+    //
+    // return statuses;
 
-    return lookupTable;
+
+
+    // Add top and bottom elements
+    // result[-1] = { code: -1, index: -1 };
+    // result[-2] = { code: -1, index: -1 };
+
+
 }
 
 /**
@@ -158,7 +196,8 @@ function createStatusLookupTable(statusData) {
  * @param slaItemData {Object} - The sla item data
  */
 function createMeasurementsMatrix(statusData, slaItemData) {
-    const numberOfRows = statusData.length;
+    const keys = Object.keys(statusData);
+    const numberOfRows = keys.length;
     // const numberOfColumns = slaItemData.measurements.length;
 
     // Here we check if the number of measurements is less than 3, if it is we set the number of columns to 3.
@@ -202,9 +241,12 @@ function initializeMatrix(matrix, numberOfRows, numberOfColumns) {
  */
 function populateMeasurementsMatrix(matrix, statusLookupTable, slaItemData) {
     let measurementIndex = 0;
+
+    matrix[0][0] = "header";
+
     for (const measurement of slaItemData.measurements) {
-        const startIndex = statusLookupTable[measurement.start_status];
-        const endIndex = statusLookupTable[measurement.end_status];
+        const startIndex = statusLookupTable[measurement.start_status].index;
+        const endIndex = statusLookupTable[measurement.end_status].index;
 
         for (let index = endIndex; index <= startIndex; index++) {
             matrix[index][measurementIndex] = `m_${measurement.id}`;
@@ -212,6 +254,8 @@ function populateMeasurementsMatrix(matrix, statusLookupTable, slaItemData) {
 
         measurementIndex++;
     }
+
+    matrix[0][0] = "footer";
 }
 
 /**
