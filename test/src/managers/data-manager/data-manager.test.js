@@ -421,4 +421,62 @@ describe("data manager tests", () => {
         const records = await crs.call("data_manager", "get_all", { manager: "store" });
         assertEquals(records.length, 2);
     });
+
+    it("get_updated", async () => {
+        await crs.call("data_manager", "update", {
+            manager: "store",
+            index:  0,
+            is_dirty: true,
+            changes: {
+                code: "luke skywalker"
+            }
+        })
+
+        // Check if the records are set
+        const records = await crs.call("data_manager", "get_updated", { manager: "store" });
+        assertEquals(records.length, 1);
+        assertEquals(records[0].id, "1000");
+        assertEquals(records[0].code, "luke skywalker");
+    });
+
+    it("get_created", async () => {
+        await crs.call("data_manager", "append", {
+            manager: "store",
+            records: [{ id: "2000", code: "2000" }],
+            is_dirty: true
+        })
+
+        // Check if the records are set
+        const records = await crs.call("data_manager", "get_created", { manager: "store" });
+        assertEquals(records.length, 1);
+        assertEquals(records[0].id, "2000");
+        assertEquals(records[0].code, "2000");
+    });
+
+    it("clear_dirty", async () => {
+        await crs.call("data_manager", "update", {
+            manager: "store",
+            index:  0,
+            is_dirty: true,
+            changes: {
+                code: "luke skywalker"
+            }
+        });
+
+        await crs.call("data_manager", "append", {
+            manager: "store",
+            records: [{ id: "2000", code: "2000" }],
+            is_dirty: true
+        });
+
+        await crs.call("data_manager", "clear_dirty", { manager: "store" });
+
+        // Check if the records are set
+        const records = await crs.call("data_manager", "get_updated", { manager: "store" });
+        assertEquals(records.length, 0);
+
+        const created = await crs.call("data_manager", "get_created", { manager: "store" });
+        assertEquals(created.length, 0);
+    });
+
 })

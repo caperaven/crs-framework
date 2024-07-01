@@ -226,13 +226,13 @@ class DataManagerActions {
 
     static async request_records(step, context, process, item) {
         const manager = await crs.process.getValue(step.args.manager, context, process, item);
-        let eventsRequired  = await crs.process.getValue(step.args.events_required ?? true, context, process, item);
+        let eventsRequired = await crs.process.getValue(step.args.events_required ?? true, context, process, item);
 
         if (manager == null) return;
 
         const instance = await globalThis.dataManagers[manager];
 
-        if (eventsRequired && instance.eventCount === 0) {
+        if (eventsRequired && instance.eventCount === 0 || instance.requestCallback == null) {
             return;
         }
 
@@ -390,15 +390,17 @@ class DataManagerActions {
         if (manager == null) return;
 
         const records = await crs.process.getValue(step.args.records || [], context, process, item);
+        const isDirty = await crs.process.getValue(step.args.is_dirty, context, process, item);
 
         const dataManager = globalThis.dataManagers[manager];
         const index = dataManager.count;
-        await dataManager.append(...records);
+        await dataManager.append(records, isDirty);
 
         await dataManager.notifyChanges({
             action: CHANGE_TYPES.add,
             models: records,
             index: index,
+            is_dirty: isDirty,
             count: records.length
         });
     }
@@ -508,14 +510,15 @@ class DataManagerActions {
         const index = await crs.process.getValue(step.args.index, context, process, item);
         const id = await crs.process.getValue(step.args.id, context, process, item);
         const changes = await crs.process.getValue(step.args.changes, context, process, item);
+        const isDirty = await crs.process.getValue(step.args.is_dirty, context, process, item);
 
         const dataManager = globalThis.dataManagers[manager];
 
         let result;
         if (index != null) {
-            result = await dataManager.updateIndex(index, changes);
+            result = await dataManager.updateIndex(index, changes, isDirty);
         } else {
-            result = await dataManager.updateId(id, changes);
+            result = await dataManager.updateId(id, changes, isDirty);
         }
 
         await dataManager.notifyChanges({
@@ -525,6 +528,7 @@ class DataManagerActions {
             changes: result.changes
         })
     }
+
 
     /**
      * @method set_group_selected - given a group id, check the records in that group (in the perspective definition) and then select them.
@@ -579,9 +583,14 @@ class DataManagerActions {
         if (manager == null) return;
 
         const selected = await crs.process.getValue(step.args.selected ?? true, context, process, item);
+        const deselectOthers = await crs.process.getValue(step.args.deselect_others ?? false, context, process, item);
         const indexes = await crs.process.getValue(step.args.indexes, context, process, item);
         const ids = await crs.process.getValue(step.args.ids, context, process, item);
         const dataManager = globalThis.dataManagers[manager];
+
+        if (deselectOthers) {
+            await dataManager.setSelectedAll(false);
+        }
 
         if (indexes != null) {
             await dataManager.setSelectedIndexes(indexes, selected);
@@ -690,6 +699,18 @@ class DataManagerActions {
         })
     }
 
+    static async filter_indexes(step, context, process, item) {
+        const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return;
+        const indexes = await crs.process.getValue(step.args.indexes, context, process, item);
+        const dataManager = globalThis.dataManagers[manager];
+        dataManager.filter = indexes;
+        await dataManager.notifyChanges({
+            action: CHANGE_TYPES.filter,
+            indexes: indexes
+        })
+    }
+
     /**
      * @method filter_selected - show only selected records in a data manager or those not selected.
      * the selected property is used to determine if you want to show the selected or the non selected values.
@@ -752,6 +773,34 @@ class DataManagerActions {
 
         const dataManager = globalThis.dataManagers[manager];
         return await dataManager.getSelected();
+    }
+
+    /** @method get_selected_indexes - Get the selected indexes in a data manager.
+     * @param step {object} - The step that contains the action to perform
+     * @param context {object} - The context of the process
+     * @param process {object} - The process
+     * @param item {object} - Current item in a process loop
+     * @param step.args.manager {string} - The name of the data manager. You will use this when performing operations on the data manager.
+     * @returns {Promise<void>}
+     * @example <caption>javascript example</caption>
+     * const selected = await crs.call("data_manager", "get_selected_indexes" {
+     *  manager: "my_data_manager"
+     *  });
+     *  @example <caption>json example</caption>
+     *  {
+     *  "type": "data_manager",
+     *  "action": "get_selected_indexes",
+     *  "args": {
+     *      "manager": "my_data_manager"
+     *      }
+     *  }
+     *  */
+    static async get_selected_indexes(step, context, process, item) {
+        const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return;
+
+        const dataManager = globalThis.dataManagers[manager];
+        return await dataManager.getSelectedIndexes();
     }
 
     static async get_unselected(step, context, process, item) {
@@ -879,15 +928,54 @@ class DataManagerActions {
         const index = await crs.process.getValue(step.args.index, context, process, item);
         const id = await crs.process.getValue(step.args.id, context, process, item);
 
-        if (index != null) {
-            return globalThis.dataManagers[manager].getByIndex(index);
+        if (globalThis.dataManagers[manager] == null) {
+            return null;
         }
+
+
+        let value = null;
+        if (index != null) {
+            value = await globalThis.dataManagers[manager].getByIndex(index);
+        }
+        else if (id != null) {
+            value = globalThis.dataManagers[manager].getById(id);
+        }
+
+        if (step.args.target) {
+            await crs.process.setValue(step.args.target, value, context, process, item);
+        }
+
+        return value;
+    }
+
+    /**
+     * @deprecated
+     * @method get_filtered - Get a filtered list of records from a data manager.
+     * @TODO - This is to be removed and replaced with a fuzzy filter on the perspective manager.
+     * The fuzzy filter will support * as the field to filter on.
+     * The implementation of the fuzzy filter must be done on the process-api data-processing
+     *
+     * @param step
+     * @param context
+     * @param process
+     * @param item
+     * @returns {Promise<*|null>}
+     */
+    static async get_filtered(step, context, process, item) {
+        const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return;
 
         if (globalThis.dataManagers[manager] == null) {
             return null;
         }
 
-        return globalThis.dataManagers[manager].getById(id);
+        const records = await globalThis.dataManagers[manager].getAll();
+        if (globalThis.dataManagers[manager].filter == null) {
+            return records;
+        }
+        else {
+            return records.filter((record, index) => globalThis.dataManagers[manager].filter.includes(index));
+        }
     }
 
     /**
@@ -1116,6 +1204,110 @@ class DataManagerActions {
         if (manager == null) return;
 
         return globalThis.dataManagers[manager].isAllSelected;
+    }
+
+    /**
+     * @method get_updated - Get the updated records in a data manager based on the dirty flag.
+     * @param step - The step that contains the action to perform
+     * @param context - The context of the process
+     * @param process - The process
+     * @param item - Current item in a process loop
+     * @param step.args.manager - The name of the data manager. You will use this when performing operations on the data manager.
+     * @param [step.args.target] - The target to set the updated records to
+     * @returns {Promise<void>}
+     *
+     * @example <caption>javascript example</caption>
+     * const updated = await crs.call("data_manager", "get_updated" {
+     *   manager: "my_data_manager"
+     * });
+     *
+     * @example <caption>json example</caption>
+     * {
+     *  "type": "data_manager",
+     *  "action": "get_updated",
+     *  "args": {
+     *    "manager": "my_data_manager"
+     *  }
+     * }
+     */
+    static async get_updated(step, context, process, item) {
+        const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return;
+
+        const updated = await globalThis.dataManagers[manager].getUpdated();
+
+        if (step.args.target != null) {
+            await crs.process.setValue(step.args.target, updated, context, process, item);
+        }
+
+        return updated;
+    }
+
+    /**
+     * @method get_created - Get the created records in a data manager based on the dirty flag.
+     * @param step - The step that contains the action to perform
+     * @param context - The context of the process
+     * @param process - The process
+     * @param item - Current item in a process loop
+     * @param step.args.manager - The name of the data manager. You will use this when performing operations on the data manager.
+     * @param [step.args.target] - The target to set the created records to
+     * @returns {Promise<void>}
+     *
+     * @example <caption>javascript example</caption>
+     * const created = await crs.call("data_manager", "get_created" {
+     *  manager: "my_data_manager"
+     * });
+     *
+     * @example <caption>json example</caption>
+     * {
+     *   "type": "data_manager",
+     *   "action": "get_created",
+     *   "args": {
+     *     "manager": "my_data_manager"
+     *   }
+     * }
+     */
+    static async get_created(step, context, process, item) {
+        const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return;
+
+        const created = await globalThis.dataManagers[manager].getCreated();
+
+        if (step.args.target != null) {
+            await crs.process.setValue(step.args.target, created, context, process, item);
+        }
+
+        return created;
+    }
+
+    /**
+     * @method clear_dirty - Clear the dirty flag on all records in a data manager.
+     * @param step - The step that contains the action to perform
+     * @param context - The context of the process
+     * @param process - The process
+     * @param item - Current item in a process loop
+     * @param step.args.manager - The name of the data manager. You will use this when performing operations on the data manager.
+     * @returns {Promise<void>}
+     *
+     * @example <caption>javascript example</caption>
+     * await crs.call("data_manager", "clear_dirty" {
+     *  manager: "my_data_manager"
+     * });
+     *
+     * @example <caption>json example</caption>
+     * {
+     *  "type": "data_manager",
+     *  "action": "clear_dirty",
+     *  "args": {
+     *   "manager": "my_data_manager"
+     *   }
+     *  }
+     */
+    static async clear_dirty(step, context, process, item) {
+        const manager = await crs.process.getValue(step.args.manager, context, process, item);
+        if (manager == null) return;
+
+        return globalThis.dataManagers[manager].clearDirty();
     }
 }
 

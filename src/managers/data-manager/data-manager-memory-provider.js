@@ -1,4 +1,5 @@
 import {BaseDataManager} from "./data-manager-base.js";
+import {DIRTY_TYPES} from "./data-manager-dirty-types.js";
 
 /**
  * @class DataManagerMemoryProvider - This class is used to provide a memory based data manager.
@@ -6,6 +7,14 @@ import {BaseDataManager} from "./data-manager-base.js";
  */
 export class DataManagerMemoryProvider extends BaseDataManager {
     #records;
+
+    /**
+     * Keep track of the dirty records.
+     * Very important:
+     * if record is updated and dirty then the value is true
+     * if record is created and dirty then the value is false
+     */
+    #dirtyLookup = {};
 
     set records(newValue) {
         this.setRecords(newValue);
@@ -17,15 +26,25 @@ export class DataManagerMemoryProvider extends BaseDataManager {
      */
     async setRecords(records) {
         this.#records = records;
+        this.#dirtyLookup = {};
         await super.setRecords(records);
     }
 
     /**
      * @method append - This method is called to append records to the data manager.
-     * @param record
+     * @param records
      */
-    async append(...record) {
-        this.#records.push(...record);
+    async append(records, isDirty = false) {
+        for (const record of records) {
+            record._index = this.#records.length;
+
+            if (isDirty === true) {
+                this.#dirtyLookup[record._index] = DIRTY_TYPES.CREATED;
+            }
+
+            this.#records.push(record);
+        }
+
         this.count = this.#records.length;
     }
 
@@ -89,6 +108,9 @@ export class DataManagerMemoryProvider extends BaseDataManager {
 
         for (const index of indexes) {
             ids.push(this.#records[index][this.idField]);
+
+            delete this.#dirtyLookup[index]; // Delete the dirty record if it exists
+
             this.#records.splice(index, 1);
         }
 
@@ -106,11 +128,14 @@ export class DataManagerMemoryProvider extends BaseDataManager {
         for (const id of ids) {
             const index = this.#records.findIndex(item => item[this.idField] == id);
             indexes.push(index);
+
+            delete this.#dirtyLookup[index]; // Delete the dirty record if it exists
+
             this.#records.splice(index, 1);
         }
 
         indexes.sort((a, b) => a > b ? -1 : 1);
-        super.removeIds(this.#records.length);
+        await super.removeIds(this.#records.length);
         return {indexes, ids};
     }
 
@@ -118,15 +143,23 @@ export class DataManagerMemoryProvider extends BaseDataManager {
      * @method updateIndex - This method is called to update a record by its index.
      * @param index {number} - The index of the record to update
      * @param changes {object} - The changes to make to the record
+     * @param isDirty {boolean} - Whether the record is dirty
      * @returns {{changes, index, id: *}}
      */
-    async updateIndex(index, changes) {
+    async updateIndex(index, changes, isDirty = false) {
         const record = this.#records[index];
         const id = record[this.idField];
 
         const keys = Object.keys(changes);
         for (const key of keys) {
             record[key] = changes[key];
+        }
+
+        if (isDirty === true) {
+            this.#dirtyLookup[index] = DIRTY_TYPES.UPDATED;
+        }
+        else {
+            delete this.#dirtyLookup[index];
         }
 
         return {id, index, changes};
@@ -138,13 +171,20 @@ export class DataManagerMemoryProvider extends BaseDataManager {
      * @param changes {object} - The changes to make to the record
      * @returns {{changes, index: *, id}}
      */
-    async updateId(id, changes) {
+    async updateId(id, changes, isDirty = false) {
         const index = this.#records.findIndex(item => item[this.idField] == id);
         const record = this.#records[index];
 
         const keys = Object.keys(changes);
         for (const key of keys) {
             record[key] = changes[key];
+        }
+
+        if (isDirty === true) {
+            this.#dirtyLookup[index] = DIRTY_TYPES.UPDATED;
+        }
+        else {
+            delete this.#dirtyLookup[index];
         }
 
         return {id, index, changes};
@@ -171,6 +211,17 @@ export class DataManagerMemoryProvider extends BaseDataManager {
         return this.#records.filter(item => item._selected === isSelected);
     }
 
+    async getSelectedIndexes() {
+        const indexes = [];
+        for (let i = 0; i < this.#records.length; i++) {
+            if (this.#records[i]._selected) {
+                indexes.push(i);
+            }
+        }
+        return indexes;
+    }
+
+
     async toggleSelectedIndexes(indexes) {
         for (const index of indexes) {
             const isSelected = !this.#records[index]._selected;
@@ -195,7 +246,36 @@ export class DataManagerMemoryProvider extends BaseDataManager {
 
         this.selectedCount = selected == true ? this.#records.length : 0;
     }
+
+    async getUpdated() {
+        const updated = [];
+        const keys = Object.keys(this.#dirtyLookup);
+        for (const index of keys) {
+            if (this.#dirtyLookup[index] === DIRTY_TYPES.UPDATED) {
+                updated.push(this.#records[index]);
+            }
+        }
+        return updated;
+    }
+
+    async getCreated() {
+        const created = [];
+        const keys = Object.keys(this.#dirtyLookup);
+        for (const index of keys) {
+            if (this.#dirtyLookup[index] === DIRTY_TYPES.CREATED) {
+                created.push(this.#records[index]);
+            }
+        }
+        return created;
+    }
+
+    async clearDirty() {
+        this.#dirtyLookup = {};
+    }
+
+    async clearDirtyIndexes(indexes) {
+        for (const index of indexes) {
+            delete this.#dirtyLookup[index];
+        }
+    }
 }
-
-
-

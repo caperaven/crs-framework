@@ -95,8 +95,8 @@ export class KeyboardInputManager {
     async #arrowRight(element) {
         if (element.matches(".parent-menu-item") === false || element.getAttribute("aria-expanded") === "true") return
         await handleSelection(element, this.#options, this.#contextMenu, this.#filterHeader);
-        const ul = element.querySelector(".submenu");
-        await setFocusState(ul.firstElementChild);
+
+        await this.#setFocusOnFirstElement(element);
     }
 
     /**
@@ -119,7 +119,17 @@ export class KeyboardInputManager {
      * @returns {Promise<void>}
      */
     async #enter(element) {
+        if (element.id === "input-filter" || element.dataset.ignoreClick === "true") return;
         await handleSelection(element, this.#options, this.#contextMenu, this.#filterHeader);
+
+        if (element.getAttribute("aria-expanded") !== "true") return;
+
+        await this.#setFocusOnFirstElement(element);
+    }
+
+    async #setFocusOnFirstElement(li) {
+        const ul = li.querySelector(".submenu");
+        await setFocusState(ul.firstElementChild);
     }
 
     /**
@@ -127,7 +137,7 @@ export class KeyboardInputManager {
      * @returns {Promise<void>}
      */
     async #escape() {
-        await crs.call("context_menu", "close");
+        this.#contextMenu.remove();
     }
 
     /**
