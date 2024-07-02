@@ -10,10 +10,16 @@ export default class Map extends crsbinding.classes.ViewBase {
 
     async connectedCallback() {
         globalThis.translations = globalThis.translations || {};
+        globalThis.translations.labels = {
+            accept: "Accept",
+            cancel: "Cancel"
+        }
         globalThis.translations.interactiveMap = {
             enterCoordinates: "Enter co-ordinates here",
             invalidCoordinates: "Please enter valid GPS co-ordinates",
             maxShapesReached: "Maximum number of shapes reached. Please delete a shape before adding a new one."
+            content: "Are you sure you want to remove the shape?",
+            header: "Remove Shape"
         }
         await crs.call("toast_notification", "enable", { position: "bottom-center", margin: 10 });
 
@@ -39,7 +45,8 @@ export default class Map extends crsbinding.classes.ViewBase {
         });
         await crsbinding.events.emitter.remove("toast", this.#toastHandler);
         this.#toastHandler = null;
-
+        globalThis.translations.labels = null;
+        globalThis.translations.interactiveMap = null;
         super.disconnectedCallback();
     }
 

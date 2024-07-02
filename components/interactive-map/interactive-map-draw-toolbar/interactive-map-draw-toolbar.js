@@ -88,22 +88,63 @@ export class InteractiveMapDrawToolbar extends crsbinding.classes.BindableElemen
         });
     }
 
-    async removeSelected() {
-        const index = this.getProperty("selectedIndex");
-
-        if (this.#instance == null) return;
-
-        await crs.call("data_manager", "remove", {
-            manager: this.#instance.dataset.manager,
-            indexes: [index]
+    async removeSelected(event) {
+        const footerTemplate = await crs.call("dom", "create_element", {
+            tag_name: "template",
+            children: [
+                {
+                    tag_name: "button",
+                    classes: ["secondary"],
+                    text_content: globalThis.translations.labels.cancel,
+                    attributes: {
+                        "data-action": "close"
+                    }
+                },
+                {
+                    tag_name: "button",
+                    classes: ["primary"],
+                    text_content: globalThis.translations.labels.accept,
+                    attributes: {
+                        "data-action": "accept"
+                    }
+                }
+            ]
         });
 
-        await crs.call("interactive_map", "set_mode", {
-            element: this.#instance,
-            mode: "none"
-        });
+        const dialog =  await crs.call("dialog", "show", {
+            title: globalThis.translations.interactiveMap.header,
+            main: globalThis.translations.interactiveMap.content,
+            severity: "warning",
+            footer: footerTemplate.content.cloneNode(true),
+            allow_resize: false,
+            target: event.target,
+            position: "bottom",
+            anchor: "right",
+            margin: 10,
+            callback: async (option) => {
+                if (option.action === "close") return;
 
-        this.setProperty("selectedIndex", null);
+                if (option.action === "accept") {
+                    const index = this.getProperty("selectedIndex");
+
+                    if (this.#instance == null) return;
+
+                    await crs.call("data_manager", "remove", {
+                        manager: this.#instance.dataset.manager,
+                        indexes: [index]
+                    });
+
+                    await crs.call("interactive_map", "set_mode", {
+                        element: this.#instance,
+                        mode: "none"
+                    });
+
+                    this.setProperty("selectedIndex", null);
+
+                    dialog.close();
+                }
+            }
+        });
     }
 
     async discard() {
