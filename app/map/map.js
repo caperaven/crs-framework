@@ -17,9 +17,9 @@ export default class Map extends crsbinding.classes.ViewBase {
         globalThis.translations.interactiveMap = {
             enterCoordinates: "Enter co-ordinates here",
             invalidCoordinates: "Please enter valid GPS co-ordinates",
-            maxShapesReached: "Maximum number of shapes reached. Please delete a shape before adding a new one."
-            content: "Are you sure you want to remove the shape?",
-            header: "Remove Shape"
+            maxShapesReached: "Maximum number of shapes reached. Please delete a shape before adding a new one.",
+            content: "Are you sure you want to remove the location?",
+            header: "Remove Location"
         }
         await crs.call("toast_notification", "enable", { position: "bottom-center", margin: 10 });
 
