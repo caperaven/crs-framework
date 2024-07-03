@@ -78,16 +78,12 @@ async function createRowElements(element, statuses) {
     const documentFragment = document.createDocumentFragment();
     for (const status  of statuses) {
         //Todo CML: reminder stopped here overflow-x issue
-        const div = document.createElement("div");
-        div.dataset.status = status.index;
-        div.dataset.id = status.description;
-        div.style.gridRow = indexCount++;
-        div.classList.add("status-row");
-        documentFragment.appendChild(div);
-        if (status.description === "footer") {
-            div.classList.add("sla-footer-border");
-            break;
-        }
+        const className = status.description !== "footer" ? "status-row" : "sla-footer-border";
+        const rowElement =  await buildStandardElement(status.description,className, null,null, indexCount++)
+        rowElement.dataset.status = status.index;
+        rowElement.dataset.id = status.description;
+
+        documentFragment.appendChild(rowElement);
     }
     element.appendChild(documentFragment);
 }
@@ -101,8 +97,8 @@ async function createSlaLayers(element, slaCollection) {
     let incrementor = 0;
     const documentFragment = document.createDocumentFragment();
     for(const sla of slaCollection) {
-        const slaLayer = await buildStandardElement(`sla-${sla.id}`, "sla-layer", null, `sla${incrementor++}`);documentFragment.appendChild(slaLayer);
-
+        const slaLayer = await buildStandardElement(`sla-${sla.id}`, "sla-layer", null, `sla${incrementor++}`);
+        documentFragment.appendChild(slaLayer);
     }
     element.appendChild(documentFragment);
 }
@@ -154,7 +150,8 @@ async function buildStatusArray(statusList) {
     return result.reverse();
 }
 
-export async function buildStandardElement(id, classes,textContent, gridArea = null, gridRow= null) {
+export async function buildStandardElement(id, classes, textContent, gridArea = null, gridRow= null) {
+    //Todo CML: we could use the process api createElement function here check in the morning
     const element = document.createElement("div");
     element.id = id;
     element.classList.add(classes);
