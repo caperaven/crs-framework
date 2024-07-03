@@ -1,4 +1,5 @@
 import "./sla-measurement.js";
+import {buildStandardElement} from "../sla-grid-utils.js";
 
 /**
  * class SlaMeasurementActions - A class that contains methods for the sla-measurement component
@@ -24,26 +25,30 @@ export class SlaMeasurementActions {
         const measurementDataStatuses = await crs.process.getValue(step.args.statuses, context, process, item);
         const parentPhase = await crs.process.getValue(step.args.parentPhase, context, process, item); // refactor for phase
 
+        let incrementor = 0;
+        const documentFragment = document.createDocumentFragment();
         for (const measurement of measurementData) {
+            measurement.incrementor = incrementor;
             await addStatusNames(measurement, measurementDataStatuses);
-            await createMeasurementElement(measurement, parentElement, parentPhase);
-        }
+            const measureElement = await createMeasurementElement(measurement, parentElement, parentPhase);
 
-        for (const measurement of parentElement.shadowRoot.querySelectorAll("sla-measurement")) {
-            const measurementId = measurement.id;
-            const correspondingMeasurementData = measurementData.find(measurement => measurement.id === measurementId);
-
-            if (correspondingMeasurementData !== null && correspondingMeasurementData !== undefined) {
-                await onSlaMeasurementLoading(measurement, async () => {
-                    await crs.call("sla_measurement", "update", {
-                        element: measurement,
-                        measurementData: correspondingMeasurementData
-                    });
+            await onSlaMeasurementLoading(measureElement, async () => {
+                await crs.call("sla_measurement", "update", {
+                    element: measureElement,
+                    measurementData: measurement
                 });
-            }
-        }
-    }
+            });
 
+            const measurementOverlay = await buildStandardElement(`m_${measurement.id}`,"measurement-overlay",null,`m${incrementor}`,`2 / span`);
+            documentFragment.appendChild(measurementOverlay);
+
+            const measurementFooterContainer = await buildStandardElement(`f_${measurement.id}`,"sla-footer-container",`${measurement.code}`,`f${incrementor}`);
+            documentFragment.appendChild(measurementFooterContainer);
+
+            incrementor++;
+        }
+        parentElement.shadowRoot.appendChild(documentFragment);
+    }
 
     /**
      * @method update - Updates the sla measurement data
@@ -82,6 +87,8 @@ export class SlaMeasurementActions {
         const element = await crs.dom.get_element(step.args.element, context, process, item);
         const type = await crs.process.getValue(step.args.type, context, process, item);
         const parent = await crs.dom.get_element(step.args.parent, context, process, item);
+        //Todo CML: remove this line
+        return;
 
         const measurementData = {
             code: element.dataset.code,
@@ -214,7 +221,6 @@ function onSlaMeasurementLoading(slaMeasurementElement, callback) {
     });
 }
 
-
 // Function to add start_status_name and end_status_name properties to measurement object
 async function addStatusNames(measurement, measurementDataStatuses) {
     const startStatus = measurementDataStatuses[measurement.start_status];
@@ -251,16 +257,12 @@ async function createMeasurementElement(measurement, parentElement, parentPhase)
         element.setAttribute("data-end-status-name", measurement.end_status_name);
     }
 
-    element.style.gridArea = `m_${measurement.id}`;
+    element.style.gridArea = `m${measurement.incrementor}`;
 
     parentElement.shadowRoot.appendChild(element);
 
-    const measurementFooterContainer = document.createElement("div");
-    measurementFooterContainer.classList.add("sla-footer-container");
-    measurementFooterContainer.id = `f_${measurement.id}`;
-    measurementFooterContainer.textContent = `${measurement.code}`
-    measurementFooterContainer.style.gridArea = `f_${measurement.id}`;
-    parentElement.shadowRoot.appendChild(measurementFooterContainer);
+    return element;
+
 }
 
 // Function to update progress-related styles
@@ -329,7 +331,5 @@ async function updateStatus(element, measurementData) {
 
     //ToDo AW - Better names for start_status_name because they became numbers
 }
-
-
 
 crs.intent.sla_measurement = SlaMeasurementActions;

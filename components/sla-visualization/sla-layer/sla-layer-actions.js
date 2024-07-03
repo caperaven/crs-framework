@@ -29,12 +29,12 @@ export class SlaLayerActions{
         // for each sla object in the data array of objects, create a sla-layer component
         // set the inner text of the sla-layer component to the code of the sla object
         // here the sla will be displayed in the specified grid-area based on the sla code. example: "sla_1001"
-
+        let incrementor = 1;
         for (const sla of slaData.sla) {
             const element = document.createElement("sla-layer");
             element.id = sla.id;
             element.shadowRoot.textContent = sla.code;
-            element.style.gridArea = `sla_${sla.id}`
+            element.style.gridArea = `sla${incrementor++}`;
             element.dataset.parentPhase = parentPhase; // refactor for phase
             parentElement.appendChild(element);
 
@@ -46,22 +46,17 @@ export class SlaLayerActions{
                 element.dataset.activeRow = parentElement.querySelector(".active-status-row")?.dataset.status || "";
             }
 
-            // Added to wait for the measurements to be created before creating the headers.
-            // Timing issues occur when the headers are created before the measurements are created.
+            //Added to wait for the measurements to be created before creating the headers.
+            //Timing issues occur when the headers are created before the measurements are created.
             await onSlaLayerLoading(element, async () => {
-                await crs.call("sla_measurement", "create_all", { parent: element, data: sla.measurements, parentPhase: element.dataset.parentPhase, statuses: slaData.statuses });
+                await crs.call("sla_measurement", "create_all", {
+                    parent: element,
+                    data: sla.measurements,
+                    parentPhase: element.dataset.parentPhase,
+                    statuses: slaData.statuses
+                });
             })
 
-            for(const measurement of element.shadowRoot.querySelectorAll("sla-measurement")) {
-                const measurementOverlay = document.createElement("div");
-                measurementOverlay.id = `m_${measurement.id}`;
-                measurementOverlay.classList.add("measurement-overlay");
-                measurementOverlay.style.gridArea = `m_${measurement.id}`;
-                measurementOverlay.style.gridRow = `2 / span ${slaData.statuses.length - 2}`;
-                element.shadowRoot.appendChild(measurementOverlay);
-            }
-
-            // loop to create sla headers and place them in the correct grid area
             await createSlaHeader(element, sla);
         }
     }
@@ -112,14 +107,12 @@ async function createSlaGrid(slaLayerElement, slaItemData, statusData) {
      */
     const statusLookupTable = createStatusLookupTable(statusData);
     const matrix = createMeasurementsMatrix(statusData, slaItemData);
-    debugger;
     const keys = Object.keys(statusData).reverse();
+
     for (let i = 0; i < keys.length; i++) {
         const status = statusData[keys[i]];
         status.index = i; // Assign index to status
     }
-
-
 
     populateMeasurementsMatrix(matrix, statusData, slaItemData);
     slaLayerElement.style.gridTemplate = matrixToTemplate(matrix, slaLayerElement);
@@ -198,7 +191,6 @@ function createStatusLookupTable(statusData) {
 function createMeasurementsMatrix(statusData, slaItemData) {
     const keys = Object.keys(statusData);
     const numberOfRows = keys.length;
-    // const numberOfColumns = slaItemData.measurements.length;
 
     // Here we check if the number of measurements is less than 3, if it is we set the number of columns to 3.
     // This is because we want to have at least 3 columns in the grid for it to display the SLA-Headers correctly.
@@ -209,9 +201,8 @@ function createMeasurementsMatrix(statusData, slaItemData) {
 
     for (let i = 0; i < numberOfColumns; i++) {
         matrix[0][i] = "header";
-        // matrix[numberOfRows - 1][i] = `f_${slaItemData.measurements[i].id}`;
-        matrix[numberOfRows - 1][i] = slaItemData.measurements[i] ? `f_${slaItemData.measurements[i].id}` : `.`;
 
+        matrix[numberOfRows - 1][i] = slaItemData.measurements[i] ? `f${i}` : `.`;
     }
 
     return matrix;
@@ -241,7 +232,6 @@ function initializeMatrix(matrix, numberOfRows, numberOfColumns) {
  */
 function populateMeasurementsMatrix(matrix, statusLookupTable, slaItemData) {
     let measurementIndex = 0;
-
     matrix[0][0] = "header";
 
     for (const measurement of slaItemData.measurements) {
@@ -249,13 +239,11 @@ function populateMeasurementsMatrix(matrix, statusLookupTable, slaItemData) {
         const endIndex = statusLookupTable[measurement.end_status].index;
 
         for (let index = endIndex; index <= startIndex; index++) {
-            matrix[index][measurementIndex] = `m_${measurement.id}`;
+            if(index === 10) continue;
+            matrix[index][measurementIndex] = `m${measurementIndex}`;
         }
-
         measurementIndex++;
     }
-
-    matrix[0][0] = "footer";
 }
 
 /**
@@ -270,17 +258,6 @@ function matrixToTemplate(matrix, slaLayerElement) {
         columns.push("5rem");
     }
 
-    // If there is only one column, we set the width to 12rem.
-    // If there are more than one column, we set the width to 5rem.
-    // ToDo: AW - Discuss with Dancus and Rabie if we should set the width to 12rem if there is only one column. (see createMeasurementsMatrix)
-    // for (let i = 0; i < matrix[0].length; i++) {
-    //     if (matrix[0].length === 1) {
-    //         columns.push("12rem");
-    //         break;
-    //     }
-    //     columns.push("5rem");
-    // }
-
     const result = [];
     for (let row = 0; row < matrix.length; row++) {
         // If the row is the first row and the parent phase is runtime, we set the height to 3fr for the Header.
@@ -288,7 +265,7 @@ function matrixToTemplate(matrix, slaLayerElement) {
         if (row === 0 && slaLayerElement.dataset.parentPhase === "runtime") {
             rowStr = `"${matrix[row].join(" ")}" 3fr`;
         } else {
-            rowStr = `"${matrix[row].join(" ")}" 1fr`;
+            rowStr = row !== 10 ? `"${matrix[row].join(" ")}" 1fr`: `"${matrix[row].join(" ")}" 2.5rem`;
         }
         result.push(rowStr);
     }

@@ -87,7 +87,6 @@ export class SlaVisualization extends HTMLElement {
 
         this.#container.innerHTML = "";
 
-
         if (data[0]?.measurements?.length > 0) {
             this.#container.style.justifyContent = "";
             const slaData = {
@@ -97,6 +96,7 @@ export class SlaVisualization extends HTMLElement {
             }
 
             await create_sla_grid(slaData, this.#container, this);
+
             await crs.call("sla_layer", "create_all_sla", { parent: this.#container, data: slaData , parentPhase: this.dataset.phase}); // refactor for phase
             if (this.dataset.phase === "runtime") {
                 await this.#updateSlaLegend(data);

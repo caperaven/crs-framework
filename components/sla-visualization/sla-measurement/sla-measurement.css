@@ -35,7 +35,7 @@
 div.progress-bar {
     display: flex;
     width: 93%;
-    margin: 0.25rem;
+    margin: 0.125rem;
     background-color: var(--blue-s1);
     position: absolute;
     bottom: 0;
