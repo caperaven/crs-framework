@@ -123,16 +123,16 @@
         box-shadow: var(--drop-shadow);
     }
 
-    .leaflet-popup-content {
+    .leaflet-tooltip  {
         margin: 0;
-
+        padding: 0;
     }
 
-    .leaflet-popup-content table {
+    .leaflet-tooltip  table {
         padding: 0.5rem;
     }
 
-    .leaflet-popup-content hr {
+    .leaflet-tooltip  hr {
         display: block;
         height: 1px;
         border: 0;
@@ -141,12 +141,8 @@
         margin: 0;
     }
 
-    .leaflet-popup-content-wrapper, .leaflet-popup-tip {
-        /*background: none;*/
-        overflow: hidden;
-    }
 
-    .leaflet-popup-content h3 {
+    .leaflet-tooltip  h3 {
         padding: var(--half-padding) 1.5rem var(--half-padding) var(--padding) ;
         margin: 0;
         font-size: small;
@@ -157,7 +153,7 @@
         position: relative;
     }
 
-    .leaflet-popup-content h3:before {
+    .leaflet-tooltip  h3:before {
         content: "";
         background: var(--blue);
         width: 5px;
@@ -167,27 +163,27 @@
         top: 0;
     }
 
-    .leaflet-popup-content h3.info:before {
+    .leaflet-tooltip  h3.info:before {
         background: var(--cl-primary);
     }
 
-    .leaflet-popup-content h3.warning:before {
+    .leaflet-tooltip  h3.warning:before {
         background: var(--orange);
     }
 
-    .leaflet-popup-content h3.error:before {
+    .leaflet-tooltip  h3.error:before {
         background: var(--red);
     }
 
-    .leaflet-popup-content h3.success:before {
+    .leaflet-tooltip  h3.success:before {
         background: var(--green);
     }
 
-    .leaflet-popup-content .map-popup-label {
+    .leaflet-tooltip  .map-popup-label {
         text-transform: capitalize;
     }
 
-    .leaflet-popup-content td{
+    .leaflet-tooltip  td{
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;

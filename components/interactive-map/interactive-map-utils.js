@@ -71,7 +71,12 @@ export function isValidCoordinates(coordinatesString) {
  * {
  *         "title": "Reference Entity",
  *          "highlightColor": "red",
- *         "fields": ["name", "age", "$seperator","address"]
+ *         "fields": [
+ *              { "name": "name", "label": "Name" },
+ *              { "name": "age", "label": "Age" },
+ *              "$seperator",
+ *              { "name": "address", "label": "Address" }
+ *         ]
  * }
  */
 export function addDynamicPopup(layer, popupDefinition, record) {
@@ -91,5 +96,9 @@ export function addDynamicPopup(layer, popupDefinition, record) {
     }
     popupContent.push("</table>");
 
-    layer.bindPopup(popupContent.join('')).openPopup();
+    const offset = layer instanceof L.Marker ? [0, -30] : [0, -10];
+    layer.bindTooltip(popupContent.join(''), {
+        direction: "top",
+        offset: offset
+    });
 }

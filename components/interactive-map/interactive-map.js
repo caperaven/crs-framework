@@ -313,12 +313,8 @@ export class InteractiveMap extends HTMLElement {
                 const record = await crs.call("data_manager", "get", {manager: this.dataset.manager, index: feature.properties.index});
                 const popupDefinition = feature.properties?.popupDefinition
                 if (popupDefinition != null) {
+                    addDynamicPopup(layer, popupDefinition, record);
 
-                    layer.on('click', function (e) {
-                        if (this.currentMode == null) {
-                            addDynamicPopup(layer, popupDefinition, record);
-                        }
-                    });
                 }
                 layer.options.readonly = record.geographicLocation?.properties?.readonly
             },
