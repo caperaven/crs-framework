@@ -1,7 +1,6 @@
 :host {
     height: 100%;
-    /*width: 100%;*/
-    width: fit-content;
+    width: 100%;
     display: flex;
     flex-direction: column;
     overflow: hidden;
@@ -12,9 +11,8 @@
     height: 100%;
     width: 100%;
     border: var(--border);
-    /*overflow: auto;*/
     overflow-x: auto;
-    /*!*gap: 0.5rem;*! causes uneven rows*/
+    overflow-y: hidden;
     padding: 1rem 0;
     grid-column-gap: 0.5rem;
 }
@@ -48,7 +46,9 @@
 
 .sla-layer {
     z-index: -1;
+    width: 100%;
     background: var(--grey-s3);
+    margin-left: 0.25rem;
 }
 
 .active-status-label {
@@ -63,6 +63,8 @@
 
 .sla-footer-border {
     border-top: 2px solid black;
+    border-bottom: none;
+    margin-left: 0.5rem;
 }
 
 .status-description{

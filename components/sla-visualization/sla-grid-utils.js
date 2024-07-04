@@ -77,8 +77,7 @@ async function createRowElements(element, statuses) {
     let indexCount = 1;
     const documentFragment = document.createDocumentFragment();
     for (const status  of statuses) {
-        //Todo CML: reminder stopped here overflow-x issue
-        const className = status.description !== "footer" ? "status-row" : "sla-footer-border";
+        const className = status.description !== "footer" ? "status-row" : "status-row sla-footer-border";
         const rowElement =  await buildStandardElement(status.description,className, null,null, indexCount++)
         rowElement.dataset.status = status.index;
         rowElement.dataset.id = status.description;
@@ -94,7 +93,7 @@ async function createRowElements(element, statuses) {
  * @param slaCollection {[Object]} - the array of sla objects
  */
 async function createSlaLayers(element, slaCollection) {
-    let incrementor = 0;
+    let incrementor = 1;
     const documentFragment = document.createDocumentFragment();
     for(const sla of slaCollection) {
         const slaLayer = await buildStandardElement(`sla-${sla.id}`, "sla-layer", null, `sla${incrementor++}`);
@@ -119,7 +118,7 @@ function generateGridTemplateArray(statuses, dataSla, visualizationPhase) {
     const gridTemplateArray = statuses.map(status => {
         rowHeight = status.index === 0 ? "2.5rem":"1fr";
         if (statusCount === 1 && visualizationPhase === "runtime") {
-            rowHeight = "3fr";
+            rowHeight = "5rem";
             statusCount++;
         }
 
@@ -153,8 +152,9 @@ async function buildStatusArray(statusList) {
 export async function buildStandardElement(id, classes, textContent, gridArea = null, gridRow= null) {
     //Todo CML: we could use the process api createElement function here check in the morning
     const element = document.createElement("div");
+
     element.id = id;
-    element.classList.add(classes);
+    element.className = classes;
     if (gridArea != null) {
         element.style.gridArea = gridArea;
     }

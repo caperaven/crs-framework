@@ -108,8 +108,6 @@ export class SlaVisualization extends HTMLElement {
             this.#container.style.display = "flex";
             await crs.call("no_content", "show", { parent: this.#container });
         }
-
-
     }
 
     async #selectionChanged(args){
@@ -145,7 +143,6 @@ export class SlaVisualization extends HTMLElement {
     }
 
     async #updateSlaLegend(data) {
-
         // USE THE DATA
         const legend = this.shadowRoot.querySelector("#sla-legend");
 
@@ -156,8 +153,6 @@ export class SlaVisualization extends HTMLElement {
             warning: 0,
             overdue: 0
         };
-
-
 
         for (const sla of data) {
             for (const measure of sla.measurements) {
