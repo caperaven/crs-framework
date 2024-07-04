@@ -150,7 +150,6 @@ async function buildStatusArray(statusList) {
 }
 
 export async function buildStandardElement(id, classes, textContent, gridArea = null, gridRow= null) {
-    //Todo CML: we could use the process api createElement function here check in the morning
     const element = document.createElement("div");
 
     element.id = id;
