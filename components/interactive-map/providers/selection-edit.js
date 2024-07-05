@@ -28,6 +28,7 @@ export default class SelectionEditProvider {
         if (shape != null) {
             const type = await this.#getType(shape);
 
+
             await crs.call("interactive_map", "set_mode", {
                 element: this.#instance,
                 mode: `draw-${type}`,
@@ -35,7 +36,7 @@ export default class SelectionEditProvider {
             });
         }
 
-        this.#instance.dispatchEvent(new CustomEvent("data-changed", { detail: { index: firstIndex }}));
+
     }
 
     async clear() {

@@ -12,6 +12,7 @@ export default class DrawPoint {
 
         if (point != null) {
             this.#point = point;
+            notifyCoordinatesChanged(this.#instance, this.#point);
         }
     }
 
@@ -23,8 +24,8 @@ export default class DrawPoint {
     }
 
     async #click(event) {
-        if(this.#point != null) {
-           this.#point.remove();
+        if (this.#point != null) {
+            this.#point.remove();
         }
 
         this.#point = await crs.call("interactive_map", "add_shape", {
@@ -39,6 +40,7 @@ export default class DrawPoint {
             },
             element: this.#instance
         });
+        notifyCoordinatesChanged(this.#instance, this.#point);
     }
 
     async cancel() {
@@ -48,7 +50,11 @@ export default class DrawPoint {
 
             if (index != null) {
                 // Only existing shapes will have an index
-                await crs.call("data_manager", "set_selected", {manager: this.#instance.dataset.manager, indexes: [index], selected: false});
+                await crs.call("data_manager", "set_selected", {
+                    manager: this.#instance.dataset.manager,
+                    indexes: [index],
+                    selected: false
+                });
 
                 // Remove temp shape and also redraw the original shape if editing was true
 
@@ -73,8 +79,7 @@ export default class DrawPoint {
                 // Get the changes from either shape options or feature properties
                 if (this.#point.feature) {
                     changes.geographicLocation = this.#point.toGeoJSON()
-                }
-                else {
+                } else {
                     changes.coordinates = latLngToCoordinates(this.#point)
                 }
 
@@ -85,18 +90,20 @@ export default class DrawPoint {
                     is_dirty: true
                 });
 
-                await crs.call("data_manager", "set_selected", {manager: this.#instance.dataset.manager, indexes: [index], selected: false});
-            }
-            else {
+                await crs.call("data_manager", "set_selected", {
+                    manager: this.#instance.dataset.manager,
+                    indexes: [index],
+                    selected: false
+                });
+            } else {
 
                 let record;
-                if ( this.#instance.dataset.format === "geojson") {
+                if (this.#instance.dataset.format === "geojson") {
                     record = {
                         geographicLocation: this.#point.toGeoJSON()
                     }
-                }
-                else {
-                    record =  {
+                } else {
+                    record = {
                         coordinates: latLngToCoordinates(this.#point),
                         type: "point"
                     }
@@ -118,4 +125,9 @@ export default class DrawPoint {
 function latLngToCoordinates(point) {
     const latlng = point.getLatLng();
     return [latlng.lat, latlng.lng];
+}
+
+function notifyCoordinatesChanged(instance, point) {
+    const latlng = point.getLatLng();
+    instance.dispatchEvent(new CustomEvent("update-coordinates", {detail: `${latlng.lat}, ${latlng.lng}`}));
 }

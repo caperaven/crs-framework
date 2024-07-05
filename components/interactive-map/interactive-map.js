@@ -19,6 +19,8 @@ export class InteractiveMap extends HTMLElement {
 
     #coordinateInput;
     #coordinateSubmitHandler;
+    #coordinateDisplay;
+    #coordinateDisplayHandler;
     #filterValue;
     #selectionProvider;
 
@@ -111,7 +113,7 @@ export class InteractiveMap extends HTMLElement {
         await this.#hookDataManager();
 
         if (this.dataset.hideDrawingTools !== "true") {
-            this.#addDrawingTools();
+            await this.#addDrawingTools();
         }
 
         L.control.zoom({
@@ -158,6 +160,14 @@ export class InteractiveMap extends HTMLElement {
                 message: await crsbinding.translations.get("interactiveMap.invalidCoordinates"),
                 type: "error"
             });
+        }
+    }
+
+    async #updateDisplayCoordinates(event) {
+        if (event.detail && isValidCoordinates(event.detail)) {
+            this.#coordinateDisplay.innerHTML = event.detail;
+        } else {
+            this.#coordinateDisplay.innerHTML = "";
         }
     }
 
@@ -314,7 +324,6 @@ export class InteractiveMap extends HTMLElement {
                 const popupDefinition = feature.properties?.popupDefinition
                 if (popupDefinition != null) {
                     addDynamicPopup(layer, popupDefinition, record);
-
                 }
                 layer.options.readonly = record.geographicLocation?.properties?.readonly
             },
@@ -346,13 +355,27 @@ export class InteractiveMap extends HTMLElement {
     async #addDrawingTools() {
         await crs.call("interactive_map", "show_drawing_tools", {element: this});
 
+        await this.#addCoordinateDisplay();
+        await this.#addCoordinateInput();
+    }
+
+    async #addCoordinateInput() {
         this.#coordinateInput = document.createElement("expanding-input");
         this.#coordinateInput.dataset.placeholder = await crsbinding.translations.get("interactiveMap.enterCoordinates")
         this.#coordinateInput.dataset.icon = "search"
         this.#coordinateInput.dataset.submitIcon = "add"
-        this.querySelector("#search-tools").appendChild(this.#coordinateInput);
         this.#coordinateSubmitHandler = this.#coordinateSubmit.bind(this);
         this.#coordinateInput.addEventListener("submit", this.#coordinateSubmitHandler);
+
+        this.appendChild(this.#coordinateDisplay);
+        this.querySelector("#search-tools").appendChild(this.#coordinateInput);
+    }
+
+    async #addCoordinateDisplay() {
+        this.#coordinateDisplay = document.createElement("div");
+        this.#coordinateDisplay.classList.add("coordinate-display");
+        this.#coordinateDisplayHandler = this.#updateDisplayCoordinates.bind(this);
+        this.addEventListener("update-coordinates", this.#coordinateDisplayHandler);
     }
 }
 

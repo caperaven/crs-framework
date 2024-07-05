@@ -96,9 +96,12 @@ export function addDynamicPopup(layer, popupDefinition, record) {
     }
     popupContent.push("</table>");
 
-    const offset = layer instanceof L.Marker ? [0, -30] : [0, -10];
+    const isMarker = layer instanceof L.Marker;
+    const offset = isMarker ? [0, -50] : [0, -20];
+
     layer.bindTooltip(popupContent.join(''), {
-        direction: "top",
+        direction: 'top',
+        sticky: !isMarker,
         offset: offset
     });
 }
