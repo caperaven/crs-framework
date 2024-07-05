@@ -51,14 +51,6 @@ export default class SlaVisualization extends crsbinding.classes.ViewBase {
        console.log(this.getProperty("mySelection"))
     }
 
-    async initializeSetup() {
-        const slaVisualization = document.querySelector("sla-visualization#setup");
-        await crs.call("sla_visualization", "initialize", {
-            element: slaVisualization,
-            data: data2
-        })
-    }
-
     async removeMeasurement() {
         const parentElement = document.querySelector("sla-visualization#setup");
         await crs.call("sla_measurement", "remove_measurement", {

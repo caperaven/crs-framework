@@ -11,21 +11,25 @@
     height: 100%;
     width: 100%;
     border: var(--border);
-    overflow-x: auto;
-    overflow-y: hidden;
+    overflow: auto;
     padding: 1rem 0;
     grid-column-gap: 0.5rem;
 }
 
 .status-label {
+    display: -webkit-box;
     position: sticky;
-    padding: 0.5rem;
+    padding: 0.5rem 0.5rem 0.5rem 3rem;
     color: var(--grey-s1);
     text-align: right;
-    align-content: center;
     left: 0;
     z-index: 3;
     font-size: 0.75rem;
+    height: 1.5rem;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2; 
+    text-overflow: ellipsis;
 }
 
 .status-row {
@@ -100,7 +104,7 @@
 /*}*/
 
 :host([data-phase="setup"]) .active-status-label {
-   color: var(--grey-s1);
+    color: var(--grey-s1);
     font-weight: normal;
 }
 

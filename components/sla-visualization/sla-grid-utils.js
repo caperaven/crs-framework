@@ -78,7 +78,7 @@ async function createRowElements(element, statuses) {
     const documentFragment = document.createDocumentFragment();
     for (const status  of statuses) {
         const className = status.description !== "footer" ? "status-row" : "status-row sla-footer-border";
-        const rowElement =  await buildStandardElement(status.description,className, null,null, indexCount++)
+        const rowElement =  await buildStandardElement("div",status.description,className, null,null, indexCount++)
         rowElement.dataset.status = status.index;
         rowElement.dataset.id = status.description;
 
@@ -96,7 +96,7 @@ async function createSlaLayers(element, slaCollection) {
     let incrementor = 1;
     const documentFragment = document.createDocumentFragment();
     for(const sla of slaCollection) {
-        const slaLayer = await buildStandardElement(`sla-${sla.id}`, "sla-layer", null, `sla${incrementor++}`);
+        const slaLayer = await buildStandardElement("div",`sla-${sla.id}`, "sla-layer", null, `sla${incrementor++}`);
         documentFragment.appendChild(slaLayer);
     }
     element.appendChild(documentFragment);
@@ -149,8 +149,8 @@ async function buildStatusArray(statusList) {
     return result.reverse();
 }
 
-export async function buildStandardElement(id, classes, textContent, gridArea = null, gridRow= null) {
-    const element = document.createElement("div");
+export async function buildStandardElement(tagName, id, classes, textContent, gridArea = null, gridRow= null) {
+    const element = document.createElement(tagName);
 
     element.id = id;
     element.className = classes;

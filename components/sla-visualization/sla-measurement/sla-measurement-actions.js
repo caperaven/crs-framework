@@ -38,11 +38,11 @@ export class SlaMeasurementActions {
                     measurementData: measurement
                 });
             });
-
-            const measurementOverlay = await buildStandardElement(`m_${measurement.id}`,"measurement-overlay",null,`m${incrementor}`,`2 / span`);
+            const tagName = "div"
+            const measurementOverlay = await buildStandardElement(tagName,`m_${measurement.id}`,"measurement-overlay",null,`m${incrementor}`,`2 / span`);
             documentFragment.appendChild(measurementOverlay);
 
-            const measurementFooterContainer = await buildStandardElement(`f_${measurement.id}`,"sla-footer-container",`${measurement.code}`,`f${incrementor}`);
+            const measurementFooterContainer = await buildStandardElement(tagName,`f_${measurement.id}`,"sla-footer-container",`${measurement.code}`,`f${incrementor}`);
             documentFragment.appendChild(measurementFooterContainer);
 
             incrementor++;

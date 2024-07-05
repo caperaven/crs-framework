@@ -239,7 +239,7 @@ function populateMeasurementsMatrix(matrix, statusLookupTable, slaItemData) {
         const endIndex = statusLookupTable[measurement.end_status].index;
 
         for (let index = endIndex; index <= startIndex; index++) {
-            if(index === 10) continue;
+            if(index === startIndex) continue;
             matrix[index][measurementIndex] = `m${measurementIndex}`;
         }
         measurementIndex++;
@@ -263,9 +263,9 @@ function matrixToTemplate(matrix, slaLayerElement) {
         // If the row is the first row and the parent phase is runtime, we set the height to 3fr for the Header.
         let rowStr;
         if (row === 0 && slaLayerElement.dataset.parentPhase === "runtime") {
-            rowStr = `"${matrix[row].join(" ")}" 4rem`;
+            rowStr = `"${matrix[row].join(" ")}" 5rem`;
         } else {
-            rowStr = row !== 10 ? `"${matrix[row].join(" ")}" 1fr`: `"${matrix[row].join(" ")}" 2.5rem`;
+            rowStr = row !== (matrix.length) - 1? `"${matrix[row].join(" ")}" 1fr`: `"${matrix[row].join(" ")}" 2.5rem`;
         }
         result.push(rowStr);
     }
