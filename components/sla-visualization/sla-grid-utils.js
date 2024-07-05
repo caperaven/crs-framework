@@ -45,27 +45,27 @@ async function createInitialGrid(element) {
  * @param element {HTMLElement} - the sla visualization element
  * @param statuses {[Object]} - the array of status objects
  */
-function createStatusLabels(element, statuses) {
-    const statusBackground = document.createElement("div");
-    statusBackground.classList.add("status-background");
-    element.appendChild(statusBackground);
+async function createStatusLabels(element, statuses) {
+    const documentFragment = document.createDocumentFragment();
 
-    const statusHeader = document.createElement("span");
-    statusHeader.classList.add("status-description");
-    statusHeader.textContent = "Status"; //Todo CML: REPLACE WITH TRANSLATION
+    const statusBackground = await buildStandardElement("div","status-label-background","status-background")
+    const statusHeader = await buildStandardElement("span","status-header","status-description", "Status")
+
     statusBackground.appendChild(statusHeader);
 
+    documentFragment.appendChild(statusBackground);
     for(const status of statuses) {
-        const statusLabel = document.createElement("div");
-        statusLabel.id = `s${status.index}`;
+        const statusLabel = await buildStandardElement("div",`status-${status.index}`, "status-label", null, `s${status.index}`);
         statusLabel.dataset.statusOrder = status.order;
-        statusLabel.classList.add("status-label");
-        statusLabel.style.gridArea = `s${status.index}`;
+
         if (status.description !== "header" && status.description !== "footer") {
-            statusLabel.textContent =`[${status.code}] ${status.description}`;
+            statusLabel.dataset.code = `[${status.code}]`;
+            statusLabel.dataset.description = status.description;
         }
-        element.appendChild(statusLabel);
+
+        documentFragment.appendChild(statusLabel);
     }
+    element.appendChild(documentFragment);
 }
 
 /**
@@ -149,7 +149,7 @@ async function buildStatusArray(statusList) {
     return result.reverse();
 }
 
-export async function buildStandardElement(tagName, id, classes, textContent, gridArea = null, gridRow= null) {
+export async function buildStandardElement(tagName, id, classes, textContent=null, gridArea = null, gridRow= null) {
     const element = document.createElement(tagName);
 
     element.id = id;

@@ -220,7 +220,7 @@ const data1 = {
     ]
 }
 
-const data2s = {
+const data2 = {
     "currentStatus": "Approved",
     "statuses": [
         {
@@ -470,7 +470,7 @@ const data2s = {
         }
     ]
 }
-const data2 = {
+const data2s = {
     "currentStatus": "Approved",
     "statuses": [
             {

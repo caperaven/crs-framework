@@ -17,19 +17,32 @@
 }
 
 .status-label {
-    display: -webkit-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: right;
+    align-items: center;
     position: sticky;
-    padding: 0.5rem 0.5rem 0.5rem 3rem;
+    padding: 0.5rem 0.25rem 0.5rem 3rem;
     color: var(--grey-s1);
-    text-align: right;
     left: 0;
     z-index: 3;
     font-size: 0.75rem;
     height: 1.5rem;
+}
+.status-label:not([data-status-order="undefined"])::before,
+.status-label:not([data-status-order="undefined"])::after {
+    width: 100%;
     overflow: hidden;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2; 
+    white-space: nowrap;
     text-overflow: ellipsis;
+    text-align: right;
+}
+
+.status-label:not([data-status-order="undefined"])::before {
+    content: attr(data-code);
+}
+.status-label:not([data-status-order="undefined"])::after {
+    content: attr(data-description);
 }
 
 .status-row {
@@ -42,7 +55,6 @@
     grid-row: 1 / -1;
     background: var(--window);
     position: sticky;
-    /*box-shadow: rgba(0, 0, 0, 0.3) 2px 0 4px;*/
     left: 0;
     z-index: 2;
     min-width: 12.5rem;
@@ -69,6 +81,7 @@
     border-top: 2px solid black;
     border-bottom: none;
     margin-left: 0.5rem;
+    box-sizing: border-box;
 }
 
 .status-description{

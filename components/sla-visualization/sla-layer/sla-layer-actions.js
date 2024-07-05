@@ -299,7 +299,7 @@ async function showCurrentStatus(currentStatus, parentElement) {
     // apply the class "active-status-label" to the status label that matches the status description
     const statusLabels = parentElement.querySelectorAll(".status-label");
     for (const statusLabel of statusLabels) {
-        if (statusLabel.textContent === currentStatus) {
+        if(statusLabel.dataset.description === currentStatus) {
             statusLabel.classList.add("active-status-label");
         }
     }
