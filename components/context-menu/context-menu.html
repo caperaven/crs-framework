@@ -153,11 +153,18 @@
         right: 0;
         fill: gray;
         cursor: nwse-resize;
+        width: 0.625rem;
+        height: 0.625rem;
+        padding: 0.25rem;
     }
 
 
     filter-header {
         --close-display: inline-block;
+    }
+
+    filter-header:focus {
+         border-bottom: 0.125rem solid var(--blue);
     }
 
     .submenu {
@@ -219,7 +226,7 @@
 
     .parent-menu-item:after {
         font-family: var(--icon-font);
-        font-size: 1.5rem;
+        font-size: 1.25rem;
         content: "chevron-right";
         position: absolute;
         right: var(--padding);
