@@ -207,6 +207,7 @@
         border-radius: 0.5rem;
         box-shadow: var(--drop-shadow);
         z-index: 400;
+        font-size: 14px;
     }
 
     .coordinate-display:empty {
@@ -219,6 +220,14 @@
         font-size: 1rem;
         color: var(--blue);
     }
+
+    @media (max-width: 768px) {
+        /*  Hide the coordinate display on mobile */
+        .coordinate-display {
+            display: none;
+        }
+    }
+
 
 </style>
 <div id="map"></div>

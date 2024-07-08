@@ -1,4 +1,4 @@
-import {getShapeIndex} from "../interactive-map-utils.js";
+import {getShapeIndex, notifyCoordinatesChanged} from "../interactive-map-utils.js";
 
 export default class DrawPoint {
 
@@ -67,6 +67,7 @@ export default class DrawPoint {
             this.#point.remove();
             this.#point = null;
         }
+        notifyCoordinatesChanged(this.#instance)
     }
 
     async accept() {
@@ -119,6 +120,7 @@ export default class DrawPoint {
             this.#point.remove();
             this.#point = null;
         }
+        notifyCoordinatesChanged(this.#instance)
     }
 }
 
@@ -127,7 +129,3 @@ function latLngToCoordinates(point) {
     return [latlng.lat, latlng.lng];
 }
 
-function notifyCoordinatesChanged(instance, point) {
-    const latlng = point.getLatLng();
-    instance.dispatchEvent(new CustomEvent("update-coordinates", {detail: `${latlng.lat}, ${latlng.lng}`}));
-}

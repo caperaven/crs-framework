@@ -89,7 +89,6 @@ export class InteractiveMap extends HTMLElement {
         if (this.#map != null || this.dataset.loading != null) return;
         await crs.call("component", "notify_loading", {element: this});
         await crs.call("interactive_map", "initialize_lib", {});
-        await this.#setSelectionMode();
 
         const container = this.querySelector("#map");
 
@@ -128,6 +127,7 @@ export class InteractiveMap extends HTMLElement {
             }
         });
 
+        await this.#setSelectionMode();
         await crs.call("component", "notify_ready", {element: this});
     }
 
@@ -191,6 +191,8 @@ export class InteractiveMap extends HTMLElement {
         const module = await import(`./providers/selection-${mode}.js`);
         this.#selectionProvider = new module.default();
         await this.#selectionProvider.initialize(this);
+
+        await crs.call("interactive_map", "set_mode", {element: this, mode: "select"});
     }
 
     /**

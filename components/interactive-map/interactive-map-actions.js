@@ -87,7 +87,7 @@ export class InteractiveMapActions {
 
         if (instance.currentMode != null) {
             await instance.currentMode.accept();
-            await crs.call("interactive_map", "set_mode", {element: instance, mode: "none"});
+            await crs.call("interactive_map", "set_mode", {element: instance, mode: "select"});
         }
     }
 

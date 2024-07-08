@@ -1,4 +1,4 @@
-import {getShapeIndex} from "../interactive-map-utils.js";
+import {getShapeIndex, notifyCoordinatesChanged} from "../interactive-map-utils.js";
 
 export default class DrawPolyBase {
     // This class will start the drawing of a polygon on the map when the user clicks on the map.
@@ -174,25 +174,12 @@ export default class DrawPolyBase {
             this.#shape.remove();
             this.#shape = null;
         }
+
+        notifyCoordinatesChanged(this.#instance)
     }
 
     async #pointClick(event) {
-        // When selecting a point we to change the style of the point to selected.
-        // We also want to add it to the selected points array.
-
-        const index = event.target.options.index;
-        const point = this.#points[index];
-
-        if (this.#selectedPoints.includes(point)) {
-            // If the point is already selected we want to deselect it.
-            event.target.setStyle({fillColor: "blue"});
-            this.#selectedPoints = this.#selectedPoints.filter(_ => _ !== point);
-        }
-        else {
-            // If the point is not selected we want to select it.
-            event.target.setStyle({fillColor: "green"});
-            this.#selectedPoints.push(point);
-        }
+       await notifyCoordinatesChanged(this.#instance, event.target);
     }
 
     async #pointDragStart(event) {
@@ -246,6 +233,8 @@ export default class DrawPolyBase {
 
 
         this.#points[index].handle = handle;
+
+        await notifyCoordinatesChanged(this.#instance, handle);
 
         await this.#updateHandleIndexes();
         await this.#removeSubDivisionMarkers();
@@ -301,6 +290,7 @@ export default class DrawPolyBase {
         await this.#removeSubDivisionMarkers();
         const handle = await this.#createDragHandle(coordinates, index)
         await this.#addPoint(index, coordinates, handle);
+        notifyCoordinatesChanged(this.#instance, handle);
 
         // If the first point we do nothing
         if (this.#points.length < 2) return;

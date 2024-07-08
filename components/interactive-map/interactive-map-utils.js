@@ -105,3 +105,18 @@ export function addDynamicPopup(layer, popupDefinition, record) {
         offset: offset
     });
 }
+
+/**
+ * Notify the instance that the coordinates have changed
+ * @param instance - The instance to notify
+ * @param point - The point that has changed or null if no point
+ */
+export function notifyCoordinatesChanged(instance, point) {
+    let detail = "";
+    if (point != null) {
+        const latlng = point.getLatLng();
+        detail = `${latlng.lat}, ${latlng.lng}`;
+    }
+
+    instance.dispatchEvent(new CustomEvent("update-coordinates", {detail: detail}));
+}
