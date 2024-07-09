@@ -1,12 +1,10 @@
 import "./../../context-menu/context-menu-actions.js";
 
 class SlaMeasurement extends HTMLElement {
-
-    #mouseEnterEventHandler = this.#mouseEnterEvent.bind(this);
-    #mouseLeaveEventHandler = this.#mouseLeaveEvent.bind(this);
+    #mouseEnterHandler = this.#mouseEnter.bind(this);
+    #mouseLeaveHandler = this.#mouseLeave.bind(this);
     #clickHandler = this.#click.bind(this);
     #contextMenuHandler = this.#contextMenu.bind(this);
-    #measurementInfoElement;
 
     get html() {
         return import.meta.url.replace(".js", ".html");
@@ -20,8 +18,8 @@ class SlaMeasurement extends HTMLElement {
     async connectedCallback() {
         this.shadowRoot.innerHTML = await fetch(import.meta.url.replace(".js", ".html")).then(response => response.text());
         await this.load();
-        this.addEventListener("mouseenter", this.#mouseEnterEventHandler);
-        this.addEventListener("mouseleave", this.#mouseLeaveEventHandler);
+        this.addEventListener("mouseenter", this.#mouseEnterHandler);
+        this.addEventListener("mouseleave", this.#mouseLeaveHandler);
         this.addEventListener("click", this.#clickHandler);
         this.addEventListener("contextmenu", this.#contextMenuHandler);
     }
@@ -37,34 +35,22 @@ class SlaMeasurement extends HTMLElement {
     }
 
     async disconnectedCallback() {
-        this.removeEventListener("mouseenter", this.#mouseEnterEventHandler);
-        this.removeEventListener("mouseleave", this.#mouseLeaveEventHandler);
+        this.removeEventListener("mouseenter", this.#mouseEnterHandler);
+        this.removeEventListener("mouseleave", this.#mouseLeaveHandler);
         this.removeEventListener("click", this.#clickHandler);
         this.removeEventListener("contextmenu", this.#contextMenuHandler);
-        this.#mouseEnterEventHandler = null;
-        this.#mouseLeaveEventHandler = null;
+        this.#mouseEnterHandler = null;
+        this.#mouseLeaveHandler = null;
         this.#clickHandler = null;
         this.#contextMenuHandler = null;
-        this.#measurementInfoElement = null;
     }
 
-    async #mouseEnterEvent(event) {
-        const parent = event.composedPath()[0].getRootNode().host;
-
-        if(event.type === "mouseenter") {
-            this.#measurementInfoElement = await crs.call("sla_measurement", "display_measurement_info", {
-                element: this,
-                type: event.type,
-                parent: parent
-            });
-        }
+    async #mouseEnter(event) {
+        await this.#dispatchCustomPopupEvent(this);
     }
 
-    async #mouseLeaveEvent(event) {
-        requestAnimationFrame(()=> {
-            this.#measurementInfoElement?.remove();
-        });
-
+    async #mouseLeave(event) {
+        await this.#dispatchCustomPopupEvent();
     }
 
     async #click(event) {
@@ -82,10 +68,12 @@ class SlaMeasurement extends HTMLElement {
                 id: parseInt(element.id),
                 version: parseInt(element.dataset.version) || 1
             }));
-            this.shadowRoot.dispatchEvent(new CustomEvent("measurement-selected", {detail: {selected: selectedMeasurements}, bubbles: true,
-                composed: true}));
+            this.shadowRoot.dispatchEvent(new CustomEvent("measurement-selected", {detail: {selected: selectedMeasurements}, bubbles: true, composed: true}));
         }
+    }
 
+    async #dispatchCustomPopupEvent(measurement = null) {
+        this.dispatchEvent(new CustomEvent("measurement-hovered", {detail: {measurement}, bubbles: true, composed: true}));
     }
 
     async #contextMenu(event) {

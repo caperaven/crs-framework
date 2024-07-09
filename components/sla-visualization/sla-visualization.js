@@ -1,6 +1,7 @@
-import {create_sla_grid} from "./sla-grid-utils.js"
+import {create_sla_grid} from "./sla-utils/sla-grid-utils.js"
 import {CHANGE_TYPES} from "../../src/managers/data-manager/data-manager-types.js";
 import "../../packages/crs-process-api/action-systems/no-content-actions.js";
+import {SlaTooltipManager} from "./sla-utils/sla-tooltip-manager.js";
 
 /**
  * @class SlaVisualization - This class is responsible for rendering the SLA visualization.
@@ -20,6 +21,7 @@ export class SlaVisualization extends HTMLElement {
     #currentStatus;
     #container;
     #selectionChangedHandler = this.#selectionChanged.bind(this);
+    #slaTooltipManager;
 
     get html() {
         return import.meta.url.replace(".js", ".html");
@@ -64,6 +66,8 @@ export class SlaVisualization extends HTMLElement {
         this.removeEventListener("measurement-selected", this.#selectionChangedHandler);
         this.#selectionChangedHandler = null;
         this.#selectedMeasurement = null;
+        this.#slaTooltipManager.dispose();
+        this.#slaTooltipManager = null;
     }
 
     async initialize(statuses, currenStatus) {
@@ -80,6 +84,7 @@ export class SlaVisualization extends HTMLElement {
         }
 
         await crs.call("component", "notify_ready", { element: this });
+        this.#slaTooltipManager = new SlaTooltipManager(this);
     }
 
     async render() {
@@ -98,6 +103,7 @@ export class SlaVisualization extends HTMLElement {
             await create_sla_grid(slaData, this.#container, this);
 
             await crs.call("sla_layer", "create_all_sla", { parent: this.#container, data: slaData , parentPhase: this.dataset.phase}); // refactor for phase
+
             if (this.dataset.phase === "runtime") {
                 await this.#updateSlaLegend(data);
             }

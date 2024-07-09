@@ -1,5 +1,5 @@
 import "./sla-measurement.js";
-import {buildStandardElement} from "../sla-grid-utils.js";
+import {buildStandardElement} from "../sla-utils/sla-grid-utils.js";
 
 /**
  * class SlaMeasurementActions - A class that contains methods for the sla-measurement component
@@ -77,69 +77,47 @@ export class SlaMeasurementActions {
     }
 
     /**
-     * @method display_measurement_info - Displays the measurement info on hover
+     * @method inflate_measurement_info_template - this will inflate the measurement info template
      * @param step {Object} - The step object in a process
      * @param context {Object} - The context object
      * @param process {Object} - The process object
      * @param item {Object} - The item object if in a loop
+     *
+     * @param step.args.element {HTMLElement} - The element to inflate the measurement info template
+     * @param step.args.type {String} - The type of event
+     * @param step.args.measurement_data {Object} - The measurement data object
      * @return {Promise<Node>}
      */
-    static async display_measurement_info(step, context, process, item) {
+    static async inflate_measurement_info_template(step, context, process, item) {
         const element = await crs.dom.get_element(step.args.element, context, process, item);
         const type = await crs.process.getValue(step.args.type, context, process, item);
-        const parent = await crs.dom.get_element(step.args.parent, context, process, item);
-        //Todo CML: remove this line
-        return;
-
-        const measurementData = {
-            code: element.dataset.code,
-            startStatus: element.getAttribute("data-start-status-name", ""),
-            endStatus: element.getAttribute("data-end-status-name", ""),
-            duration: element.dataset.duration,
-            progress: element.dataset.progress,
-            nextTrigger: element.shadowRoot.querySelector(".measurement-trigger-indicator") !== null ? `${element.shadowRoot.querySelector(".measurement-trigger-indicator").dataset?.trigger}` : "",
-            triggerType: element.shadowRoot.querySelector(".measurement-trigger-indicator") !== null ? `${element.shadowRoot.querySelector(".measurement-trigger-indicator").dataset?.triggerType}` : "",
-            NumOfTriggers: element.shadowRoot.querySelectorAll(".measurement-trigger-indicator").length
-        }
+        const measurementData = await crs.process.getValue(step.args.measurement_data, context, process, item) ?? {};
 
         let templateSelector, backgroundStyle;
+        const parentPhase = element.dataset.parentPhase;
 
-        if (element.dataset.parentPhase === "runtime") {
+        if (parentPhase === "runtime") {
             templateSelector = "template.runtime-measurement-info-template";
         }
-        else if (element.dataset.parentPhase === "setup") {
+        else {
             templateSelector = "template.setup-measurement-info-template";
             backgroundStyle = type === "mouseenter" ? "#075E96" : "var(--blue)"; // Add class .selected
         }
 
         const measurementInfoTemplate = element.shadowRoot.querySelector(templateSelector).content.firstElementChild.cloneNode(true);
+        measurementInfoTemplate.dataset.id = `m-${element.id}`;
 
         await crsbinding.staticInflationManager.inflateElement(measurementInfoTemplate, measurementData);
 
         // Create a <link> element and add to header for measurement-info
         // We should do this when the connectedCallback of the main sla-component fires.
-
         const link = document.createElement("link");
         const baseUrl = window.location.origin + window.location.pathname.split("/").slice(0, -1).join("/");
         link.rel = "stylesheet";
-        link.href = `${baseUrl}/packages/crs-framework/components/sla-visualization/sla-measurement/sla-measurement-info.css`;
+        // link.href = `${baseUrl}/packages/crs-framework/components/sla-visualization/sla-measurement/sla-measurement-info.css`;
+        link.href = `./components/sla-visualization/sla-measurement/sla-measurement-info.css`;
         document.head.appendChild(link);
         document.body.appendChild(measurementInfoTemplate);
-
-        // measurementInfoTemplate.style.display = type === "mouseenter" ? "flex" : "none";
-        // element.style.background = backgroundStyle;
-
-        // rather toggle the display style by adding a class
-        // measurementInfoTemplate.classList.add("show-info");
-
-        await crs.call("fixed_layout", "set", {
-            element: measurementInfoTemplate,
-            target: element,
-            container: parent.parentElement,
-            at: "right",
-            anchor: "top",
-            margin: 0
-        });
 
         measurementInfoTemplate.style.zIndex = 999999
         return measurementInfoTemplate;

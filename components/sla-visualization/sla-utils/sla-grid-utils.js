@@ -1,4 +1,4 @@
-import "../../packages/crs-process-api/action-systems/css-grid-actions.js";
+import "../../../packages/crs-process-api/action-systems/css-grid-actions.js";
 
 /**
  * 1. create css grid for SLA visualization
