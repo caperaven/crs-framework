@@ -122,6 +122,7 @@ export default class DrawPolyBase {
                 });
             }
         }
+        notifyCoordinatesChanged(this.#instance)
     }
 
     async accept() {
@@ -193,6 +194,7 @@ export default class DrawPolyBase {
     }
 
     async #pointDragEnd(event, test) {
+        notifyCoordinatesChanged(this.#instance, event.target);
         await this.#addSubDivisionMarkers();
     }
 
@@ -336,6 +338,7 @@ export default class DrawPolyBase {
         await this.redraw();
         await this.#removeSubDivisionMarkers();
         await this.#addSubDivisionMarkers();
+        notifyCoordinatesChanged(this.#instance)
     }
 
     async #addSubDivisionMarkers() {
