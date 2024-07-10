@@ -37,7 +37,7 @@ export class SlaTooltipManager {
             return;
         }
 
-        // await this.#setPopupVisibleState(false);
+        await this.#setPopupVisibleState(false);
     }
 
     /**
