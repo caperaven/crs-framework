@@ -72,6 +72,13 @@ export class SlaTooltipManager {
     async #getMeasurementData(measurement) {
         const measurementData = {
             code: measurement.dataset.code,
+            startLabel: globalThis.translations.sla.labels.startLabel,
+            endLabel: globalThis.translations.sla.labels.endLabel,
+            durationLabel: globalThis.translations.sla.labels.durationLabel,
+            progressLabel: globalThis.translations.sla.labels.progressLabel,
+            triggerLabel: globalThis.translations.sla.labels.triggerLabel,
+            triggerDescriptionLabel: globalThis.translations.sla.labels.triggerDescriptionLabel,
+            numberOfTriggersLabel: globalThis.translations.sla.labels.numberOfTriggersLabel,
             duration: measurement.dataset.duration,
             progress: measurement.dataset.progress,
             numberOfTriggers: measurement.shadowRoot.querySelectorAll(".measurement-trigger-indicator").length,
@@ -106,12 +113,17 @@ export class SlaTooltipManager {
         await this.#setPopupVisibleState(true);
     }
 
+    /**
+     * @method #updateMeasurementPopupContent - Updates the this.#popup content based on the measurementData.
+     * @param measurement
+     * @param measurementData
+     * @returns {Promise<void>}
+     */
     async #updateMeasurementPopupContent(measurement, measurementData) {
         const measurementId = `m-${measurement.id}`;
-
         if (this.#popup.dataset.id === measurementId) return;
 
-        const spanElementsList = this.#popup.querySelectorAll("span");
+        const spanElementsList = this.#popup.querySelectorAll("h3.measurement-content");
         for (const span of spanElementsList) {
             span.textContent = measurementData[span.dataset.id];
         }

@@ -3,41 +3,61 @@
 
 <template class="setup-measurement-info-template">
     <div class="measurement-info">
-        <h4>${code}</h4>
+        <h2>${code}</h2>
+        <div class="measurement-info-container">
+             <span class="label-container measurement-info-padding">
+                    <h3 class="info-label">${startLabel}</h3>
+                    <h3 data-id="startStatus" class="measurement-content">${startStatus}</h3>
+             </span>
+            <span class="label-container measurement-info-border-bottom">
+                    <h3 class="info-label">${endLabel}</h3>
+                    <h3 data-id="endStatus" class="measurement-content">${endStatus}</h3>
+            </span>
 
-        <div class="measurement-status-info">
-            <div>Start-Status : <span data-id="startStatus" class="measurement-content">${startStatus}</span></div>
-            <div>End-Status : <span data-id="endStatus" class="measurement-content">${endStatus}</span></div>
-        </div>
 
+            <span class="label-container measurement-info-border-bottom measurement-info-padding">
+                    <h3 class="info-label">${durationLabel}</h3>
+                    <h3 data-id="duration" class="measurement-content">${duration}</h3>
+            </span>
 
-        <div class="measurement-duration-info">
-            <div>Duration :<span data-id="duration" class="measurement-content">${duration}</span></div>
-        </div>
-
-        <div class="measurement-trigger-info">
-            <div>Number Of Triggers : <span data-id="numberOfTriggers" class="measurement-content">${numberOfTriggers}</span></div>
-        </div>
+            <span class="label-container measurement-info-padding">
+                    <h3 class="info-label">${numberOfTriggersLabel}</h3>
+                    <h3 data-id="numberOfTriggers" class="measurement-content">${numberOfTriggers}</h3>
+            </span>
+       </div>
     </div>
 </template>
 
 <template class="runtime-measurement-info-template">
     <div class="measurement-info">
-        <h4>${code}</h4>
+        <h2>${code}</h2>
+        <div class=measurement-info-container>
+                <span class="label-container measurement-info-padding">
+                    <h3 class="info-label">${startLabel}</h3>
+                    <h3 data-id="startStatus" class="measurement-content">${startStatus}</h3>
+                </span>
+                <span class="label-container measurement-info-border-bottom">
+                    <h3 class="info-label">${endLabel}</h3>
+                    <h3 data-id="endStatus" class="measurement-content">${endStatus}</h3>
+                </span>
 
-        <div class="measurement-status-info">
-            <div>Start-Status : <span data-id="startStatus" class="measurement-content">${startStatus}</span></div>
-            <div>End-Status : <span data-id="endStatus" class="measurement-content">${endStatus}</span></div>
-        </div>
+                <span class="label-container measurement-info-padding">
+                    <h3 class="info-label">${durationLabel}</h3>
+                    <h3 data-id="duration" class="measurement-content">${duration}</h3>
+                </span>
+                <span class="label-container measurement-info-border-bottom">
+                    <h3 class="info-label">${progressLabel}</h3>
+                    <h3 data-id="progress" class="measurement-content">${progress}</h3>
+                </span>
 
-        <div class="measurement-duration-info">
-            <div>Duration :<span data-id="duration" class="measurement-content">${duration}</span></div>
-            <div>Work Progress : <span data-id="progress" class="measurement-content">${progress}</span></div>
-        </div>
-
-        <div class="measurement-trigger-info">
-            <div>Next Trigger : <span data-id="trigger" class="measurement-content">${trigger}</span></div>
-            <div>Trigger Description : <span data-id="triggerDescription" class="measurement-content">${triggerDescription}</span></div>
+                <span class="label-container measurement-info-padding">
+                    <h3 class="info-label">${triggerLabel}</h3>
+                    <h3 data-id="trigger" class="measurement-content">${trigger}</h3>
+                </span>
+                <span class="label-container">
+                    <h3 class="info-label">${triggerDescriptionLabel}</h3>
+                    <h3 data-id="triggerDescription" class="measurement-content">${triggerDescription}</h3>
+                </span>
         </div>
     </div>
 </template>

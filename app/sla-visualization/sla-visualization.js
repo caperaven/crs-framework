@@ -18,9 +18,20 @@ export default class SlaVisualization extends crsbinding.classes.ViewBase {
     }
 
     async connectedCallback() {
-
-
         await super.connectedCallback();
+        globalThis.translations = {};
+        globalThis.translations.sla = {
+            labels: {
+                startLabel: "Start Status : ",
+                endLabel: "End Status : ",
+                durationLabel: "Duration : ",
+                progressLabel: "Work Progress : ",
+                triggerLabel: "Next Trigger : ",
+                triggerDescriptionLabel: "Trigger Description : ",
+                numberOfTriggersLabel: "Number of Triggers : "
+            }
+        }
+
         await crs.call("data_manager", "register", {
             manager: "my_sla",
             id_field: "id",
@@ -38,6 +49,7 @@ export default class SlaVisualization extends crsbinding.classes.ViewBase {
     }
 
     async disconnectedCallback() {
+        globalThis.translations = null;
         await super.disconnectedCallback();
     }
 
