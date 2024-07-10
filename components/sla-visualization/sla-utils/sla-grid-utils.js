@@ -116,7 +116,7 @@ function generateGridTemplateArray(statuses, dataSla, visualizationPhase) {
 
     statusCount = 1;
     const gridTemplateArray = statuses.map(status => {
-        rowHeight = status.index === 0 ? "2.5rem":"1fr";
+        rowHeight = "2.5rem";
         if (statusCount === 1 && visualizationPhase === "runtime") {
             rowHeight = "5rem";
             statusCount++;
@@ -136,7 +136,7 @@ function generateGridTemplateArray(statuses, dataSla, visualizationPhase) {
 }
 
 async function buildStatusArray(statusList) {
-    const tempStatusList = {footer:{description: "footer"},...statusList,header:{description: "header"}};
+    const tempStatusList = {footer:{description: "footer", code : "foot"},...statusList,header:{description: "header", code : "head"}};
     const keys = Object.keys(tempStatusList);
     let result = [];
 

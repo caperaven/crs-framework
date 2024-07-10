@@ -255,9 +255,10 @@ async function updateProgressStyles(element, measurementData) {
     const progressBar = element.shadowRoot.querySelector("div.progress-bar");
     progressBar.style.height = `${Math.min(measurementData.progress, 100) - 7}%`;
     element.dataset.progress = `${measurementData.progress}%`;
+    const activeRowNumber = parseInt(element.dataset.activeRow);
 
     if (measurementData.progress > 100 ) {
-        if(measurementData.start_status_order >= parseInt(element.dataset.activeRow) || measurementData.end_status_order <= parseInt(element.dataset.activeRow))
+        if(measurementData.start_status_order >= activeRowNumber || measurementData.end_status_order <= activeRowNumber)
             element.classList.add("measurement-overdue-state");
             element.dataset.state = "overdue";
     } else if (measurementData.progress >= 80 && measurementData.progress <= 99) {
@@ -296,14 +297,15 @@ async function createTriggerIndicators(element, measurementData) {
  * @return {Promise<void>}
  */
 async function updateStatus(element, measurementData) {
-    if (element.dataset.parentPhase === "runtime") {
-        if (parseInt(element.dataset.activeRow) < measurementData.start_status_order || parseInt(element.dataset.activeRow) > measurementData.end_status_order) {
-            element.dataset.state = "inactive";
-            element.classList.add("measurement-inactive-state");
-        }
-        else {
-            element.dataset.state = "active";
-        }
+    if (element.dataset.parentPhase !== "runtime") return;
+    const activeRowNumber = parseInt(element.dataset.activeRow) - 1;
+
+    if (activeRowNumber < measurementData.start_status_order || activeRowNumber > measurementData.end_status_order) {
+        element.dataset.state = "inactive";
+        element.classList.add("measurement-inactive-state");
+    }
+    else {
+        element.dataset.state = "active";
     }
 
     await updateProgressStyles(element, measurementData);

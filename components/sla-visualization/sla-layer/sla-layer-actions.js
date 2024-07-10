@@ -30,6 +30,9 @@ export class SlaLayerActions{
         // set the inner text of the sla-layer component to the code of the sla object
         // here the sla will be displayed in the specified grid-area based on the sla code. example: "sla_1001"
         let incrementor = 1;
+        // ToDo: AW - Ask Gerhard about this
+        const tempStatuses =  {footer:{description: "footer", code : "foot"},...slaData.statuses, header:{description: "header", code : "head"}};
+
         for (const sla of slaData.sla) {
             const element = document.createElement("sla-layer");
             element.id = sla.id;
@@ -38,7 +41,7 @@ export class SlaLayerActions{
             element.dataset.parentPhase = parentPhase; // refactor for phase
             parentElement.appendChild(element);
 
-            await createSlaGrid(element, sla, slaData.statuses);
+            await createSlaGrid(element, sla, tempStatuses);
             // in the sla data, based on the workOrder.statusDescription, call function:
             // showCurrentWorkOrderStatus(workOrder.statusDescription, element);
             await showCurrentStatus(slaData.currentStatus, parentElement);
@@ -239,7 +242,6 @@ function populateMeasurementsMatrix(matrix, statusLookupTable, slaItemData) {
         const endIndex = statusLookupTable[measurement.end_status].index;
 
         for (let index = endIndex; index <= startIndex; index++) {
-            if(index === startIndex) continue;
             matrix[index][measurementIndex] = `m${measurementIndex}`;
         }
         measurementIndex++;
@@ -265,7 +267,7 @@ function matrixToTemplate(matrix, slaLayerElement) {
         if (row === 0 && slaLayerElement.dataset.parentPhase === "runtime") {
             rowStr = `"${matrix[row].join(" ")}" 5rem`;
         } else {
-            rowStr = row !== (matrix.length) - 1? `"${matrix[row].join(" ")}" 1fr`: `"${matrix[row].join(" ")}" 2.5rem`;
+            rowStr = `"${matrix[row].join(" ")}" 2.5rem`;
         }
         result.push(rowStr);
     }

@@ -11,6 +11,7 @@
     background: var(--blue);
     color: var(--cl-primary-alt);
     z-index: auto;
+    bottom: 0.25rem;
 }
 
 :host([data-state="inactive"]) {

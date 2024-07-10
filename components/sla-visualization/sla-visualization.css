@@ -27,7 +27,8 @@
     left: 0;
     z-index: 3;
     font-size: 0.75rem;
-    height: 1.5rem;
+    height: 2.5rem;
+    align-self: center;
 }
 .status-label:not([data-status-order="undefined"])::before,
 .status-label:not([data-status-order="undefined"])::after {
