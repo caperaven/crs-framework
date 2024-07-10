@@ -37,7 +37,7 @@ export class SlaTooltipManager {
             return;
         }
 
-        await this.#setPopupVisibleState(false);
+        // await this.#setPopupVisibleState(false);
     }
 
     /**
@@ -72,18 +72,18 @@ export class SlaTooltipManager {
     async #getMeasurementData(measurement) {
         const measurementData = {
             code: measurement.dataset.code,
-            startStatus: measurement.getAttribute("data-start-status-name", ""),
-            endStatus: measurement.getAttribute("data-end-status-name", ""),
             duration: measurement.dataset.duration,
             progress: measurement.dataset.progress,
-            NumOfTriggers: measurement.shadowRoot.querySelectorAll(".measurement-trigger-indicator").length
+            numberOfTriggers: measurement.shadowRoot.querySelectorAll(".measurement-trigger-indicator").length,
+            startStatus: measurement.getAttribute("data-start-status-name", ""),
+            endStatus: measurement.getAttribute("data-end-status-name", "")
         };
 
         const measurementTriggerIndicator = measurement.shadowRoot.querySelector(".measurement-trigger-indicator");
 
         if (measurementTriggerIndicator !== null) {
-            measurementData.nextTrigger = measurementTriggerIndicator.dataset?.trigger;
-            measurementData.triggerType = measurementTriggerIndicator.dataset?.triggerType;
+            measurementData.trigger = measurementTriggerIndicator.dataset?.trigger;
+            measurementData.triggerDescription = measurementTriggerIndicator.dataset?.triggerType;
         }
 
         return measurementData;
@@ -112,18 +112,8 @@ export class SlaTooltipManager {
         if (this.#popup.dataset.id === measurementId) return;
 
         const spanElementsList = this.#popup.querySelectorAll("span");
-        const spanIdMapping = {
-            "measurement-start": "startStatus",
-            "measurement-end": "endStatus",
-            "measurement-duration": "duration",
-            "measurement-progress": "progress",
-            "next-trigger": "nextTrigger",
-            "trigger-description": "triggerType",
-        }
-
         for (const span of spanElementsList) {
-            const propertyKey = spanIdMapping[span.id];
-            span.textContent = measurementData[propertyKey];
+            span.textContent = measurementData[span.dataset.id];
         }
 
         this.#popup.firstElementChild.textContent = measurementData.code;

@@ -6,17 +6,17 @@
         <h4>${code}</h4>
 
         <div class="measurement-status-info">
-            <div>Start-Status : <span id="setup-start-status" class="measurement-content">${startStatus}</span></div>
-            <div>End-Status : <span id="setup-end-status" class="measurement-content">${endStatus}</span></div>
+            <div>Start-Status : <span data-id="startStatus" class="measurement-content">${startStatus}</span></div>
+            <div>End-Status : <span data-id="endStatus" class="measurement-content">${endStatus}</span></div>
         </div>
 
 
         <div class="measurement-duration-info">
-            <div>Duration :<span id="setup-measurement-duration" class="measurement-content">${duration}</span></div>
+            <div>Duration :<span data-id="duration" class="measurement-content">${duration}</span></div>
         </div>
 
         <div class="measurement-trigger-info">
-            <div>Number Of Triggers : <span id="number-of-triggers" class="measurement-content">${NumOfTriggers}</span></div>
+            <div>Number Of Triggers : <span data-id="numberOfTriggers" class="measurement-content">${numberOfTriggers}</span></div>
         </div>
     </div>
 </template>
@@ -26,18 +26,18 @@
         <h4>${code}</h4>
 
         <div class="measurement-status-info">
-            <div>Start-Status : <span id="measurement-start" class="measurement-content">${startStatus}</span></div>
-            <div>End-Status : <span id="measurement-end" class="measurement-content">${endStatus}</span></div>
+            <div>Start-Status : <span data-id="startStatus" class="measurement-content">${startStatus}</span></div>
+            <div>End-Status : <span data-id="endStatus" class="measurement-content">${endStatus}</span></div>
         </div>
 
         <div class="measurement-duration-info">
-            <div>Duration :<span id="measurement-duration" class="measurement-content">${duration}</span></div>
-            <div>Work Progress : <span id="measurement-progress" class="measurement-content">${progress}</span></div>
+            <div>Duration :<span data-id="duration" class="measurement-content">${duration}</span></div>
+            <div>Work Progress : <span data-id="progress" class="measurement-content">${progress}</span></div>
         </div>
 
         <div class="measurement-trigger-info">
-            <div>Next Trigger : <span id="next-trigger" class="measurement-content">${nextTrigger}</span></div>
-            <div>Trigger Description : <span id="trigger-description" class="measurement-content">${triggerType}</span></div>
+            <div>Next Trigger : <span data-id="trigger" class="measurement-content">${trigger}</span></div>
+            <div>Trigger Description : <span data-id="triggerDescription" class="measurement-content">${triggerDescription}</span></div>
         </div>
     </div>
 </template>
