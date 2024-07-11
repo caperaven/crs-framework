@@ -45,6 +45,7 @@
     font-size: 0.75rem;
     margin-top: 0.25rem;
     width: 5rem;
+    text-align: center;
 }
 .sla-footer-container::before {
     content: attr(data-footer-content);
@@ -56,8 +57,8 @@
     -webkit-box-orient: vertical;
 }
 :host([data-parent-phase="setup"]) .measurement-overlay {
-    grid-area: m3;
     width: 100%;
+    height: 100%;
     background: var(--blue-s2);
     opacity: 0;
     border: 1px solid var(--blue);
