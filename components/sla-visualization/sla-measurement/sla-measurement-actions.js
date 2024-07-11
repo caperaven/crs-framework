@@ -26,6 +26,7 @@ export class SlaMeasurementActions {
         const parentPhase = await crs.process.getValue(step.args.parentPhase, context, process, item); // refactor for phase
 
         let incrementor = 0;
+        const rowCount = (Object.keys(measurementDataStatuses).length) + 3;
         const documentFragment = document.createDocumentFragment();
         for (const measurement of measurementData) {
             measurement.incrementor = incrementor;
@@ -39,7 +40,7 @@ export class SlaMeasurementActions {
                 });
             });
             const tagName = "div"
-            const measurementOverlay = await buildStandardElement(tagName,`m_${measurement.id}`,"measurement-overlay",null,`m${incrementor}`,`2 / span`);
+            const measurementOverlay = await buildStandardElement(tagName,`m_${measurement.id}`,"measurement-overlay",null,`m${incrementor}`,`2 / ${rowCount}`);
             documentFragment.appendChild(measurementOverlay);
 
             const measurementFooterContainer = await buildStandardElement(tagName,`f_${measurement.id}`,"sla-footer-container",null,`f${incrementor}`);
@@ -66,14 +67,16 @@ export class SlaMeasurementActions {
         const element = await crs.dom.get_element(step.args.element, context, process, item);
         const measurementData = await crs.process.getValue(step.args.measurementData, context, process, item);
 
-        // Update progress-related styles
-        await updateProgressStyles(element, measurementData);
-
         // Create trigger indicators
         await createTriggerIndicators(element, measurementData);
 
+        if (element.dataset.parentPhase !== "runtime") return;
+
         // Update status based on parent phase
         await updateStatus(element, measurementData);
+
+        // Update progress-related styles
+        await updateProgressStyles(element, measurementData);
     }
 
     /**
@@ -101,7 +104,6 @@ export class SlaMeasurementActions {
         }
         else {
             templateSelector = "template.setup-measurement-info-template";
-            backgroundStyle = type === "mouseenter" ? "#075E96" : "var(--blue)"; // Add class .selected
         }
 
         const measurementInfoTemplate = element.shadowRoot.querySelector(templateSelector).content.firstElementChild.cloneNode(true);
@@ -114,8 +116,8 @@ export class SlaMeasurementActions {
         const link = document.createElement("link");
         const baseUrl = window.location.origin + window.location.pathname.split("/").slice(0, -1).join("/");
         link.rel = "stylesheet";
-        // link.href = `${baseUrl}/packages/crs-framework/components/sla-visualization/sla-measurement/sla-measurement-info.css`;
-        link.href = `./components/sla-visualization/sla-measurement/sla-measurement-info.css`;
+        link.href = `${baseUrl}/packages/crs-framework/components/sla-visualization/sla-measurement/sla-measurement-info.css`;
+        // link.href = `./components/sla-visualization/sla-measurement/sla-measurement-info.css`;
         document.head.appendChild(link);
         document.body.appendChild(measurementInfoTemplate);
 
@@ -253,7 +255,7 @@ async function createMeasurementElement(measurement, parentElement, parentPhase)
  */
 async function updateProgressStyles(element, measurementData) {
     const progressBar = element.shadowRoot.querySelector("div.progress-bar");
-    progressBar.style.height = `${Math.min(measurementData.progress, 100) - 7}%`;
+    progressBar.style.height = `${Math.min(measurementData.progress, 100) - 5}%`;
     element.dataset.progress = `${measurementData.progress}%`;
     const activeRowNumber = parseInt(element.dataset.activeRow);
 
@@ -297,7 +299,6 @@ async function createTriggerIndicators(element, measurementData) {
  * @return {Promise<void>}
  */
 async function updateStatus(element, measurementData) {
-    if (element.dataset.parentPhase !== "runtime") return;
     const activeRowNumber = parseInt(element.dataset.activeRow) - 1;
 
     if (activeRowNumber < measurementData.start_status_order || activeRowNumber > measurementData.end_status_order) {
@@ -308,7 +309,6 @@ async function updateStatus(element, measurementData) {
         element.dataset.state = "active";
     }
 
-    await updateProgressStyles(element, measurementData);
 
     //ToDo AW - Better names for start_status_name because they became numbers
 }

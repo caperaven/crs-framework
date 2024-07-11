@@ -39,11 +39,9 @@
 
 .sla-footer-container {
     display: flex;
-    /*width: fit-content;*/
     justify-self: center;
     align-items: center;
     font-size: 0.75rem;
-    margin-top: 0.25rem;
     width: 5rem;
     text-align: center;
 }

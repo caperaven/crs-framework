@@ -52,18 +52,20 @@ div.progress-bar {
 
 :host::after {
     content: attr(data-progress);
+    display: flex;
+    width: 2.5rem;
+    height: 1.25rem;
     justify-content: center;
-    display: block;
+    align-items: center;
     color: var(--cl-text);
     font-family: 'SourceSansPro', sans-serif;
     text-align: center;
     font-size: 0.75rem;
     font-weight: bold;
-    height: fit-content;
     background: var(--blue-s2);
     border: 1px solid silver;
     border-radius: 5px;
-    width: 2rem;
+
     bottom: 0.5rem;
     position: absolute;
 }
@@ -95,7 +97,7 @@ div.progress-bar {
     content: '';
     position: absolute;
     top: 50%;
-    left: -8%; /* Position at the end of the dashed line */
+    left: -12%; /* Position at the end of the dashed line */
     width: 0;
     height: 0;
     border-style: solid;
