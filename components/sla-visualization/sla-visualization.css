@@ -14,6 +14,7 @@
     overflow: auto;
     padding: 1rem 0;
     grid-column-gap: 0.5rem;
+    align-content: center;
 }
 
 .status-label {
