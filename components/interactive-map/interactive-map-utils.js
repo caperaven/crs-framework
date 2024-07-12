@@ -120,3 +120,8 @@ export function notifyCoordinatesChanged(instance, point) {
 
     instance.dispatchEvent(new CustomEvent("update-coordinates", {detail: detail}));
 }
+
+/**
+ * Apply shape
+ */
+

@@ -1,4 +1,5 @@
 import {getShapeIndex, notifyCoordinatesChanged} from "../interactive-map-utils.js";
+import {accept_shape} from "./draw/draw-helpers.js";
 
 export default class DrawPolyBase {
     // This class will start the drawing of a polygon on the map when the user clicks on the map.
@@ -126,57 +127,7 @@ export default class DrawPolyBase {
     }
 
     async accept() {
-        if (this.#shape != null) {
-
-
-            if (this.#isEditing === true) {
-                const index = getShapeIndex(this.#shape);
-
-                let changes = {}
-                // Get the changes from either shape options or feature properties
-                if (this.#shape.feature) {
-                   changes.geographicLocation = this.#shape.toGeoJSON()
-                }
-                else {
-                    changes.coordinates =  latLngsToCoordinates(this.#shape);
-                }
-
-                await crs.call("data_manager", "update", {
-                    index: index,
-                    manager: this.#instance.dataset.manager,
-                    changes: changes,
-                    is_dirty: true
-                });
-
-                await crs.call("data_manager", "set_selected", {manager: this.#instance.dataset.manager, indexes: [index], selected: false});
-            }
-            else {
-
-                let record;
-                if ( this.#instance.dataset.format === "geojson") {
-                    record = {
-                        geographicLocation: this.#shape.toGeoJSON()
-                    }
-                }
-                else {
-                    record =  {
-                        coordinates: latLngsToCoordinates(this.#shape),
-                        type: this.shapeKey
-                    }
-                }
-
-                await crs.call("data_manager", "append", {
-                    records: [record],
-                    manager: this.#instance.dataset.manager,
-                    is_dirty: true
-                });
-            }
-
-            this.#shape.remove();
-            this.#shape = null;
-        }
-
-        notifyCoordinatesChanged(this.#instance)
+      this.#shape = await accept_shape(this.#instance, this.shapeKey, this.#shape, this.#isEditing);
     }
 
     async #pointClick(event) {

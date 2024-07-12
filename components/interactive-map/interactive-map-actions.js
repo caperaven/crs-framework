@@ -78,7 +78,7 @@ export class InteractiveMapActions {
         if (instance.currentMode != null) {
             await instance.currentMode.cancel();
             await crs.call("data_manager", "set_selected", {manager: instance.dataset.manager, indexes: [], selected: false, deselect_others:true});
-            await crs.call("interactive_map", "set_mode", {element: instance, mode: "none"});
+            await crs.call("interactive_map", "set_mode", {element: instance, mode: "select"});
         }
     }
 
@@ -391,7 +391,7 @@ export class ShapeFactory {
             iconAnchor: [24, 48] // Point of the icon which will correspond to marker's location
         });
 
-        const marker = L.marker(data.coordinates, {icon: customIcon});
+        const marker = L.marker(data.coordinates, {icon: customIcon, index: data.options.index});
 
         if (layer != null) {
             marker.addTo(layer);
