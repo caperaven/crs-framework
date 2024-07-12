@@ -18,9 +18,8 @@
             "view": "icons"
         },
         {
-            "title": "Macro recorder",
-            "hash": "#macro-recorder",
-            "view": "macro-recorder"
+            "title": "Data Grid2",
+            "view": "data-grid2"
         },
         {
             "title": "Cell Editing",
