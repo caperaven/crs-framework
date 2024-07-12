@@ -43,10 +43,15 @@ div.progress-bar {
     transform-origin: bottom;
     transform: scaleY(0);
     justify-content: center;
+    pointer-events: none;
 }
 
 :host([data-parent-phase="setup"]) div.progress-bar {
     display: none;
+}
+
+sla-measurement[aria-selected='true'] {
+    background: #075E96;
 }
 
 :host::after {

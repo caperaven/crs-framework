@@ -80,52 +80,6 @@ export class SlaMeasurementActions {
     }
 
     /**
-     * @method inflate_measurement_info_template - this will inflate the measurement info template
-     * @param step {Object} - The step object in a process
-     * @param context {Object} - The context object
-     * @param process {Object} - The process object
-     * @param item {Object} - The item object if in a loop
-     *
-     * @param step.args.element {HTMLElement} - The element to inflate the measurement info template
-     * @param step.args.type {String} - The type of event
-     * @param step.args.measurement_data {Object} - The measurement data object
-     * @return {Promise<Node>}
-     */
-    static async inflate_measurement_info_template(step, context, process, item) {
-        const element = await crs.dom.get_element(step.args.element, context, process, item);
-        const type = await crs.process.getValue(step.args.type, context, process, item);
-        const measurementData = await crs.process.getValue(step.args.measurement_data, context, process, item) ?? {};
-
-        let templateSelector, backgroundStyle;
-        const parentPhase = element.dataset.parentPhase;
-
-        if (parentPhase === "runtime") {
-            templateSelector = "template.runtime-measurement-info-template";
-        }
-        else {
-            templateSelector = "template.setup-measurement-info-template";
-        }
-
-        const measurementInfoTemplate = element.shadowRoot.querySelector(templateSelector).content.firstElementChild.cloneNode(true);
-        measurementInfoTemplate.dataset.id = `m-${element.id}`;
-
-        await crsbinding.staticInflationManager.inflateElement(measurementInfoTemplate, measurementData);
-
-        // Create a <link> element and add to header for measurement-info
-        // We should do this when the connectedCallback of the main sla-component fires.
-        const link = document.createElement("link");
-        const baseUrl = window.location.origin + window.location.pathname.split("/").slice(0, -1).join("/");
-        link.rel = "stylesheet";
-        link.href = `${baseUrl}/packages/crs-framework/components/sla-visualization/sla-measurement/sla-measurement-info.css`;
-        // link.href = `./components/sla-visualization/sla-measurement/sla-measurement-info.css`;
-        document.head.appendChild(link);
-        document.body.appendChild(measurementInfoTemplate);
-
-        measurementInfoTemplate.style.zIndex = 999999
-        return measurementInfoTemplate;
-    }
-
-    /**
      * @method select_measurement - Selects the measurement
      * @param step {Object} - The step object in a process
      * @param context {Object} - The context object
@@ -140,10 +94,10 @@ export class SlaMeasurementActions {
 
         // toggle selected class if selected is true or false on measurementOverlay
         // Check if data-selected attribute exists
-        const isSelected = measurementOverlay.getAttribute("data-selected") === "true";
+        const isSelected = measurementOverlay.getAttribute("aria-selected") === "true";
 
-        measurementOverlay.setAttribute("data-selected", isSelected ? "false" : "true");
-        element.dataset.selected = isSelected ? "false" : "true";
+        measurementOverlay.setAttribute("aria-selected", isSelected ? "false" : "true");
+        element.setAttribute("aria-selected", isSelected ? "false" : "true");
 
         measurementOverlay.style.opacity = isSelected ? "0" : "1";
 
@@ -181,7 +135,6 @@ export class SlaMeasurementActions {
             overlay.style.opacity = "0";
         }
     }
-
 }
 
 async function performSlaMeasurementCallback(slaMeasurementElement, callback, resolve) {

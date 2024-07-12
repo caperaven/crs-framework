@@ -153,7 +153,10 @@ export async function buildStandardElement(tagName, id, classes, textContent=nul
     const element = document.createElement(tagName);
 
     element.id = id;
-    element.className = classes;
+
+    if (classes != null) {
+        element.className = classes;
+    }
     if (gridArea != null) {
         element.style.gridArea = gridArea;
     }

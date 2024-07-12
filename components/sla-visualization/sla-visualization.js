@@ -1,7 +1,7 @@
 import {create_sla_grid} from "./sla-utils/sla-grid-utils.js"
 import {CHANGE_TYPES} from "../../src/managers/data-manager/data-manager-types.js";
 import "../../packages/crs-process-api/action-systems/no-content-actions.js";
-import {SlaTooltipManager} from "./sla-utils/sla-tooltip-manager.js";
+import {SlaTooltipManager} from "./sla-tooltip/sla-tooltip-manager.js";
 
 /**
  * @class SlaVisualization - This class is responsible for rendering the SLA visualization.
@@ -22,6 +22,8 @@ export class SlaVisualization extends HTMLElement {
     #container;
     #selectionChangedHandler = this.#selectionChanged.bind(this);
     #slaTooltipManager;
+    #clickHandler = this.#click.bind(this);
+    #contextMenuHandler = this.#contextMenu.bind(this);
 
     get html() {
         return import.meta.url.replace(".js", ".html");
@@ -54,9 +56,14 @@ export class SlaVisualization extends HTMLElement {
         this.shadowRoot.innerHTML = html;
         this.#container = this.shadowRoot.querySelector("#sla-grid-container");
         this.addEventListener("measurement-selected", this.#selectionChangedHandler);
+        this.addEventListener("contextmenu", this.#contextMenuHandler);
+        this.addEventListener("click", this.#clickHandler);
+
     }
 
     async disconnectedCallback() {
+        this.addEventListener("click", this.#clickHandler);
+        this.#clickHandler = null;
         await crs.call("data_manager", "remove_change", {manager: this.dataset.manager, callback: this.#dataManagerChangedHandler});
         this.#dataManagerChangedHandler = null;
         this.#changeEventMap = null;
@@ -66,8 +73,49 @@ export class SlaVisualization extends HTMLElement {
         this.removeEventListener("measurement-selected", this.#selectionChangedHandler);
         this.#selectionChangedHandler = null;
         this.#selectedMeasurement = null;
-        this.#slaTooltipManager.dispose();
+        await this.#slaTooltipManager.dispose(this);
         this.#slaTooltipManager = null;
+    }
+
+    async #click(event) {
+        const measurement = event.composedPath()[0];
+        const parentElement = measurement.getRootNode().host;
+
+        if (this.dataset.phase !== "setup" || measurement.tagName.toLowerCase() === "sla-layer") return;
+
+        await crs.call("sla_measurement", "select_measurement", {element: measurement, measurementParent: parentElement});
+
+        const selectedElements = parentElement.shadowRoot.querySelectorAll("sla-measurement[aria-selected='true']")
+
+        const selectedMeasurements = [];
+        for (const measurement of selectedElements) {
+            selectedMeasurements.push({
+                id: parseInt(measurement.id),
+                version: parseInt(measurement.dataset.version) || 1
+            });
+        }
+
+        await this.#selectionChanged(selectedMeasurements)
+    }
+
+    async #contextMenu(event) {
+        // event.preventDefault();
+        // const measurement = event.composedPath()[0];
+        // const parentElement = event.composedPath()[0].getRootNode().host;
+        //
+        // if (measurement.dataset.parentPhase === "setup") {
+        //     await crs.call("context_menu", "show", {
+        //         element: event.composedPath()[0],
+        //         icon_font_family: "crsfrw",
+        //         at: 'bottom',
+        //         height: "max-content",
+        //         filtering: false,
+        //         options: [
+        //             { id: "item1", title: "Edit", tags: "edit", icon: "edit", type: "console", action: "log", args: { message: "Edit "}, attributes: { "aria-hidden.if": "status == 'b'" } },
+        //             { id: "item3", title: "Delete", tags: "delete", icon: "delete", icon_color: "var(--red)", type: "sla_measurement", action: "remove_measurement", args: { element: this} }
+        //         ],
+        //     });
+        // }
     }
 
     async initialize(statuses, currenStatus) {
@@ -116,8 +164,8 @@ export class SlaVisualization extends HTMLElement {
         }
     }
 
-    async #selectionChanged(args){
-        this.selectedMeasurements = args.detail.selected;
+    async #selectionChanged(selectedMeasurements) {
+        this.selectedMeasurements = selectedMeasurements;
     }
 
     async #hookDataManager(){
