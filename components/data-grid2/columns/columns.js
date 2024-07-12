@@ -10,15 +10,41 @@ export const SortDirection = Object.freeze({
     DESC: 'desc'
 })
 
+export const DataType = Object.freeze({
+    STRING: 'string',
+    NUMBER: 'number',
+    DATE: 'date',
+    BOOLEAN: 'boolean',
+    MEMO: 'memo',
+    IMAGE: 'image',
+    LINK: 'link',
+    GEOLOCATION: 'geolocation'
+})
+
 const DEFAULT_WIDTH = 100;
 const DEFAULT_ALIGN = Alignment.LEFT;
 const DEFAULT_SORTABLE = true;
 const DEFAULT_SORT_DIRECTION = SortDirection.NONE;
 
 class Column {
-    static create(title, width=DEFAULT_WIDTH, align=DEFAULT_ALIGN, sortable=DEFAULT_SORTABLE, sortDirection=DEFAULT_SORT_DIRECTION) {
+    /**
+     * Factory method to create a column object
+     * @param title {string} - column title
+     * @param field {string} - column field name
+     * @param dataType {DataType} - column data type - default is DataType.STRING
+     * @param isReadOnly {boolean} - is column read only - default is true
+     * @param width {number} - column width in pixels - default is 100px
+     * @param align {Alignment} - column text alignment - default is left
+     * @param sortable {boolean} - is column sortable - default is true
+     * @param sortDirection {SortDirection} - column sort direction - default is none
+     * @returns {{sortDirection: string, isReadOnly: boolean, field, dataType: string, width: number, sortable: boolean, title, align: string}}
+     */
+    static create(title, field, dataType=DataType.STRING, isReadOnly=true, width=DEFAULT_WIDTH, align=DEFAULT_ALIGN, sortable=DEFAULT_SORTABLE, sortDirection=DEFAULT_SORT_DIRECTION) {
         return {
             title: title,
+            field: field,
+            dataType: dataType,
+            isReadOnly: true,
             width: width,
             align: align,
             sortable: sortable,
@@ -27,6 +53,9 @@ class Column {
     }
 }
 
+/**
+ * This class stores the column information for the data grid
+ */
 export class Columns {
     #collection = [];
 
@@ -34,6 +63,11 @@ export class Columns {
         this.#collection = null;
     }
 
+    /**
+     * Get an immutable copy of the collection.
+     * We return it as read only to prevent the caller from modifying the collection.
+     * @returns {Readonly<*[]>}
+     */
     get() {
         return Object.freeze(this.#collection)
     }
@@ -41,13 +75,16 @@ export class Columns {
     /**
      * Add column to collection
      * @param title - column title - default is empty string
+     * @param field - column field name - default is empty string
+     * @param dataType - column data type - default is string
+     * @param isReadOnly - is column read only - default is true
      * @param width - column width in pixels - default is 100px
      * @param align - column text alignment - default is left
      * @param sortable - is column sortable - default is true
      * @param sortDirection - column sort direction - default is none
      */
-    add(title, width=DEFAULT_WIDTH, align=DEFAULT_ALIGN, sortable=DEFAULT_SORTABLE, sortDirection=DEFAULT_SORT_DIRECTION) {
-        this.#collection.push(Column.create(title, width, align, sortable, sortDirection));
+    add(title, field, dataType=DataType.STRING, isReadOnly=true, width=DEFAULT_WIDTH, align=DEFAULT_ALIGN, sortable=DEFAULT_SORTABLE, sortDirection=DEFAULT_SORT_DIRECTION) {
+        this.#collection.push(Column.create(title, field, dataType, isReadOnly, width, align, sortable, sortDirection));
     }
 
     /**
