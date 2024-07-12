@@ -2,9 +2,11 @@
     display: block;
     height: 100%;
     width: 100%;
-    background: blue;
+    padding: 1rem;
 }
 
-h2 {
-    background: green;
+data-grid2 {
+    max-width: 500px;
+    max-height: 400px;
+    border: silver 1px solid;
 }
