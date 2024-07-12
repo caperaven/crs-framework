@@ -14,7 +14,6 @@
     overflow: auto;
     padding: 1rem 0;
     grid-column-gap: 0.5rem;
-    align-content: center;
 }
 
 .status-label {
@@ -140,7 +139,8 @@
     background-color: var(--grey-s3);
     border-radius: var(--radius);
     padding: 0.5rem;
-    justify-content: space-between;
+    justify-content: flex-start;
+    width: fit-content;
 }
 
 :host([data-phase="runtime"]) #sla-legend li {

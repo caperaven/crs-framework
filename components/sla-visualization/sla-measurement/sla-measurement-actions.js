@@ -255,8 +255,10 @@ async function createMeasurementElement(measurement, parentElement, parentPhase)
  */
 async function updateProgressStyles(element, measurementData) {
     const progressBar = element.shadowRoot.querySelector("div.progress-bar");
-    progressBar.style.height = `${Math.min(measurementData.progress, 100) - 5}%`;
+
+    progressBar.style.transform = `scaleY(${Math.min(measurementData.progress, 100) / 100})`;
     element.dataset.progress = `${measurementData.progress}%`;
+
     const activeRowNumber = parseInt(element.dataset.activeRow);
 
     if (measurementData.progress > 100 ) {

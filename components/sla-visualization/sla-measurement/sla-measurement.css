@@ -11,7 +11,8 @@
     background: var(--blue);
     color: var(--cl-primary-alt);
     z-index: auto;
-    bottom: 0.25rem;
+    padding: 0.125rem;
+    box-sizing: border-box;
 }
 
 :host([data-state="inactive"]) {
@@ -35,14 +36,12 @@
 
 div.progress-bar {
     display: flex;
-    width: 93%;
-    margin: 0.125rem;
+    width: 100%;
     background-color: var(--blue-s1);
-    position: absolute;
-    bottom: 0;
     border-radius: var(--radius) var(--radius) 0 0;
-    transition: height 0.7s ease;
-    height: 0;
+    transition: transform 0.7s ease;
+    transform-origin: bottom;
+    transform: scaleY(0);
     justify-content: center;
 }
 
