@@ -81,9 +81,10 @@ export class SlaVisualization extends HTMLElement {
 
     async #click(event) {
         const measurement = event.composedPath()[0];
-        const parentElement = measurement.getRootNode().host;
 
         if (this.dataset.phase !== "setup" || measurement.tagName.toLowerCase() === "sla-layer") return;
+
+        const parentElement = measurement.getRootNode().host;
 
         await crs.call("sla_measurement", "select_measurement", {element: measurement, measurementParent: parentElement});
 
@@ -101,23 +102,23 @@ export class SlaVisualization extends HTMLElement {
     }
 
     async #contextMenu(event) {
-        // event.preventDefault();
-        // const measurement = event.composedPath()[0];
-        // const parentElement = event.composedPath()[0].getRootNode().host;
-        //
-        // if (measurement.dataset.parentPhase === "setup") {
-        //     await crs.call("context_menu", "show", {
-        //         element: event.composedPath()[0],
-        //         icon_font_family: "crsfrw",
-        //         at: 'bottom',
-        //         height: "max-content",
-        //         filtering: false,
-        //         options: [
-        //             { id: "item1", title: "Edit", tags: "edit", icon: "edit", type: "console", action: "log", args: { message: "Edit "}, attributes: { "aria-hidden.if": "status == 'b'" } },
-        //             { id: "item3", title: "Delete", tags: "delete", icon: "delete", icon_color: "var(--red)", type: "sla_measurement", action: "remove_measurement", args: { element: this} }
-        //         ],
-        //     });
-        // }
+        event.preventDefault();
+
+        if (this.dataset.phase !== "setup") return;
+
+        const measurement = event.composedPath()[0];
+        await crs.call("context_menu", "show", {
+            point: {x: event.clientX, y: event.clientY},
+            icon_font_family: "crsfrw",
+            filtering: false,
+            options: [
+                { id: "edit-measurement", title: "Edit", tags: "edit", icon: "edit", type: "console", action: "edit", attributes: { "aria-hidden.if": "status == 'b'" } },
+                { id: "delete-measurement", title: "Delete", tags: "delete", icon: "delete", icon_color: "var(--red)", type: "sla_measurement", action: "remove_measurement", args: { element: measurement} }
+            ],
+            callback: async (args) => {
+                const action = args.detail.action;
+            }
+        });
     }
 
     async initialize(statuses, currenStatus) {
