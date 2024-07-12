@@ -112,7 +112,7 @@ export class SlaVisualization extends HTMLElement {
             icon_font_family: "crsfrw",
             filtering: false,
             options: [
-                { id: "edit-measurement", title: "Edit", tags: "edit", icon: "edit", type: "console", action: "edit", attributes: { "aria-hidden.if": "status == 'b'" } },
+                { id: "edit-measurement", title: "Edit", tags: "edit", icon: "edit", action: "edit", attributes: { "aria-hidden.if": "status == 'b'" } },
                 { id: "delete-measurement", title: "Delete", tags: "delete", icon: "delete", icon_color: "var(--red)", type: "sla_measurement", action: "remove_measurement", args: { element: measurement} }
             ],
             callback: async (args) => {
