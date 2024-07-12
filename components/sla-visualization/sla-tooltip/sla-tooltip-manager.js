@@ -23,6 +23,10 @@ export class SlaTooltipManager {
         await crs.call("styles", "unload_file", {id: "sla-popup-styles",});
     }
 
+    /**
+     * @method #initialize - Initializes the tooltip/popup.
+     * @returns {Promise<void>}
+     */
     async #initialize() {
         let replacePath = "-setup.html";
 

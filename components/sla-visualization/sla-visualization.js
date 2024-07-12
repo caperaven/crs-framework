@@ -62,8 +62,10 @@ export class SlaVisualization extends HTMLElement {
     }
 
     async disconnectedCallback() {
-        this.addEventListener("click", this.#clickHandler);
+        this.removeEventListener("contextmenu", this.#contextMenuHandler);
+        this.removeEventListener("click", this.#clickHandler);
         this.#clickHandler = null;
+        this.#contextMenuHandler = null;
         await crs.call("data_manager", "remove_change", {manager: this.dataset.manager, callback: this.#dataManagerChangedHandler});
         this.#dataManagerChangedHandler = null;
         this.#changeEventMap = null;
