@@ -7,24 +7,6 @@ import {ConversionType} from "./../../../../components/data-grid2/columns/enums/
 import { assertThrows, assertEquals } from "https://deno.land/std/testing/asserts.ts";
 import { ElementMock } from "../../../mockups/element-mock.js";
 
-
-const UpdateType = Object.freeze({
-    LAYOUT: 1,
-    DATA: 2
-})
-
-const updates = UpdateType.LAYOUT | UpdateType.DATA;
-
-if (updates & UpdateType.LAYOUT) {
-    console.log("Layout update");
-}
-
-if (updates & UpdateType.DATA) {
-    console.log("Data update");
-}
-
-
-
 Deno.test("Column.create with default parameters", () => {
     const column = Column.create("Test Title", "testField");
     const expected = {
