@@ -1,5 +1,13 @@
-import {Column, Columns, Alignment, SortDirection, DataType, ConversionType} from "./../../../../components/data-grid2/columns/columns.js";
+import {Columns} from "./../../../../components/data-grid2/columns/columns.js";
+import {Column} from "./../../../../components/data-grid2/columns/column.js";
+import {Alignment} from "./../../../../components/data-grid2/columns/enums/alignment.js";
+import {SortDirection} from "./../../../../components/data-grid2/columns/enums/sort-direction.js";
+import {DataType} from "./../../../../components/data-grid2/columns/enums/data-type.js";
+import {ConversionType} from "./../../../../components/data-grid2/columns/enums/conversion-type.js";
 import { assertThrows, assertEquals } from "https://deno.land/std/testing/asserts.ts";
+import { ElementMock } from "../../../mockups/element-mock.js";
+
+
 
 Deno.test("Column.create with default parameters", () => {
     const column = Column.create("Test Title", "testField");

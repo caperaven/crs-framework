@@ -8,4 +8,9 @@ export default class DataGrid2ViewModel extends crs.classes.BindableElement {
     get shadowDom() {
         return true;
     }
+
+    async load() {
+        const grid = this.shadowRoot.querySelector("data-grid2");
+        await crs.call("datagrid2", "initialize", { element: grid });
+    }
 }
