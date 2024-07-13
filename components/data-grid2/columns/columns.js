@@ -66,7 +66,7 @@ const DEFAULT_SORT_DIRECTION = SortDirection.NONE;
  * We use the class name here as a namespace to group related functions together
  * and to give context when reading the code
  */
-class Column {
+export class Column {
     /**
      * Factory method to create a column object
      * @param title {string} - column title
@@ -137,8 +137,8 @@ export class Columns {
                 throw new Error("Column title and field are required");
             }
 
-            column.title ||= 'undefined';
-            column.field ||= 'undefined';
+            column.title ||= assertRequired(column.title, "data-grid2.columns.set", "Column title is required", false, "string");
+            column.field ||= assertRequired(column.field, "data-grid2.columns.set", "Column field is required", false, "string");
             column.dataType ||= DataType.STRING;
             column.isReadOnly = column.isReadOnly ?? true;
             column.width ||= DEFAULT_WIDTH;

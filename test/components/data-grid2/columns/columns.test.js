@@ -1,5 +1,37 @@
-import {Columns, Alignment, SortDirection, DataType, ConversionType} from "./../../../../components/data-grid2/columns/columns.js";
+import {Column, Columns, Alignment, SortDirection, DataType, ConversionType} from "./../../../../components/data-grid2/columns/columns.js";
 import { assertThrows, assertEquals } from "https://deno.land/std/testing/asserts.ts";
+
+Deno.test("Column.create with default parameters", () => {
+    const column = Column.create("Test Title", "testField");
+    const expected = {
+        title: "Test Title",
+        field: "testField",
+        dataType: DataType.STRING,
+        isReadOnly: true,
+        width: 100,
+        align: Alignment.LEFT,
+        sortable: true,
+        sortDirection: SortDirection.NONE,
+        groupId: null
+    };
+    assertEquals(column, expected);
+});
+
+Deno.test("Column.create with custom parameters", () => {
+    const column = Column.create("Custom Title", "customField", DataType.NUMBER, false, 150, Alignment.RIGHT, false, SortDirection.ASC, "group1");
+    const expected = {
+        title: "Custom Title",
+        field: "customField",
+        dataType: DataType.NUMBER,
+        isReadOnly: false,
+        width: 150,
+        align: Alignment.RIGHT,
+        sortable: false,
+        sortDirection: SortDirection.ASC,
+        groupId: "group1"
+    };
+    assertEquals(column, expected);
+});
 
 Deno.test("Columns class - add method", () => {
     const columns = new Columns();
@@ -83,7 +115,7 @@ Deno.test("Columns class - get method with no columns", () => {
     assertEquals(columns.get(), []);
 });
 
-Deno.test("Columns class - set method", () => {
+Deno.test("Columns class - set method valid data", () => {
     const columns = new Columns();
     columns.add("Title", "Field1");
 
@@ -128,4 +160,10 @@ Deno.test("Columns class - set method", () => {
     }];
 
     assertEquals(columns.get(), expected2);
+});
+
+Deno.test("Columns.set with invalid data types in collection", () => {
+    const columns = new Columns();
+    const invalidCollection = [{ title: 123, field: null }]; // Invalid data types
+    assertThrows(() => columns.set(invalidCollection), Error, "Column title and field are required");
 });

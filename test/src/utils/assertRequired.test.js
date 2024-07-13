@@ -35,3 +35,11 @@ Deno.test("assertRequired does not throw error for non-string values", () => {
     assertEquals(assertRequired(true, "test", "Value is valid"), true);
     assertEquals(assertRequired({}, "test", "Value is valid"), {});
 });
+
+Deno.test("assertRequired with wrong data type", () => {
+    const result = assertThrows(() => {
+        assertRequired("123", "test", "Value is valid", false, "number")
+    });
+
+    assertEquals(result.message, "[test] value: 123, should be of type number");
+});
