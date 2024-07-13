@@ -12,10 +12,8 @@ class DataGrid2Actions {
 
     static async initialize(step, context, process, item) {
         const element = await crs.dom.get_element(step.args.element, context, process, item);
-
-        // 0.4ms
-        const columns = Columns.from(ConversionType.HTML, element);
-        console.log(columns);
+        element.columns = Columns.from(ConversionType.HTML, element);
+        console.log("done")
     }
 }
 
