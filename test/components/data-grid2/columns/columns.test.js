@@ -8,6 +8,22 @@ import { assertThrows, assertEquals } from "https://deno.land/std/testing/assert
 import { ElementMock } from "../../../mockups/element-mock.js";
 
 
+const UpdateType = Object.freeze({
+    LAYOUT: 1,
+    DATA: 2
+})
+
+const updates = UpdateType.LAYOUT | UpdateType.DATA;
+
+if (updates & UpdateType.LAYOUT) {
+    console.log("Layout update");
+}
+
+if (updates & UpdateType.DATA) {
+    console.log("Data update");
+}
+
+
 
 Deno.test("Column.create with default parameters", () => {
     const column = Column.create("Test Title", "testField");
@@ -66,7 +82,7 @@ Deno.test("Columns class - add method with no title", () => {
         columns.add(null, "Field1");
     });
 
-    assertEquals(error.message, "[data-grid2.columns] Column title is required");
+    assertEquals(error.message, "[Column.create] Column title is required");
 })
 
 Deno.test("Columns class - add method with no field", () => {
@@ -75,7 +91,7 @@ Deno.test("Columns class - add method with no field", () => {
         columns.add("Title", null);
     });
 
-    assertEquals(error.message, "[data-grid2.columns] Column field is required");
+    assertEquals(error.message, "[Column.create] Column field is required");
 })
 
 Deno.test("Columns class - toCSS method", () => {
