@@ -3,6 +3,7 @@ import {Alignment} from "./enums/alignment.js";
 import {SortDirection} from "./enums/sort-direction.js";
 import {DataType} from "./enums/data-type.js";
 import {DEFAULT_WIDTH, DEFAULT_ALIGN, DEFAULT_SORTABLE, DEFAULT_SORT_DIRECTION} from "./defaults.js";
+import {ConversionType} from "./enums/conversion-type.js";
 
 /**
  * @description This class represents a column in the data grid
@@ -35,8 +36,8 @@ export class Column {
                   groupId=null) {
 
         return {
-            title: assertRequired(title, "data-grid2.columns", "Column title is required"),
-            field: assertRequired(field, "data-grid2.columns", "Column field is required"),
+            title: assertRequired(title, "Column.create", "Column title is required"),
+            field: assertRequired(field, "Column.create", "Column field is required"),
             dataType,
             isReadOnly,
             width,
@@ -45,5 +46,32 @@ export class Column {
             sortDirection,
             groupId
         }
+    }
+
+    /**
+     * Generate a new instance of Column from an element as source
+     * <column data-title="title" data-field="field" ...>
+     * @param conversionType
+     * @param source
+     * @returns {{sortDirection: (*|string), isReadOnly: (*|boolean), field, dataType: string, groupId: (string|string|string|string[]|ConstrainDOMStringParameters|boolean|*|null), width: (number|number), sortable: boolean, title, align: string}}
+     */
+    static from(conversionType, source) {
+        if (conversionType === ConversionType.HTML) {
+            return fromHTML(source);
+        }
+    }
+}
+
+function fromHTML(source) {
+    return {
+        title: assertRequired(source.dataset.title, "Column.from", "Column title is required"),
+        field: assertRequired(source.dataset.field, "Column.from", "Column field is required"),
+        dataType: source.dataset.dataType || DataType.STRING,
+        isReadOnly: source.dataset.isReadOnly || true,
+        width: parseInt(source.dataset.width) || DEFAULT_WIDTH,
+        align: source.dataset.align || DEFAULT_ALIGN,
+        sortable: source.dataset.sortable === "true" || DEFAULT_SORTABLE,
+        sortDirection: source.dataset.sortDirection || DEFAULT_SORT_DIRECTION,
+        groupId: source.dataset.groupId || null
     }
 }

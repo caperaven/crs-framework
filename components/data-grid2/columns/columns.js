@@ -182,5 +182,13 @@ function toHTML(collection) {
 }
 
 function fromHTML(parentElement) {
-    return collection;
+    const columnElements = parentElement.querySelectorAll('column');
+    const columns = [];
+
+    for (let columnElement of columnElements) {
+        const column = Column.from(ConversionType.HTML, columnElement);
+        columns.push(column);
+    }
+
+    return columns;
 }

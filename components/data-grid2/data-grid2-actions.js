@@ -1,5 +1,6 @@
 import "./data-grid2.js";
-import {Columns, ConversionType} from "./columns/columns.js";
+import {Columns} from "./columns/columns.js";
+import {ConversionType} from "./columns/enums/conversion-type.js";
 
 class DataGrid2Actions {
     static async perform(step, context, process, item) {
@@ -11,8 +12,10 @@ class DataGrid2Actions {
 
     static async initialize(step, context, process, item) {
         const element = await crs.dom.get_element(step.args.element, context, process, item);
+
+        // 0.4ms
         const columns = Columns.from(ConversionType.HTML, element);
-        console.log(element)
+        console.log(columns);
     }
 }
 
