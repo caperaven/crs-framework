@@ -187,6 +187,12 @@ export class Columns {
         }
     }
 
+    /**
+     * @description Generate a new instance of Columns from a source
+     * @param type - conversion type - JSON, HTML
+     * @param source - source data to convert from - JSON object or parent HTML element to query
+     * @returns {Columns|null}
+     */
     static from(type, source) {
         const result = new Columns();
 
