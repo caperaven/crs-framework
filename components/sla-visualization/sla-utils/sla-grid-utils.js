@@ -19,7 +19,7 @@ export async function create_sla_grid(data,slaGridContainer, slaVisualization) {
         slaVisualization.shadowRoot.querySelector("#sla-legend").style.display = "flex"
     }
 
-    const statuses = await buildStatusArray(data.statuses);
+    const statuses = await buildStatusArray(data.orderedStatuses);
 
     await createInitialGrid(element);
 
@@ -58,7 +58,7 @@ async function createStatusLabels(element, statuses) {
         const statusLabel = await buildStandardElement("div",`status-${status.index}`, "status-label", null, `s${status.index}`);
         statusLabel.dataset.statusOrder = status.order;
 
-        if (status.description !== "header" && status.description !== "footer") {
+        if (status.id !== "header" && status.id !== "footer") {
             statusLabel.dataset.code = `[${status.code}]`;
             statusLabel.dataset.description = status.description;
         }
@@ -77,10 +77,10 @@ async function createRowElements(element, statuses) {
     let indexCount = 1;
     const documentFragment = document.createDocumentFragment();
     for (const status  of statuses) {
-        const className = status.description !== "footer" ? "status-row" : "status-row sla-footer-border";
-        const rowElement =  await buildStandardElement("div",status.description,className, null,null, indexCount++)
+        const className = status.id !== "footer" ? "status-row" : "status-row sla-footer-border";
+        const rowElement =  await buildStandardElement("div",status.id,className, null,null, indexCount++)
         rowElement.dataset.status = status.index;
-        rowElement.dataset.id = status.description;
+        rowElement.dataset.id = status.id;
 
         documentFragment.appendChild(rowElement);
     }
@@ -135,17 +135,18 @@ function generateGridTemplateArray(statuses, dataSla, visualizationPhase) {
     return gridTemplateArray;
 }
 
-async function buildStatusArray(statusList) {
-    const tempStatusList = {footer:{description: "footer", code : "foot"},...statusList,header:{description: "header", code : "head"}};
-    const keys = Object.keys(tempStatusList);
-    let result = [];
+export async function buildStatusArray(statusList) {
 
-    for (let i = 0; i < keys.length; i++) {
-        const status = tempStatusList[keys[i]];
-        status.index = i;
+    let result =[{id: "footer", code : "foot", index: 0}];
+
+    let  index = 1;
+    for (const status of statusList) {
+        status.index = index;
         result.push(status);
+        index++;
     }
 
+    result.push({id: "header", code : "head", index: index + 1});
     return result.reverse();
 }
 

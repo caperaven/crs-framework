@@ -66,6 +66,7 @@
     width: 100%;
     background: var(--grey-s3);
     margin-left: 0.25rem;
+    border: var(--double-border-width) solid silver;
 }
 
 .active-status-label {

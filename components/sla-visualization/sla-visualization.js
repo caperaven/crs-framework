@@ -17,6 +17,7 @@ export class SlaVisualization extends HTMLElement {
 
     #currentStatusIndex;
     #statuses;
+    #orderedStatuses;
     #selectedMeasurement;
     #currentStatus;
     #container;
@@ -126,13 +127,15 @@ export class SlaVisualization extends HTMLElement {
         this.#currentStatus = currenStatus
         let index = 0;
         for (const status of statuses) {
-            if(status.description === this.#currentStatus){
+            if(status.id === this.#currentStatus){
                 // TODO BUG DESCRIPTIONS CAN BE THE SAME
                 this.#currentStatusIndex = index;
             }
             status.order = index++;
-            this.#statuses[status.code] = status;
+            this.#statuses[status.id] = status;
         }
+
+        this.#orderedStatuses = statuses;
 
         await crs.call("component", "notify_ready", { element: this });
         this.#slaTooltipManager = new SlaTooltipManager(this);
@@ -148,6 +151,7 @@ export class SlaVisualization extends HTMLElement {
             const slaData = {
                 sla: data,
                 statuses: this.#statuses,
+                orderedStatuses: this.#orderedStatuses,
                 currentStatus: this.#currentStatus || "",
             }
 

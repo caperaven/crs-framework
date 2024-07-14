@@ -1,5 +1,6 @@
 import "./sla-layer.js";
 import "./../sla-measurement/sla-measurement-actions.js";
+import {buildStatusArray} from "../sla-utils/sla-grid-utils.js";
 
 /**
  * class SlaLayerActions - A class that contains methods for the sla-layer component
@@ -30,8 +31,7 @@ export class SlaLayerActions{
         // set the inner text of the sla-layer component to the code of the sla object
         // here the sla will be displayed in the specified grid-area based on the sla code. example: "sla_1001"
         let incrementor = 1;
-        // ToDo: AW - Ask Gerhard about this
-        const tempStatuses =  {footer:{description: "footer", code : "foot"},...slaData.statuses, header:{description: "header", code : "head"}};
+        const tempStatuses =  await buildStatusArray(slaData.orderedStatuses);
 
         for (const sla of slaData.sla) {
             const element = document.createElement("sla-layer");
@@ -108,71 +108,16 @@ async function createSlaGrid(slaLayerElement, slaItemData, statusData) {
      * The measurement has a start and end status.
      * We need a lookup table so that we know where to put the measurement in the grid.
      */
-    const statusLookupTable = createStatusLookupTable(statusData);
     const matrix = createMeasurementsMatrix(statusData, slaItemData);
-    const keys = Object.keys(statusData).reverse();
+    const keys = Object.keys(statusData);
 
     for (let i = 0; i < keys.length; i++) {
         const status = statusData[keys[i]];
-        status.index = i; // Assign index to status
+        status.index = i;
     }
 
     populateMeasurementsMatrix(matrix, statusData, slaItemData);
     slaLayerElement.style.gridTemplate = matrixToTemplate(matrix, slaLayerElement);
-}
-
-/**
- * @method createStatusLookupTable - Create a lookup table so that we can see what row index represents the status based on id.
- * @param statusData {Array} - The status data
- * @return {{}}
- */
-function createStatusLookupTable(statusData) {
-    // create a dictionary where the key is the status id and the value is the index in the grid.
-    // const lookupTable = {};
-    // let index = statusData.length - 2;
-    //
-    // for (let i = 0; i < statusData.length; i++) {
-    //     const status = statusData[i];
-    //
-    //     if (status.code === -1) {
-    //         lookupTable[status.code] = -1
-    //     }
-    //     else {
-    //         lookupTable[status.code] = index;
-    //         index--;
-    //     }
-    // }
-    //
-    // return lookupTable;
-
-
-    // const keys = Object.keys(statusData);
-    // const statuses = statusData
-    //
-    //
-    //
-    // for(const key of keys) {
-    //     if (statuses[key].code === -1) {
-    //         statuses[key].index = -1;
-    //     }
-    //     statuses[key].index = keys.length - statuses[key].order;
-    //
-    //     // statusData[key].index = keys.length - statusData[key].order;
-    // }
-    //
-    // statuses['-1'] = { code: -1, index: -1 };
-    // statuses['-2'] = { code: -1, index: -1 };
-    //
-    //
-    // return statuses;
-
-
-
-    // Add top and bottom elements
-    // result[-1] = { code: -1, index: -1 };
-    // result[-2] = { code: -1, index: -1 };
-
-
 }
 
 /**
@@ -238,13 +183,21 @@ function populateMeasurementsMatrix(matrix, statusLookupTable, slaItemData) {
     matrix[0][0] = "header";
 
     for (const measurement of slaItemData.measurements) {
-        const startIndex = statusLookupTable[measurement.start_status].index;
-        const endIndex = statusLookupTable[measurement.end_status].index;
+        const startStatusObj = statusLookupTable.find(item => item.id === measurement.start_status);
+        const endStatusObj = statusLookupTable.find(item => item.id === measurement.end_status);
 
-        for (let index = endIndex; index <= startIndex; index++) {
-            matrix[index][measurementIndex] = `m${measurementIndex}`;
+        if (startStatusObj && endStatusObj) {
+            const startIndex = startStatusObj.index;
+            const endIndex = endStatusObj.index;
+
+            const minIndex = Math.min(startIndex, endIndex);
+            const maxIndex = Math.max(startIndex, endIndex);
+
+            for (let index = minIndex; index <= maxIndex; index++) {
+                matrix[index][measurementIndex] = `m${measurementIndex}`;
+            }
+            measurementIndex++;
         }
-        measurementIndex++;
     }
 }
 
@@ -301,7 +254,7 @@ async function showCurrentStatus(currentStatus, parentElement) {
     // apply the class "active-status-label" to the status label that matches the status description
     const statusLabels = parentElement.querySelectorAll(".status-label");
     for (const statusLabel of statusLabels) {
-        if(statusLabel.dataset.description === currentStatus) {
+        if(statusLabel.dataset.id === currentStatus) {
             statusLabel.classList.add("active-status-label");
         }
     }

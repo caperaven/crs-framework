@@ -254,7 +254,7 @@ async function createTriggerIndicators(element, measurementData) {
  * @return {Promise<void>}
  */
 async function updateStatus(element, measurementData) {
-    const activeRowNumber = parseInt(element.dataset.activeRow) - 1;
+    const activeRowNumber = parseInt(element.dataset.activeRow);
 
     if (activeRowNumber < measurementData.start_status_order || activeRowNumber > measurementData.end_status_order) {
         element.dataset.state = "inactive";
