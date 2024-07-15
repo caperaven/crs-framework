@@ -66,12 +66,12 @@ function fromHTML(source) {
     return {
         title: assertRequired(source.dataset.title, "Column.from", "Column title is required"),
         field: assertRequired(source.dataset.field, "Column.from", "Column field is required"),
-        dataType: source.dataset.dataType || DataType.STRING,
-        isReadOnly: source.dataset.isReadOnly || true,
-        width: parseInt(source.dataset.width) || DEFAULT_WIDTH,
-        align: source.dataset.align || DEFAULT_ALIGN,
-        sortable: source.dataset.sortable === "true" || DEFAULT_SORTABLE,
-        sortDirection: source.dataset.sortDirection || DEFAULT_SORT_DIRECTION,
-        groupId: source.dataset.groupId || null
+        dataType: source.dataset.dataType ?? DataType.STRING,
+        isReadOnly: (source.dataset.isReadOnly ?? "").toLowerCase() === "true",
+        width: parseInt(source.dataset.width) ?? DEFAULT_WIDTH,
+        align: source.dataset.align ?? DEFAULT_ALIGN,
+        sortable: source.dataset.sortable === "true" ?? DEFAULT_SORTABLE,
+        sortDirection: source.dataset.sortDirection ?? DEFAULT_SORT_DIRECTION,
+        groupId: source.dataset.groupId ?? null
     }
 }

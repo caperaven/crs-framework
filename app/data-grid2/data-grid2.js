@@ -1,4 +1,4 @@
-import "./../../components/data-grid2/data-grid2-actions.js";
+import "../../components/data-grid/data-grid-actions.js";
 
 export default class DataGrid2ViewModel extends crs.classes.BindableElement {
     get html() {
@@ -10,7 +10,7 @@ export default class DataGrid2ViewModel extends crs.classes.BindableElement {
     }
 
     async load() {
-        const grid = this.shadowRoot.querySelector("data-grid2");
+        const grid = this.shadowRoot.querySelector("data-grid");
         await crs.call("datagrid2", "initialize", { element: grid });
     }
 }

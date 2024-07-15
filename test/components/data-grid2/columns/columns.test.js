@@ -1,9 +1,9 @@
-import {Columns} from "./../../../../components/data-grid2/columns/columns.js";
-import {Column} from "./../../../../components/data-grid2/columns/column.js";
-import {Alignment} from "./../../../../components/data-grid2/columns/enums/alignment.js";
-import {SortDirection} from "./../../../../components/data-grid2/columns/enums/sort-direction.js";
-import {DataType} from "./../../../../components/data-grid2/columns/enums/data-type.js";
-import {ConversionType} from "./../../../../components/data-grid2/columns/enums/conversion-type.js";
+import {Columns} from "../../../../components/data-grid/columns/columns.js";
+import {Column} from "../../../../components/data-grid/columns/column.js";
+import {Alignment} from "../../../../components/data-grid/columns/enums/alignment.js";
+import {SortDirection} from "../../../../components/data-grid/columns/enums/sort-direction.js";
+import {DataType} from "../../../../components/data-grid/columns/enums/data-type.js";
+import {ConversionType} from "../../../../components/data-grid/columns/enums/conversion-type.js";
 import { assertThrows, assertEquals } from "https://deno.land/std/testing/asserts.ts";
 import { ElementMock } from "../../../mockups/element-mock.js";
 

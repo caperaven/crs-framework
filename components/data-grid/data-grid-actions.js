@@ -1,10 +1,10 @@
-import "./data-grid2.js";
+import "./data-grid.js";
 import {Columns} from "./columns/columns.js";
 import {ConversionType} from "./columns/enums/conversion-type.js";
 
-class DataGrid2Actions {
+class DataGridActions {
     static async perform(step, context, process, item) {
-        let action = DataGrid2Actions[step.action];
+        let action = DataGridActions[step.action];
         if (action) {
             return action(step, context, process, item);
         }
@@ -17,4 +17,4 @@ class DataGrid2Actions {
     }
 }
 
-crs.intent.datagrid2 = DataGrid2Actions;
+crs.intent.datagrid2 = DataGridActions;

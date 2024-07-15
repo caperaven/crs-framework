@@ -83,7 +83,7 @@ export class Columns {
                 return toHTML(this.#collection);
             }
             default:
-                return null;
+                throw new Error(`Invalid conversion type [Columns.to] - ${type}`);
         }
     }
 
