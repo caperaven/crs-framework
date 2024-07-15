@@ -35,7 +35,10 @@ export default class SelectionEditProvider {
             }
         }
 
-        await crs.call("interactive_map", "fit_bounds", { element: this.#instance, layer: this.#instance.activeLayer });
+        if (this.#instance.activeLayer.getLayers().length > 0) {
+            // Only focus if layer has shapes. In some cases we have data without any geo data. In that case we don't want to focus
+            await crs.call("interactive_map", "fit_bounds", { element: this.#instance, layer: this.#instance.activeLayer });
+        }
     }
 
     async clear() {

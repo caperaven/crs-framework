@@ -12,18 +12,21 @@ export default class SelectionEditProvider {
     }
 
     async select() {
-       await this.clear();
+        await this.clear();
 
-        const indexes = await crs.call("data_manager", "get_selected_indexes", { manager: this.#instance.dataset.manager });
+        const indexes = await crs.call("data_manager", "get_selected_indexes", {manager: this.#instance.dataset.manager});
         if (indexes.length === 0) {
             // If no shapes are selected, do nothing
-            this.#instance.dispatchEvent(new CustomEvent("data-changed", { detail: { index: null }}));
+            this.#instance.dispatchEvent(new CustomEvent("data-changed", {detail: {index: null}}));
             return;
         }
 
         const firstIndex = indexes[0];
 
-        const shape = await crs.call("interactive_map", "find_shape_by_index", { layer: this.#instance.activeLayer, index: firstIndex });
+        const shape = await crs.call("interactive_map", "find_shape_by_index", {
+            layer: this.#instance.activeLayer,
+            index: firstIndex
+        });
 
         if (shape != null) {
             const type = await this.#getType(shape);
@@ -34,8 +37,6 @@ export default class SelectionEditProvider {
                 shape: shape
             });
         }
-
-        this.#instance.dispatchEvent(new CustomEvent("data-changed", { detail: { index: firstIndex }}));
     }
 
     async clear() {

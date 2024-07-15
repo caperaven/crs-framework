@@ -78,16 +78,16 @@ export class InteractiveMapActions {
         if (instance.currentMode != null) {
             await instance.currentMode.cancel();
             await crs.call("data_manager", "set_selected", {manager: instance.dataset.manager, indexes: [], selected: false, deselect_others:true});
-            await crs.call("interactive_map", "set_mode", {element: instance, mode: "none"});
+            await crs.call("interactive_map", "set_mode", {element: instance, mode: "select"});
         }
     }
 
     static async accept_mode(step, context, process, item) {
         const instance = await crs.dom.get_element(step, context, process, item);
 
-        if (instance.currentMode != null) {
+        if (instance.currentMode?.accept != null) {
             await instance.currentMode.accept();
-            await crs.call("interactive_map", "set_mode", {element: instance, mode: "none"});
+            await crs.call("interactive_map", "set_mode", {element: instance, mode: "select"});
         }
     }
 
@@ -124,6 +124,11 @@ export class InteractiveMapActions {
         const instance = await crs.dom.get_element(step, context, process, item);
 
         for (const record of records) {
+            if (record.geographicLocation == null && record.type == null) {
+                // No geographic location
+                continue;
+            }
+
             if (record.geographicLocation != null)  {
                 record.geographicLocation.properties = record.geographicLocation.properties || {};
                 // Add shape via geojson
@@ -273,6 +278,7 @@ export class InteractiveMapActions {
         let index = 0;
 
         for (const item of data) {
+            if (item[featurePath] == null) continue;
             let source;
             if(item[featurePath].type === "FeatureCollection") {
                 // If it comes from server as feature collection we need to get the first feature. The server does not support multiple features in a collection
@@ -311,6 +317,7 @@ export class InteractiveMapActions {
         }
 
         for (const item of data) {
+            if (item[featurePath] == null) continue;
             let source;
             if(item[featurePath].type === "FeatureCollection") {
                 // If it comes from server as feature collection we need to get the first feature. The server does not support multiple features in a collection
@@ -384,7 +391,7 @@ export class ShapeFactory {
             iconAnchor: [24, 48] // Point of the icon which will correspond to marker's location
         });
 
-        const marker = L.marker(data.coordinates, {icon: customIcon});
+        const marker = L.marker(data.coordinates, {icon: customIcon, index: data.options.index});
 
         if (layer != null) {
             marker.addTo(layer);

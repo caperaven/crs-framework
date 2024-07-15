@@ -19,6 +19,8 @@ export class InteractiveMap extends HTMLElement {
 
     #coordinateInput;
     #coordinateSubmitHandler;
+    #coordinateDisplay;
+    #coordinateDisplayHandler;
     #filterValue;
     #selectionProvider;
 
@@ -87,7 +89,6 @@ export class InteractiveMap extends HTMLElement {
         if (this.#map != null || this.dataset.loading != null) return;
         await crs.call("component", "notify_loading", {element: this});
         await crs.call("interactive_map", "initialize_lib", {});
-        await this.#setSelectionMode();
 
         const container = this.querySelector("#map");
 
@@ -111,7 +112,7 @@ export class InteractiveMap extends HTMLElement {
         await this.#hookDataManager();
 
         if (this.dataset.hideDrawingTools !== "true") {
-            this.#addDrawingTools();
+            await this.#addDrawingTools();
         }
 
         L.control.zoom({
@@ -126,6 +127,7 @@ export class InteractiveMap extends HTMLElement {
             }
         });
 
+        await this.#setSelectionMode();
         await crs.call("component", "notify_ready", {element: this});
     }
 
@@ -161,6 +163,14 @@ export class InteractiveMap extends HTMLElement {
         }
     }
 
+    async #updateDisplayCoordinates(event) {
+        if (event.detail && isValidCoordinates(event.detail)) {
+            this.#coordinateDisplay.innerHTML = event.detail;
+        } else {
+            this.#coordinateDisplay.innerHTML = "";
+        }
+    }
+
     /**
      * @private
      * @method #hoodDataManager - get the data manager and set the event listeners to be notified of change
@@ -181,6 +191,8 @@ export class InteractiveMap extends HTMLElement {
         const module = await import(`./providers/selection-${mode}.js`);
         this.#selectionProvider = new module.default();
         await this.#selectionProvider.initialize(this);
+
+        await crs.call("interactive_map", "set_mode", {element: this, mode: "select"});
     }
 
     /**
@@ -313,12 +325,7 @@ export class InteractiveMap extends HTMLElement {
                 const record = await crs.call("data_manager", "get", {manager: this.dataset.manager, index: feature.properties.index});
                 const popupDefinition = feature.properties?.popupDefinition
                 if (popupDefinition != null) {
-
-                    layer.on('click', function (e) {
-                        if (this.currentMode == null) {
-                            addDynamicPopup(layer, popupDefinition, record);
-                        }
-                    });
+                    addDynamicPopup(layer, popupDefinition, record);
                 }
                 layer.options.readonly = record.geographicLocation?.properties?.readonly
             },
@@ -350,13 +357,27 @@ export class InteractiveMap extends HTMLElement {
     async #addDrawingTools() {
         await crs.call("interactive_map", "show_drawing_tools", {element: this});
 
+        await this.#addCoordinateDisplay();
+        await this.#addCoordinateInput();
+    }
+
+    async #addCoordinateInput() {
         this.#coordinateInput = document.createElement("expanding-input");
         this.#coordinateInput.dataset.placeholder = await crsbinding.translations.get("interactiveMap.enterCoordinates")
         this.#coordinateInput.dataset.icon = "search"
         this.#coordinateInput.dataset.submitIcon = "add"
-        this.querySelector("#search-tools").appendChild(this.#coordinateInput);
         this.#coordinateSubmitHandler = this.#coordinateSubmit.bind(this);
         this.#coordinateInput.addEventListener("submit", this.#coordinateSubmitHandler);
+
+        this.appendChild(this.#coordinateDisplay);
+        this.querySelector("#search-tools").appendChild(this.#coordinateInput);
+    }
+
+    async #addCoordinateDisplay() {
+        this.#coordinateDisplay = document.createElement("div");
+        this.#coordinateDisplay.classList.add("coordinate-display");
+        this.#coordinateDisplayHandler = this.#updateDisplayCoordinates.bind(this);
+        this.addEventListener("update-coordinates", this.#coordinateDisplayHandler);
     }
 }
 

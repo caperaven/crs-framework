@@ -112,7 +112,12 @@ export default class Map extends crsbinding.classes.ViewBase {
                     "popupDefinition": {
                         "title": "Reference Entity",
                         "highlightColor": "red",
-                        "fields": ["name", "age", "$seperator","address"]
+                        "fields": [
+                            { "name": "name", "label": "Name" },
+                            { "name": "age", "label": "Age" },
+                            "$seperator",
+                            { "name": "address", "label": "Address" }
+                        ]
                     },
                     "readonly": false,
                 },
@@ -163,7 +168,18 @@ export default class Map extends crsbinding.classes.ViewBase {
                 "type": "Feature",
                 "properties": {
                     "id": i,
-                    "name": `Point ${i}`
+                    "name": `Point ${i}`,
+                    "popupDefinition": {
+                        "title": "Reference Entity",
+                        "highlightColor": "red",
+                        "fields": [
+                            { "name": "name", "label": "Name" },
+                            { "name": "age", "label": "Age" },
+                            "$seperator",
+                            { "name": "address", "label": "Address" }
+                        ]
+                    },
+
                 },
                 "geometry": {
                     "type": "Point",

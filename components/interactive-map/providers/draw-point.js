@@ -1,10 +1,12 @@
-import {getShapeIndex} from "../interactive-map-utils.js";
+import {getShapeIndex, notifyCoordinatesChanged} from "../interactive-map-utils.js";
+import {accept_shape} from "./draw/draw-helpers.js";
 
 export default class DrawPoint {
 
     #instance = null;
     #clickHandler = this.#click.bind(this);
     #point = null;
+    #isEditing = false;
 
     async initialize(instance, point) {
         this.#instance = instance;
@@ -12,6 +14,8 @@ export default class DrawPoint {
 
         if (point != null) {
             this.#point = point;
+            this.#isEditing = true;
+            notifyCoordinatesChanged(this.#instance, this.#point);
         }
     }
 
@@ -23,8 +27,8 @@ export default class DrawPoint {
     }
 
     async #click(event) {
-        if(this.#point != null) {
-           this.#point.remove();
+        if (this.#point != null) {
+            this.#point.remove();
         }
 
         this.#point = await crs.call("interactive_map", "add_shape", {
@@ -39,6 +43,7 @@ export default class DrawPoint {
             },
             element: this.#instance
         });
+        notifyCoordinatesChanged(this.#instance, this.#point);
     }
 
     async cancel() {
@@ -48,7 +53,11 @@ export default class DrawPoint {
 
             if (index != null) {
                 // Only existing shapes will have an index
-                await crs.call("data_manager", "set_selected", {manager: this.#instance.dataset.manager, indexes: [index], selected: false});
+                await crs.call("data_manager", "set_selected", {
+                    manager: this.#instance.dataset.manager,
+                    indexes: [index],
+                    selected: false
+                });
 
                 // Remove temp shape and also redraw the original shape if editing was true
 
@@ -61,57 +70,11 @@ export default class DrawPoint {
             this.#point.remove();
             this.#point = null;
         }
+        notifyCoordinatesChanged(this.#instance)
     }
 
     async accept() {
-        if (this.#point != null) {
-            const index = getShapeIndex(this.#point);
-            if (index != null) {
-                const index = getShapeIndex(this.#point);
-
-                let changes = {}
-                // Get the changes from either shape options or feature properties
-                if (this.#point.feature) {
-                    changes.geographicLocation = this.#point.toGeoJSON()
-                }
-                else {
-                    changes.coordinates = latLngToCoordinates(this.#point)
-                }
-
-                await crs.call("data_manager", "update", {
-                    index: index,
-                    manager: this.#instance.dataset.manager,
-                    changes: changes,
-                    is_dirty: true
-                });
-
-                await crs.call("data_manager", "set_selected", {manager: this.#instance.dataset.manager, indexes: [index], selected: false});
-            }
-            else {
-
-                let record;
-                if ( this.#instance.dataset.format === "geojson") {
-                    record = {
-                        geographicLocation: this.#point.toGeoJSON()
-                    }
-                }
-                else {
-                    record =  {
-                        coordinates: latLngToCoordinates(this.#point),
-                        type: "point"
-                    }
-                }
-
-                await crs.call("data_manager", "append", {
-                    records: [record],
-                    manager: this.#instance.dataset.manager,
-                    is_dirty: true
-                });
-            }
-
-            this.#point.remove();
-            this.#point = null;
-        }
+        this.#point = await accept_shape(this.#instance, "point", this.#point, this.#isEditing);
     }
 }
 
@@ -119,3 +82,4 @@ function latLngToCoordinates(point) {
     const latlng = point.getLatLng();
     return [latlng.lat, latlng.lng];
 }
+

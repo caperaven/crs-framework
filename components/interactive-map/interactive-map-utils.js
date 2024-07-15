@@ -71,7 +71,12 @@ export function isValidCoordinates(coordinatesString) {
  * {
  *         "title": "Reference Entity",
  *          "highlightColor": "red",
- *         "fields": ["name", "age", "$seperator","address"]
+ *         "fields": [
+ *              { "name": "name", "label": "Name" },
+ *              { "name": "age", "label": "Age" },
+ *              "$seperator",
+ *              { "name": "address", "label": "Address" }
+ *         ]
  * }
  */
 export function addDynamicPopup(layer, popupDefinition, record) {
@@ -91,5 +96,32 @@ export function addDynamicPopup(layer, popupDefinition, record) {
     }
     popupContent.push("</table>");
 
-    layer.bindPopup(popupContent.join('')).openPopup();
+    const isMarker = layer instanceof L.Marker;
+    const offset = isMarker ? [0, -50] : [0, -20];
+
+    layer.bindTooltip(popupContent.join(''), {
+        direction: 'top',
+        sticky: !isMarker,
+        offset: offset
+    });
 }
+
+/**
+ * Notify the instance that the coordinates have changed
+ * @param instance - The instance to notify
+ * @param point - The point that has changed or null if no point
+ */
+export function notifyCoordinatesChanged(instance, point) {
+    let detail = "";
+    if (point != null) {
+        const latlng = point.getLatLng();
+        detail = `${latlng.lat}, ${latlng.lng}`;
+    }
+
+    instance.dispatchEvent(new CustomEvent("update-coordinates", {detail: detail}));
+}
+
+/**
+ * Apply shape
+ */
+
