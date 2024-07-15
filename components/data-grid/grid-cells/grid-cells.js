@@ -1,4 +1,4 @@
-export default class DataGridCells extends crs.classes.BindableElement {
+export default class GridCells extends crs.classes.BindableElement {
     get shadowDom() {
         return true;
     }
@@ -12,4 +12,4 @@ export default class DataGridCells extends crs.classes.BindableElement {
     }
 }
 
-customElements.define("data-grid-cells", DataGridCells);
+customElements.define("grid-cells", GridCells);

@@ -1,4 +1,4 @@
-import "./data-grid-cells/data-grid-cells.js";
+import "./grid-cells/grid-cells.js";
 import {assertClassType} from "../../src/utils/assertClassType.js";
 
 const DATA_GRID_CELLS_QUERY = "data-grid-cells";
