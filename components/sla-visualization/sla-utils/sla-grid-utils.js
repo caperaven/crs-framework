@@ -19,7 +19,7 @@ export async function create_sla_grid(data,slaGridContainer, slaVisualization) {
         slaVisualization.shadowRoot.querySelector("#sla-legend").style.display = "flex"
     }
 
-    const statuses = await buildStatusArray(data.orderedStatuses);
+    const statuses = await buildRows(data.orderedStatuses);
 
     await createInitialGrid(element);
 
@@ -136,19 +136,22 @@ function generateGridTemplateArray(statuses, dataSla, visualizationPhase) {
     return gridTemplateArray;
 }
 
-export async function buildStatusArray(statusList) {
+export async function buildRows(statusList) {
+    let result =[{id: "header", code : "head", index: 0}];
 
-    let result =[{id: "footer", code : "foot", index: 0}];
 
-    let  index = 1;
-    for (const status of statusList) {
+    let index = 1;
+    // We loop through the statusList in reverse order to get the correct order of the statuses from bottom to top
+    for (let i = statusList.length -1; i >= 0; i--) {
+        const status = statusList[i];
         status.index = index;
         result.push(status);
+
         index++;
     }
 
-    result.push({id: "header", code : "head", index: index + 1});
-    return result.reverse();
+    result.push({id: "footer", code : "foot", index: statusList.length+1});
+    return result;
 }
 
 export async function buildStandardElement(tagName, id, classes, textContent=null, gridArea = null, gridRow= null) {

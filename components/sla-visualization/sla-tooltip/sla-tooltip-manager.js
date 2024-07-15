@@ -20,7 +20,7 @@ export class SlaTooltipManager {
         this.#measurementHoverHandler = null
         await crsbinding.inflationManager.unregister(this.#templateId);
         this.#templateId = null;
-        await crs.call("styles", "unload_file", {id: "sla-popup-styles",});
+        await crs.call("styles", "unload_file", {id: "sla-popup-styles"});
     }
 
     /**

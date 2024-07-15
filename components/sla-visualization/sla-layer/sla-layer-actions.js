@@ -1,6 +1,6 @@
 import "./sla-layer.js";
 import "./../sla-measurement/sla-measurement-actions.js";
-import {buildStatusArray} from "../sla-utils/sla-grid-utils.js";
+import {buildRows} from "../sla-utils/sla-grid-utils.js";
 
 /**
  * class SlaLayerActions - A class that contains methods for the sla-layer component
@@ -31,7 +31,7 @@ export class SlaLayerActions{
         // set the inner text of the sla-layer component to the code of the sla object
         // here the sla will be displayed in the specified grid-area based on the sla code. example: "sla_1001"
         let incrementor = 1;
-        const tempStatuses =  await buildStatusArray(slaData.orderedStatuses);
+        const gridRows =  await buildRows(slaData.orderedStatuses);
 
         for (const sla of slaData.sla) {
             const element = document.createElement("sla-layer");
@@ -41,12 +41,11 @@ export class SlaLayerActions{
             element.dataset.parentPhase = parentPhase; // refactor for phase
             parentElement.appendChild(element);
 
-            await createSlaGrid(element, sla, tempStatuses);
+            await createSlaGrid(element, sla, gridRows, slaData.statuses);
             // in the sla data, based on the workOrder.statusDescription, call function:
-            // showCurrentWorkOrderStatus(workOrder.statusDescription, element);
             await showCurrentStatus(slaData.currentStatus, parentElement);
             if (parentPhase === "runtime") {
-                element.dataset.activeRow = parentElement.querySelector(".active-status-row")?.dataset.status || "";
+                element.dataset.activeRow = slaData.currentStatus;
             }
 
             //Added to wait for the measurements to be created before creating the headers.
@@ -100,23 +99,17 @@ function onSlaLayerLoading(slaLayerElement, callback) {
  * @method createSlaGrid - Creates the sla grid visualization
  * @param slaLayerElement {HTMLElement} - The sla layer element
  * @param slaItemData {Object} - The sla item data
- * @param statusData {Array} - The status data
+ * @param orderedStatuses {Array} - The status data
  * @return {Promise<void>}
  */
-async function createSlaGrid(slaLayerElement, slaItemData, statusData) {
+async function createSlaGrid(slaLayerElement, slaItemData, orderedStatuses, statusLookupTable) {
     /**
      * The measurement has a start and end status.
      * We need a lookup table so that we know where to put the measurement in the grid.
      */
-    const matrix = createMeasurementsMatrix(statusData, slaItemData);
-    const keys = Object.keys(statusData);
+    const matrix = createMeasurementsMatrix(orderedStatuses, slaItemData);
 
-    for (let i = 0; i < keys.length; i++) {
-        const status = statusData[keys[i]];
-        status.index = i;
-    }
-
-    populateMeasurementsMatrix(matrix, statusData, slaItemData);
+    populateMeasurementsMatrix(matrix, slaItemData, statusLookupTable);
     slaLayerElement.style.gridTemplate = matrixToTemplate(matrix, slaLayerElement);
 }
 
@@ -178,26 +171,19 @@ function initializeMatrix(matrix, numberOfRows, numberOfColumns) {
  * @param statusLookupTable {Object} - The status lookup table {statusId: index}
  * @param slaItemData {Object} - The sla item data
  */
-function populateMeasurementsMatrix(matrix, statusLookupTable, slaItemData) {
+function populateMeasurementsMatrix(matrix, slaItemData, statusLookupTable) {
     let measurementIndex = 0;
-    matrix[0][0] = "header";
 
     for (const measurement of slaItemData.measurements) {
-        const startStatusObj = statusLookupTable.find(item => item.id === measurement.start_status);
-        const endStatusObj = statusLookupTable.find(item => item.id === measurement.end_status);
 
-        if (startStatusObj && endStatusObj) {
-            const startIndex = startStatusObj.index;
-            const endIndex = endStatusObj.index;
+        const endIndex = statusLookupTable[measurement.start_status].index; // End index is the start status index
+        const startIndex = statusLookupTable[measurement.end_status].index; // Start index is the end status index
 
-            const minIndex = Math.min(startIndex, endIndex);
-            const maxIndex = Math.max(startIndex, endIndex);
-
-            for (let index = minIndex; index <= maxIndex; index++) {
-                matrix[index][measurementIndex] = `m${measurementIndex}`;
-            }
-            measurementIndex++;
+        for (let index = startIndex; index <= endIndex; index++) {
+            matrix[index][measurementIndex] = `m${measurementIndex}`;
         }
+
+        measurementIndex++;
     }
 }
 

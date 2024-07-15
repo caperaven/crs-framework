@@ -222,9 +222,10 @@ async function updateProgressStyles(element, measurementData) {
     const activeRowNumber = parseInt(element.dataset.activeRow);
 
     if (measurementData.progress > 100 ) {
-        if(measurementData.start_status_order >= activeRowNumber || measurementData.end_status_order <= activeRowNumber)
+        if(measurementData.start_status >= activeRowNumber || measurementData.end_status <= activeRowNumber) {
             element.classList.add("measurement-overdue-state");
             element.dataset.state = "overdue";
+        }
     } else if (measurementData.progress >= 80 && measurementData.progress <= 99) {
         element.dataset.state = "warning"
         element.classList.add("measurement-warning-state");
@@ -263,7 +264,7 @@ async function createTriggerIndicators(element, measurementData) {
 async function updateStatus(element, measurementData) {
     const activeRowNumber = parseInt(element.dataset.activeRow);
 
-    if (activeRowNumber < measurementData.start_status_order || activeRowNumber > measurementData.end_status_order) {
+    if (activeRowNumber < measurementData.start_status || activeRowNumber > measurementData.end_status) {
         element.dataset.state = "inactive";
         element.classList.add("measurement-inactive-state");
     }
