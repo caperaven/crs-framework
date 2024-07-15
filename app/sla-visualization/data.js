@@ -221,7 +221,7 @@ const data1 = {
 }
 
 const data2 = {
-    "currentStatus": "Approved",
+    "currentStatus": 11,
     "statuses": [
         {
             "code": "AA",

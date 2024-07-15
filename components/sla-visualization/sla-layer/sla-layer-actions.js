@@ -254,7 +254,8 @@ async function showCurrentStatus(currentStatus, parentElement) {
     // apply the class "active-status-label" to the status label that matches the status description
     const statusLabels = parentElement.querySelectorAll(".status-label");
     for (const statusLabel of statusLabels) {
-        if(statusLabel.dataset.id === currentStatus) {
+        const statusId = parseInt(statusLabel.dataset.id);
+        if(statusId === currentStatus) {
             statusLabel.classList.add("active-status-label");
         }
     }
@@ -262,7 +263,8 @@ async function showCurrentStatus(currentStatus, parentElement) {
     // apply the class "active-status-row" to the row that matches the status description key.
     const statusRows = parentElement.querySelectorAll(".status-row");
     for (const statusRow of statusRows) {
-        if (statusRow.dataset.id === currentStatus) {
+        const statusId = parseInt(statusRow.dataset.id);
+        if (statusId === currentStatus) {
             statusRow.classList.add("active-status-row");
         }
     }

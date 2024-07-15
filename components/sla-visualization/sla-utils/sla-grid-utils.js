@@ -26,7 +26,7 @@ export async function create_sla_grid(data,slaGridContainer, slaVisualization) {
     // Generate the grid template array
     element.style.gridTemplate = generateGridTemplateArray(statuses, data.sla, slaVisualizationPhase).join(' '); // refactor for phase
 
-    createStatusLabels(element, statuses);
+    await createStatusLabels(element, statuses);
     await createRowElements(element, statuses);
     await createSlaLayers(element, data.sla);
 }
@@ -60,6 +60,7 @@ async function createStatusLabels(element, statuses) {
 
         if (status.id !== "header" && status.id !== "footer") {
             statusLabel.dataset.code = `[${status.code}]`;
+            statusLabel.dataset.id = status.id;
             statusLabel.dataset.description = status.description;
         }
 
