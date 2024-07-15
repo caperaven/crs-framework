@@ -14,13 +14,15 @@ export class SlaTooltipManager {
 
     async dispose(visualization) {
         visualization.removeEventListener("measurement-hovered", this.#measurementHoverHandler);
+        await crs.call("styles", "unload_file", {id: "sla-popup-styles"});
+        await crsbinding.inflationManager.unregister(this.#templateId);
+        this.#measurementHoverHandler = null
         this.#phase = null;
+        this.#templateId = null;
+
+        if (this.#popup == null) return;
         this.#popup?.remove();
         this.#popup = null;
-        this.#measurementHoverHandler = null
-        await crsbinding.inflationManager.unregister(this.#templateId);
-        this.#templateId = null;
-        await crs.call("styles", "unload_file", {id: "sla-popup-styles"});
     }
 
     /**
@@ -41,7 +43,7 @@ export class SlaTooltipManager {
         popupTemplate.innerHTML = popupHtmlFile;
 
         // here we are going to add the link to the document head to load the css file
-        await crs.call("styles", "load_file", {id: "sla-popup-styles", file: "/components/sla-visualization/sla-tooltip/sla-tooltip.css"});
+        await crs.call("styles", "load_file", {id: "sla-popup-styles", file: import.meta.url.replace("-manager.js", ".css")});
 
         // here we are going to register the template with the inflation manager
         await crsbinding.inflationManager.register(this.#templateId, popupTemplate);
@@ -79,6 +81,11 @@ export class SlaTooltipManager {
      */
     async #setPopupVisibleState(state) {
         if (this.#popup == null) return;
+
+        if (state == false ) {
+            this.#popup.removeAttribute("hidden");
+            return;
+        }
         this.#popup.setAttribute("hidden", state);
     }
 

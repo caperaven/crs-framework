@@ -14,10 +14,6 @@
     pointer-events: none;
 }
 
-.measurement-info[hidden = "true"] {
-    display: none !important;
-}
-
 .measurement-info-container {
     padding: 0 0.5rem 0.5rem;
 }

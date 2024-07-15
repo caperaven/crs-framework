@@ -12,14 +12,14 @@
     background: var(--window);
     color: var(--grey-s1);
     justify-content: left;
-    border: var(--border);
     border-radius: var(--radius);
     grid-area: header;
-    padding: 0.5rem;
-    margin-top: 0.125rem;
+    padding: 0.25rem;
     height: max-content;
     position: relative;
     font-size: 0.875rem;
+    margin: 0.5rem -0.5rem -0.5rem -0.25rem;
+    box-shadow: var(--drop-shadow);
 }
 
 :host([data-parent-phase="setup"]) .sla-header-container {

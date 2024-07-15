@@ -118,6 +118,7 @@ export class SlaMeasurementActions {
         await removeMeasurementFooters(parentElement, deletedMeasurementIds);
 
         //we will need to delete the measurements off the completely this only removes the visual representation
+
     }
 }
 

@@ -80,7 +80,7 @@
 }
 
 .sla-footer-border {
-    border-top: 2px solid black;
+    border-top: 2px solid var(--grey-s1);
     border-bottom: none;
     margin-left: 0.5rem;
     box-sizing: border-box;

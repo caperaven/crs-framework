@@ -11,6 +11,8 @@ html {
     --blue: #0276C2;
     --blue-s1: #B9D8EC;
     --blue-s2: #ECF7FF;
+    --blue-s3: #8BC0E3;
+
 
     --red: #E00000;
     --red-s1: #ED7D7D;
@@ -40,6 +42,8 @@ html {
     --grey-s3: #F4F4F4;
     --grey-surface: #F4F4F4;
     --grey-s4: #F4F6F8;
+    --grey-s5: #BBBBBB;
+    --grey-s6: #DDDDDD;
 
     --alt-fg: #FFFFFF;
     --cl-li-hover: #EEEEEE;

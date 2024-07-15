@@ -16,11 +16,11 @@
 }
 
 :host([data-state="inactive"]) {
-    background: var(--grey-s2);
+    background: var(--grey-s5);
 }
 
 :host([data-state="inactive"]) div.progress-bar {
-    background: var(--grey-s3);
+    background: var(--grey-s6);
 }
 
 :host::before {
@@ -37,7 +37,7 @@
 div.progress-bar {
     display: flex;
     width: 100%;
-    background-color: var(--blue-s1);
+    background-color: var(--blue-s3);
     border-radius: var(--radius) var(--radius) 0 0;
     transition: transform 0.7s ease;
     transform-origin: bottom;

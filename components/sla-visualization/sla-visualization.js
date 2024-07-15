@@ -57,13 +57,13 @@ export class SlaVisualization extends HTMLElement {
         this.shadowRoot.innerHTML = html;
         this.#container = this.shadowRoot.querySelector("#sla-grid-container");
         this.addEventListener("measurement-selected", this.#selectionChangedHandler);
-        this.addEventListener("contextmenu", this.#contextMenuHandler);
+        // this.addEventListener("contextmenu", this.#contextMenuHandler);
         this.addEventListener("click", this.#clickHandler);
 
     }
 
     async disconnectedCallback() {
-        this.removeEventListener("contextmenu", this.#contextMenuHandler);
+        // this.removeEventListener("contextmenu", this.#contextMenuHandler);
         this.removeEventListener("click", this.#clickHandler);
         this.#clickHandler = null;
         this.#contextMenuHandler = null;
@@ -76,6 +76,9 @@ export class SlaVisualization extends HTMLElement {
         this.removeEventListener("measurement-selected", this.#selectionChangedHandler);
         this.#selectionChangedHandler = null;
         this.#selectedMeasurement = null;
+
+        if (this.#slaTooltipManager == null) return;
+
         await this.#slaTooltipManager.dispose(this);
         this.#slaTooltipManager = null;
     }
@@ -117,10 +120,7 @@ export class SlaVisualization extends HTMLElement {
             options: [
                 { id: "edit-measurement", title: "Edit", tags: "edit", icon: "edit", action: "edit", attributes: { "aria-hidden.if": "status == 'b'" } },
                 { id: "delete-measurement", title: "Delete", tags: "delete", icon: "delete", icon_color: "var(--red)", type: "sla_measurement", action: "remove_measurement", args: { element: parentElement} }
-            ],
-            callback: async (args) => {
-                const action = args.detail.action;
-            }
+            ]
         });
     }
 
