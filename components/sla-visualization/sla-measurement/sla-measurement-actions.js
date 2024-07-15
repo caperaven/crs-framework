@@ -44,7 +44,7 @@ export class SlaMeasurementActions {
             documentFragment.appendChild(measurementOverlay);
 
             const measurementFooterContainer = await buildStandardElement(tagName,`f_${measurement.id}`,"sla-footer-container",null,`f${incrementor}`);
-            measurementFooterContainer.dataset.footerContent = measurement.code;
+            measurementFooterContainer.dataset.footerContent = measurement.description;
             documentFragment.appendChild(measurementFooterContainer);
 
             incrementor++;
@@ -183,6 +183,7 @@ async function createMeasurementElement(measurement, parentElement, parentPhase)
     const element = document.createElement("sla-measurement");
     element.id = measurement.id;
     element.dataset.code = measurement.code;
+    element.dataset.description = measurement.description;
     element.dataset.version = measurement.version;
     element.setAttribute("data-progress", measurement.progress);
     element.setAttribute("data-state", measurement.state);

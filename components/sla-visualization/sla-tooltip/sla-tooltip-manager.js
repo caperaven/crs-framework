@@ -108,7 +108,7 @@ export class SlaTooltipManager {
      */
     async #getMeasurementData(measurement) {
         const measurementData = {
-            code: measurement.dataset.code,
+            description: measurement.dataset.description,
             duration: measurement.dataset.duration,
             progress: measurement.dataset.progress,
             numberOfTriggers: measurement.shadowRoot.querySelectorAll(".measurement-trigger-indicator").length,
