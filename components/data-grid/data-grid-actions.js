@@ -12,7 +12,9 @@ class DataGridActions {
 
     static async initialize(step, context, process, item) {
         const element = await crs.dom.get_element(step.args.element, context, process, item);
+        const dataManager = await crs.process.getValue(step.args.manager, context, process, item);
         element.columns = Columns.from(ConversionType.HTML, element);
+        element.dataManager = dataManager;
         console.log("done")
     }
 }
