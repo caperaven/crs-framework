@@ -1,7 +1,7 @@
 import "./../../components/sla-visualization/sla-visualization-actions.js";
 import "./../../components/sla-visualization/sla-layer/sla-layer-actions.js";
 import "./../../components/sla-visualization/sla-measurement/sla-measurement-actions.js";
-import {data1, data2, data3} from "./data.js";
+import {data1, data2, data3, data4} from "./data.js";
 import "./../../components/sla-visualization/sla-visualization.js";
 import "../../src/managers/data-manager/data-manager-actions.js";
 
@@ -30,7 +30,17 @@ export default class SlaVisualization extends crsbinding.classes.ViewBase {
                 progressLabel: "Work Progress : ",
                 triggerLabel: "Next Trigger : ",
                 triggerDescriptionLabel: "Trigger Description : ",
-                numberOfTriggersLabel: "Number of Triggers : "
+                numberOfTriggersLabel: "Number of Triggers : ",
+                slaStatus: "Status",
+                slaMeasurementFooter: "Measurement Name",
+                slaHeaderCode: "Code",
+                slaHeaderDescription: "Description",
+                slaHeaderTimeElapsed: "Time-Elapsed",
+                slaLegendInRange: "In Status Range",
+                slaLegendOutOfRange: "Out Of Status Range",
+                slaLegendWarning: "Warning",
+                slaLegendOverdue: "Overdue"
+
             }
         }
 

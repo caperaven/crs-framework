@@ -49,7 +49,7 @@ async function createStatusLabels(element, statuses) {
     const documentFragment = document.createDocumentFragment();
 
     const statusBackground = await buildStandardElement("div","status-label-background","status-background")
-    const statusHeader = await buildStandardElement("span","status-header","status-description", "Status")
+    const statusHeader = await buildStandardElement("span","status-header","status-description", globalThis.translations.sla.labels.slaStatus)
 
     statusBackground.appendChild(statusHeader);
 

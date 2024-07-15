@@ -59,7 +59,6 @@ export class SlaVisualization extends HTMLElement {
         this.addEventListener("measurement-selected", this.#selectionChangedHandler);
         // this.addEventListener("contextmenu", this.#contextMenuHandler);
         this.addEventListener("click", this.#clickHandler);
-
     }
 
     async disconnectedCallback() {
@@ -161,6 +160,7 @@ export class SlaVisualization extends HTMLElement {
 
             await crs.call("sla_layer", "create_all_sla", { parent: this.#container, data: slaData , parentPhase: this.dataset.phase}); // refactor for phase
 
+            this.#container.nextElementSibling.textContent = globalThis.translations.sla.labels.slaMeasurementFooter
             if (this.dataset.phase === "runtime") {
                 await this.#updateSlaLegend(data);
             }
@@ -208,6 +208,8 @@ export class SlaVisualization extends HTMLElement {
     async #updateSlaLegend(data) {
         // USE THE DATA
         const legend = this.shadowRoot.querySelector("#sla-legend");
+        //inflate the legend
+        await crsbinding.staticInflationManager.inflateElement(legend, globalThis.translations.sla.labels);
 
         // Initialize the counts for each state
         const stateCounts = {

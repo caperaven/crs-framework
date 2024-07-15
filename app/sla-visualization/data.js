@@ -1952,6 +1952,456 @@ const data2s = {
         }
     ]
 }
+const data4 = {
+    "currentStatus": 11,
+    "statuses": [
+        {
+            "code": "AA",
+            "description": "Awaiting Approval",
+            "sequenceNumber": 0,
+            "baseStatus": "AwaitingApproval",
+            "applyStatusRestrictions": false,
+            "id": 10,
+            "version": 1,
+            "additionalInfo": {
+                "class": "DomainDynamicRecord"
+            },
+            "translation_description": "Awaiting Approval"
+        },
+        {
+            "code": "*1019",
+            "description": "To be Inspected",
+            "sequenceNumber": 1,
+            "baseStatus": "AwaitingApproval",
+            "applyStatusRestrictions": false,
+            "id": 5000001019,
+            "version": 2,
+            "additionalInfo": {
+                "class": "DomainDynamicRecord"
+            },
+            "translation_description": "To be Inspected"
+        },
+        {
+            "code": "AP",
+            "description": "Approved",
+            "sequenceNumber": 0,
+            "baseStatus": "Approved",
+            "applyStatusRestrictions": false,
+            "id": 11,
+            "version": 1,
+            "additionalInfo": {
+                "class": "DomainDynamicRecord"
+            },
+            "translation_description": "Approved"
+        },
+        {
+            "code": "AL",
+            "description": "Awaiting Labour",
+            "sequenceNumber": 1,
+            "baseStatus": "Approved",
+            "applyStatusRestrictions": false,
+            "id": 5000001001,
+            "version": 1,
+            "additionalInfo": {
+                "class": "DomainDynamicRecord"
+            },
+            "translation_description": "Awaiting Labour"
+        },
+        {
+            "code": "AS",
+            "description": "Awaiting Spares",
+            "sequenceNumber": 2,
+            "baseStatus": "Approved",
+            "applyStatusRestrictions": false,
+            "id": 5000001002,
+            "version": 1,
+            "additionalInfo": {
+                "class": "DomainDynamicRecord"
+            },
+            "translation_description": "Awaiting Spares"
+        },
+        {
+            "code": "IP",
+            "description": "In Progress",
+            "sequenceNumber": 3,
+            "baseStatus": "Approved",
+            "applyStatusRestrictions": false,
+            "id": 5000001003,
+            "version": 1,
+            "additionalInfo": {
+                "class": "DomainDynamicRecord"
+            },
+            "translation_description": "In Progress"
+        },
+        {
+            "code": "AF",
+            "description": "Complete/Awaiting Feedback",
+            "sequenceNumber": 4,
+            "baseStatus": "Approved",
+            "applyStatusRestrictions": false,
+            "id": 5000001004,
+            "version": 1,
+            "additionalInfo": {
+                "class": "DomainDynamicRecord"
+            },
+            "translation_description": "Complete/Awaiting Feedback"
+        },
+        {
+            "code": "AC",
+            "description": "Complete/Awaiting Costs",
+            "sequenceNumber": 5,
+            "baseStatus": "Approved",
+            "applyStatusRestrictions": false,
+            "id": 5000001005,
+            "version": 1,
+            "additionalInfo": {
+                "class": "DomainDynamicRecord"
+            },
+            "translation_description": "Complete/Awaiting Costs"
+        },
+        {
+            "code": "CP",
+            "description": "Completed",
+            "sequenceNumber": 0,
+            "baseStatus": "Completed",
+            "applyStatusRestrictions": false,
+            "id": 12,
+            "version": 1,
+            "additionalInfo": {
+                "class": "DomainDynamicRecord"
+            },
+            "translation_description": "Completed"
+        },
+        {
+            "code": "CL",
+            "description": "Closed",
+            "sequenceNumber": 0,
+            "baseStatus": "Closed",
+            "applyStatusRestrictions": false,
+            "id": 13,
+            "version": 1,
+            "additionalInfo": {
+                "class": "DomainDynamicRecord"
+            },
+            "translation_description": "Closed"
+        },
+        {
+            "code": "CA",
+            "description": "Cancelled",
+            "sequenceNumber": 0,
+            "baseStatus": "Cancelled",
+            "applyStatusRestrictions": false,
+            "id": 14,
+            "version": 1,
+            "additionalInfo": {
+                "class": "DomainDynamicRecord"
+            },
+            "translation_description": "Cancelled"
+        }
+    ],
+    "sla": [
+        {
+            "id": "1001",
+            "code": "SLA-1",
+            "description": "Pump Breakdown",
+            "duration": "99%",
+            "measurements": [
+                {
+                    "id": "1001",
+                    "version": 1,
+                    "code": "Response Time",
+                    "description": "something",
+                    "start_status": 10,
+                    "end_status": 11,
+                    "progress": 25,
+                    "status": "active",
+                    "duration": "27:00",
+                    "triggers": [
+                        {
+                            "id": "1001",
+                            "trigger": 15,
+                            "type": "warning"
+                        },
+                        {
+                            "id": "1002",
+                            "trigger": 55,
+                            "type": "warning"
+                        }
+                    ]
+                },
+                {
+                    "id": "777",
+                    "version": 1,
+                    "code": "Inspection",
+                    "description": "something else",
+                    "start_status": 5000001001,
+                    "end_status": 5000001002,
+                    "progress": 100,
+                    "status": "active",
+                    "duration": "27:00",
+                    "triggers": [
+                        {
+                            "id": "1001",
+                            "trigger": 25,
+                            "type": "warning"
+                        },
+                        {
+                            "id": "1002",
+                            "trigger": 50,
+                            "type": "warning"
+                        }
+                    ]
+                },
+                {
+                    "id": "1002",
+                    "version": 1,
+                    "code": "Maintenance",
+                    "description": "something",
+                    "start_status": 5000001003,
+                    "end_status": 5000001005,
+                    "progress": 50,
+                    "status": "active",
+                    "duration": "30:00",
+                    "triggers": [
+                        {
+                            "id": "1001",
+                            "trigger": 25,
+                            "type": "warning"
+                        },
+                        {
+                            "id": "1002",
+                            "trigger": 75,
+                            "type": "warning"
+                        }
+                    ]
+                },
+                {
+                    "id": "1003",
+                    "version": 1,
+                    "code": "Completion",
+                    "description": "something",
+                    "start_status": 11,
+                    "end_status": 12,
+                    "progress": 75,
+                    "status": "active",
+                    "duration": "50:00",
+                    "triggers": [
+                        {
+                            "id": "1001",
+                            "trigger": 25,
+                            "type": "warning"
+                        },
+                        {
+                            "id": "1002",
+                            "trigger": 0,
+                            "type": "warning"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "1002",
+            "code": "SLA-2",
+            "description": "Pump Build",
+            "duration": "99%",
+            "measurements": [
+                {
+                    "id": "1001",
+                    "version": 1,
+                    "code": "Response Time",
+                    "description": "something",
+                    "start_status": 10,
+                    "end_status": 11,
+                    "progress": 25,
+                    "status": "active",
+                    "duration": "27:00",
+                    "triggers": [
+                        {
+                            "id": "1001",
+                            "trigger": 15,
+                            "type": "warning"
+                        },
+                        {
+                            "id": "1002",
+                            "trigger": 55,
+                            "type": "warning"
+                        }
+                    ]
+                },
+                {
+                    "id": "777",
+                    "version": 1,
+                    "code": "Inspection",
+                    "description": "something else",
+                    "start_status": 5000001001,
+                    "end_status": 5000001002,
+                    "progress": 100,
+                    "status": "active",
+                    "duration": "27:00",
+                    "triggers": [
+                        {
+                            "id": "1001",
+                            "trigger": 25,
+                            "type": "warning"
+                        },
+                        {
+                            "id": "1002",
+                            "trigger": 50,
+                            "type": "warning"
+                        }
+                    ]
+                },
+                {
+                    "id": "1002",
+                    "version": 1,
+                    "code": "Maintenance",
+                    "description": "something",
+                    "start_status": 5000001003,
+                    "end_status": 5000001005,
+                    "progress": 50,
+                    "status": "active",
+                    "duration": "30:00",
+                    "triggers": [
+                        {
+                            "id": "1001",
+                            "trigger": 25,
+                            "type": "warning"
+                        },
+                        {
+                            "id": "1002",
+                            "trigger": 75,
+                            "type": "warning"
+                        }
+                    ]
+                },
+                {
+                    "id": "1003",
+                    "version": 1,
+                    "code": "Completion",
+                    "description": "something",
+                    "start_status": 11,
+                    "end_status": 12,
+                    "progress": 75,
+                    "status": "active",
+                    "duration": "50:00",
+                    "triggers": [
+                        {
+                            "id": "1001",
+                            "trigger": 25,
+                            "type": "warning"
+                        },
+                        {
+                            "id": "1002",
+                            "trigger": 0,
+                            "type": "warning"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "id": "1003",
+            "code": "SLA-3",
+            "description": "Pump Finish",
+            "duration": "99%",
+            "measurements": [
+                {
+                    "id": "1001",
+                    "version": 1,
+                    "code": "Response Time",
+                    "description": "something",
+                    "start_status": 10,
+                    "end_status": 11,
+                    "progress": 81,
+                    "status": "active",
+                    "duration": "27:00",
+                    "triggers": [
+                        {
+                            "id": "1001",
+                            "trigger": 15,
+                            "type": "warning"
+                        },
+                        {
+                            "id": "1002",
+                            "trigger": 55,
+                            "type": "warning"
+                        }
+                    ]
+                },
+                {
+                    "id": "777",
+                    "version": 1,
+                    "code": "Inspection",
+                    "description": "something else",
+                    "start_status": 5000001001,
+                    "end_status": 5000001002,
+                    "progress": 100,
+                    "status": "active",
+                    "duration": "27:00",
+                    "triggers": [
+                        {
+                            "id": "1001",
+                            "trigger": 25,
+                            "type": "warning"
+                        },
+                        {
+                            "id": "1002",
+                            "trigger": 50,
+                            "type": "warning"
+                        }
+                    ]
+                },
+                {
+                    "id": "1002",
+                    "version": 1,
+                    "code": "Maintenance",
+                    "description": "something",
+                    "start_status": 5000001003,
+                    "end_status": 5000001005,
+                    "progress": 50,
+                    "status": "active",
+                    "duration": "30:00",
+                    "triggers": [
+                        {
+                            "id": "1001",
+                            "trigger": 25,
+                            "type": "warning"
+                        },
+                        {
+                            "id": "1002",
+                            "trigger": 75,
+                            "type": "warning"
+                        }
+                    ]
+                },
+                {
+                    "id": "1003",
+                    "version": 1,
+                    "code": "Completion",
+                    "description": "something",
+                    "start_status": 11,
+                    "end_status": 12,
+                    "progress": 101,
+                    "status": "active",
+                    "duration": "50:00",
+                    "triggers": [
+                        {
+                            "id": "1001",
+                            "trigger": 25,
+                            "type": "warning"
+                        },
+                        {
+                            "id": "1002",
+                            "trigger": 0,
+                            "type": "warning"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
 
 const data3 = {
     "currentStatus": "Status 7",
@@ -2001,4 +2451,4 @@ function getRandomInt(min, max) {
 
 
 
-export {data1, data2, data3}
+export {data1, data2, data3, data4}

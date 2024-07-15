@@ -2,10 +2,10 @@
 <link rel="stylesheet" href="/components/sla-visualization/sla-visualization.css">
 <div id="sla-grid-container"></div>
 
-<span id="measurement-name">Measurement Name</span>
+<span id="measurement-name"></span>
 <ul id="sla-legend">
-    <li id="in-range">In Status Range <span></span></li>
-    <li id="out-of-range">Out Of Status Range <span></span></li>
-    <li id="warning">Warning <span></span></li>
-    <li id="overdue">Overdue <span></span></li>
+    <li id="in-range"><h2 class="sla-legend-labels">${slaLegendInRange} </h2><span></span></li>
+    <li id="out-of-range"><h2 class="sla-legend-labels">${slaLegendOutOfRange}</h2> <span></span></li>
+    <li id="warning"><h2 class="sla-legend-labels">${slaLegendWarning}</h2><span></span></li>
+    <li id="overdue"><h2 class="sla-legend-labels">${slaLegendOverdue}</h2><span></span></li>
 </ul>
