@@ -251,24 +251,14 @@ async function createSlaHeader(slaLayerElement, slaItemData) {
  */
 
 async function showCurrentStatus(currentStatus, parentElement) {
-    // apply the class "active-status-label" to the status label that matches the status description
-    const statusLabels = parentElement.querySelectorAll(".status-label");
-    for (const statusLabel of statusLabels) {
-        const statusId = parseInt(statusLabel.dataset.id);
-        if(statusId === currentStatus) {
-            statusLabel.classList.add("active-status-label");
+    const statusActiveElements = parentElement.querySelectorAll(`[data-id='${currentStatus}']`);
+    for (const element of statusActiveElements) {
+        if (element.classList.contains("status-row")) {
+            element.classList.add("active-status-row");
+            continue;
         }
+        element.classList.add("active-status-label");
     }
-
-    // apply the class "active-status-row" to the row that matches the status description key.
-    const statusRows = parentElement.querySelectorAll(".status-row");
-    for (const statusRow of statusRows) {
-        const statusId = parseInt(statusRow.dataset.id);
-        if (statusId === currentStatus) {
-            statusRow.classList.add("active-status-row");
-        }
-    }
-
 }
 
 crs.intent.sla_layer = SlaLayerActions;

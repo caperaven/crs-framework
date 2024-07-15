@@ -114,25 +114,32 @@ export class SlaMeasurementActions {
      */
     static async remove_measurement(step, context, process, item) {
         const parentElement = await crs.dom.get_element(step.args.element, context, process, item);
-        const selectedMeasurements = parentElement.shadowRoot.querySelector("sla-layer").shadowRoot.querySelectorAll("sla-measurement[data-selected='true']");
-        const measurementOverlay = parentElement.shadowRoot.querySelector("sla-layer").shadowRoot.querySelectorAll(`[data-selected='true']`)
+        const deletedMeasurementIds = await removeMeasurements(parentElement);
+        await removeMeasurementFooters(parentElement, deletedMeasurementIds);
 
-        for (const measurement of selectedMeasurements) {
-            const selectedMeasurementsFooters = parentElement.shadowRoot.querySelector("sla-layer").shadowRoot.querySelectorAll("div.sla-footer-container");
-            for (const footer of selectedMeasurementsFooters) {
-                // if measurement id is equal to footer id, remove the footer
-                if (measurement.id === footer.id.split("_")[1]) {
-                    footer.remove();
-                }
-            }
+        //we will need to delete the measurements off the completely this only removes the visual representation
+    }
+}
 
-            measurement.dataset.selected = "false";
-            measurement.remove();
+async function removeMeasurements(slaLayer) {
+    const selectedMeasurements = slaLayer.shadowRoot.querySelectorAll(`[aria-selected='true']`)
+
+    const deletedMeasurementIds = {};
+    for (const measurement of selectedMeasurements) {
+        if (measurement.tagName.toLowerCase() === "sla-measurement") {
+            deletedMeasurementIds[measurement.id] = measurement.id;
         }
+        measurement.remove();
+    }
+    return deletedMeasurementIds;
+}
 
-        for (const overlay of measurementOverlay) {
-            overlay.dataset.selected = "false";
-            overlay.style.opacity = "0";
+async function removeMeasurementFooters(slaLayer, deletedMeasurementsIds) {
+    const selectedMeasurementsFooters = slaLayer.shadowRoot.querySelectorAll("div.sla-footer-container");
+    for (const footer of selectedMeasurementsFooters) {
+        const footerId = footer.id.split("_")[1];
+        if (deletedMeasurementsIds[footerId] === footerId) {
+            footer.remove();
         }
     }
 }

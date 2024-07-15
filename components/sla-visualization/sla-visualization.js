@@ -83,7 +83,7 @@ export class SlaVisualization extends HTMLElement {
     async #click(event) {
         const measurement = event.composedPath()[0];
 
-        if (this.dataset.phase !== "setup" || measurement.tagName.toLowerCase() === "sla-layer") return;
+        if (this.dataset.phase !== "setup" || measurement.tagName.toLowerCase() !== "sla-measurement") return;
 
         const parentElement = measurement.getRootNode().host;
 
@@ -104,17 +104,19 @@ export class SlaVisualization extends HTMLElement {
 
     async #contextMenu(event) {
         event.preventDefault();
-
-        if (this.dataset.phase !== "setup") return;
-
         const measurement = event.composedPath()[0];
+
+        if (this.dataset.phase !== "setup" || measurement.tagName.toLowerCase() !== "sla-measurement") return;
+
+        const parentElement = event.composedPath()[0].getRootNode().host
+
         await crs.call("context_menu", "show", {
             point: {x: event.clientX, y: event.clientY},
             icon_font_family: "crsfrw",
             filtering: false,
             options: [
                 { id: "edit-measurement", title: "Edit", tags: "edit", icon: "edit", action: "edit", attributes: { "aria-hidden.if": "status == 'b'" } },
-                { id: "delete-measurement", title: "Delete", tags: "delete", icon: "delete", icon_color: "var(--red)", type: "sla_measurement", action: "remove_measurement", args: { element: measurement} }
+                { id: "delete-measurement", title: "Delete", tags: "delete", icon: "delete", icon_color: "var(--red)", type: "sla_measurement", action: "remove_measurement", args: { element: parentElement} }
             ],
             callback: async (args) => {
                 const action = args.detail.action;

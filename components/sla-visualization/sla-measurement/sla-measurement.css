@@ -95,6 +95,7 @@ sla-measurement[aria-selected='true'] {
     background-image: linear-gradient(to right, var(--orange) 50%, transparent 50%);
     background-size: 0.75rem 2px; /* Adjust the size and spacing of the dashes */
     background-repeat: repeat-x;
+    pointer-events: none;
 }
 
 .measurement-trigger-indicator::before {
