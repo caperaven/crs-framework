@@ -1,6 +1,6 @@
 :host {
     display: grid;
-    margin: 0 -0.25rem 0 0.25rem;
+    margin: 0 -0.25rem 0 0.5rem;
     border-radius: var(--radius);
     padding: 0 1rem;
     grid-column-gap: 1rem;
@@ -14,12 +14,16 @@
     justify-content: left;
     border-radius: var(--radius);
     grid-area: header;
-    padding: 0.125rem 0.25rem;
+    padding: 0 0.25rem 0.25rem;
     height: max-content;
     position: relative;
     font-size: 0.875rem;
-    margin: 0.5rem -0.5rem -0.5rem -0.25rem;
+    margin: 0.5rem -0.625rem -0.5rem -0.625rem;
     box-shadow: var(--drop-shadow);
+}
+
+.sla-header-container span.sla-header-label-container {
+    margin-top: 0.25rem;
 }
 
 :host([data-parent-phase="setup"]) .sla-header-container {
@@ -28,7 +32,7 @@
 
 .sla-header-content {
     position: absolute;
-    left: 55%;
+    left: 30%;
     color: var(--cl-text);
     width: 7rem;
     overflow: hidden;

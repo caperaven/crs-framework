@@ -119,7 +119,7 @@ function generateGridTemplateArray(statuses, dataSla, visualizationPhase) {
     const gridTemplateArray = statuses.map(status => {
         rowHeight = "2.5rem";
         if (statusCount === 1 && visualizationPhase === "runtime") {
-            rowHeight = "5rem";
+            rowHeight = "5.5rem";
             statusCount++;
         }
 
@@ -129,7 +129,7 @@ function generateGridTemplateArray(statuses, dataSla, visualizationPhase) {
 
     let columnWidth = ("max-content ").repeat(dataSla.length).trim();
 
-    columnWidth = `/ 14rem ${columnWidth}`;
+    columnWidth = `/ 13rem ${columnWidth}`;
 
     gridTemplateArray.push(columnWidth);
 

@@ -139,10 +139,14 @@ export class SlaTooltipManager {
      * @returns {Promise<void>}
      */
     async #setPopupPosition(measurement) {
+        const {right} = measurement.getBoundingClientRect();
+
+        const popupDirection = (window.innerWidth - right) < 240 ? "left" : "right";
+
         await crs.call("fixed_layout", "set", {
             element: this.#popup,
             target: measurement,
-            at: "right",
+            at: popupDirection,
             anchor: "top",
             margin: 1
         });

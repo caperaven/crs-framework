@@ -19,17 +19,16 @@
 .status-label {
     display: flex;
     flex-direction: column;
-    justify-content: right;
-    align-items: center;
+    justify-content: center;
     position: sticky;
-    padding: 0.5rem 0.25rem 0.5rem 3rem;
     color: var(--grey-s1);
+    padding: 0 0.25rem 0 3rem;
     left: 0;
     z-index: 3;
     font-size: 0.75rem;
-    height: 2.5rem;
-    align-self: center;
+    height: 2.5rem;;
 }
+
 .status-label:not([data-status-order="undefined"])::before,
 .status-label:not([data-status-order="undefined"])::after {
     width: 100%;
@@ -47,7 +46,7 @@
 }
 
 .status-row {
-    border-bottom: var(--border);
+    border-bottom: var(--border-width) solid var(--grey-s6);
     grid-column: 2 / -1;
 }
 
@@ -64,9 +63,10 @@
 .sla-layer {
     z-index: -1;
     width: 100%;
-    background: var(--grey-s3);
+    background: var(--grey-s7);
     margin-left: 0.25rem;
-    border: var(--double-border-width) solid silver;
+    border: var(--double-border-width) solid var(--grey-s6);
+    border-radius: var(--radius);
 }
 
 .active-status-label {
