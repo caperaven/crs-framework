@@ -1,8 +1,8 @@
 import {buildStandardElement} from "../sla-utils/sla-grid-utils.js";
 
 export class SlaTooltipManager {
-    #measurementHoverHandler = this.#toggle.bind(this);
-    #popup;
+    #measurementHoverHandler = this.#toggleTooltip.bind(this);
+    #tooltip;
     #phase;
     #templateId= "setup-popup";
 
@@ -20,9 +20,9 @@ export class SlaTooltipManager {
         this.#phase = null;
         this.#templateId = null;
 
-        if (this.#popup == null) return;
-        this.#popup?.remove();
-        this.#popup = null;
+        if (this.#tooltip == null) return;
+        this.#tooltip?.remove();
+        this.#tooltip = null;
     }
 
     /**
@@ -30,14 +30,14 @@ export class SlaTooltipManager {
      * @returns {Promise<void>}
      */
     async #initialize() {
-        let replacePath = "-setup.html";
+        let dynamicPath = "-setup.html";
 
         if (this.#phase === "runtime") {
-            replacePath = "-runtime.html";
+            dynamicPath = "-runtime.html";
             this.#templateId = "runtime-popup";
         }
 
-        const popupHtmlFile = await fetch(import.meta.url.replace("-manager.js", replacePath)).then(result => result.text());
+        const popupHtmlFile = await fetch(import.meta.url.replace("-manager.js", dynamicPath)).then(result => result.text());
 
         const popupTemplate = await buildStandardElement("template", `${this.#phase}-sla-popup-template`);
         popupTemplate.innerHTML = popupHtmlFile;
@@ -50,54 +50,55 @@ export class SlaTooltipManager {
     }
 
     /**
-     * @method #show - shows the tooltip/popup based on the measurement element.
+     * @method #toggleTooltip - shows the tooltip based on the measurement element.
      * @param event {CustomEvent} - the custom event object
      * @returns {Promise<void>}
      */
-    async #toggle(event) {
+    async #toggleTooltip(event) {
         const measurement = event.detail.measurement;
 
         if (measurement != null) {
             const measurementData = await this.#getMeasurementData(measurement);
             const popupId = `m-${measurement.id}`;
 
-            if (this.#popup == null) {
-                await this.#createMeasurementPopup(popupId,measurementData);
+            if (this.#tooltip == null) {
+                await this.#createMeasurementTooltip(popupId,measurementData);
             }else {
-                await this.#updateMeasurementPopupContent(popupId,measurementData);
+                await this.#updateMeasurementTooltipContent(popupId,measurementData);
             }
 
-            await this.#setPopupPosition(measurement);
+            await this.#setTooltipPosition(measurement);
             return;
         }
 
-        await this.#setPopupVisibleState(true);
+        await this.#setTooltipVisibleState(true);
     }
 
     /**
-     * @method #setPopupVisibleState - Sets the tooltip visible state.
-     * @param state {Boolean} - boolean value to set the tooltip visible state
+     * @method #setTooltipVisibleState - Sets the tooltip visible state.
+     * @param isVisible {Boolean} - boolean value to set the tooltip visible state.
      * @returns {Promise<void>}
      */
-    async #setPopupVisibleState(state) {
-        if (this.#popup == null) return;
+    async #setTooltipVisibleState(isVisible) {
+        if (this.#tooltip == null) return;
 
-        if (state == false ) {
-            this.#popup.removeAttribute("hidden");
+        if (isVisible == false ) {
+            this.#tooltip.removeAttribute("hidden");
             return;
         }
-        this.#popup.setAttribute("hidden", state);
+        this.#tooltip.setAttribute("hidden", isVisible);
     }
 
     /**
-     * @method #createMeasurementPopup - Creates the measurement popup.
-     * @param measurement {Element} - the measurement element
+     * @method #createMeasurementTooltip - Creates the measurement tooltip.
+     * @param id {String} - the measurement id
+     * @param measurementData {Object} - the measurement data
      * @returns {Promise<void>}
      */
-    async #createMeasurementPopup(id,measurementData) {
+    async #createMeasurementTooltip(id, measurementData) {
         const popupFragment = await crsbinding.inflationManager.get(this.#templateId, measurementData);
-        this.#popup = popupFragment.children[0];
-        this.#popup.setAttribute("id", id);
+        this.#tooltip = popupFragment.children[0];
+        this.#tooltip.setAttribute("id", id);
         document.body.appendChild(popupFragment);
     }
 
@@ -134,35 +135,35 @@ export class SlaTooltipManager {
     }
 
     /**
-     * @method #setPopupPosition - Sets the popup position.
+     * @method #setTooltipPosition - Sets the popup position.
      * @param measurement {Element} - the measurement element
      * @returns {Promise<void>}
      */
-    async #setPopupPosition(measurement) {
+    async #setTooltipPosition(measurement) {
         const {right} = measurement.getBoundingClientRect();
 
-        const popupPosition = (window.innerWidth - right) < 240 ? "left" : "right";
+        const tooltipPosition = (window.innerWidth - right) < 240 ? "left" : "right";
 
         await crs.call("fixed_layout", "set", {
-            element: this.#popup,
+            element: this.#tooltip,
             target: measurement,
-            at: popupPosition,
+            at: tooltipPosition,
             anchor: "top",
             margin: 1
         });
-        await this.#setPopupVisibleState(false);
+        await this.#setTooltipVisibleState(false);
     }
 
     /**
-     * @method #updateMeasurementPopupContent - Updates the this.#popup content based on the measurementData.
+     * @method #updateMeasurementTooltipContent - Updates the this.#tooltip content based on the measurementData.
      * @param measurement
      * @param measurementData
      * @returns {Promise<void>}
      */
-    async #updateMeasurementPopupContent(id, measurementData) {
-        if (this.#popup.id === id) return;
+    async #updateMeasurementTooltipContent(id, measurementData) {
+        if (this.#tooltip.id === id) return;
 
-        this.#popup.setAttribute("id", id);
-        await crsbinding.inflationManager.inflate(this.#templateId,this.#popup, measurementData);
+        this.#tooltip.setAttribute("id", id);
+        await crsbinding.inflationManager.inflate(this.#templateId,this.#tooltip, measurementData);
     }
 }
