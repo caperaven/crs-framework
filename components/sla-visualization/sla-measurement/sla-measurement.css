@@ -6,7 +6,7 @@
     justify-self: center;
     height: 100%;
     border: 1px solid silver;
-    border-radius: var(--radius) var(--radius) 0 0;
+    border-radius: var(--radius);
     position: relative;
     background: var(--blue);
     color: var(--cl-primary-alt);
@@ -22,6 +22,13 @@
 :host([data-state="inactive"]) div.progress-bar {
     background: var(--grey-s6);
 }
+:host(:hover) {
+    background: var(--dark-blue);
+}
+
+:host([data-state="inactive"]:hover) {
+    background: var(--grey-s8);
+}
 
 :host::before {
     content:' 'var(--clock-outline)'  'attr(data-duration)' ';
@@ -29,7 +36,7 @@
     display: block;
     color: var(--grey-s1);
     top: -1rem;
-    font-family: crsfrw;
+    font-family: crsfrw, SourceSansPro;
     font-size: 0.75rem;
     font-weight: bold;
 }
@@ -37,8 +44,8 @@
 div.progress-bar {
     display: flex;
     width: 100%;
-    background-color: var(--blue-s3);
-    border-radius: var(--radius) var(--radius) 0 0;
+    background-color: var(--blue-s4);
+    border-radius: var(--radius);
     transition: transform 0.7s ease;
     transform-origin: bottom;
     transform: scaleY(0);
@@ -51,13 +58,13 @@ div.progress-bar {
 }
 
 sla-measurement[aria-selected='true'] {
-    background: #075E96;
+    background: var(--dark-blue);
 }
 
 :host::after {
     content: attr(data-progress);
     display: flex;
-    width: 2.5rem;
+    width: 2rem;
     height: 1.25rem;
     justify-content: center;
     align-items: center;
@@ -68,9 +75,8 @@ sla-measurement[aria-selected='true'] {
     font-weight: bold;
     background: var(--blue-s2);
     border: 1px solid silver;
-    border-radius: 5px;
-
-    bottom: 0.5rem;
+    border-radius: var(--double-radius);
+    bottom: 0.375rem;
     position: absolute;
 }
 

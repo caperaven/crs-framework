@@ -117,9 +117,9 @@ function generateGridTemplateArray(statuses, dataSla, visualizationPhase) {
 
     statusCount = 1;
     const gridTemplateArray = statuses.map(status => {
-        rowHeight = "2.5rem";
+        rowHeight = status.code === "foot"? "2.5rem" : "minmax(2.5rem, 1fr)";
         if (statusCount === 1 && visualizationPhase === "runtime") {
-            rowHeight = "5.5rem";
+            rowHeight = "6rem";
             statusCount++;
         }
 

@@ -4,7 +4,7 @@
     color: var(--grey-s1);
     justify-content: space-evenly;
     border: var(--border);
-    border-radius: var(--radius);
+    border-radius: var(--double-radius);
     width: 15rem;
     height: max-content;
     background: var(--window);
@@ -72,4 +72,3 @@
 .measurement-info-padding {
     padding: 0.5rem 0;
 }
-

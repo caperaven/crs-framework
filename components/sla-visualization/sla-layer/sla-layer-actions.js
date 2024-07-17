@@ -204,9 +204,9 @@ function matrixToTemplate(matrix, slaLayerElement) {
         // If the row is the first row and the parent phase is runtime, we set the height to 3fr for the Header.
         let rowStr;
         if (row === 0 && slaLayerElement.dataset.parentPhase === "runtime") {
-            rowStr = `"${matrix[row].join(" ")}" 5.5rem`;
+            rowStr = `"${matrix[row].join(" ")}" 6rem`;
         } else {
-            rowStr = `"${matrix[row].join(" ")}" 2.5rem`;
+            rowStr = matrix.length - 1 !== row ? `"${matrix[row].join(" ")}" minmax(2.5rem,1fr)` :  `"${matrix[row].join(" ")}" 2.5rem`;
         }
         result.push(rowStr);
     }

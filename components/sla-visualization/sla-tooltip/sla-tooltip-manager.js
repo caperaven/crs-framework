@@ -115,6 +115,8 @@ export class SlaTooltipManager {
             numberOfTriggers: measurement.shadowRoot.querySelectorAll(".measurement-trigger-indicator").length,
             startStatus: measurement.getAttribute("data-start-status-name", ""),
             endStatus: measurement.getAttribute("data-end-status-name", ""),
+            trigger: "",
+            triggerDescription: "",
             startLabel: globalThis.translations.sla.labels.startLabel,
             endLabel: globalThis.translations.sla.labels.endLabel,
             durationLabel: globalThis.translations.sla.labels.durationLabel,
