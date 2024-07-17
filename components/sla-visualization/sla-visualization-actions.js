@@ -32,12 +32,6 @@ export class SlaVisualizationActions {
     static async initialize(step, context, process, item) {
         const element = await crs.dom.get_element(step, context, process, item);
 
-        if(element.initialized === true) {
-            return;
-        }
-
-        element.initialized = true;
-
         const statuses = await crs.process.getValue(step.args.statuses, context, process, item);
         const currentStatus = await crs.process.getValue(step.args.currentStatus, context, process, item);
 
