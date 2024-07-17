@@ -129,7 +129,7 @@ export async function packageHTML(sourceFile, targetFile, minified) {
 
     src = src.replaceAll("/styles/", "./packages/crs-framework/styles/");
     // When we package the components we need to change the path to the components links to the new path
-    src = src.replaceAll('<link rel="stylesheet" href="/components/', '<link rel="stylesheet" href="/packages/crs-framework/components/');
+    src = src.replaceAll('<link rel="stylesheet" href="/components/', '<link rel="stylesheet" href="./packages/crs-framework/components/');
 
     if (minified == true) {
         src = decoder.decode(minify(encoder.encode(src), { minify_css: true, minify_js: true, do_not_minify_doctype: true, keep_closing_tags: true }));
