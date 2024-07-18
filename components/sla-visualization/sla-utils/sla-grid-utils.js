@@ -111,21 +111,22 @@ async function createSlaLayers(element, slaCollection) {
  * @returns {[string]} - the generated grid template array
  */
 function generateGridTemplateArray(statuses, dataSla, visualizationPhase) {
-    let rowHeight;
     let statusCount = 1;
     const slaArray = dataSla.map(sla => ` sla${statusCount++}`);
 
-    statusCount = 1;
-    const gridTemplateArray = statuses.map(status => {
-        rowHeight = status.code === "foot"? "2.5rem" : "minmax(2.5rem, 1fr)";
-        if (statusCount === 1 && visualizationPhase === "runtime") {
-            rowHeight = "6rem";
-            statusCount++;
-        }
+    const gridTemplateArray = [];
+    let headerRow = visualizationPhase === "runtime" ? "6rem" :  "2.5rem";
 
-        let row = `"s${status.index}${slaArray.join('')}"${rowHeight}`
-        return row;
-    });
+    // Add the header row
+    gridTemplateArray.push(buildGridRowString(statuses[0], slaArray, headerRow));
+
+    for (let row = 1; row < statuses.length - 1; row++) {
+        // Add the status row
+        gridTemplateArray.push(buildGridRowString(statuses[row], slaArray, "minmax(2.5rem, 1fr)"));
+    }
+
+    // Add the footer row
+    gridTemplateArray.push(buildGridRowString(statuses[statuses.length - 1], slaArray, "2.5rem"));
 
     let columnWidth = ("max-content ").repeat(dataSla.length).trim();
 
@@ -134,6 +135,12 @@ function generateGridTemplateArray(statuses, dataSla, visualizationPhase) {
     gridTemplateArray.push(columnWidth);
 
     return gridTemplateArray;
+}
+
+function buildGridRowString(status, slaArray, height) {
+    let rowStr = `s${status.index}${slaArray.join('')}`;
+    rowStr = `"${rowStr}" ${height}`;
+    return rowStr;
 }
 
 export async function buildRows(statusList) {

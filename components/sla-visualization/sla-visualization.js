@@ -138,6 +138,9 @@ export class SlaVisualization extends HTMLElement {
 
         this.#orderedStatuses = statuses;
 
+        //setting measurement label translation
+        this.shadowRoot.querySelector("#measurement-name").textContent = globalThis.translations.sla.labels.slaMeasurementFooter
+
         await crs.call("component", "notify_ready", { element: this });
         this.#slaTooltipManager = new SlaTooltipManager(this);
     }
@@ -160,7 +163,6 @@ export class SlaVisualization extends HTMLElement {
 
             await crs.call("sla_layer", "create_all_sla", { parent: this.#container, data: slaData , parentPhase: this.dataset.phase}); // refactor for phase
 
-            this.#container.nextElementSibling.textContent = globalThis.translations.sla.labels.slaMeasurementFooter
             if (this.dataset.phase === "runtime") {
                 await this.#updateSlaLegend(data);
             }

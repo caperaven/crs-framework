@@ -205,7 +205,7 @@ function matrixToTemplate(matrix, slaLayerElement) {
     // Add header
     result.push(buildRowString(matrix, 0, headerRowHeight))
 
-    for (let row = 1; row < matrix.length -1; row++) {
+    for (let row = 1; row < matrix.length - 1; row++) {
         // Add the status row
         result.push(buildRowString(matrix, row, "minmax(2.5rem,1fr)"));
     }
