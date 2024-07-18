@@ -200,19 +200,34 @@ function matrixToTemplate(matrix, slaLayerElement) {
     }
 
     const result = [];
-    for (let row = 0; row < matrix.length; row++) {
-        // If the row is the first row and the parent phase is runtime, we set the height to 3fr for the Header.
-        let rowStr;
-        if (row === 0 && slaLayerElement.dataset.parentPhase === "runtime") {
-            rowStr = `"${matrix[row].join(" ")}" 6rem`;
-        } else {
-            rowStr = matrix.length - 1 !== row ? `"${matrix[row].join(" ")}" minmax(2.5rem,1fr)` :  `"${matrix[row].join(" ")}" 2.5rem`;
-        }
-        result.push(rowStr);
+    let headerRowHeight = slaLayerElement.dataset.parentPhase === "runtime" ? "6rem" : "2.5rem";
+
+    // Add header
+    result.push(buildRowString(matrix, 0, headerRowHeight))
+
+    for (let row = 1; row < matrix.length -1; row++) {
+        // Add the status row
+        result.push(buildRowString(matrix, row, "minmax(2.5rem,1fr)"));
     }
+
+    // Add footer
+    result.push(buildRowString(matrix, matrix.length - 1, "2.5rem"));
 
     result.push(` / ${columns.join(" ")}`);
     return result.join("\n");
+}
+
+/**
+ * @method buildRowString - Builds the row string
+ * @param matrix {Array} - The matrix
+ * @param row {Number} - The row number
+ * @param height {String} - The height
+ * @returns {string}
+ */
+function buildRowString(matrix, row, height) {
+    let rowStr = matrix[row].join(" ");
+    rowStr = `"${rowStr}" ${height}`;
+    return rowStr;
 }
 
 /**
