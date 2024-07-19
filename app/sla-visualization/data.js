@@ -221,7 +221,7 @@ const data1 = {
 }
 
 const data2 = {
-    "currentStatus": 11,
+    "currentStatus": 5000001002,
     "statuses": [
         {
             "code": "AA",
@@ -372,7 +372,7 @@ const data2 = {
             "id": "1001",
             "code": "SLA-1",
             "description": "Pump Breakdown",
-            "duration": "99%",
+            "mainMeasurePercentage": "99%",
             "measurements": [
                 {
                     "id": "1001",
@@ -404,7 +404,7 @@ const data2 = {
                     "description": "something else",
                     "start_status": 5000001001,
                     "end_status": 5000001002,
-                    "progress": 100,
+                    "progress": 101,
                     "status": "active",
                     "duration": "27:00",
                     "triggers": [
@@ -427,7 +427,7 @@ const data2 = {
                     "description": "something",
                     "start_status": 5000001003,
                     "end_status": 5000001005,
-                    "progress": 50,
+                    "progress": 81,
                     "status": "active",
                     "duration": "30:00",
                     "triggers": [
@@ -461,7 +461,7 @@ const data2 = {
                         },
                         {
                             "id": "1002",
-                            "trigger": 0,
+                            "trigger": 1,
                             "type": "warning"
                         }
                     ]

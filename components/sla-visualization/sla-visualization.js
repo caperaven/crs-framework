@@ -157,6 +157,7 @@ export class SlaVisualization extends HTMLElement {
                 statuses: this.#statuses,
                 orderedStatuses: this.#orderedStatuses,
                 currentStatus: this.#currentStatus || "",
+                currentStatusIndex: this.#currentStatusIndex,
             }
 
             await create_sla_grid(slaData, this.#container, this);

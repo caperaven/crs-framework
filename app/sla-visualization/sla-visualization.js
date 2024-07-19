@@ -35,12 +35,11 @@ export default class SlaVisualization extends crsbinding.classes.ViewBase {
                 slaMeasurementFooter: "Measurement Name",
                 slaHeaderCode: "Code",
                 slaHeaderDescription: "Description",
-                slaHeaderTimeElapsed: "Time-Elapsed",
                 slaLegendInRange: "In Status Range",
                 slaLegendOutOfRange: "Out Of Status Range",
                 slaLegendWarning: "Warning",
-                slaLegendOverdue: "Overdue"
-
+                slaLegendOverdue: "Overdue",
+                mainMeasurePercentageLabel: "Main Measure Percentage"
             }
         }
 

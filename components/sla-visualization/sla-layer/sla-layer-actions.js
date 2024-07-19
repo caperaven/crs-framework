@@ -45,7 +45,7 @@ export class SlaLayerActions{
             // in the sla data, based on the workOrder.statusDescription, call function:
             await showCurrentStatus(slaData.currentStatus, parentElement);
             if (parentPhase === "runtime") {
-                element.dataset.activeRow = slaData.currentStatus;
+                element.dataset.activeRow = slaData.currentStatusIndex;
             }
 
             //Added to wait for the measurements to be created before creating the headers.
@@ -243,7 +243,7 @@ async function createSlaHeader(slaLayerElement, slaItemData) {
     slaItemData = {
         ...slaItemData, codeLabel: globalThis.translations.sla.labels.slaHeaderCode,
         descriptionLabel: globalThis.translations.sla.labels.slaHeaderDescription,
-        timeElapsedLabel: globalThis.translations.sla.labels.slaHeaderTimeElapsed,
+        mainMeasurePercentageLabel: globalThis.translations.sla.labels.mainMeasurePercentageLabel,
     };
 
 

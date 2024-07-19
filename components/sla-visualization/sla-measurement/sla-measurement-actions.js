@@ -223,18 +223,27 @@ async function updateProgressStyles(element, measurementData) {
 
     const activeRowNumber = parseInt(element.dataset.activeRow);
 
+    await setAlternativeMeasurementState(measurementData, activeRowNumber, element);
+}
+
+async function setAlternativeMeasurementState(measurementData, activeRowNumber, element) {
+    let measurementProgressState, measurementStateType;
+
     if (measurementData.progress > 100 ) {
-        if(measurementData.start_status >= activeRowNumber || measurementData.end_status <= activeRowNumber) {
-            element.classList.add("measurement-overdue-state");
-            element.dataset.state = "overdue";
-        }
-    } else if (measurementData.progress >= 80 && measurementData.progress <= 99) {
-        element.dataset.state = "warning"
-        element.classList.add("measurement-warning-state");
+        measurementProgressState = "measurement-overdue-state";
+        measurementStateType = "overdue";
+    }
+    else if (measurementData.progress >= 80 && measurementData.progress <= 99) {
+        measurementProgressState = "measurement-warning-state";
+        measurementStateType = "warning";
+    }
+
+    if (measurementData.start_status_order <= activeRowNumber && measurementData.end_status_order >= activeRowNumber) {
+        element.classList.add(measurementProgressState);
+        element.dataset.state = measurementStateType;
     }
 }
 
-// Function to create trigger indicators
 /**
  * @method createTriggerIndicators - Creates the trigger indicators
  * @param element {HTMLElement} - The sla-measurement element
@@ -246,7 +255,7 @@ async function createTriggerIndicators(element, measurementData) {
         for (const trigger of measurementData.triggers) {
             const triggerIndicator = document.createElement("div");
             triggerIndicator.id = `trigger_${trigger.id}`;
-            triggerIndicator.dataset.trigger = `${trigger.trigger}%`;
+            triggerIndicator.dataset.trigger = await calculateNextTrigger(measurementData, measurementData.progress);
             triggerIndicator.dataset.triggerType = trigger.type !== null ? trigger.type : "";
             triggerIndicator.classList.add("measurement-trigger-indicator");
             triggerIndicator.style.bottom = `${trigger.trigger}%`;
@@ -254,6 +263,21 @@ async function createTriggerIndicators(element, measurementData) {
             element.shadowRoot.appendChild(triggerIndicator);
         }
     }
+}
+
+/**
+ * @method calculateNextTrigger - Calculates the next trigger
+ * @param measurementData {Object} - The measurement data object
+ * @param currentProgress {Number} - The current progress
+ * @return {String}
+ */
+async function calculateNextTrigger(measurementData, currentProgress) {
+    for (const trigger of measurementData.triggers) {
+        if (trigger.trigger > currentProgress) {
+            return trigger.trigger;
+        }
+    }
+    return "";
 }
 
 // Function to update status based on parent phase
@@ -266,7 +290,7 @@ async function createTriggerIndicators(element, measurementData) {
 async function updateStatus(element, measurementData) {
     const activeRowNumber = parseInt(element.dataset.activeRow);
 
-    if (activeRowNumber < measurementData.start_status || activeRowNumber > measurementData.end_status) {
+    if (activeRowNumber < measurementData.start_status_order || activeRowNumber > measurementData.end_status_order) {
         element.dataset.state = "inactive";
         element.classList.add("measurement-inactive-state");
     }
