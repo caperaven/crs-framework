@@ -45,6 +45,7 @@ export class SlaMeasurementActions {
 
             const measurementFooterContainer = await buildStandardElement(tagName,`f_${measurement.id}`,"sla-footer-container",null,`f${incrementor}`);
             measurementFooterContainer.dataset.footerContent = measurement.description;
+            measurementFooterContainer.title = measurement.description;
             documentFragment.appendChild(measurementFooterContainer);
 
             incrementor++;

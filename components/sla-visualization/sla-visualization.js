@@ -226,9 +226,14 @@ export class SlaVisualization extends HTMLElement {
             for (const measure of sla.measurements) {
                 if (this.#currentStatusIndex < measure.start_status_order || this.#currentStatusIndex > measure.end_status_order) {
                     stateCounts.inactive++;
-                }
-                else {
-                    stateCounts.active++;
+                } else {
+                    if (measure.progress > 100) {
+                        stateCounts.overdue++;
+                    } else if (measure.progress >= 80 && measure.progress <= 99) {
+                        stateCounts.warning++;
+                    } else {
+                        stateCounts.active++;
+                    }
                 }
             }
         }

@@ -382,7 +382,6 @@ const data2 = {
                     "start_status": 10,
                     "end_status": 11,
                     "progress": 25,
-                    "status": "active",
                     "duration": "27:00",
                     "triggers": [
                         {
@@ -405,7 +404,6 @@ const data2 = {
                     "start_status": 5000001001,
                     "end_status": 5000001002,
                     "progress": 101,
-                    "status": "active",
                     "duration": "27:00",
                     "triggers": [
                         {
@@ -428,7 +426,6 @@ const data2 = {
                     "start_status": 5000001003,
                     "end_status": 5000001005,
                     "progress": 81,
-                    "status": "active",
                     "duration": "30:00",
                     "triggers": [
                         {
@@ -451,7 +448,6 @@ const data2 = {
                     "start_status": 11,
                     "end_status": 12,
                     "progress": 75,
-                    "status": "active",
                     "duration": "50:00",
                     "triggers": [
                         {

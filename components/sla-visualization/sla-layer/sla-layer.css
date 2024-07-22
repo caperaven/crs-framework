@@ -20,6 +20,9 @@
     font-size: 0.875rem;
     margin: -0.625rem -0.5rem 0 -0.5rem;;
     box-shadow: var(--drop-shadow);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .sla-header-container span.sla-header-label-container {

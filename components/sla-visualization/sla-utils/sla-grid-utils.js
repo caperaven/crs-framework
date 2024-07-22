@@ -62,6 +62,7 @@ async function createStatusLabels(element, statuses) {
             statusLabel.dataset.code = `[${status.code}]`;
             statusLabel.dataset.id = status.id;
             statusLabel.dataset.description = status.description;
+            statusLabel.title = status.description;
         }
 
         documentFragment.appendChild(statusLabel);
