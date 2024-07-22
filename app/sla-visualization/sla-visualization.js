@@ -39,7 +39,7 @@ export default class SlaVisualization extends crsbinding.classes.ViewBase {
                 slaLegendOutOfRange: "Out Of Status Range",
                 slaLegendWarning: "Warning",
                 slaLegendOverdue: "Overdue",
-                mainMeasurePercentageLabel: "Main Measure Percentage"
+                mainMeasurePercentageLabel: "Main Measure %"
             }
         }
 

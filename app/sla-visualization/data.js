@@ -220,7 +220,7 @@ const data1 = {
     ]
 }
 
-const data2 = {
+const data4 = {
     "currentStatus": 5000001002,
     "statuses": [
         {
@@ -1948,7 +1948,7 @@ const data2s = {
         }
     ]
 }
-const data4 = {
+const data2 = {
     "currentStatus": 11,
     "statuses": [
         {
@@ -2199,7 +2199,7 @@ const data4 = {
         {
             "id": "1002",
             "code": "SLA-2",
-            "description": "Pump Build",
+            "description": "Pump Builder dot Com",
             "duration": "99%",
             "measurements": [
                 {
@@ -2224,53 +2224,8 @@ const data4 = {
                             "type": "warning"
                         }
                     ]
-                },
-                {
-                    "id": "777",
-                    "version": 1,
-                    "code": "Inspection",
-                    "description": "something else",
-                    "start_status": 5000001001,
-                    "end_status": 5000001002,
-                    "progress": 100,
-                    "status": "active",
-                    "duration": "27:00",
-                    "triggers": [
-                        {
-                            "id": "1001",
-                            "trigger": 25,
-                            "type": "warning"
-                        },
-                        {
-                            "id": "1002",
-                            "trigger": 50,
-                            "type": "warning"
-                        }
-                    ]
-                },
-                {
-                    "id": "1002",
-                    "version": 1,
-                    "code": "Maintenance",
-                    "description": "something",
-                    "start_status": 5000001003,
-                    "end_status": 5000001005,
-                    "progress": 50,
-                    "status": "active",
-                    "duration": "30:00",
-                    "triggers": [
-                        {
-                            "id": "1001",
-                            "trigger": 25,
-                            "type": "warning"
-                        },
-                        {
-                            "id": "1002",
-                            "trigger": 75,
-                            "type": "warning"
-                        }
-                    ]
-                },
+                }
+                ,
                 {
                     "id": "1003",
                     "version": 1,

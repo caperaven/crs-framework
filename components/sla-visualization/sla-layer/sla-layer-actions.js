@@ -107,7 +107,7 @@ async function createSlaGrid(slaLayerElement, slaItemData, orderedStatuses, stat
      * The measurement has a start and end status.
      * We need a lookup table so that we know where to put the measurement in the grid.
      */
-    const matrix = createMeasurementsMatrix(orderedStatuses, slaItemData);
+    const matrix = createMeasurementsMatrix(orderedStatuses, slaItemData, slaLayerElement.dataset.parentPhase);
 
     populateMeasurementsMatrix(matrix, slaItemData, statusLookupTable);
     slaLayerElement.style.gridTemplate = matrixToTemplate(matrix, slaLayerElement);
@@ -128,14 +128,14 @@ async function createSlaGrid(slaLayerElement, slaItemData, orderedStatuses, stat
  * @method createMeasurementsMatrix - Creates the measurements matrix
  * @param statusData {Array} - The status data
  * @param slaItemData {Object} - The sla item data
+ * @param parentPhase {String} - The parent phase
  */
-function createMeasurementsMatrix(statusData, slaItemData) {
+function createMeasurementsMatrix(statusData, slaItemData, parentPhase) {
     const keys = Object.keys(statusData);
     const numberOfRows = keys.length;
 
-    // Here we check if the number of measurements is less than 3, if it is we set the number of columns to 3.
-    // This is because we want to have at least 3 columns in the grid for it to display the SLA-Headers correctly.
-    const numberOfColumns = slaItemData.measurements.length < 3 ? 3 : slaItemData.measurements.length;
+    const columnCount = parentPhase === "runtime" ? 2 : 3;
+    const numberOfColumns = slaItemData.measurements.length < columnCount ? 3 : slaItemData.measurements.length;
 
     const matrix = [];
     initializeMatrix(matrix, numberOfRows, numberOfColumns);
