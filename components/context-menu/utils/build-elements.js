@@ -36,12 +36,16 @@ async function createListItems(parentElement, collection, templates) {
             continue;
         }
 
+        if (option.icon != null) {
+            option.dataset = option.dataset || {}
+            option.dataset.icon = option.icon;
+        }
+
         const li = await crs.call("dom", "create_element", {
             parent: parentElement,
             id: option.id,
             tag_name: "li",
             dataset: {
-                icon: option.icon,
                 ic: option.icon_color || "black",
                 tags: option.tags || "",
                 ...(option.dataset || {})
@@ -49,6 +53,8 @@ async function createListItems(parentElement, collection, templates) {
             attributes: {
                 role: "menuitem",
                 "aria-selected": option.selected == true,
+                "aria-label": option.title,
+                tabindex: -1,
                 ...(option.attributes || {})
             },
             styles: option.styles,
@@ -66,22 +72,23 @@ async function createListItems(parentElement, collection, templates) {
             li.appendChild(fragment);
         }
         else {
-            if (option.children == null) {
-                li.textContent = option.title;
-            }
-            else {
-                li.classList.add("parent-menu-item")
+            await crs.call("dom", "create_element", {
+                parent: li,
+                tag_name: "span",
+                text_content: option.title
+            });
 
-                await crs.call("dom", "create_element", {
-                    parent: li,
-                    tag_name: "div",
-                    text_content: option.title
-                });
+            if (option.children != null) {
+                li.classList.add("parent-menu-item")
 
                 const ul = await crs.call("dom", "create_element", {
                     parent: li,
                     tag_name: "ul",
-                    classes: ["submenu"]
+                    classes: ["submenu"],
+                    dataset: {
+                        closable: true,
+                        ignoreClick: true
+                    }
                 });
 
                 await createListItems(ul, option.children, templates);

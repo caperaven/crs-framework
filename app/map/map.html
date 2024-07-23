@@ -1,0 +1,56 @@
+<style>
+    form {
+        border: var(--border);
+        padding: var(--padding);
+        display: flex;
+    }
+
+    .toolbar {
+        display: flex;
+    }
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .flex {
+        display: flex;
+        flex-direction: row;
+        height: 100%;
+    }
+
+    interactive-map {
+        height: 600px;
+    }
+
+    toast-notification {
+
+        z-index: 1000;
+    }
+
+    @media (max-width: 600px) {
+        .flex {
+            flex-direction: column;
+        }
+    }
+
+    dialog-component {
+        z-index: 4000;
+    }
+
+</style>
+
+<div class="container">
+    <div class="toolbar">
+        <button click.call="setLayerGeoJson">Set Random Data</button>
+        <button click.call="clear">Clear all</button>
+    </div>
+
+
+    <div class="flex vertical" id="maps-container">
+        <interactive-map id="openstreetmap" data-provider="openstreetmap" data-path="geographicLocation" data-manager="my_data" data-selection-mode="edit" class="flex" data-fill-color="#ff0000" data-stroke-color="#cc0000"></interactive-map>
+    </div>
+</div>
+

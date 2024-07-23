@@ -1,0 +1,72 @@
+<style>
+    section {
+        margin: 1rem 0;
+    }
+
+    #target {
+        margin: 2rem;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .states {
+        margin-bottom: 2rem;
+    }
+
+    #animation-layer .drop-area {
+        background-color: var(--blue-s1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        border: .3rem dashed var(--blue);
+        border-radius: 1rem;
+        opacity: 0.2;
+    }
+
+    #animation-layer #insert-photo:before {
+        content: 'insert-photo';
+        font-family: crsfrw;
+        font-size: 3rem;
+        font-weight: 500;
+    }
+
+    #animation-layer .drop-area * {
+        margin: 0.3125rem;
+    }
+</style>
+
+<div id="target">
+    <section>
+        <h2>Context</h2>
+        <p>
+            Implemented screen showcasing the file-uploader component.
+            There's a section showing the different states the component can be in,
+            as well as a working example to test the component.
+        </p>
+    </section>
+
+    <section>
+        <h2>States</h2>
+        <div class="states">
+            <section id="upload-component">
+                <h3>Upload</h3>
+                <file-uploader id="upload"></file-uploader>
+            </section>
+            <section id="uploading-component">
+                <h3>Uploading</h3>
+                <file-uploader id="uploading"></file-uploader>
+            </section>
+            <section id="uploaded-component">
+                <h3>Uploaded</h3>
+                <file-uploader id="uploaded"></file-uploader>
+            </section>
+        </div>
+    </section>
+
+
+    <section id="working-example">
+        <h2>Working Example</h2>
+        <file-uploader id="working-example-component" data-drag-target="#target"></file-uploader>
+    </section>
+</div>

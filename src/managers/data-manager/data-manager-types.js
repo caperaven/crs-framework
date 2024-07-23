@@ -15,5 +15,6 @@ export const CHANGE_TYPES = Object.freeze({
     refresh: "refresh",
     selected: "selected",
     perspectiveChanged: "perspective_changed",
-    perspectiveRollback: "perspective_rollback"
+    perspectiveRollback: "perspective_rollback",
+    filter: "filter",
 });

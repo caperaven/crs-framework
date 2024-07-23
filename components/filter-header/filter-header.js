@@ -1,4 +1,4 @@
-class FilterHeader extends crs.classes.BindableElement {
+class FilterHeader extends crsbinding.classes.BindableElement {
     #container;
 
     get container() {
@@ -17,14 +17,10 @@ class FilterHeader extends crs.classes.BindableElement {
         return import.meta.url.replace(".js", ".html");
     }
 
-    async load() {
-        return new Promise(resolve => {
-            requestAnimationFrame(() => {
-                const query = this.getAttribute("for");
-                this.#container = (this.parentElement || this.getRootNode()).querySelector(query);
-                resolve();
-            })
-        })
+    async connectedCallback() {
+        super.connectedCallback();
+        const query = this.getAttribute("for");
+        this.#container = this.parentElement.querySelector(query);
     }
 
     async disconnectedCallback() {
@@ -34,15 +30,15 @@ class FilterHeader extends crs.classes.BindableElement {
 
     async filter(event) {
         if (event.code == "ArrowDown") {
-            return this.dispatchEvent(new CustomEvent("focus-out", { bubbles: true, composed: true }));
+            return this.dispatchEvent(new CustomEvent("focus-out"));
         }
 
-        const target = event.composedPath()[0];
-
-        await crs.call("dom_collection", "filter_children", {
-            filter: target.value.toLowerCase(),
-            element: this.#container
-        })
+        const remainingItems = await crs.call("dom_collection", "filter_children", {
+            filter: event.target.value.toLowerCase(),
+            element: this.#container,
+            hierarchical: true
+        });
+        this.#container.dataset.noContent = remainingItems === 0;
     }
 
     async clear() {
@@ -50,7 +46,7 @@ class FilterHeader extends crs.classes.BindableElement {
     }
 
     async close() {
-        this.dispatchEvent(new CustomEvent("close", { bubbles: true, composed: true }));
+        this.dispatchEvent(new CustomEvent("close"));
     }
 }
 
