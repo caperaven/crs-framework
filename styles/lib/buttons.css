@@ -101,6 +101,7 @@ button.icon {
     align-items: center;
     font-size: 1.25rem;
     font-weight: 500;
+    white-space: nowrap;
 }
 
 button.icon svg {

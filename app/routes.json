@@ -114,6 +114,11 @@
             "view": "file-system"
         },
         {
+            "title": "File Uploader",
+            "hash": "#file-uploader",
+            "view": "file-uploader"
+        },
+        {
             "title": "Toast Notifications",
             "view": "toast-notification"
         },
@@ -175,6 +180,11 @@
             "title": "percentage bar",
             "hash": "percentage-bar",
             "view": "percentage-bar"
+        },
+        {
+            "title": "map",
+            "hash": "#map",
+            "view": "map"
         }
     ]
 }
