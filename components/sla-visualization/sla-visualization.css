@@ -1,4 +1,6 @@
 :host {
+    --scale: 1;
+
     height: 100%;
     width: 100%;
     display: flex;
@@ -9,11 +11,13 @@
     display: none;
     position: relative;
     height: 100%;
-    width: 100%;
-    border: var(--border);
-    overflow: auto;
-    padding: 1rem 0;
+    width: max-content;
+    margin: 1rem 0;
     grid-column-gap: 0.5rem;
+    transform-origin: left center;
+    transition: transform 0.3s ease 0s;
+    grid-column: 2 / 3;
+    transform: scale(var(--scale));
 }
 
 .status-label {
@@ -22,7 +26,7 @@
     justify-content: center;
     position: sticky;
     color: var(--grey-s1);
-    padding: 0 0.25rem 0 3rem;
+    padding: 0 0.25rem 0 2rem;
     left: 0;
     z-index: 3;
     font-size: 0.75rem;
@@ -31,7 +35,7 @@
 
 .status-label:not([data-status-order="undefined"])::before,
 .status-label:not([data-status-order="undefined"])::after {
-    width: 100%;
+    max-width: 10rem;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -100,23 +104,13 @@
 }
 
 #measurement-name{
-    /*opacity: 0;*/
     display: none;
-    /*position: sticky;*/
-    /*left: 50%;*/
-    /*bottom: 0;*/
-    /*display: flex;*/
     justify-content: center;
     padding: 0.5rem;
     font-size: 1rem;
     font-weight: bold;
     color: var(--cl-text);
 }
-
-
-/*:host([data-phase="setup"]) {*/
-/*    background-color: var(--grey-s4)*/
-/*}*/
 
 :host([data-phase="setup"]) .active-status-label {
     color: var(--grey-s1);
@@ -200,4 +194,38 @@
     width: 1rem;
     height: 1rem;
     background-color: var(--red);
+}
+
+#grid-parent-container {
+    display: grid;
+    grid-template-columns: 12rem 1fr;
+    grid-template-rows: 1fr;
+    overflow: auto;
+    height: 100%;
+    padding-bottom: 1rem;
+}
+
+#grid-label-container {
+    display: grid;
+    position: sticky;
+    left: 0;
+    z-index: 5;
+    background: var(--window);
+    height: 100%;
+    width: 100%;
+    margin: 1rem 0;
+    transform-origin: right center;
+    transition: transform 0.3s ease 0s;
+    transform: scale(var(--scale));
+}
+
+#background, #grid-label-container {
+    grid-area: 1 / 1 / 1 / 1;
+}
+
+#background {
+    position: sticky;
+    left: 0;
+    z-index: 5;
+    background: var(--window);
 }

@@ -258,8 +258,8 @@ async function createSlaHeader(slaLayerElement, slaItemData) {
  * @param parentElement {HTMLElement} - The parent element
  */
 
-async function showCurrentStatus(currentStatus, parentElement) {
-    const statusActiveElements = parentElement.querySelectorAll(`[data-id='${currentStatus}']`);
+async function showCurrentStatus(currentStatus, slaContainer) {
+    const statusActiveElements = slaContainer.parentElement.querySelectorAll(`[data-id='${currentStatus}']`);
     for (const element of statusActiveElements) {
         if (element.classList.contains("status-row")) {
             element.classList.add("active-status-row");

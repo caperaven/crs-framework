@@ -11,7 +11,7 @@ import "../../../packages/crs-process-api/action-systems/css-grid-actions.js";
  * @param slaVisualization {HTMLElement} element that is the sla visualization component
  * @return {Promise<void>}
  */
-export async function create_sla_grid(data,slaGridContainer, slaVisualization) {
+export async function create_sla_grid(data,slaGridContainer, labelContainer,slaVisualization) {
     const element = slaGridContainer
     const slaVisualizationPhase = slaVisualization.dataset.phase; // refactor for phase
     slaVisualization.shadowRoot.querySelector("#measurement-name").style.display = "flex"
@@ -24,9 +24,11 @@ export async function create_sla_grid(data,slaGridContainer, slaVisualization) {
     await createInitialGrid(element);
 
     // Generate the grid template array
-    element.style.gridTemplate = generateGridTemplateArray(statuses, data.sla, slaVisualizationPhase).join(' '); // refactor for phase
+    const gridString= generateGridTemplateArray(statuses, data.sla, slaVisualizationPhase).join(' '); // refactor for phase
+    element.style.gridTemplate = gridString;
+    labelContainer.style.gridTemplate = gridString;
 
-    await createStatusLabels(element, statuses);
+    await createStatusLabels(labelContainer, statuses, gridString);
     await createRowElements(element, statuses);
     await createSlaLayers(element, data.sla);
 }
@@ -45,7 +47,7 @@ async function createInitialGrid(element) {
  * @param element {HTMLElement} - the sla visualization element
  * @param statuses {[Object]} - the array of status objects
  */
-async function createStatusLabels(element, statuses) {
+async function createStatusLabels(labelContainer, statuses, gridString) {
     const documentFragment = document.createDocumentFragment();
 
     const statusBackground = await buildStandardElement("div","status-label-background","status-background")
@@ -67,7 +69,7 @@ async function createStatusLabels(element, statuses) {
 
         documentFragment.appendChild(statusLabel);
     }
-    element.appendChild(documentFragment);
+    labelContainer.appendChild(documentFragment);
 }
 
 /**
@@ -131,7 +133,7 @@ function generateGridTemplateArray(statuses, dataSla, visualizationPhase) {
 
     let columnWidth = ("max-content ").repeat(dataSla.length).trim();
 
-    columnWidth = `/ 13rem ${columnWidth}`;
+    columnWidth = `/ ${columnWidth}`;
 
     gridTemplateArray.push(columnWidth);
 

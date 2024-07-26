@@ -25,6 +25,9 @@ export class SlaVisualization extends HTMLElement {
     #slaTooltipManager;
     #clickHandler = this.#click.bind(this);
     #contextMenuHandler = this.#contextMenu.bind(this);
+    #currentScale = 1;
+    #scaleHandler = this.#scaleGridVisualization.bind(this);
+    #labelContainer;
 
     get html() {
         return import.meta.url.replace(".js", ".html");
@@ -56,15 +59,19 @@ export class SlaVisualization extends HTMLElement {
         const html = await fetch(import.meta.url.replace(".js", ".html")).then(result => result.text());
         this.shadowRoot.innerHTML = html;
         this.#container = this.shadowRoot.querySelector("#sla-grid-container");
+        this.#labelContainer = this.shadowRoot.querySelector("#grid-label-container");
         this.addEventListener("measurement-selected", this.#selectionChangedHandler);
         // this.addEventListener("contextmenu", this.#contextMenuHandler);
         this.addEventListener("click", this.#clickHandler);
+        this.addEventListener("wheel", this.#scaleHandler);
     }
 
     async disconnectedCallback() {
         // this.removeEventListener("contextmenu", this.#contextMenuHandler);
         this.removeEventListener("click", this.#clickHandler);
+        this.removeEventListener("wheel", this.#scaleHandler);
         this.#clickHandler = null;
+        this.#scaleHandler = null;
         this.#contextMenuHandler = null;
         await crs.call("data_manager", "remove_change", {manager: this.dataset.manager, callback: this.#dataManagerChangedHandler});
         this.#dataManagerChangedHandler = null;
@@ -75,6 +82,8 @@ export class SlaVisualization extends HTMLElement {
         this.removeEventListener("measurement-selected", this.#selectionChangedHandler);
         this.#selectionChangedHandler = null;
         this.#selectedMeasurement = null;
+        this.#currentScale = null;
+        this.#labelContainer = null;
 
         if (this.#slaTooltipManager == null) return;
 
@@ -123,6 +132,23 @@ export class SlaVisualization extends HTMLElement {
         });
     }
 
+    async #scaleGridVisualization(event) {
+        if (event.ctrlKey === false) return;
+
+        event.preventDefault();
+
+        const zoomScale =  event.deltaY < 0 ? 0.1 : -0.1;
+
+        if (zoomScale > 0 && this.#currentScale === 1 || zoomScale < 0 && this.#currentScale === 0.1) return;
+
+        this.#currentScale += zoomScale;
+
+        // Round the scale value to one decimal place
+        this.#currentScale = Math.round(this.#currentScale * 10) / 10;
+
+        this.style.setProperty('--scale', this.#currentScale);
+    }
+
     async initialize(statuses, currenStatus) {
         this.#statuses = {};
         this.#currentStatus = currenStatus
@@ -149,6 +175,7 @@ export class SlaVisualization extends HTMLElement {
         let data = await crs.call("data_manager", "get_all", { manager: this.dataset.manager });
 
         this.#container.innerHTML = "";
+        this.#labelContainer.innerHTML = "";
 
         if (data[0]?.measurements?.length > 0) {
             this.#container.style.justifyContent = "";
@@ -160,7 +187,7 @@ export class SlaVisualization extends HTMLElement {
                 currentStatusIndex: this.#currentStatusIndex,
             }
 
-            await create_sla_grid(slaData, this.#container, this);
+            await create_sla_grid(slaData, this.#container, this.#labelContainer, this);
 
             await crs.call("sla_layer", "create_all_sla", { parent: this.#container, data: slaData , parentPhase: this.dataset.phase}); // refactor for phase
 
