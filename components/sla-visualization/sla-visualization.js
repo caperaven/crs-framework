@@ -189,10 +189,15 @@ export class SlaVisualization extends HTMLElement {
 
             await create_sla_grid(slaData, this.#container, this.#labelContainer, this);
 
-            await crs.call("sla_layer", "create_all_sla", { parent: this.#container, data: slaData , parentPhase: this.dataset.phase}); // refactor for phase
+            //phaseType can either be runtime or setup
+            const phaseType = this.dataset.phase;
+            
+            await crs.call("sla_layer", "create_all_sla", { parent: this.#container, data: slaData , parentPhase: phaseType}); // refactor for phase
 
-            if (this.dataset.phase === "runtime") {
+            if (phaseType === "runtime") {
                 await this.#updateSlaLegend(data);
+                const activeStatusRow = this.shadowRoot.querySelector("[class='status-label active-status-label']");
+                activeStatusRow.scrollIntoView({behavior: 'smooth', block: 'center', inline: 'start'});
             }
         }
         else{
