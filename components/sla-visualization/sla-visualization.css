@@ -229,3 +229,8 @@
     z-index: 5;
     background: var(--window);
 }
+
+#grid-parent-container > no-content {
+    grid-area: 1 / 1 / 1 / 3;
+    z-index: 6;
+}

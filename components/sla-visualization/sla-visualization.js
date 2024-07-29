@@ -155,7 +155,6 @@ export class SlaVisualization extends HTMLElement {
         let index = 0;
         for (const status of statuses) {
             if(status.id === this.#currentStatus){
-                // TODO BUG DESCRIPTIONS CAN BE THE SAME
                 this.#currentStatusIndex = index;
             }
             status.order = index++;
@@ -176,6 +175,7 @@ export class SlaVisualization extends HTMLElement {
 
         this.#container.innerHTML = "";
         this.#labelContainer.innerHTML = "";
+        const gridParentContainer = this.shadowRoot.querySelector("#grid-parent-container");
 
         if (data[0]?.measurements?.length > 0) {
             this.#container.style.justifyContent = "";
@@ -191,12 +191,13 @@ export class SlaVisualization extends HTMLElement {
 
             //phaseType can either be runtime or setup
             const phaseType = this.dataset.phase;
-            
+
             await crs.call("sla_layer", "create_all_sla", { parent: this.#container, data: slaData , parentPhase: phaseType}); // refactor for phase
+
 
             if (phaseType === "runtime") {
                 await this.#updateSlaLegend(data);
-                const activeStatusRow = this.shadowRoot.querySelector("[class='status-label active-status-label']");
+                const activeStatusRow = gridParentContainer.querySelector("[class='status-label active-status-label']");
                 activeStatusRow.scrollIntoView({behavior: 'smooth', block: 'center', inline: 'start'});
             }
         }
@@ -204,7 +205,7 @@ export class SlaVisualization extends HTMLElement {
             this.shadowRoot.querySelector("#sla-legend").style.display = "none";
             this.#container.style.justifyContent = "center";
             this.#container.style.display = "flex";
-            await crs.call("no_content", "show", { parent: this.#container });
+            await crs.call("no_content", "show", { parent: gridParentContainer });
         }
     }
 
@@ -261,11 +262,12 @@ export class SlaVisualization extends HTMLElement {
                 } else {
                     if (measure.progress > 100) {
                         stateCounts.overdue++;
-                    } else if (measure.progress >= 80 && measure.progress <= 99) {
-                        stateCounts.warning++;
-                    } else {
-                        stateCounts.active++;
                     }
+                    else if (measure.progress >= 80 && measure.progress <= 99) {
+                        stateCounts.warning++;
+                    }
+
+                    stateCounts.active++;
                 }
             }
         }
