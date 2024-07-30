@@ -1,5 +1,7 @@
 :host {
     --scale: 1;
+    --translate-x: 0;
+    --transformation: translateX(var(--translate-x)) scale(var(--scale));
 
     height: 100%;
     width: 100%;
@@ -17,7 +19,7 @@
     transform-origin: left center;
     transition: transform 0.3s ease 0s;
     grid-column: 2 / 3;
-    transform: scale(var(--scale));
+    transform: var(--transformation);
 }
 
 .status-label {
@@ -216,18 +218,11 @@
     margin: 1rem 0;
     transform-origin: right center;
     transition: transform 0.3s ease 0s;
-    transform: scale(var(--scale));
+    transform: var(--transformation);
 }
 
-#background, #grid-label-container {
+#grid-label-container {
     grid-area: 1 / 1 / 1 / 1;
-}
-
-#background {
-    position: sticky;
-    left: 0;
-    z-index: 5;
-    background: var(--window);
 }
 
 #grid-parent-container > no-content {

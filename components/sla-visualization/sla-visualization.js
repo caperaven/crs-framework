@@ -146,7 +146,13 @@ export class SlaVisualization extends HTMLElement {
         // Round the scale value to one decimal place
         this.#currentScale = Math.round(this.#currentScale * 10) / 10;
 
+        // We want to set the translate-x depending on the scale. 0.1 = 200 and 1 = 0
+        // Inverse scale
+        const invertScale = 1 - this.#currentScale;
+        const translateX = (invertScale * 200) * -1;
+
         this.style.setProperty('--scale', this.#currentScale);
+        this.style.setProperty('--translate-x', `${translateX}px`);
     }
 
     async initialize(statuses, currenStatus) {
