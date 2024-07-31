@@ -2,7 +2,12 @@ import "./sla-measurement.js";
 import {buildStandardElement} from "../sla-utils/sla-grid-utils.js";
 
 /**
- * class SlaMeasurementActions - A class that contains methods for the sla-measurement component
+ * @class SlaMeasurementActions - A class that contains methods for the sla-measurement component
+ *
+ * @method perform - Executes the specified action step.
+ * @method create_all - Creates the SLA measurement components.
+ * @method update - Updates the SLA measurement with the provided data.
+ * @method select_measurement - Selects the specified measurement.
  */
 
 export class SlaMeasurementActions {
@@ -18,7 +23,6 @@ export class SlaMeasurementActions {
      * @param process {Object} - The process object
      * @param item {Object} - The item object if in a loop
      */
-    // Main create_all function
     static async create_all(step, context, process, item) {
         const parentElement = await crs.dom.get_element(step.args.parent, context, process, item);
         const measurementData = await crs.process.getValue(step.args.data, context, process, item);
@@ -39,6 +43,7 @@ export class SlaMeasurementActions {
                     measurementData: measurement
                 });
             });
+
             const tagName = "div"
             const measurementOverlay = await buildStandardElement(tagName,`m_${measurement.id}`,"measurement-overlay",null,`m${incrementor}`,`2 / ${rowCount}`);
             documentFragment.appendChild(measurementOverlay);
@@ -54,16 +59,13 @@ export class SlaMeasurementActions {
     }
 
     /**
-     * @method update - Updates the sla measurement data
+     * @method update - Updates the sla measurement with the measurement data
      * @param step {Object} - The step object in a process
      * @param context {Object} - The context object
      * @param process {Object} - The process object
      * @param item {Object} - The item object if in a loop
-     *
-     *
      * @returns {Promise<void>}
      */
-    // Main update function
     static async update(step, context, process, item) {
         const element = await crs.dom.get_element(step.args.element, context, process, item);
         const measurementData = await crs.process.getValue(step.args.measurementData, context, process, item);
@@ -104,67 +106,34 @@ export class SlaMeasurementActions {
 
         return element;
     }
-
-    /**
-     * @method remove_measurement - Removes the measurement from the visualization
-     * @param step {Object} - The step object in a process
-     * @param context {Object} - The context object
-     * @param process {Object} - The process object
-     * @param item {Object} - The item object if in a loop
-     * @return {Promise<void>}
-     */
-    static async remove_measurement(step, context, process, item) {
-        const parentElement = await crs.dom.get_element(step.args.element, context, process, item);
-        const deletedMeasurementIds = await removeMeasurements(parentElement);
-        await removeMeasurementFooters(parentElement, deletedMeasurementIds);
-
-        //we will need to delete the measurements off the completely this only removes the visual representation
-
-    }
 }
 
-async function removeMeasurements(slaLayer) {
-    const selectedMeasurements = slaLayer.shadowRoot.querySelectorAll(`[aria-selected='true']`)
-
-    const deletedMeasurementIds = {};
-    for (const measurement of selectedMeasurements) {
-        if (measurement.tagName.toLowerCase() === "sla-measurement") {
-            deletedMeasurementIds[measurement.id] = measurement.id;
-        }
-        measurement.remove();
-    }
-    return deletedMeasurementIds;
-}
-
-async function removeMeasurementFooters(slaLayer, deletedMeasurementsIds) {
-    const selectedMeasurementsFooters = slaLayer.shadowRoot.querySelectorAll("div.sla-footer-container");
-    for (const footer of selectedMeasurementsFooters) {
-        const footerId = footer.id.split("_")[1];
-        if (deletedMeasurementsIds[footerId] === footerId) {
-            footer.remove();
-        }
-    }
-}
-
-async function performSlaMeasurementCallback(slaMeasurementElement, callback, resolve) {
-    await callback();
-    slaMeasurementElement.dataset.status = "loaded";
-    resolve();
-}
-
+/**
+ * @method onSlaMeasurementLoading - Waits for the sla measurement to finish loading before executing the callback
+ * @param slaMeasurementElement {HTMLElement} - The sla measurement element
+ * @param callback {Function} - The callback function
+ * @returns {Promise<unknown>}
+ */
 function onSlaMeasurementLoading(slaMeasurementElement, callback) {
     return new Promise(async resolve => {
-        if (slaMeasurementElement.dataset.status === "loading") {
-            await performSlaMeasurementCallback(slaMeasurementElement, callback, resolve);
+        if (slaMeasurementElement.dataset.status === "ready") {
+            resolve(await callback());
+        } else {
+            const listener = async () => {
+                slaMeasurementElement.removeEventListener("measurement-loaded", listener);
+                resolve(await callback());
+            };
+            slaMeasurementElement.addEventListener("measurement-loaded", listener);
         }
-
-        slaMeasurementElement.addEventListener("loading-measurement", async () => {
-            await performSlaMeasurementCallback(slaMeasurementElement, callback, resolve);
-        });
     });
 }
 
-// Function to add start_status_name and end_status_name properties to measurement object
+/**
+ * @method addStatusNames - Adds the status names to the measurement object
+ * @param measurement {Object} - The measurement object
+ * @param measurementDataStatuses {Object} - a status lookup table object
+ * @returns {Promise<void>}
+ */
 async function addStatusNames(measurement, measurementDataStatuses) {
     const startStatus = measurementDataStatuses[measurement.start_status];
     const endStatus = measurementDataStatuses[measurement.end_status];
@@ -179,7 +148,13 @@ async function addStatusNames(measurement, measurementDataStatuses) {
     }
 }
 
-// Function to create measurement element
+/**
+ * @method createMeasurementElement - Creates the measurement element
+ * @param measurement {Object} - The measurement object
+ * @param parentElement {HTMLElement} - The parent element of the measurement
+ * @param parentPhase {String} - The parent phase of the measurement
+ * @returns {Promise<HTMLElement>}
+ */
 async function createMeasurementElement(measurement, parentElement, parentPhase) {
     const element = document.createElement("sla-measurement");
     element.id = measurement.id;
@@ -209,7 +184,7 @@ async function createMeasurementElement(measurement, parentElement, parentPhase)
 
 }
 
-// Function to update progress-related styles
+
 /**
  * @method updateProgressStyles - Updates the progress-related styles
  * @param element {HTMLElement} - The sla-measurement element
@@ -227,6 +202,13 @@ async function updateProgressStyles(element, measurementData) {
     await setAlternativeMeasurementState(measurementData, activeRowNumber, element);
 }
 
+/**
+ * @method setAlternativeMeasurementState - Sets the alternative measurement state to either warning or overdue
+ * @param measurementData {Object} - The measurement data object
+ * @param activeRowNumber {Number} - The active row number
+ * @param element {HTMLElement} - The sla-measurement element
+ * @returns {Promise<void>}
+ */
 async function setAlternativeMeasurementState(measurementData, activeRowNumber, element) {
     let measurementProgressState, measurementStateType;
 
@@ -256,7 +238,6 @@ async function createTriggerIndicators(element, measurementData) {
         for (const trigger of measurementData.triggers) {
             const triggerIndicator = document.createElement("div");
             triggerIndicator.id = `trigger_${trigger.id}`;
-            triggerIndicator.dataset.trigger = await calculateNextTrigger(measurementData, measurementData.progress);
             triggerIndicator.dataset.triggerType = trigger.type !== null ? trigger.type : "";
             triggerIndicator.classList.add("measurement-trigger-indicator");
             triggerIndicator.style.bottom = `${trigger.trigger}%`;
@@ -266,22 +247,6 @@ async function createTriggerIndicators(element, measurementData) {
     }
 }
 
-/**
- * @method calculateNextTrigger - Calculates the next trigger
- * @param measurementData {Object} - The measurement data object
- * @param currentProgress {Number} - The current progress
- * @return {String}
- */
-async function calculateNextTrigger(measurementData, currentProgress) {
-    for (const trigger of measurementData.triggers) {
-        if (trigger.trigger > currentProgress) {
-            return trigger.trigger;
-        }
-    }
-    return "";
-}
-
-// Function to update status based on parent phase
 /**
  * @method updateStatus - Updates the status based on the parent phase
  * @param element {HTMLElement} - The sla-measurement element
@@ -298,9 +263,6 @@ async function updateStatus(element, measurementData) {
     else {
         element.dataset.state = "active";
     }
-
-
-    //ToDo AW - Better names for start_status_name because they became numbers
 }
 
 crs.intent.sla_measurement = SlaMeasurementActions;

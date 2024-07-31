@@ -1,12 +1,11 @@
 import "./../../context-menu/context-menu-actions.js";
 
+/**
+ * @class SlaMeasurementActions - This component is responsible for rendering the SLA measurement
+ */
 class SlaMeasurement extends HTMLElement {
     #mouseEnterHandler = this.#mouseEnter.bind(this);
     #mouseLeaveHandler = this.#mouseLeave.bind(this);
-
-    get html() {
-        return import.meta.url.replace(".js", ".html");
-    }
 
     constructor() {
         super();
@@ -20,11 +19,15 @@ class SlaMeasurement extends HTMLElement {
         this.addEventListener("mouseleave", this.#mouseLeaveHandler);
     }
 
+    /**
+     * @method load - Loads the sla-measurement component
+     * @returns {Promise<unknown>}
+     */
     async load() {
         return new Promise(resolve => {
             requestAnimationFrame(async () => {
-                this.dataset.status = "loading";
-                this.dispatchEvent(new CustomEvent("loading-measurement"));
+                this.dataset.status = "ready";
+                this.dispatchEvent(new CustomEvent("measurement-loaded"));
                 resolve();
             });
         });
@@ -37,14 +40,29 @@ class SlaMeasurement extends HTMLElement {
         this.#mouseLeaveHandler = null;
     }
 
+    /**
+     * @method #mouseEnter - Dispatches a custom event when the mouse enters the measurement
+     * @param event {MouseEvent} - The mouse event
+     * @returns {Promise<void>}
+     */
     async #mouseEnter(event) {
         await this.#dispatchCustomPopupEvent(this);
     }
 
+    /**
+     * @method #mouseLeave - Dispatches a custom event when the mouse leaves the measurement
+     * @param event {MouseEvent} - The mouse event
+     * @returns {Promise<void>}
+     */
     async #mouseLeave(event) {
         await this.#dispatchCustomPopupEvent();
     }
 
+    /**
+     * @method #dispatchCustomPopupEvent - Dispatches a custom event
+     * @param measurement {Object} - The measurement object
+     * @returns {Promise<void>}
+     */
     async #dispatchCustomPopupEvent(measurement = null) {
         this.dispatchEvent(new CustomEvent("measurement-hovered", {detail: {measurement}, bubbles: true, composed: true}));
     }

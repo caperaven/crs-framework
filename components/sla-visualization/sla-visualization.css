@@ -134,11 +134,12 @@
     list-style-type: none;
     color: var(--grey-s1);
     background-color: var(--grey-s3);
-    border-radius: var(--radius);
     padding: 0.25rem 0.5rem;
     justify-content: flex-start;
     width: fit-content;
     height: 2.5rem;
+    border-radius: 0.5rem;
+    margin: 1rem;
 }
 
 :host([data-phase="runtime"]) #sla-legend li {
@@ -158,6 +159,7 @@
     width: 1rem;
     height: 1rem;
     margin-right: 0.5rem;
+    border-radius: var(--radius);
 }
 
 :host([data-phase="runtime"]) #sla-legend li span {
@@ -189,6 +191,11 @@
     width: 1rem;
     height: 1rem;
     background-color: var(--orange);
+}
+
+:host([data-phase="runtime"]) #sla-legend li#warning {
+    border-left: 1px solid var(--grey-s2);
+    padding-left: 1rem;
 }
 
 :host([data-phase="runtime"]) #sla-legend li#overdue::before {

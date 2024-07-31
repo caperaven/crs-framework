@@ -1,5 +1,16 @@
 import {buildStandardElement} from "../sla-utils/sla-grid-utils.js";
 
+/**
+ * @class SlaTooltipManager - A class that manages the tooltip for the sla visualization component's measurements
+ * @method dispose - Disposes the tooltip manager
+ * @method #initialize - Initializes the tooltip/popup
+ * @method #toggleTooltip - Shows the tooltip based on the measurement element
+ * @method #setTooltipVisibleState - Sets the tooltip visible state
+ * @method #createMeasurementTooltip - Creates the measurement tooltip
+ * @method #getMeasurementData - Gets the measurement data and returns it as an object
+ * @method #setTooltipPosition - Sets the popup position
+ * @method #updateMeasurementTooltipContent - Updates the this.#tooltip content based on the measurementData
+ */
 export class SlaTooltipManager {
     #measurementHoverHandler = this.#toggleTooltip.bind(this);
     #tooltip;
@@ -9,6 +20,7 @@ export class SlaTooltipManager {
     constructor(visualization) {
         this.#phase = visualization.dataset.phase;
         visualization.addEventListener("measurement-hovered", this.#measurementHoverHandler);
+        // ToDo: Ask Charles about this. Async function in constructor not awaited
         this.#initialize();
     }
 
@@ -106,6 +118,7 @@ export class SlaTooltipManager {
      * @method #getMeasurementData - Gets the measurement data and returns it as an object.
      * @param measurement {Element} - the measurement element
      * @returns {Promise<{duration: string, code: string, NumOfTriggers: number, startStatus: *, progress: string, endStatus: *}>}
+     * // ToDo: Ask Charles about the return type
      */
     async #getMeasurementData(measurement) {
         const measurementData = {
@@ -158,8 +171,8 @@ export class SlaTooltipManager {
 
     /**
      * @method #updateMeasurementTooltipContent - Updates the this.#tooltip content based on the measurementData.
-     * @param measurement
-     * @param measurementData
+     * @param id {String} - the measurement id
+     * @param measurementData {Object} - the measurement data
      * @returns {Promise<void>}
      */
     async #updateMeasurementTooltipContent(id, measurementData) {

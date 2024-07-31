@@ -1,5 +1,6 @@
 :host {
     --clock-outline: "update";
+    --trigger-indicator: "arrow-drop-up";
     display: flex;
     justify-content: center;
     width: 100%;
@@ -36,7 +37,7 @@
     display: block;
     color: var(--grey-s1);
     top: -1rem;
-    font-family: crsfrw, SourceSansPro;
+    font-family: crsfrw, Source Sans Pro, SourceSansPro;
     font-size: 0.75rem;
     font-weight: bold;
 }
@@ -69,7 +70,7 @@ sla-measurement[aria-selected='true'] {
     justify-content: center;
     align-items: center;
     color: var(--cl-text);
-    font-family: 'SourceSansPro', sans-serif;
+    font-family: Source Sans Pro, SourceSansPro, sans-serif;
     text-align: center;
     font-size: 0.75rem;
     font-weight: bold;
@@ -105,16 +106,13 @@ sla-measurement[aria-selected='true'] {
 }
 
 .measurement-trigger-indicator::before {
-    content: '';
-    position: absolute;
-    top: 50%;
+    content: var(--trigger-indicator);
+    position: relative;
     left: -12%; /* Position at the end of the dashed line */
-    width: 0;
-    height: 0;
-    border-style: solid;
-    border-width: 8px 0 8px 8px; /* Adjust size to change triangle dimensions */
-    border-color: transparent transparent transparent var(--orange); /* Yellow to match the dashed line color */
     transform: translateY(-50%);
+    color: var(--orange);
+    rotate: 90deg;
+    font-family: 'crsfrw';
 }
 
 :host(.measurement-warning-state) {

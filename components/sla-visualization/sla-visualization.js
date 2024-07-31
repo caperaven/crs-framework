@@ -4,11 +4,23 @@ import "../../packages/crs-process-api/action-systems/no-content-actions.js";
 import {SlaTooltipManager} from "./sla-tooltip/sla-tooltip-manager.js";
 
 /**
- * @class SlaVisualization - This class is responsible for rendering the SLA visualization.
- * @extends crs.classes.BindableElement
+ * @class SlaVisualization - This component is responsible for rendering the SLA visualization.
  *
- *
- **/
+ * @method connectedCallback - Called when the element is connected to the document.
+ * @method disconnectedCallback - Called when the element is disconnected from the document.
+ * @method #click - Handles the click event on the SLA visualization.
+ * @method #contextMenu - Handles the context menu event on the SLA visualization.
+ * @method #scaleGridVisualization - Handles the scaling of the grid visualization.
+ * @method initialize - Initializes the SLA visualization component.
+ * @method render - Renders the SLA visualization component.
+ * @method #selectionChanged - Handles the selection change event on the SLA visualization.
+ * @method #hookDataManager - Hooks into the data manager to listen for changes.
+ * @method #dataManagerChanged - Handles the data manager change event.
+ * @method #refresh - Refreshes the SLA visualization component.
+ * @method enable - Enables the SLA visualization component.
+ * @method disable - Disables the SLA visualization component.
+ * @method #updateSlaLegend - Updates the SLA legend with the relevant counts for each measurement state.
+ */
 export class SlaVisualization extends HTMLElement {
     #dataManagerChangedHandler = this.#dataManagerChanged.bind(this);
     #changeEventMap = {
@@ -16,7 +28,7 @@ export class SlaVisualization extends HTMLElement {
     };
 
     #currentStatusIndex;
-    #statuses;
+    #statusLookupTable;
     #orderedStatuses;
     #selectedMeasurement;
     #currentStatus;
@@ -33,21 +45,11 @@ export class SlaVisualization extends HTMLElement {
         return import.meta.url.replace(".js", ".html");
     }
 
+    /**
+     * This is used externally for crud operations where we need to get the selected measurements.
+     */
     get selectedMeasurements() {
         return this.#selectedMeasurement;
-    }
-
-    set selectedMeasurements(newValue) {
-        this.#selectedMeasurement = newValue;
-        this.dispatchEvent(new CustomEvent("selectedMeasurementsChange", {detail: {selected: newValue}}));
-    }
-
-    get currentStatus() {
-        return this.#currentStatus;
-    }
-
-    set currentStatus(newValue) {
-        this.#currentStatus = newValue;
     }
 
     constructor() {
@@ -61,12 +63,14 @@ export class SlaVisualization extends HTMLElement {
         this.#container = this.shadowRoot.querySelector("#sla-grid-container");
         this.#labelContainer = this.shadowRoot.querySelector("#grid-label-container");
         this.addEventListener("measurement-selected", this.#selectionChangedHandler);
+        // ToDo: This is for the context menu on the measurements. We will re-implement this in the future for V2
         // this.addEventListener("contextmenu", this.#contextMenuHandler);
         this.addEventListener("click", this.#clickHandler);
         this.addEventListener("wheel", this.#scaleHandler);
     }
 
     async disconnectedCallback() {
+        // ToDo: This is for the context menu on the measurements. We will re-implement this in the future for V2
         // this.removeEventListener("contextmenu", this.#contextMenuHandler);
         this.removeEventListener("click", this.#clickHandler);
         this.removeEventListener("wheel", this.#scaleHandler);
@@ -74,9 +78,10 @@ export class SlaVisualization extends HTMLElement {
         this.#scaleHandler = null;
         this.#contextMenuHandler = null;
         await crs.call("data_manager", "remove_change", {manager: this.dataset.manager, callback: this.#dataManagerChangedHandler});
+        // ToDo: Dispose of the data manager ?
         this.#dataManagerChangedHandler = null;
         this.#changeEventMap = null;
-        this.#statuses = null;
+        this.#statusLookupTable = null;
         this.#currentStatus = null;
         this.#container = null;
         this.removeEventListener("measurement-selected", this.#selectionChangedHandler);
@@ -91,6 +96,11 @@ export class SlaVisualization extends HTMLElement {
         this.#slaTooltipManager = null;
     }
 
+    /**
+     * @method #click - Handles the click event on the SLA visualization. Mostly used for selecting measurements.
+     * @param event {MouseEvent} - the mouse event object
+     * @returns {Promise<void>}
+     */
     async #click(event) {
         const measurement = event.composedPath()[0];
 
@@ -113,6 +123,11 @@ export class SlaVisualization extends HTMLElement {
         await this.#selectionChanged(selectedMeasurements)
     }
 
+    /**
+     * @method #contextMenu - Handles the context menu event on the SLA visualization. Mostly used for showing the context menu on measurements.
+     * @param event {MouseEvent} - the mouse event object
+     * @returns {Promise<void>}
+     */
     async #contextMenu(event) {
         event.preventDefault();
         const measurement = event.composedPath()[0];
@@ -132,6 +147,11 @@ export class SlaVisualization extends HTMLElement {
         });
     }
 
+    /**
+     * @method #scaleGridVisualization - Handles the scaling of the grid visualization.
+     * @param event {WheelEvent} - the wheel event object
+     * @returns {Promise<void>}
+     */
     async #scaleGridVisualization(event) {
         if (event.ctrlKey === false) return;
 
@@ -155,27 +175,39 @@ export class SlaVisualization extends HTMLElement {
         this.style.setProperty('--translate-x', `${translateX}px`);
     }
 
-    async initialize(statuses, currenStatus) {
-        this.#statuses = {};
-        this.#currentStatus = currenStatus
+    /**
+     * @method initialize - Initializes the SLA visualization component. We create a status lookup table and set the current status.
+     * @param statuses {object} - the statuses that are used in the SLA visualization
+     * @param currentStatus {number} - the current status of the SLA visualization
+     * @returns {Promise<void>}
+     */
+    async initialize(statuses, currentStatus) {
+        this.#statusLookupTable = {};
+        this.#currentStatus = currentStatus
         let index = 0;
         for (const status of statuses) {
             if(status.id === this.#currentStatus){
                 this.#currentStatusIndex = index;
             }
             status.order = index++;
-            this.#statuses[status.id] = status;
+            this.#statusLookupTable[status.id] = status;
         }
 
         this.#orderedStatuses = statuses;
 
-        //setting measurement label translation
-        this.shadowRoot.querySelector("#measurement-name").textContent = globalThis.translations.sla.labels.slaMeasurementFooter
+        requestAnimationFrame(async ()=>{
+            //setting measurement label translation
+            this.shadowRoot.querySelector("#measurement-name").textContent = globalThis.translations.sla.labels.slaMeasurementFooter
+        })
 
         await crs.call("component", "notify_ready", { element: this });
         this.#slaTooltipManager = new SlaTooltipManager(this);
     }
 
+    /**
+     * @method render - Renders the SLA visualization component. We get the data from the data manager and render the SLA grid. If there is no data we show a no content message.
+     * @returns {Promise<void>}
+     */
     async render() {
         let data = await crs.call("data_manager", "get_all", { manager: this.dataset.manager });
 
@@ -187,7 +219,7 @@ export class SlaVisualization extends HTMLElement {
             this.#container.style.justifyContent = "";
             const slaData = {
                 sla: data,
-                statuses: this.#statuses,
+                statuses: this.#statusLookupTable,
                 orderedStatuses: this.#orderedStatuses,
                 currentStatus: this.#currentStatus || "",
                 currentStatusIndex: this.#currentStatusIndex,
@@ -199,7 +231,6 @@ export class SlaVisualization extends HTMLElement {
             const phaseType = this.dataset.phase;
 
             await crs.call("sla_layer", "create_all_sla", { parent: this.#container, data: slaData , parentPhase: phaseType}); // refactor for phase
-
 
             if (phaseType === "runtime") {
                 await this.#updateSlaLegend(data);
@@ -215,10 +246,20 @@ export class SlaVisualization extends HTMLElement {
         }
     }
 
+    /**
+     * @method #selectionChanged - Handles the selection change event on the SLA visualization. We dispatch an event to notify the selected measurements have changed
+     * @param selectedMeasurements {Array} - the selected measurements
+     * @returns {Promise<void>}
+     */
     async #selectionChanged(selectedMeasurements) {
-        this.selectedMeasurements = selectedMeasurements;
+        this.#selectedMeasurement = selectedMeasurements;
+        this.dispatchEvent(new CustomEvent("selectedMeasurementsChange", {detail: {selected: selectedMeasurements}}));
     }
 
+    /**
+     * @method #hookDataManager - Hooks into the data manager to listen for changes.
+     * @returns {Promise<void>}
+     */
     async #hookDataManager(){
         await crs.call("data_manager", "on_change", {
             manager: this.dataset.manager,
@@ -226,27 +267,51 @@ export class SlaVisualization extends HTMLElement {
         });
     }
 
+    /**
+     * @method #dataManagerChanged - Handles the data manager change event. We call the relevant method based on the action type.
+     * @param args {object} - the data manager change event arguments
+     * @returns {Promise<void>}
+     */
     async #dataManagerChanged(args){
         await this.#changeEventMap[args.action].call(this, args);
     }
 
+    // ToDo: Not sure if we use this anymore because we redraw the whole grid
+    /**
+     * @method #refresh - Refreshes the SLA visualization component.
+     * @param args {object} - the data manager change event arguments
+     * @returns {Promise<void>}
+     */
     async #refresh(args){
         await crs.call("sla_visualization", "render", {
             element: this,
-            statuses: this.#statuses,
+            statuses: this.#statusLookupTable,
             currentStatus: this.#currentStatus
         });
     }
 
+    /**
+     * @method enable - Enables the SLA visualization component. We hook into the data manager and request the records.
+     * @returns {Promise<void>}
+     */
     async enable() {
         await this.#hookDataManager();
         await crs.call("data_manager", "request_records", {manager: this.dataset.manager});
     }
 
+    /**
+     * @method disable - Disables the SLA visualization component. We remove the change event listener from the data manager
+     * @returns {Promise<void>}
+     */
     async disable() {
         await crs.call("data_manager", "remove_change", {manager: this.dataset.manager, callback: this.#dataManagerChangedHandler});
     }
 
+    /**
+     * @method #updateSlaLegend - Updates the SLA legend with the relevant counts for each measurement state.
+     * @param data {Array} - the data that contains all the sla information we use to update the SLA legend.
+     * @returns {Promise<void>}
+     */
     async #updateSlaLegend(data) {
         // USE THE DATA
         const legend = this.shadowRoot.querySelector("#sla-legend");

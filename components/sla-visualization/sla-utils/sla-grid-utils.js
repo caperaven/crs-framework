@@ -1,12 +1,7 @@
 import "../../../packages/crs-process-api/action-systems/css-grid-actions.js";
 
 /**
- * 1. create css grid for SLA visualization
- * 2. create css grid for SLA layer including areas
- */
-
-/**
- * Create and set the css grid on the sla visualization
+ * @method create_sla_grid -  Create and set the css grid on the sla visualization
  * @param data {Object} - sla initialization object - see data.js
  * @param slaVisualization {HTMLElement} element that is the sla visualization component
  * @return {Promise<void>}
@@ -43,9 +38,10 @@ async function createInitialGrid(element) {
 }
 
 /**
- * Create the status labels
- * @param element {HTMLElement} - the sla visualization element
+ * @method createStatusLabels -  Create the status labels
+ * @param labelContainer {HTMLElement} - the container for the status labels
  * @param statuses {[Object]} - the array of status objects
+ * @param gridString
  */
 async function createStatusLabels(labelContainer, statuses, gridString) {
     const documentFragment = document.createDocumentFragment();
@@ -140,15 +136,26 @@ function generateGridTemplateArray(statuses, dataSla, visualizationPhase) {
     return gridTemplateArray;
 }
 
+/**
+ * @method buildGridRowString - builds the grid row string used in the grid template
+ * @param status {Object} - the status object
+ * @param slaArray {[string]} - the array of sla strings
+ * @param height {string} - the height of the row
+ * @returns {`"${string}" ${string}`}
+ */
 function buildGridRowString(status, slaArray, height) {
     let rowStr = `s${status.index}${slaArray.join('')}`;
     rowStr = `"${rowStr}" ${height}`;
     return rowStr;
 }
 
+/**
+ * @method buildRows - builds the rows for the sla visualization
+ * @param statusList {[Object]} - the array of status objects
+ * @returns {Promise<[{code: string, index: number, id: string}]>}
+ */
 export async function buildRows(statusList) {
     let result =[{id: "header", code : "head", index: 0}];
-
 
     let index = 1;
     // We loop through the statusList in reverse order to get the correct order of the statuses from bottom to top
@@ -164,6 +171,17 @@ export async function buildRows(statusList) {
     return result;
 }
 
+/**
+ * @method buildStandardElement - creates a standard element
+ * @param tagName {string} - the tag name of the element
+ * @param id {string} - the id of the element
+ * @param classes {string} - the classes of the element
+ * @param textContent {string} - the text content of the element
+ * @param gridArea {string} - the grid area of the element where it should be placed
+ * @param gridRow {string} - the grid row of the element
+ * // ToDo: Ask Charles about the return type
+ * @returns {Promise<HTMLAnchorElement|HTMLElement|HTMLAreaElement|HTMLAudioElement|HTMLBaseElement|HTMLQuoteElement|HTMLBodyElement|HTMLBRElement|HTMLButtonElement|HTMLCanvasElement|HTMLTableCaptionElement|HTMLTableColElement|HTMLDataElement|HTMLDataListElement|HTMLModElement|HTMLDetailsElement|HTMLDialogElement|HTMLDivElement|HTMLDListElement|HTMLEmbedElement|HTMLFieldSetElement|HTMLFormElement|HTMLHeadingElement|HTMLHeadElement|HTMLHRElement|HTMLHtmlElement|HTMLIFrameElement|HTMLImageElement|HTMLInputElement|HTMLLabelElement|HTMLLegendElement|HTMLLIElement|HTMLLinkElement|HTMLMapElement|HTMLMenuElement|HTMLMetaElement|HTMLMeterElement|HTMLObjectElement|HTMLOListElement|HTMLOptGroupElement|HTMLOptionElement|HTMLOutputElement|HTMLParagraphElement|HTMLPictureElement|HTMLPreElement|HTMLProgressElement|HTMLScriptElement|HTMLSelectElement|HTMLSlotElement|HTMLSourceElement|HTMLSpanElement|HTMLStyleElement|HTMLTableElement|HTMLTableSectionElement|HTMLTableCellElement|HTMLTemplateElement|HTMLTextAreaElement|HTMLTimeElement|HTMLTitleElement|HTMLTableRowElement|HTMLTrackElement|HTMLUListElement|HTMLVideoElement>}
+ */
 export async function buildStandardElement(tagName, id, classes, textContent=null, gridArea = null, gridRow= null) {
     const element = document.createElement(tagName);
 

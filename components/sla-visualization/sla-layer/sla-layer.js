@@ -1,15 +1,9 @@
 /**
- * @class SlaVisualization - This class is responsible for rendering the SLA visualization.
- * @extends crs.classes.BindableElement
- *
+ * @class SlaVisualization - This component is responsible for rendering the SLA Layer on the SLA Visualization
  *
  **/
 
 export class SlaLayer extends HTMLElement {
-
-    get html() {
-        return import.meta.url.replace(".js", ".html");
-    }
 
     constructor() {
         super();
@@ -19,7 +13,8 @@ export class SlaLayer extends HTMLElement {
     async connectedCallback() {
         const html = await fetch(import.meta.url.replace(".js", ".html")).then(result => result.text());
         this.shadowRoot.innerHTML = html;
-        this.dispatchEvent(new CustomEvent("loading"));
+        this.dataset.status = "ready";
+        this.dispatchEvent(new CustomEvent("sla-layer-loaded"));
     }
 
     async disconnectedCallback() {

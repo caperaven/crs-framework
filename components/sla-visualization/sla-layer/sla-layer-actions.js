@@ -3,7 +3,8 @@ import "./../sla-measurement/sla-measurement-actions.js";
 import {buildRows} from "../sla-utils/sla-grid-utils.js";
 
 /**
- * class SlaLayerActions - A class that contains methods for the sla-layer component
+ * @class SlaLayerActions - A class that contains methods for the sla-layer component
+ * @method create_all_sla - Creates the sla layer component
  */
 
 export class SlaLayerActions{
@@ -18,10 +19,7 @@ export class SlaLayerActions{
      * @param context {Object} - The context object
      * @param process {Object} - The process object
      * @param item {Object} - The item object if in a loop
-     * @param parent {Object} - The parent element to attach the component to
-     * @param data {[Object]} - The array of objects where each object contains the data for the component
      */
-
     static async create_all_sla(step, context, process, item) {
         const parentElement = await crs.dom.get_element(step.args.parent, context, process, item);
         const parentPhase = await crs.process.getValue(step.args.parentPhase, context, process, item);
@@ -64,18 +62,6 @@ export class SlaLayerActions{
     }
 }
 
-/**
- * @method performSlaLayerCallback - Performs the sla layer callback
- * @param slaLayerElement {HTMLElement} - The sla layer element
- * @param callback {Function} - The callback function
- * @param resolve {Function} - The resolve function
- * @return {Promise<void>}
- */
-async function performSlaLayerCallback(slaLayerElement, callback, resolve) {
-    await callback();
-    slaLayerElement.dataset.status = "loaded";
-    resolve();
-}
 
 /**
  * @method onSlaLayerLoading - Waits for the sla layer to finish loading before executing the callback
@@ -85,13 +71,16 @@ async function performSlaLayerCallback(slaLayerElement, callback, resolve) {
  */
 function onSlaLayerLoading(slaLayerElement, callback) {
     return new Promise(async resolve => {
-        if (slaLayerElement.dataset.status === "loading") {
-            await performSlaLayerCallback(slaLayerElement, callback, resolve);
+        if (slaLayerElement.dataset.status === "ready") {
+            resolve(await callback())
         }
-
-        slaLayerElement.addEventListener("loading", async () => {
-            await performSlaLayerCallback(slaLayerElement, callback, resolve);
-        })
+        else {
+            const listener = async () => {
+                slaLayerElement.removeEventListener("sla-layer-loaded", listener);
+                resolve(await callback());
+            }
+            slaLayerElement.addEventListener("sla-layer-loaded", listener);
+        }
     })
 }
 
@@ -255,9 +244,8 @@ async function createSlaHeader(slaLayerElement, slaItemData) {
 /**
  * @method showCurrentWorkOrderStatus - Shows the current work order status and applies the correct styles on the sla grid visualization.
  * @param currentStatus {String} - The status description
- * @param parentElement {HTMLElement} - The parent element
+ * @param slaContainer {HTMLElement} - The sla container element
  */
-
 async function showCurrentStatus(currentStatus, slaContainer) {
     const statusActiveElements = slaContainer.parentElement.querySelectorAll(`[data-id='${currentStatus}']`);
     for (const element of statusActiveElements) {
