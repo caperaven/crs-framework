@@ -39,7 +39,7 @@ export class SlaVisualization extends HTMLElement {
     #contextMenuHandler = this.#contextMenu.bind(this);
     #currentScale = 1;
     #scaleHandler = this.#scaleGridVisualization.bind(this);
-    #labelContainer;
+    #statusLabelContainer;
 
     get html() {
         return import.meta.url.replace(".js", ".html");
@@ -61,12 +61,13 @@ export class SlaVisualization extends HTMLElement {
         const html = await fetch(import.meta.url.replace(".js", ".html")).then(result => result.text());
         this.shadowRoot.innerHTML = html;
         this.#container = this.shadowRoot.querySelector("#sla-grid-container");
-        this.#labelContainer = this.shadowRoot.querySelector("#grid-label-container");
+        this.#statusLabelContainer = this.shadowRoot.querySelector("#grid-label-container");
         this.addEventListener("measurement-selected", this.#selectionChangedHandler);
         // ToDo: This is for the context menu on the measurements. We will re-implement this in the future for V2
         // this.addEventListener("contextmenu", this.#contextMenuHandler);
         this.addEventListener("click", this.#clickHandler);
         this.addEventListener("wheel", this.#scaleHandler);
+        await crs.call("component", "notify_ready", { element: this });
     }
 
     async disconnectedCallback() {
@@ -78,7 +79,6 @@ export class SlaVisualization extends HTMLElement {
         this.#scaleHandler = null;
         this.#contextMenuHandler = null;
         await crs.call("data_manager", "remove_change", {manager: this.dataset.manager, callback: this.#dataManagerChangedHandler});
-        // ToDo: Dispose of the data manager ?
         this.#dataManagerChangedHandler = null;
         this.#changeEventMap = null;
         this.#statusLookupTable = null;
@@ -88,7 +88,7 @@ export class SlaVisualization extends HTMLElement {
         this.#selectionChangedHandler = null;
         this.#selectedMeasurement = null;
         this.#currentScale = null;
-        this.#labelContainer = null;
+        this.#statusLabelContainer = null;
 
         if (this.#slaTooltipManager == null) return;
 
@@ -195,12 +195,9 @@ export class SlaVisualization extends HTMLElement {
 
         this.#orderedStatuses = statuses;
 
-        requestAnimationFrame(async ()=>{
-            //setting measurement label translation
-            this.shadowRoot.querySelector("#measurement-name").textContent = globalThis.translations.sla.labels.slaMeasurementFooter
-        })
+        //setting measurement label translation
+        this.shadowRoot.querySelector("#measurement-name").textContent = globalThis.translations.sla.labels.slaMeasurementFooter
 
-        await crs.call("component", "notify_ready", { element: this });
         this.#slaTooltipManager = new SlaTooltipManager(this);
     }
 
@@ -212,11 +209,11 @@ export class SlaVisualization extends HTMLElement {
         let data = await crs.call("data_manager", "get_all", { manager: this.dataset.manager });
 
         this.#container.innerHTML = "";
-        this.#labelContainer.innerHTML = "";
+        this.#statusLabelContainer.innerHTML = "";
         const gridParentContainer = this.shadowRoot.querySelector("#grid-parent-container");
 
         if (data[0]?.measurements?.length > 0) {
-            this.#container.style.justifyContent = "";
+            this.classList.remove("no-content")
             const slaData = {
                 sla: data,
                 statuses: this.#statusLookupTable,
@@ -225,7 +222,7 @@ export class SlaVisualization extends HTMLElement {
                 currentStatusIndex: this.#currentStatusIndex,
             }
 
-            await create_sla_grid(slaData, this.#container, this.#labelContainer, this);
+            await create_sla_grid(slaData, this.#container, this.#statusLabelContainer, this);
 
             //phaseType can either be runtime or setup
             const phaseType = this.dataset.phase;
@@ -234,14 +231,12 @@ export class SlaVisualization extends HTMLElement {
 
             if (phaseType === "runtime") {
                 await this.#updateSlaLegend(data);
-                const activeStatusRow = gridParentContainer.querySelector("[class='status-label active-status-label']");
+                const activeStatusRow = gridParentContainer.querySelector(".status-label.active-status-label");
                 activeStatusRow.scrollIntoView({behavior: 'smooth', block: 'center', inline: 'start'});
             }
         }
         else{
-            this.shadowRoot.querySelector("#sla-legend").style.display = "none";
-            this.#container.style.justifyContent = "center";
-            this.#container.style.display = "flex";
+            this.classList.add("no-content");
             await crs.call("no_content", "show", { parent: gridParentContainer });
         }
     }
@@ -276,7 +271,6 @@ export class SlaVisualization extends HTMLElement {
         await this.#changeEventMap[args.action].call(this, args);
     }
 
-    // ToDo: Not sure if we use this anymore because we redraw the whole grid
     /**
      * @method #refresh - Refreshes the SLA visualization component.
      * @param args {object} - the data manager change event arguments

@@ -20,7 +20,6 @@ export class SlaTooltipManager {
     constructor(visualization) {
         this.#phase = visualization.dataset.phase;
         visualization.addEventListener("measurement-hovered", this.#measurementHoverHandler);
-        // ToDo: Ask Charles about this. Async function in constructor not awaited
         this.#initialize();
     }
 
@@ -118,7 +117,6 @@ export class SlaTooltipManager {
      * @method #getMeasurementData - Gets the measurement data and returns it as an object.
      * @param measurement {Element} - the measurement element
      * @returns {Promise<{duration: string, code: string, NumOfTriggers: number, startStatus: *, progress: string, endStatus: *}>}
-     * // ToDo: Ask Charles about the return type
      */
     async #getMeasurementData(measurement) {
         const measurementData = {

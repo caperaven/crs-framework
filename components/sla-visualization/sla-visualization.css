@@ -205,6 +205,15 @@
     background-color: var(--red);
 }
 
+:host(.no-content) #sla-legend  {
+    display: none;
+}
+
+:host(.no-content) #sla-grid-container {
+    display: flex;
+    justify-content: center;
+}
+
 #grid-parent-container {
     display: grid;
     grid-template-columns: 12rem 1fr;

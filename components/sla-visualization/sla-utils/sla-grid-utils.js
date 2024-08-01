@@ -3,6 +3,8 @@ import "../../../packages/crs-process-api/action-systems/css-grid-actions.js";
 /**
  * @method create_sla_grid -  Create and set the css grid on the sla visualization
  * @param data {Object} - sla initialization object - see data.js
+ * @param slaGridContainer {HTMLElement} - the container for the sla grid
+ * @param labelContainer {HTMLElement} - the container for the status labels
  * @param slaVisualization {HTMLElement} element that is the sla visualization component
  * @return {Promise<void>}
  */
@@ -179,7 +181,6 @@ export async function buildRows(statusList) {
  * @param textContent {string} - the text content of the element
  * @param gridArea {string} - the grid area of the element where it should be placed
  * @param gridRow {string} - the grid row of the element
- * // ToDo: Ask Charles about the return type
  * @returns {Promise<HTMLAnchorElement|HTMLElement|HTMLAreaElement|HTMLAudioElement|HTMLBaseElement|HTMLQuoteElement|HTMLBodyElement|HTMLBRElement|HTMLButtonElement|HTMLCanvasElement|HTMLTableCaptionElement|HTMLTableColElement|HTMLDataElement|HTMLDataListElement|HTMLModElement|HTMLDetailsElement|HTMLDialogElement|HTMLDivElement|HTMLDListElement|HTMLEmbedElement|HTMLFieldSetElement|HTMLFormElement|HTMLHeadingElement|HTMLHeadElement|HTMLHRElement|HTMLHtmlElement|HTMLIFrameElement|HTMLImageElement|HTMLInputElement|HTMLLabelElement|HTMLLegendElement|HTMLLIElement|HTMLLinkElement|HTMLMapElement|HTMLMenuElement|HTMLMetaElement|HTMLMeterElement|HTMLObjectElement|HTMLOListElement|HTMLOptGroupElement|HTMLOptionElement|HTMLOutputElement|HTMLParagraphElement|HTMLPictureElement|HTMLPreElement|HTMLProgressElement|HTMLScriptElement|HTMLSelectElement|HTMLSlotElement|HTMLSourceElement|HTMLSpanElement|HTMLStyleElement|HTMLTableElement|HTMLTableSectionElement|HTMLTableCellElement|HTMLTemplateElement|HTMLTextAreaElement|HTMLTimeElement|HTMLTitleElement|HTMLTableRowElement|HTMLTrackElement|HTMLUListElement|HTMLVideoElement>}
  */
 export async function buildStandardElement(tagName, id, classes, textContent=null, gridArea = null, gridRow= null) {

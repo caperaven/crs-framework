@@ -89,6 +89,7 @@ function onSlaLayerLoading(slaLayerElement, callback) {
  * @param slaLayerElement {HTMLElement} - The sla layer element
  * @param slaItemData {Object} - The sla item data
  * @param orderedStatuses {Array} - The status data
+ * @param statusLookupTable {Object} - The status lookup table
  * @return {Promise<void>}
  */
 async function createSlaGrid(slaLayerElement, slaItemData, orderedStatuses, statusLookupTable) {

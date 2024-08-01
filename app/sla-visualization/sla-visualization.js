@@ -43,6 +43,11 @@ export default class SlaVisualization extends crsbinding.classes.ViewBase {
             }
         }
 
+        globalThis.translations.noContent = {
+            title: "No Records Found",
+            message: "Either you do not have sufficient user rights required to display the records or there are no records to be displayed."
+        }
+
         await crs.call("data_manager", "register", {
             manager: "my_sla",
             id_field: "id",
@@ -52,32 +57,38 @@ export default class SlaVisualization extends crsbinding.classes.ViewBase {
             }
         });
 
-        await crs.call("sla_visualization", "initialize", {
-            element: document.querySelector("sla-visualization"),
-            statuses: data2.statuses,
-            currentStatus: data2.currentStatus,
-        })
+
     }
 
     async disconnectedCallback() {
         globalThis.translations = null;
+        await crs.call("data_manager", "dispose", {
+            manager: "my_sla"
+        })
         await super.disconnectedCallback();
     }
 
+    /**
+     * @method initializeRuntime - Initializes the runtime
+     * @returns {Promise<void>}
+     */
     async initializeRuntime() {
         const slaVisualization = document.querySelector("sla-visualization");
-        slaVisualization.enable();
+        await crs.call("sla_visualization", "initialize", {
+            element: slaVisualization,
+            statuses: data2.statuses,
+            currentStatus: data2.currentStatus,
+        })
+
+        await slaVisualization.enable();
 
     }
 
+    /**
+     * @method logSelection - Logs the selected measurements when in Setup Phase
+     * @returns {Promise<void>}
+     */
     async logSelection() {
        console.log(this.getProperty("mySelection"))
-    }
-
-    async removeMeasurement() {
-        const parentElement = document.querySelector("sla-visualization#setup");
-        await crs.call("sla_measurement", "remove_measurement", {
-            element: parentElement
-        })
     }
 }
