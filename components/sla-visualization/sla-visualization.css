@@ -37,7 +37,7 @@
 
 .status-label:not([data-status-order="undefined"])::before,
 .status-label:not([data-status-order="undefined"])::after {
-    max-width: 10rem;
+    max-width: 8.5rem;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
@@ -63,7 +63,7 @@
     position: sticky;
     left: 0;
     z-index: 2;
-    min-width: 12.5rem;
+    min-width: 10.5rem;
 }
 
 .sla-layer {
@@ -92,7 +92,7 @@
     box-sizing: border-box;
 }
 
-.status-description{
+.status-description {
     position: sticky;
     top: 50%;
     left: 0;
@@ -216,7 +216,7 @@
 
 #grid-parent-container {
     display: grid;
-    grid-template-columns: 12rem 1fr;
+    grid-template-columns: 10.5rem 1fr;
     grid-template-rows: 1fr;
     overflow: auto;
     height: 100%;

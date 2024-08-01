@@ -2,20 +2,26 @@ import {buildStandardElement} from "../sla-utils/sla-grid-utils.js";
 
 /**
  * @class SlaTooltipManager - A class that manages the tooltip for the sla visualization component's measurements
- * @method dispose - Disposes the tooltip manager
- * @method #initialize - Initializes the tooltip/popup
- * @method #toggleTooltip - Shows the tooltip based on the measurement element
- * @method #setTooltipVisibleState - Sets the tooltip visible state
- * @method #createMeasurementTooltip - Creates the measurement tooltip
- * @method #getMeasurementData - Gets the measurement data and returns it as an object
- * @method #setTooltipPosition - Sets the popup position
- * @method #updateMeasurementTooltipContent - Updates the this.#tooltip content based on the measurementData
+ *
+ * @method constructor - Initializes the tooltip manager.
+ * @method dispose - Disposes the tooltip manager.
+ * @method #initialize - Initializes the tooltip.
+ * @method #toggleTooltip - Shows the tooltip based on the measurement element.
+ * @method #setTooltipVisibleState - Sets the tooltip visible state.
+ * @method #createMeasurementTooltip - Creates the measurement tooltip.
+ * @method #inflateTriggers - Inflates the triggers template and appends the fragment to the tooltip after the first child.
+ * @method #getMeasurementData - Gets the measurement data and returns it as an object.
+ * @method #buildTriggerLookup - Builds the trigger lookup.
+ * @method #setTooltipPosition - Sets the tooltip position.
+ * @method #updateMeasurementTooltipContent - Updates the this.#tooltip content based on the measurementData.
  */
 export class SlaTooltipManager {
     #measurementHoverHandler = this.#toggleTooltip.bind(this);
     #tooltip;
     #phase;
-    #templateId= "setup-popup";
+    #templateId= "setup-tooltip";
+    #triggerLookup = {};
+    #triggerContainer;
 
     constructor(visualization) {
         this.#phase = visualization.dataset.phase;
@@ -25,19 +31,21 @@ export class SlaTooltipManager {
 
     async dispose(visualization) {
         visualization.removeEventListener("measurement-hovered", this.#measurementHoverHandler);
-        await crs.call("styles", "unload_file", {id: "sla-popup-styles"});
-        await crsbinding.inflationManager.unregister(this.#templateId);
+        await crs.call("styles", "unload_file", {id: "sla-tooltip-styles"});
+        await crsbinding.inflationManager.unregister(`${this.#templateId}-sla-tooltip-template`);
+        await crsbinding.inflationManager.unregister("triggers-template");
         this.#measurementHoverHandler = null
         this.#phase = null;
         this.#templateId = null;
-
+        this.#triggerLookup = null;
+        this.#triggerContainer = null;
         if (this.#tooltip == null) return;
         this.#tooltip?.remove();
         this.#tooltip = null;
     }
 
     /**
-     * @method #initialize - Initializes the tooltip/popup.
+     * @method #initialize - Initializes the tooltip.
      * @returns {Promise<void>}
      */
     async #initialize() {
@@ -45,19 +53,20 @@ export class SlaTooltipManager {
 
         if (this.#phase === "runtime") {
             dynamicPath = "-runtime.html";
-            this.#templateId = "runtime-popup";
+            this.#templateId = "runtime-tooltip";
         }
-
-        const popupHtmlFile = await fetch(import.meta.url.replace("-manager.js", dynamicPath)).then(result => result.text());
-
-        const popupTemplate = await buildStandardElement("template", `${this.#phase}-sla-popup-template`);
-        popupTemplate.innerHTML = popupHtmlFile;
+        await this.#registerTemplate(dynamicPath,`${this.#templateId}-sla-tooltip-template`);
+        await this.#registerTemplate("-triggers.html", "triggers-template");
 
         // here we are going to add the link to the document head to load the css file
-        await crs.call("styles", "load_file", {id: "sla-popup-styles", file: import.meta.url.replace("-manager.js", ".css")});
+        await crs.call("styles", "load_file", {id: "sla-tooltip-styles", file: import.meta.url.replace("-manager.js", ".css")});
+    }
 
-        // here we are going to register the template with the inflation manager
-        await crsbinding.inflationManager.register(this.#templateId, popupTemplate);
+    async #registerTemplate(pathName, templateId) {
+        const templateHtmlFile = await fetch(import.meta.url.replace("-manager.js", pathName)).then(result => result.text());
+        const tempTemplate = await buildStandardElement("template", templateId);
+        tempTemplate.innerHTML = templateHtmlFile;
+        await crsbinding.inflationManager.register(templateId, tempTemplate);
     }
 
     /**
@@ -69,15 +78,20 @@ export class SlaTooltipManager {
         const measurement = event.detail.measurement;
 
         if (measurement != null) {
-            const measurementData = await this.#getMeasurementData(measurement);
-            const popupId = `m-${measurement.id}`;
+            await this.#buildTriggerLookup(measurement);
+
+            const id = measurement?.id;
+            const measurementData = await this.#getMeasurementData(measurement,this.#triggerLookup[id].length);
+            const tooltipId = `m-${id}`;
 
             if (this.#tooltip == null) {
-                await this.#createMeasurementTooltip(popupId,measurementData);
-            }else {
-                await this.#updateMeasurementTooltipContent(popupId,measurementData);
+                await this.#createMeasurementTooltip(tooltipId,measurementData);
+                this.#triggerContainer = this.#tooltip.querySelector("[data-id='trigger-data']");
+            } else {
+                await this.#updateMeasurementTooltipContent(tooltipId,measurementData);
             }
 
+            await this.#inflateTriggersContainerContent(id);
             await this.#setTooltipPosition(measurement);
             return;
         }
@@ -107,10 +121,37 @@ export class SlaTooltipManager {
      * @returns {Promise<void>}
      */
     async #createMeasurementTooltip(id, measurementData) {
-        const popupFragment = await crsbinding.inflationManager.get(this.#templateId, measurementData);
-        this.#tooltip = popupFragment.children[0];
+        const tooltipFragment = await crsbinding.inflationManager.get(`${this.#templateId}-sla-tooltip-template`, measurementData);
+        this.#tooltip = tooltipFragment.children[0];
         this.#tooltip.setAttribute("id", id);
-        document.body.appendChild(popupFragment);
+        document.body.appendChild(tooltipFragment);
+    }
+
+    /**
+     * @method #inflateTriggersContainerContent - Inflates the triggers template and appends the fragment to the tooltip after the first child.
+     * @returns {Promise<void>}
+     */
+    async #inflateTriggersContainerContent(measurementId) {
+        if (this.#triggerContainer.id === this.#tooltip.id) {
+            return;
+        }
+
+        // clears the trigger container innerHTML
+        await this.#resetTriggersContainer();
+
+        const fragment = await crsbinding.inflationManager.get("triggers-template", this.#triggerLookup[measurementId]);
+        this.#triggerContainer.setAttribute("id",`m-${measurementId}`);
+        this.#triggerContainer.appendChild(fragment);
+    }
+
+    /**
+     * @method #resetTriggers - Resets the triggers containers innerHTML.
+     * @returns {Promise<void>}
+     */
+    async #resetTriggersContainer() {
+        if(this.#triggerContainer.innerHTML === "") return;
+
+        this.#triggerContainer.innerHTML = "";
     }
 
     /**
@@ -118,37 +159,51 @@ export class SlaTooltipManager {
      * @param measurement {Element} - the measurement element
      * @returns {Promise<{duration: string, code: string, NumOfTriggers: number, startStatus: *, progress: string, endStatus: *}>}
      */
-    async #getMeasurementData(measurement) {
+    async #getMeasurementData(measurement,numberOfTriggers) {
         const measurementData = {
             description: measurement.dataset.description,
             duration: measurement.dataset.duration,
             progress: measurement.dataset.progress,
-            numberOfTriggers: measurement.shadowRoot.querySelectorAll(".measurement-trigger-indicator").length,
+            numberOfTriggers: numberOfTriggers,
             startStatus: measurement.getAttribute("data-start-status-name", ""),
             endStatus: measurement.getAttribute("data-end-status-name", ""),
-            trigger: "",
-            triggerDescription: "",
             startLabel: globalThis.translations.sla.labels.startLabel,
             endLabel: globalThis.translations.sla.labels.endLabel,
             durationLabel: globalThis.translations.sla.labels.durationLabel,
             progressLabel: globalThis.translations.sla.labels.progressLabel,
             triggerLabel: globalThis.translations.sla.labels.triggerLabel,
-            triggerDescriptionLabel: globalThis.translations.sla.labels.triggerDescriptionLabel,
-            numberOfTriggersLabel: globalThis.translations.sla.labels.numberOfTriggersLabel,
+            slaMeasureLabel: globalThis.translations.sla.labels.slaMeasureLabel,
         };
-
-        const measurementTriggerIndicator = measurement.shadowRoot.querySelector(".measurement-trigger-indicator");
-
-        if (measurementTriggerIndicator !== null) {
-            measurementData.trigger = measurementTriggerIndicator.dataset?.trigger;
-            measurementData.triggerDescription = measurementTriggerIndicator.dataset?.triggerType;
-        }
 
         return measurementData;
     }
 
     /**
-     * @method #setTooltipPosition - Sets the popup position.
+     * @method #buildTriggerLookup - Builds the trigger lookup.
+     * @param measurement {Element} - the measurement element
+     * @returns {Promise<void>}
+     */
+    async #buildTriggerLookup (measurement) {
+        const measurementId  = measurement.id;
+
+        if (this.#triggerLookup[measurementId] != null) return;
+
+        const measurementTriggersArray = [];
+        const triggerElements = measurement.shadowRoot.querySelectorAll(".measurement-trigger-indicator");
+
+        for (const triggerElement of triggerElements) {
+            const triggerObject =  {
+                triggerProgress: triggerElement.dataset.triggerProgress,
+                triggerDescription: `${triggerElement.dataset.triggerType} :`
+            }
+            measurementTriggersArray.push(triggerObject);
+        }
+
+        this.#triggerLookup[measurementId] = measurementTriggersArray;
+    }
+
+    /**
+     * @method #setTooltipPosition - Sets the tooltip position.
      * @param measurement {Element} - the measurement element
      * @returns {Promise<void>}
      */
@@ -162,7 +217,7 @@ export class SlaTooltipManager {
             target: measurement,
             at: tooltipPosition,
             anchor: "top",
-            margin: 1
+            margin: 5
         });
         await this.#setTooltipVisibleState(false);
     }
@@ -176,7 +231,7 @@ export class SlaTooltipManager {
     async #updateMeasurementTooltipContent(id, measurementData) {
         if (this.#tooltip.id === id) return;
 
+        await crsbinding.inflationManager.inflate(`${this.#templateId}-sla-tooltip-template`,this.#tooltip, measurementData);
         this.#tooltip.setAttribute("id", id);
-        await crsbinding.inflationManager.inflate(this.#templateId,this.#tooltip, measurementData);
     }
 }

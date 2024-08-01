@@ -241,6 +241,7 @@ async function createTriggerIndicators(element, measurementData) {
             triggerIndicator.dataset.triggerType = trigger.type !== null ? trigger.type : "";
             triggerIndicator.classList.add("measurement-trigger-indicator");
             triggerIndicator.style.bottom = `${trigger.trigger}%`;
+            triggerIndicator.dataset.triggerProgress =`${trigger.trigger}%`;
             trigger.trigger === 0 ? triggerIndicator.style.opacity = "0" : triggerIndicator.style.opacity = "1";
             element.shadowRoot.appendChild(triggerIndicator);
         }

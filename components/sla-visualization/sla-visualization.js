@@ -169,7 +169,7 @@ export class SlaVisualization extends HTMLElement {
         // We want to set the translate-x depending on the scale. 0.1 = 200 and 1 = 0
         // Inverse scale
         const invertScale = 1 - this.#currentScale;
-        const translateX = (invertScale * 200) * -1;
+        const translateX = (invertScale * 170) * -1;
 
         this.style.setProperty('--scale', this.#currentScale);
         this.style.setProperty('--translate-x', `${translateX}px`);
