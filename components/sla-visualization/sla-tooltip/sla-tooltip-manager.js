@@ -172,7 +172,7 @@ export class SlaTooltipManager {
             durationLabel: globalThis.translations.sla.labels.durationLabel,
             progressLabel: globalThis.translations.sla.labels.progressLabel,
             triggerLabel: globalThis.translations.sla.labels.triggerLabel,
-            slaMeasureLabel: globalThis.translations.sla.labels.slaMeasureLabel,
+            slaMeasureLabel: globalThis.translations.sla.labels.slaMeasurementLabel,
         };
 
         return measurementData;

@@ -29,7 +29,7 @@ export default class SlaVisualization extends crsbinding.classes.ViewBase {
                 durationLabel: "Duration : ",
                 progressLabel: "Work Progress : ",
                 triggerLabel: "Triggers : ",
-                slaMeasureLabel: "SLA Measure :",
+                slaMeasurementLabel: "SLA Measure :",
                 slaStatus: "Status",
                 slaMeasurementFooter: "Measurement Name",
                 slaHeaderCode: "Code",
