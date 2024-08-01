@@ -132,9 +132,7 @@ export class SlaTooltipManager {
      * @returns {Promise<void>}
      */
     async #inflateTriggersContainerContent(measurementId) {
-        if (this.#triggerContainer.id === this.#tooltip.id) {
-            return;
-        }
+        if (this.#triggerContainer.id === this.#tooltip.id) return;
 
         // clears the trigger container innerHTML
         await this.#resetTriggersContainer();
