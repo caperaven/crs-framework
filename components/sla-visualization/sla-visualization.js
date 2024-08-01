@@ -68,6 +68,7 @@ export class SlaVisualization extends HTMLElement {
         this.addEventListener("click", this.#clickHandler);
         this.addEventListener("wheel", this.#scaleHandler);
         await crs.call("component", "notify_ready", { element: this });
+        this.#slaTooltipManager = new SlaTooltipManager(this);
     }
 
     async disconnectedCallback() {
@@ -197,8 +198,6 @@ export class SlaVisualization extends HTMLElement {
 
         //setting measurement label translation
         this.shadowRoot.querySelector("#measurement-name").textContent = globalThis.translations.sla.labels.slaMeasurementFooter
-
-        this.#slaTooltipManager = new SlaTooltipManager(this);
     }
 
     /**
@@ -210,6 +209,7 @@ export class SlaVisualization extends HTMLElement {
 
         this.#container.innerHTML = "";
         this.#statusLabelContainer.innerHTML = "";
+
         const gridParentContainer = this.shadowRoot.querySelector("#grid-parent-container");
 
         if (data[0]?.measurements?.length > 0) {
