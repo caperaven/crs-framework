@@ -82,6 +82,7 @@
     font-weight: normal;
     max-width: 6rem;
     color: var(--cl-text-alt);
+    white-space: normal;
 }
 
 .measurement-content {

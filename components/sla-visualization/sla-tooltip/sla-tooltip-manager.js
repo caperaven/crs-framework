@@ -55,6 +55,7 @@ export class SlaTooltipManager {
             dynamicPath = "-runtime.html";
             this.#templateId = "runtime-tooltip";
         }
+
         await this.#registerTemplate(dynamicPath,`${this.#templateId}-sla-tooltip-template`);
         await this.#registerTemplate("-triggers.html", "triggers-template");
 
@@ -64,9 +65,9 @@ export class SlaTooltipManager {
 
     async #registerTemplate(pathName, templateId) {
         const templateHtmlFile = await fetch(import.meta.url.replace("-manager.js", pathName)).then(result => result.text());
-        const tempTemplate = await buildStandardElement("template", templateId);
-        tempTemplate.innerHTML = templateHtmlFile;
-        await crsbinding.inflationManager.register(templateId, tempTemplate);
+        const templateElement = await buildStandardElement("template", templateId);
+        templateElement.innerHTML = templateHtmlFile;
+        await crsbinding.inflationManager.register(templateId, templateElement);
     }
 
     /**
