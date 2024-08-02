@@ -232,6 +232,21 @@ async function setAlternativeMeasurementState(measurementData, activeRowNumber, 
 }
 
 /**
+ * @method calculateNextTrigger - Calculates the next trigger
+ * @param measurementData {Object} - The measurement data object
+ * @param currentProgress {Number} - The current progress
+ * @return {String}
+ */
+async function calculateNextTrigger(measurementData, currentProgress) {
+    for (const trigger of measurementData.triggers) {
+        if (trigger.trigger > currentProgress) {
+            return trigger.trigger;
+        }
+    }
+    return "";
+}
+
+/**
  * @method createTriggerIndicators - Creates the trigger indicators
  * @param element {HTMLElement} - The sla-measurement element
  * @param measurementData {Object} - The measurement data object
@@ -243,6 +258,7 @@ async function createTriggerIndicators(element, measurementData) {
             const triggerIndicator = document.createElement("div");
             triggerIndicator.id = `trigger_${trigger.id}`;
             triggerIndicator.dataset.triggerType = trigger.type !== null ? trigger.type : "";
+            triggerIndicator.dataset.trigger = await calculateNextTrigger(measurementData, measurementData.progress);
             triggerIndicator.classList.add("measurement-trigger-indicator");
             triggerIndicator.style.bottom = `${trigger.trigger}%`;
             triggerIndicator.dataset.triggerProgress =`${trigger.trigger}%`;
