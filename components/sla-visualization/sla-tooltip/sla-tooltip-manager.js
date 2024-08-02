@@ -133,11 +133,8 @@ export class SlaTooltipManager {
      * @returns {Promise<void>}
      */
     async #inflateTriggersContainerContent(measurementId) {
-        if (this.#triggerContainer.id === this.#tooltip.id) return;
-
         // clears the trigger container innerHTML
         await this.#resetTriggersContainer();
-
         const fragment = await crsbinding.inflationManager.get("triggers-template", this.#triggerLookup[measurementId]);
         this.#triggerContainer.setAttribute("id",`m-${measurementId}`);
         this.#triggerContainer.appendChild(fragment);
@@ -159,6 +156,7 @@ export class SlaTooltipManager {
      * @returns {Promise<{duration: string, code: string, NumOfTriggers: number, startStatus: *, progress: string, endStatus: *}>}
      */
     async #getMeasurementData(measurement,numberOfTriggers) {
+        const measurementTriggerPercentage = measurement.dataset.nextTriggerPercentage;
         const measurementData = {
             description: measurement.dataset.description,
             duration: measurement.dataset.duration,
@@ -172,7 +170,11 @@ export class SlaTooltipManager {
             progressLabel: globalThis.translations.sla.labels.progressLabel,
             triggerLabel: globalThis.translations.sla.labels.triggerLabel,
             slaMeasureLabel: globalThis.translations.sla.labels.slaMeasurementLabel,
-        };
+            nextTriggerLabel: globalThis.translations.sla.labels.nextTriggerLabel,
+            nextTriggerDescriptionLabel: globalThis.translations.sla.labels.nextTriggerDescriptionLabel,
+            nextTrigger: measurementTriggerPercentage === "" ? "": `${measurementTriggerPercentage}%`,
+            nextTriggerDescription: measurement.dataset.nextTriggerDescription
+        }
 
         return measurementData;
     }
@@ -209,6 +211,8 @@ export class SlaTooltipManager {
     async #setTooltipPosition(measurement) {
         const {right} = measurement.getBoundingClientRect();
 
+        await this.#setTooltipVisibleState(false);
+
         const tooltipPosition = (window.innerWidth - right) < 240 ? "left" : "right";
 
         await crs.call("fixed_layout", "set", {
@@ -218,7 +222,6 @@ export class SlaTooltipManager {
             anchor: "top",
             margin: 5
         });
-        await this.#setTooltipVisibleState(false);
     }
 
     /**
@@ -228,8 +231,6 @@ export class SlaTooltipManager {
      * @returns {Promise<void>}
      */
     async #updateMeasurementTooltipContent(id, measurementData) {
-        if (this.#tooltip.id === id) return;
-
         await crsbinding.inflationManager.inflate(`${this.#templateId}-sla-tooltip-template`,this.#tooltip, measurementData);
         this.#tooltip.setAttribute("id", id);
     }

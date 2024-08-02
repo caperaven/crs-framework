@@ -20,8 +20,7 @@ export default class SlaVisualization extends crsbinding.classes.ViewBase {
     async connectedCallback() {
         await super.connectedCallback();
         globalThis.translations = {};
-        globalThis.translations.contextMenu = {
-        };
+        globalThis.translations.contextMenu = {};
         globalThis.translations.sla = {
             labels: {
                 startLabel: "Start Status : ",
@@ -38,7 +37,9 @@ export default class SlaVisualization extends crsbinding.classes.ViewBase {
                 slaLegendOutOfRange: "Out Of Status Range",
                 slaLegendWarning: "Warning",
                 slaLegendOverdue: "Overdue",
-                mainMeasurePercentageLabel: "Main Measure %"
+                mainMeasurePercentageLabel: "Main Measure %",
+                nextTriggerLabel: "Next Trigger : ",
+                nextTriggerDescriptionLabel: "Trigger Description : "
             }
         }
 
