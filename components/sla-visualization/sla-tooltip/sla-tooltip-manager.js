@@ -80,9 +80,9 @@ export class SlaTooltipManager {
         if (measurement != null) {
             await this.#buildTriggerLookup(measurement);
 
-            const id = measurement?.id;
-            const measurementData = await this.#getMeasurementData(measurement,this.#triggerLookup[id].length);
-            const tooltipId = `m-${id}`;
+            const measurementId = measurement?.id;
+            const measurementData = await this.#getMeasurementData(measurement,this.#triggerLookup[measurementId].length);
+            const tooltipId = `m-${measurementId}`;
 
             if (this.#tooltip == null) {
                 await this.#createMeasurementTooltip(tooltipId,measurementData);
@@ -91,7 +91,7 @@ export class SlaTooltipManager {
                 await this.#updateMeasurementTooltipContent(tooltipId,measurementData);
             }
 
-            await this.#inflateTriggersContainerContent(id);
+            await this.#inflateTriggersContainerContent(measurementId);
             await this.#setTooltipPosition(measurement);
             return;
         }
