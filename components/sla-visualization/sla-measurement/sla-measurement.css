@@ -32,7 +32,7 @@
 }
 
 :host::before {
-    content:' 'var(--clock-outline)'  'attr(data-duration)' ';
+    content:' 'var(--clock-outline)'  'attr(data-formatted-duration)' ';
     position: absolute;
     display: block;
     color: var(--grey-s1);

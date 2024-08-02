@@ -2111,7 +2111,7 @@ const data2 = {
                     "end_status": 11,
                     "progress": 25,
                     "status": "active",
-                    "duration": "27:00",
+                    "duration": "00:27:00:07",
                     "triggers": [
                         {
                             "id": "1001",
@@ -2134,7 +2134,7 @@ const data2 = {
                     "end_status": 5000001002,
                     "progress": 100,
                     "status": "active",
-                    "duration": "27:00",
+                    "duration": "1:27:00:07",
                     "triggers": [
                         {
                             "id": "1001",
@@ -2157,7 +2157,7 @@ const data2 = {
                     "end_status": 5000001005,
                     "progress": 50,
                     "status": "active",
-                    "duration": "30:00",
+                    "duration": "2:30:45:07",
                     "triggers": [
                         {
                             "id": "1001",
@@ -2180,7 +2180,7 @@ const data2 = {
                     "end_status": 12,
                     "progress": 75,
                     "status": "active",
-                    "duration": "50:00",
+                    "duration": "08:00:00:07",
                     "triggers": [
                         {
                             "id": "1001",
@@ -2211,7 +2211,7 @@ const data2 = {
                     "end_status": 11,
                     "progress": 25,
                     "status": "active",
-                    "duration": "27:00",
+                    "duration": "27:00:30",
                     "triggers": [
                         {
                             "id": "1001",
@@ -2235,7 +2235,7 @@ const data2 = {
                     "end_status": 12,
                     "progress": 75,
                     "status": "active",
-                    "duration": "50:00",
+                    "duration": "8:07:30",
                     "triggers": [
                         {
                             "id": "1001",
@@ -2266,7 +2266,7 @@ const data2 = {
                     "end_status": 11,
                     "progress": 81,
                     "status": "active",
-                    "duration": "27:00",
+                    "duration": "27:00:15",
                     "triggers": [
                         {
                             "id": "1001",
@@ -2289,7 +2289,7 @@ const data2 = {
                     "end_status": 5000001002,
                     "progress": 100,
                     "status": "active",
-                    "duration": "27:00",
+                    "duration": "08:00:08",
                     "triggers": [
                         {
                             "id": "1001",
@@ -2312,7 +2312,7 @@ const data2 = {
                     "end_status": 5000001005,
                     "progress": 50,
                     "status": "active",
-                    "duration": "30:00",
+                    "duration": "30:00:00",
                     "triggers": [
                         {
                             "id": "1001",
@@ -2335,7 +2335,7 @@ const data2 = {
                     "end_status": 12,
                     "progress": 101,
                     "status": "active",
-                    "duration": "50:00",
+                    "duration": "00:50:00",
                     "triggers": [
                         {
                             "id": "1001",

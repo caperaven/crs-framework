@@ -156,6 +156,9 @@ async function addStatusNames(measurement, measurementDataStatuses) {
  * @returns {Promise<HTMLElement>}
  */
 async function createMeasurementElement(measurement, parentElement, parentPhase) {
+    const [days, hours, minutes] = measurement.duration.split(":").slice(0, 3);
+    const formattedDuration = `${days}:${hours}:${minutes}`;
+
     const element = document.createElement("sla-measurement");
     element.id = measurement.id;
     element.dataset.code = measurement.code;
@@ -163,6 +166,7 @@ async function createMeasurementElement(measurement, parentElement, parentPhase)
     element.dataset.version = measurement.version;
     element.setAttribute("data-progress", measurement.progress);
     element.setAttribute("data-state", measurement.state);
+    element.setAttribute("data-formatted-duration", formattedDuration);
     element.setAttribute("data-duration", measurement.duration);
     element.setAttribute("data-start-status", measurement.start_status);
     element.setAttribute("data-end-status", measurement.end_status);
