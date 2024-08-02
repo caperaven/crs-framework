@@ -258,7 +258,8 @@ async function createTriggerIndicators(element, measurementData) {
             const triggerIndicator = document.createElement("div");
             triggerIndicator.id = `trigger_${trigger.id}`;
             triggerIndicator.dataset.triggerType = trigger.type !== null ? trigger.type : "";
-            triggerIndicator.dataset.trigger = await calculateNextTrigger(measurementData, measurementData.progress);
+            element.dataset.nextTriggerPercentage = await calculateNextTrigger(measurementData, measurementData.progress);
+            element.dataset.nextTriggerDescription = element.dataset.nextTriggerPercentage !== "" ? trigger.type : "";
             triggerIndicator.classList.add("measurement-trigger-indicator");
             triggerIndicator.style.bottom = `${trigger.trigger}%`;
             triggerIndicator.dataset.triggerProgress =`${trigger.trigger}%`;
