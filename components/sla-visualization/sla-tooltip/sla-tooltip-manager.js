@@ -20,7 +20,6 @@ export class SlaTooltipManager {
     #tooltip;
     #phase;
     #templateId= "setup-tooltip";
-    #triggerLookup = {};
     #triggerContainer;
 
     constructor(visualization) {
@@ -37,7 +36,6 @@ export class SlaTooltipManager {
         this.#measurementHoverHandler = null
         this.#phase = null;
         this.#templateId = null;
-        this.#triggerLookup = null;
         this.#triggerContainer = null;
         if (this.#tooltip == null) return;
         this.#tooltip?.remove();
@@ -79,10 +77,10 @@ export class SlaTooltipManager {
         const measurement = event.detail.measurement;
 
         if (measurement != null) {
-            await this.#buildTriggerLookup(measurement);
+            const triggerArray = await this.#buildTriggersArray(measurement);
 
             const measurementId = measurement?.id;
-            const measurementData = await this.#getMeasurementData(measurement,this.#triggerLookup[measurementId].length);
+            const measurementData = await this.#getMeasurementData(measurement,triggerArray.length);
             const tooltipId = `m-${measurementId}`;
 
             if (this.#tooltip == null) {
@@ -92,7 +90,7 @@ export class SlaTooltipManager {
                 await this.#updateMeasurementTooltipContent(tooltipId,measurementData);
             }
 
-            await this.#inflateTriggersContainerContent(measurementId);
+            await this.#inflateTriggersContainerContent(measurementId,triggerArray);
             await this.#setTooltipPosition(measurement);
             return;
         }
@@ -132,10 +130,10 @@ export class SlaTooltipManager {
      * @method #inflateTriggersContainerContent - Inflates the triggers template and appends the fragment to the tooltip after the first child.
      * @returns {Promise<void>}
      */
-    async #inflateTriggersContainerContent(measurementId) {
+    async #inflateTriggersContainerContent(measurementId, triggerArray) {
         // clears the trigger container innerHTML
         await this.#resetTriggersContainer();
-        const fragment = await crsbinding.inflationManager.get("triggers-template", this.#triggerLookup[measurementId]);
+        const fragment = await crsbinding.inflationManager.get("triggers-template", triggerArray);
         this.#triggerContainer.setAttribute("id",`m-${measurementId}`);
         this.#triggerContainer.appendChild(fragment);
     }
@@ -152,8 +150,9 @@ export class SlaTooltipManager {
 
     /**
      * @method #getMeasurementData - Gets the measurement data and returns it as an object.
-     * @param measurement {Element} - the measurement element
-     * @returns {Promise<{duration: string, code: string, NumOfTriggers: number, startStatus: *, progress: string, endStatus: *}>}
+     * @param measurement {Element} - the measurement element,
+     * @param numberOfTriggers {Number} - the number of triggers
+     * @returns {Promise<object>}
      */
     async #getMeasurementData(measurement,numberOfTriggers) {
         const measurementTriggerPercentage = measurement.dataset.nextTriggerPercentage;
@@ -180,17 +179,13 @@ export class SlaTooltipManager {
     }
 
     /**
-     * @method #buildTriggerLookup - Builds the trigger lookup.
-     * @param measurement {Element} - the measurement element
-     * @returns {Promise<void>}
+     * @method #buildTriggersArray - Builds the triggers array.
+     * @returns {Promise<array>}
      */
-    async #buildTriggerLookup (measurement) {
-        const measurementId  = measurement.id;
-
-        if (this.#triggerLookup[measurementId] != null) return;
+    async #buildTriggersArray (measurement) {
+        const triggerElements = measurement.shadowRoot.querySelectorAll(".measurement-trigger-indicator");
 
         const measurementTriggersArray = [];
-        const triggerElements = measurement.shadowRoot.querySelectorAll(".measurement-trigger-indicator");
 
         for (const triggerElement of triggerElements) {
             const triggerObject =  {
@@ -200,7 +195,7 @@ export class SlaTooltipManager {
             measurementTriggersArray.push(triggerObject);
         }
 
-        this.#triggerLookup[measurementId] = measurementTriggersArray;
+        return measurementTriggersArray;
     }
 
     /**
