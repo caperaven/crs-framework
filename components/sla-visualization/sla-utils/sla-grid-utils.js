@@ -11,7 +11,6 @@ import "../../../packages/crs-process-api/action-systems/css-grid-actions.js";
 export async function create_sla_grid(data,slaGridContainer, labelContainer,slaVisualization) {
     const element = slaGridContainer
     const slaVisualizationPhase = slaVisualization.dataset.phase; // refactor for phase
-    slaVisualization.shadowRoot.querySelector("#measurement-name").style.display = "flex"
     if (slaVisualizationPhase === "runtime"){
         slaVisualization.shadowRoot.querySelector("#sla-legend").style.display = "flex"
     }

@@ -214,6 +214,7 @@ export class SlaVisualization extends HTMLElement {
 
         if (data[0]?.measurements?.length > 0) {
             this.classList.remove("no-content")
+            await crs.call("no_content", "hide", { parent: gridParentContainer });
             const slaData = {
                 sla: data,
                 statuses: this.#statusLookupTable,
@@ -237,6 +238,11 @@ export class SlaVisualization extends HTMLElement {
         }
         else{
             this.classList.add("no-content");
+
+            const noContentElement = gridParentContainer.querySelector("no-content");
+
+            if (noContentElement != null) return;
+
             await crs.call("no_content", "show", { parent: gridParentContainer });
         }
     }
