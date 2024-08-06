@@ -155,7 +155,7 @@ export class SlaTooltipManager {
      * @returns {Promise<object>}
      */
     async #getMeasurementData(measurement,numberOfTriggers) {
-        const measurementTriggerPercentage = measurement.dataset.nextTriggerPercentage;
+        const measurementTriggerPercentage = measurement.dataset.nextTriggerPercentage ?? "";
         const measurementData = {
             description: measurement.dataset.description,
             duration: measurement.dataset.duration,
@@ -171,8 +171,8 @@ export class SlaTooltipManager {
             slaMeasureLabel: globalThis.translations.sla.labels.slaMeasurementLabel,
             nextTriggerLabel: globalThis.translations.sla.labels.nextTriggerLabel,
             nextTriggerDescriptionLabel: globalThis.translations.sla.labels.nextTriggerDescriptionLabel,
-            nextTrigger: measurementTriggerPercentage === "" ? "": `${measurementTriggerPercentage}%`,
-            nextTriggerDescription: measurement.dataset.nextTriggerDescription
+            nextTrigger: measurementTriggerPercentage === "" ? measurementTriggerPercentage : `${measurementTriggerPercentage}%`,
+            nextTriggerDescription: measurement.dataset.nextTriggerDescription ?? ""
         }
 
         return measurementData;

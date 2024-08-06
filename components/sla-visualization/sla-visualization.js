@@ -282,7 +282,7 @@ export class SlaVisualization extends HTMLElement {
      * @param args {object} - the data manager change event arguments
      * @returns {Promise<void>}
      */
-    async #refresh(args){
+    async #refresh(args) {
         await crs.call("sla_visualization", "render", {
             element: this,
             statuses: this.#statusLookupTable,
