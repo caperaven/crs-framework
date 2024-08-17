@@ -10,7 +10,7 @@ export async function generate_data(manager) {
 
     const data = await crs.call("random", "generate_collection", {
         definition,
-        count: 10000
+        count: 100
     });
 
     await crs.call("data_manager", "register", {
