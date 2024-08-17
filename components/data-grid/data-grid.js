@@ -3,6 +3,8 @@ import {DATA_GRID_HEADER_QUERY} from "./grid-header/grid-header.js";
 import {assertClassType} from "../../src/utils/assertClassType.js";
 import {assertExists} from "../../src/utils/assertExists.js";
 import {UpdateOptions} from "./core/update-options.js";
+import {Columns} from "./columns/columns.js";
+import {ConversionType} from "./columns/enums/conversion-type.js";
 
 
 export default class DataGrid extends crs.classes.BindableElement {

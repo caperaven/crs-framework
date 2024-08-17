@@ -15,14 +15,8 @@ export default class GridHeader extends crs.classes.BindableElement {
     async onMessage(args) {
         this.shadowRoot.innerHTML = "";
 
-        if (args.columns) {
-            await createColumns(args.columns);
-        }
+        console.log(args)
     }
-}
-
-async function createColumns(sourceColumns) {
-    const columns = Columns.from(ConversionType.JSON, sourceColumns);
 }
 
 customElements.define(DATA_GRID_HEADER_QUERY, GridHeader);

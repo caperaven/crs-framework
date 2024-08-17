@@ -162,7 +162,11 @@ function toJSON(collection) {
  * @returns {any}
  */
 function fromJSON(json) {
-    return JSON.parse(json);
+    if (typeof json === "string") {
+        return JSON.parse(json);
+    }
+
+    return json;
 }
 
 /**

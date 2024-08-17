@@ -15,7 +15,7 @@ class DataGridActions {
         const dataManager = await crs.process.getValue(step.args.manager, context, process, item);
         element.columns = Columns.from(ConversionType.HTML, element);
         element.dataManager = dataManager;
-        console.log("done")
+        console.log("DataGridActions.initialize.done");
     }
 }
 
