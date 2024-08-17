@@ -1,6 +1,11 @@
 :host {
-    width: 100%;
     height: auto;
-    overflow: hidden;
     display: grid;
+    border-bottom: 1px solid var(--grey-s2);
+}
+
+column {
+    background-color: var(--grey-s3);
+    border-right: 1px solid var(--grey-s2);
+    padding: var(--padding);
 }
