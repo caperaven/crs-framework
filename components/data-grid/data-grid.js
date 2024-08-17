@@ -1,6 +1,7 @@
 import {DATA_GRID_CELLS_QUERY} from "./grid-cells/grid-cells.js";
 import {DATA_GRID_HEADER_QUERY} from "./grid-header/grid-header.js";
 import {assertClassType} from "../../src/utils/assertClassType.js";
+import {assertExists} from "../../src/utils/assertExists.js";
 import {UpdateOptions} from "./core/update-options.js";
 
 
@@ -22,7 +23,7 @@ export default class DataGrid extends crs.classes.BindableElement {
 
     set columns(newValue) {
         this.#columns = assertClassType(newValue, "Columns");
-        this.#notifyColumnsChanged(UpdateOptions.COLUMNS);
+        this.#notifyColumnsChanged(UpdateOptions.COLUMNS).catch(error => console.error(error));
     }
 
     get dataManager() {
@@ -35,7 +36,7 @@ export default class DataGrid extends crs.classes.BindableElement {
 
     async connectedCallback() {
         await super.connectedCallback();
-        this.#notifyColumnsChanged(UpdateOptions.COLUMNS, DATA_GRID_HEADER_QUERY, DATA_GRID_CELLS_QUERY);
+        await this.#notifyColumnsChanged(UpdateOptions.COLUMNS, DATA_GRID_HEADER_QUERY, DATA_GRID_CELLS_QUERY);
     }
 
     /**
@@ -43,13 +44,13 @@ export default class DataGrid extends crs.classes.BindableElement {
      * @param updateOptions - bitwise flag to indicate what has changed.
      * @param targetQuery - query selector to find the element to send the message to.
      */
-    #notifyColumnsChanged(updateOptions, ...targetQuery) {
+    async #notifyColumnsChanged(updateOptions, ...targetQuery) {
         if (this.dataset.ready !== "true") return;
 
         if (updateOptions | UpdateOptions.COLUMNS) {
-            targetQuery.forEach(query => {
-                sendMessage.call(this, query, {columns: this.columns});
-            });
+            for (const query of targetQuery) {
+                await sendMessage.call(this, query, {columns: this.columns});
+            }
         }
     }
 }
@@ -59,11 +60,12 @@ export default class DataGrid extends crs.classes.BindableElement {
  * @param query {string} - query selector to find the element
  * @param args {object} - arguments to send to the element
  */
-function sendMessage(query, args) {
+async function sendMessage(query, args) {
     const element = this.shadowRoot.querySelector(query);
+    assertExists(element, `Element with query "${query}" not found`);
 
-    crs.call("component", "on_ready", {element: element, callback: () => {
-        element?.onMessage(args);
+    await crs.call("component", "on_ready", {element: element, callback: async () => {
+        await element.onMessage(args);
     }, caller: this});
 }
 

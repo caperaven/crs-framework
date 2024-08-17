@@ -9,7 +9,7 @@ export default class GridCells extends crs.classes.BindableElement {
         return import.meta.url.replace(".js", ".html");
     }
 
-    onMessage(args) {
+    async onMessage(args) {
         this.shadowRoot.innerHTML = "";
         console.log("GridCells.onMessage", args);
     }
