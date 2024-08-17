@@ -1,3 +1,5 @@
+export const DATA_GRID_CELLS_QUERY = "grid-cells";
+
 export default class GridCells extends crs.classes.BindableElement {
     get shadowDom() {
         return true;
@@ -12,4 +14,4 @@ export default class GridCells extends crs.classes.BindableElement {
     }
 }
 
-customElements.define("grid-cells", GridCells);
+customElements.define(DATA_GRID_CELLS_QUERY, GridCells);

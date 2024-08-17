@@ -1,4 +1,8 @@
 export function assertClassType(value, className) {
+    if (typeof value === className) {
+        return value;
+    }
+
     if (value == null) {
         throw new Error(`[assertClassType] value is null or undefined`);
     }

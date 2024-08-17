@@ -172,13 +172,14 @@ function fromJSON(json) {
  * @returns {string}
  */
 function toHTML(collection) {
-    let stack = [];
-
-    for (let column of collection) {
-        stack.push(`<div>${column.title}</div>`);
-    }
-
-    return stack.join('');
+    // let stack = [];
+    //
+    // for (let column of collection) {
+    //     stack.push(`<div>${column.title}</div>`);
+    // }
+    //
+    // return stack.join('');
+    debugger;
 }
 
 function fromHTML(parentElement) {

@@ -60,6 +60,12 @@ export class Column {
             return fromHTML(source);
         }
     }
+
+    static to(conversionType, source) {
+        if (conversionType === ConversionType.HTML) {
+            return toHTML(source);
+        }
+    }
 }
 
 function fromHTML(source) {
@@ -74,4 +80,18 @@ function fromHTML(source) {
         sortDirection: source.dataset.sortDirection ?? DEFAULT_SORT_DIRECTION,
         groupId: source.dataset.groupId ?? null
     }
+}
+
+function toHTML(source) {
+    const column = document.createElement("column");
+    column.dataset.title = source.title;
+    column.dataset.field = source.field;
+    column.dataset.dataType = source.dataType;
+    column.dataset.isReadOnly = source.isReadOnly;
+    column.dataset.width = source.width;
+    column.dataset.align = source.align;
+    column.dataset.sortable = source.sortable;
+    column.dataset.sortDirection = source.sortDirection;
+    column.dataset.groupId = source.groupId;
+    return column;
 }
