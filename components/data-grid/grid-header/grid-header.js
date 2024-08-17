@@ -19,6 +19,8 @@ export default class GridHeader extends crs.classes.BindableElement {
             const fragment = args.columns.to(ConversionType.HTML);
             this.shadowRoot.appendChild(fragment);
         }
+
+        this.style.gridTemplateColumns = args.columns.to(ConversionType.CSS);
     }
 }
 
