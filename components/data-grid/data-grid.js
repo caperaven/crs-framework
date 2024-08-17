@@ -1,4 +1,5 @@
 import {DATA_GRID_CELLS_QUERY} from "./grid-cells/grid-cells.js";
+import {DATA_GRID_HEADER_QUERY} from "./grid-header/grid-header.js";
 import {assertClassType} from "../../src/utils/assertClassType.js";
 import {UpdateOptions} from "./core/update-options.js";
 
@@ -34,27 +35,35 @@ export default class DataGrid extends crs.classes.BindableElement {
 
     async connectedCallback() {
         await super.connectedCallback();
-        this.#notifyColumnsChanged(UpdateOptions.COLUMNS);
+        this.#notifyColumnsChanged(UpdateOptions.COLUMNS, DATA_GRID_HEADER_QUERY, DATA_GRID_CELLS_QUERY);
     }
 
     /**
      * update child components of changes happening using the messaging system.
      * @param updateOptions - bitwise flag to indicate what has changed.
+     * @param targetQuery - query selector to find the element to send the message to.
      */
-    #notifyColumnsChanged(updateOptions) {
+    #notifyColumnsChanged(updateOptions, ...targetQuery) {
         if (this.dataset.ready !== "true") return;
 
         if (updateOptions | UpdateOptions.COLUMNS) {
-            sendMessage.call(this, DATA_GRID_CELLS_QUERY, {columns: this.columns});
+            targetQuery.forEach(query => {
+                sendMessage.call(this, query, {columns: this.columns});
+            });
         }
     }
 }
 
+/**
+ * Wait for the element to be ready and then send a message to it.
+ * @param query {string} - query selector to find the element
+ * @param args {object} - arguments to send to the element
+ */
 function sendMessage(query, args) {
     const element = this.shadowRoot.querySelector(query);
 
     crs.call("component", "on_ready", {element: element, callback: () => {
-            element?.onMessage(args);
+        element?.onMessage(args);
     }, caller: this});
 }
 
