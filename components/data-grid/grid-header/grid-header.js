@@ -15,7 +15,10 @@ export default class GridHeader extends crs.classes.BindableElement {
     async onMessage(args) {
         this.shadowRoot.innerHTML = "";
 
-        console.log(args)
+        if (args.columns) {
+            const fragment = args.columns.to(ConversionType.HTML);
+            this.shadowRoot.appendChild(fragment);
+        }
     }
 }
 

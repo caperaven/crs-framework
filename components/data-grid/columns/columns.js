@@ -173,17 +173,19 @@ function fromJSON(json) {
  * @description Convert a collection of columns from HTML.
  * This will generate the header structure used by the grid
  * @param collection
- * @returns {string}
+ * @returns {DocumentFragment}
  */
 function toHTML(collection) {
-    // let stack = [];
-    //
-    // for (let column of collection) {
-    //     stack.push(`<div>${column.title}</div>`);
-    // }
-    //
-    // return stack.join('');
-    debugger;
+    const fragment = document.createDocumentFragment();
+
+    if (collection?.length > 0) {
+        for (const column of collection) {
+            const columnElement = Column.to(ConversionType.HTML, column);
+            fragment.appendChild(columnElement);
+        }
+    }
+
+    return fragment;
 }
 
 function fromHTML(parentElement) {

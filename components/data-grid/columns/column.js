@@ -84,7 +84,7 @@ function fromHTML(source) {
 
 function toHTML(source) {
     const column = document.createElement("column");
-    column.dataset.title = source.title;
+    column.textContent = source.title;
     column.dataset.field = source.field;
     column.dataset.dataType = source.dataType;
     column.dataset.isReadOnly = source.isReadOnly;
