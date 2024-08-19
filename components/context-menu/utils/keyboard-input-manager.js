@@ -149,6 +149,10 @@ export class KeyboardInputManager {
     async #setTabIndex(element, siblingType = null) {
         let li = element[siblingType];
 
+        if (li?.tagName.toLowerCase() === "hr") {
+            li = li[siblingType];
+        }
+
         const parentId = element.parentElement.id;
         if (li == null && parentId === "list-container") {
             li = this.#contextMenu.filter.filterInput;
