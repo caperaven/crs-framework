@@ -65,6 +65,10 @@
     ul[data-no-content="true"] ~ .no-content {
         background: var(--window);
     }
+    
+    ul[role="menu"][data-no-content="true"] {
+        display: none;
+    }
 
     ul, .popup,
     #no-result-header {
