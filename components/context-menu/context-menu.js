@@ -129,7 +129,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     async #click(event) {
         let element = event.composedPath()[0];
 
-        if (element.id === "input-filter" || element.dataset.ignoreClick === "true") return;
+        if (element.id === "input-filter" || element.dataset.ignoreClick === "true" || element.id === "resize") return;
 
         if (element.parentElement?.dataset.closable == null) {
             await this.#closeContextMenu();
