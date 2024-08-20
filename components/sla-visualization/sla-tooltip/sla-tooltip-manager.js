@@ -30,7 +30,7 @@ export class SlaTooltipManager {
 
     async dispose(visualization) {
         visualization.removeEventListener("measurement-hovered", this.#measurementHoverHandler);
-        await crs.call("styles", "unload_file", {id: "sla-tooltip-styles"});
+        await crs.call("styles", "unload_file", {id: `${this.#templateId}-sla-tooltip-styles`});
         await crsbinding.inflationManager.unregister(`${this.#templateId}-sla-tooltip-template`);
         await crsbinding.inflationManager.unregister("triggers-template");
         this.#measurementHoverHandler = null
@@ -58,7 +58,7 @@ export class SlaTooltipManager {
         await this.#registerTemplate("-triggers.html", "triggers-template");
 
         // here we are going to add the link to the document head to load the css file
-        await crs.call("styles", "load_file", {id: "sla-tooltip-styles", file: import.meta.url.replace("-manager.js", ".css")});
+        await crs.call("styles", "load_file", {id: `${this.#templateId}-sla-tooltip-styles`, file: import.meta.url.replace("-manager.js", ".css")});
     }
 
     async #registerTemplate(pathName, templateId) {
