@@ -155,7 +155,7 @@ export class KeyboardInputManager {
          let li = element[siblingType];
 
          //when li is null then it is a submenu navigation set li to the first or last li or
-        // the last li on the main container has been reached then set li to the filter input
+        // when the last li on the main container has been reached then set li to the filter input
          if (li == null) {
              const subMenu = element.parentElement;
              li = subMenu.className === "submenu" ? subMenu[this.#liPosition[siblingType]] : this.#contextMenu.filter.filterInput;
