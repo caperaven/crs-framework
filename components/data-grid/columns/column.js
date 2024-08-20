@@ -23,7 +23,8 @@ export class Column {
      * @param sortable {boolean} - is column sortable - default is true
      * @param sortDirection {SortDirection} - column sort direction - default is none
      * @param groupId {string} - column group id - default is null
-     * @returns {{sortDirection: string, isReadOnly: boolean, field, dataType: string, width: number, sortable: boolean, title, align: string, groupId: null}}
+     * @param order
+     * @returns {{sortDirection: string, isReadOnly: boolean, field, dataType: string, width: number, sortable: boolean, title, align: string, groupId: null, order: number}}
      */
     static create(title,
                   field,
@@ -33,7 +34,8 @@ export class Column {
                   align=DEFAULT_ALIGN,
                   sortable=DEFAULT_SORTABLE,
                   sortDirection=DEFAULT_SORT_DIRECTION,
-                  groupId=null) {
+                  groupId=null,
+                  order=0) {
 
         return {
             title: assertRequired(title, "Column.create", "Column title is required"),
@@ -44,7 +46,8 @@ export class Column {
             align,
             sortable,
             sortDirection,
-            groupId
+            groupId,
+            order
         }
     }
 
@@ -93,5 +96,6 @@ function toHTML(source) {
     column.dataset.sortable = source.sortable;
     column.dataset.sortDirection = source.sortDirection;
     column.dataset.groupId = source.groupId;
+    column.dataset.order = source.order;
     return column;
 }

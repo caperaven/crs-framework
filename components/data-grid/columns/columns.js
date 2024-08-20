@@ -2,16 +2,27 @@ import {assertRequired} from "../../../src/utils/assertRequired.js";
 import {DataType} from "./enums/data-type.js";
 import {ConversionType} from "./enums/conversion-type.js";
 import {Column} from "./column.js";
-import {DEFAULT_WIDTH, DEFAULT_SORTABLE, DEFAULT_ALIGN, DEFAULT_SORT_DIRECTION} from "./defaults.js";
+import {DEFAULT_ALIGN, DEFAULT_SORT_DIRECTION, DEFAULT_SORTABLE, DEFAULT_WIDTH} from "./defaults.js";
 
 /**
  * This class stores the column information for the data grid
  */
 export class Columns {
-    #collection = [];
+    #collection = {};
 
     dispose() {
         this.#collection = null;
+    }
+
+    move(fromIndex, toIndex) {
+        /*
+        Scenario: Move column from fromIndex to toIndex
+            Given: toIndex is not the last item
+             Then: use the toIndex - 1
+
+            Given: toIndex is the last item
+             Then: use the toIndex
+         */
     }
 
     /**
@@ -28,11 +39,11 @@ export class Columns {
      * @param collection
      */
     set(collection) {
-        if (!Array.isArray(collection)) {
-            throw new Error("Collection must be an array");
-        }
+        const keys = Object.keys(collection);
 
-        for (let column of collection) {
+        for (const key of keys) {
+            const column = collection[key];
+
             if (column.title == null || column.field == null) {
                 throw new Error("Column title and field are required");
             }
@@ -45,7 +56,8 @@ export class Columns {
             column.align ||= DEFAULT_ALIGN;
             column.sortable ||= DEFAULT_SORTABLE;
             column.sortDirection ||= DEFAULT_SORT_DIRECTION;
-            column.groupId ||= null;
+            column.groupId ||= 0;
+            column.order ||= 0;
         }
 
         this.#collection = collection;
@@ -64,7 +76,9 @@ export class Columns {
      * @param sortDirection - column sort direction - default is none
      */
     add(title, field, dataType=DataType.STRING, isReadOnly=true, width=DEFAULT_WIDTH, align=DEFAULT_ALIGN, sortable=DEFAULT_SORTABLE, sortDirection=DEFAULT_SORT_DIRECTION) {
-        this.#collection.push(Column.create(title, field, dataType, isReadOnly, width, align, sortable, sortDirection));
+        // 1. get the current key count
+        const count = Object.keys(this.#collection).length;
+        this.#collection[count] = Column.create(title, field, dataType, isReadOnly, width, align, sortable, sortDirection, 0, count);
     }
 
     /**
@@ -122,12 +136,15 @@ function toCSS(collection) {
         count: 0
     }
 
-    for (let column of collection) {
+    const keys = Object.keys(collection);
+    for (const key of keys) {
+        const column = collection[key];
+
         if (column.width === currentItem.width) {
             currentItem.count++;
 
             // if this is the last item, push it to stack
-            if (collection.indexOf(column) === collection.length - 1) {
+            if (keys.indexOf(key) === keys.length - 1) {
                 stack.push(`repeat(${currentItem.count}, ${currentItem.width}px)`);
             }
         }
@@ -177,9 +194,11 @@ function fromJSON(json) {
  */
 function toHTML(collection) {
     const fragment = document.createDocumentFragment();
+    const keys = Object.keys(collection);
 
-    if (collection?.length > 0) {
-        for (const column of collection) {
+    if (keys.length > 0) {
+        for (const key of keys) {
+            const column = collection[key];
             const columnElement = Column.to(ConversionType.HTML, column);
             fragment.appendChild(columnElement);
         }
@@ -190,11 +209,13 @@ function toHTML(collection) {
 
 function fromHTML(parentElement) {
     const columnElements = parentElement.querySelectorAll('column');
-    const columns = [];
+    const columns = {};
 
+    let order = -1;
     for (let columnElement of columnElements) {
         const column = Column.from(ConversionType.HTML, columnElement);
-        columns.push(column);
+        column.order = order++;
+        columns[order] = column;
     }
 
     return columns;

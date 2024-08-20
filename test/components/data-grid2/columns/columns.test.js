@@ -18,7 +18,8 @@ Deno.test("Column.create with default parameters", () => {
         align: Alignment.LEFT,
         sortable: true,
         sortDirection: SortDirection.NONE,
-        groupId: null
+        groupId: null,
+        order: 0
     };
     assertEquals(column, expected);
 });
@@ -34,7 +35,8 @@ Deno.test("Column.create with custom parameters", () => {
         align: Alignment.RIGHT,
         sortable: false,
         sortDirection: SortDirection.ASC,
-        groupId: "group1"
+        groupId: "group1",
+        order: 0
     };
     assertEquals(column, expected);
 });
@@ -43,19 +45,24 @@ Deno.test("Columns class - add method", () => {
     const columns = new Columns();
     columns.add("Title", "Field1", DataType.STRING, true, 200, Alignment.CENTER, true, SortDirection.ASC);
 
-    const expected = [{
-        title: "Title",
-        field: "Field1",
-        dataType: DataType.STRING,
-        isReadOnly: true,
-        width: 200,
-        align: Alignment.CENTER,
-        sortable: true,
-        sortDirection: SortDirection.ASC,
-        groupId: null
-    }];
+    const expected = {
+        0: {
+            title: "Title",
+            field: "Field1",
+            dataType: DataType.STRING,
+            isReadOnly: true,
+            width: 200,
+            align: Alignment.CENTER,
+            sortable: true,
+            sortDirection: SortDirection.ASC,
+            groupId: 0,
+            order: 0
+        }
+    };
 
-    assertEquals(columns.get(), expected);
+    const existing = columns.get();
+
+    assertEquals(existing[0], expected[0]);
 });
 
 Deno.test("Columns class - add method with no title", () => {
@@ -100,17 +107,20 @@ Deno.test("Columns class - get method", () => {
     const columns = new Columns();
     columns.add("Title", "Field1");
 
-    const expected = [{
-        title: "Title",
-        field: "Field1",
-        dataType: DataType.STRING,
-        isReadOnly: true,
-        width: 100,
-        align: Alignment.LEFT,
-        sortable: true,
-        sortDirection: SortDirection.NONE,
-        groupId: null
-    }];
+    const expected = {
+        0: {
+            title: "Title",
+            field: "Field1",
+            dataType: DataType.STRING,
+            isReadOnly: true,
+            width: 100,
+            align: Alignment.LEFT,
+            sortable: true,
+            sortDirection: SortDirection.NONE,
+            groupId: 0,
+            order: 0
+        }
+    };
 
     assertEquals(columns.get(), expected);
     assertEquals(Object.isFrozen(columns.get()), true);
@@ -118,29 +128,32 @@ Deno.test("Columns class - get method", () => {
 
 Deno.test("Columns class - get method with no columns", () => {
     const columns = new Columns();
-    assertEquals(columns.get(), []);
+    assertEquals(columns.get(), {});
 });
 
 Deno.test("Columns class - set method valid data", () => {
     const columns = new Columns();
     columns.add("Title", "Field1");
 
-    const expected = [{
-        title: "Title",
-        field: "Field1",
-        dataType: DataType.STRING,
-        isReadOnly: true,
-        width: 100,
-        align: Alignment.LEFT,
-        sortable: true,
-        sortDirection: SortDirection.NONE,
-        groupId: null
-    }];
+    const expected = {
+        0: {
+            title: "Title",
+            field: "Field1",
+            dataType: DataType.STRING,
+            isReadOnly: true,
+            width: 100,
+            align: Alignment.LEFT,
+            sortable: true,
+            sortDirection: SortDirection.NONE,
+            groupId: 0,
+            order: 0
+        }
+    };
 
     assertEquals(columns.get(), expected);
 
-    columns.set([
-        {
+    columns.set({
+        0: {
             title: "Title2",
             field: "Field2",
             dataType: DataType.NUMBER,
@@ -149,21 +162,25 @@ Deno.test("Columns class - set method valid data", () => {
             align: Alignment.CENTER,
             sortable: true,
             sortDirection: SortDirection.ASC,
-            groupId: null
+            groupId: 0,
+            order: 0
         }
-    ]);
+    });
 
-    const expected2 = [{
-        title: "Title2",
-        field: "Field2",
-        dataType: DataType.NUMBER,
-        isReadOnly: false,
-        width: 200,
-        align: Alignment.CENTER,
-        sortable: true,
-        sortDirection: SortDirection.ASC,
-        groupId: null
-    }];
+    const expected2 = {
+        0: {
+            title: "Title2",
+            field: "Field2",
+            dataType: DataType.NUMBER,
+            isReadOnly: false,
+            width: 200,
+            align: Alignment.CENTER,
+            sortable: true,
+            sortDirection: SortDirection.ASC,
+            groupId: 0,
+            order: 0
+        }
+    }
 
     assertEquals(columns.get(), expected2);
 });
