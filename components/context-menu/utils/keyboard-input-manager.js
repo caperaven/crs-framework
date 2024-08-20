@@ -13,7 +13,11 @@ export class KeyboardInputManager {
         "ArrowLeft": this.#arrowLeft.bind(this),
         "Enter": this.#enter.bind(this),
         "Escape": this.#escape.bind(this)
-    })
+    });
+    #liPosition = Object.freeze({
+        nextElementSibling: "firstElementChild",
+        previousElementSibling: "lastElementChild"
+    });
 
     constructor(contextMenu, options, filterHeader) {
         this.#options = options;
@@ -40,6 +44,7 @@ export class KeyboardInputManager {
         this.#options = null;
         this.#filterHeader = null;
         this.#actions = null;
+        this.#liPosition = null;
     }
 
     /**
@@ -73,7 +78,7 @@ export class KeyboardInputManager {
             await setFocusState(this.#container.firstElementChild);
             return;
         }
-        await this.#setTabIndex(element, "nextElementSibling");
+        await this.keyboardVerticalNavigation(element, "nextElementSibling");
     }
 
     /**
@@ -84,7 +89,7 @@ export class KeyboardInputManager {
     async #arrowUp(element) {
         if (element.id === "input-filter") return;
 
-        await this.#setTabIndex(element, "previousElementSibling");
+        await this.keyboardVerticalNavigation(element, "previousElementSibling");
     }
 
     /**
@@ -141,32 +146,26 @@ export class KeyboardInputManager {
     }
 
     /**
-     * @method #setTabIndex - Sets the tabindex on the selected element.
-     * @param element - the selected element.
-     * @param siblingType {String} - the type of sibling to select.
+     * @method keyboardVerticalNavigation - Handles the vertical navigation for the context menu.
+     * @param element - currently focused element in the list.
+     * @param siblingType - the sibling type to navigate to. can be nextElementSibling or previousElementSibling.
      * @returns {Promise<void>}
      */
-    async #setTabIndex(element, siblingType = null) {
-        let li = element[siblingType];
+    async keyboardVerticalNavigation(element, siblingType = null) {
+         let li = element[siblingType];
 
-        if (li?.tagName.toLowerCase() === "hr") {
-            li = li[siblingType];
-        }
+         //when li is null then it is a submenu navigation set li to the first or last li or
+        // the last li on the main container has been reached then set li to the filter input
+         if (li == null) {
+             const subMenu = element.parentElement;
+             li = subMenu.className === "submenu" ? subMenu[this.#liPosition[siblingType]] : this.#contextMenu.filter.filterInput;
+         }
 
-        const parentId = element.parentElement.id;
-        if (li == null && parentId === "list-container") {
-            li = this.#contextMenu.filter.filterInput;
-        }
-        else if (li == null && parentId !== "list-container") {
-            const elementPosition = {
-                nextElementSibling: "firstElementChild",
-                previousElementSibling: "lastElementChild"
-            }[siblingType];
+         if (li.tagName.toLowerCase() === "hr") {
+             li =  li[siblingType];
+         }
 
-            li = element.parentElement[elementPosition];
-        }
-
-        element.tabIndex = -1;
-        await setFocusState(li);
+         element.tabIndex = -1;
+         await setFocusState(li);
     }
 }
