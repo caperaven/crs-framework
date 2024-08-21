@@ -144,7 +144,13 @@ export class KeyboardInputManager {
     async #escape() {
         this.#contextMenu.remove();
     }
-    
+
+    /**
+     * @method keyboardVerticalNavigation - Handles the vertical navigation for the context menu.
+     * @param element - currently focused element in the list.
+     * @param siblingType - the sibling type to navigate to. can be nextElementSibling or previousElementSibling.
+     * @returns {Promise<void>}
+     */
     async keyboardVerticalNavigation(element, siblingType = null) {
         let li = element[siblingType];
 
