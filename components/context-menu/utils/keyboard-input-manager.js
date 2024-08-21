@@ -168,4 +168,28 @@ export class KeyboardInputManager {
          element.tabIndex = -1;
          await setFocusState(li);
     }
+    async keyboardVerticalNavigation(element, siblingType = null) {
+        let li = element[siblingType];
+
+        // If there is no sibling element (li is null), it means either:
+        // 1. The current element is in a submenu, so we need to set li to the first or last item in the submenu.
+        // 2. We've reached the end of the main menu, so we set li to the filter input field.
+        if (li == null) {
+            const subMenu = element.parentElement;
+            li = subMenu.className === "submenu"
+                ? subMenu[this.#liPosition[siblingType]]  // Get the first/last item in the submenu.
+                : this.#contextMenu.filter.filterInput;   // Set li to the filter input field.
+        }
+
+        // If the sibling element is a horizontal rule (<hr>), skip it and move to the next sibling.
+        if (li.tagName.toLowerCase() === "hr") {
+            li = li[siblingType];
+        }
+
+        // Remove focus from the current element.
+        element.tabIndex = -1;
+
+        // Set focus on the new target element.
+        await setFocusState(li);
+    }
 }
