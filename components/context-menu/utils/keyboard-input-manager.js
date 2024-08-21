@@ -144,30 +144,7 @@ export class KeyboardInputManager {
     async #escape() {
         this.#contextMenu.remove();
     }
-
-    /**
-     * @method keyboardVerticalNavigation - Handles the vertical navigation for the context menu.
-     * @param element - currently focused element in the list.
-     * @param siblingType - the sibling type to navigate to. can be nextElementSibling or previousElementSibling.
-     * @returns {Promise<void>}
-     */
-    async keyboardVerticalNavigation(element, siblingType = null) {
-         let li = element[siblingType];
-
-         //when li is null then it is a submenu navigation set li to the first or last li or
-        // when the last li on the main container has been reached then set li to the filter input
-         if (li == null) {
-             const subMenu = element.parentElement;
-             li = subMenu.className === "submenu" ? subMenu[this.#liPosition[siblingType]] : this.#contextMenu.filter.filterInput;
-         }
-
-         if (li.tagName.toLowerCase() === "hr") {
-             li =  li[siblingType];
-         }
-
-         element.tabIndex = -1;
-         await setFocusState(li);
-    }
+    
     async keyboardVerticalNavigation(element, siblingType = null) {
         let li = element[siblingType];
 
