@@ -19,3 +19,62 @@ li {
 .flex {
     flex: 1;
 }
+
+.container {
+    display: flex;
+    flex-direction: row;
+    height: 50%;
+}
+
+#vertical {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    height: 100%;
+    width: 300px;
+    border: var(--border);
+    overflow-x: hidden;
+}
+
+#horizontal {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 800px;
+    height: 100%;
+    border: var(--border);
+    overflow-y: hidden;
+}
+
+#vertical li {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-bottom: var(--border);
+    height: 2rem;
+    width: 100%;
+}
+
+#horizontal li {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    border-right: var(--border);
+    width: 10rem;
+    height: 100%;
+    padding: var(--padding);
+}
+
+.container {
+    display: flex;
+    flex-direction: row;
+}
+
+.toolbar {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: var(--padding);
+}

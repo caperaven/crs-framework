@@ -4,6 +4,11 @@ import {ConversionType} from "./enums/conversion-type.js";
 import {Column} from "./column.js";
 import {DEFAULT_ALIGN, DEFAULT_SORT_DIRECTION, DEFAULT_SORTABLE, DEFAULT_WIDTH} from "./defaults.js";
 
+export const ColumnMoveLocation = Object.freeze({
+    BEFORE: "before",
+    AFTER: "after"
+});
+
 /**
  * This class stores the column information for the data grid
  */
@@ -14,15 +19,19 @@ export class Columns {
         this.#collection = null;
     }
 
-    move(fromIndex, toIndex) {
-        /*
-        Scenario: Move column from fromIndex to toIndex
-            Given: toIndex is not the last item
-             Then: use the toIndex - 1
+    move(fromIndex, toIndex, location) {
+        // check if the indexes are the same and that the toIndex is greater than the fromIndex
+        if (fromIndex === toIndex || toIndex < fromIndex) return;
+        // check if the fromIndex is out of bounds
+        if (fromIndex < 0 || fromIndex >= this.#collection.length - 1) return;
+        // check if the toIndex is out of bounds
+        if (toIndex >= this.#collection.length - 1) return;
 
-            Given: toIndex is the last item
-             Then: use the toIndex
-         */
+        toIndex = location === MoveLocation.BEFORE ? toIndex -1 : toIndex;
+
+        const column = this.#collection[fromIndex];
+
+        // JHR: todo.
     }
 
     /**

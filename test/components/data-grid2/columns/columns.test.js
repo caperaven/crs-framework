@@ -1,10 +1,10 @@
-import {Columns} from "../../../../components/data-grid/columns/columns.js";
+import {Columns, ColumnMoveLocation} from "../../../../components/data-grid/columns/columns.js";
 import {Column} from "../../../../components/data-grid/columns/column.js";
 import {Alignment} from "../../../../components/data-grid/columns/enums/alignment.js";
 import {SortDirection} from "../../../../components/data-grid/columns/enums/sort-direction.js";
 import {DataType} from "../../../../components/data-grid/columns/enums/data-type.js";
 import {ConversionType} from "../../../../components/data-grid/columns/enums/conversion-type.js";
-import { assertThrows, assertEquals } from "https://deno.land/std/testing/asserts.ts";
+import { assert, assertThrows, assertEquals } from "https://deno.land/std/testing/asserts.ts";
 import { ElementMock } from "../../../mockups/element-mock.js";
 
 Deno.test("Column.create with default parameters", () => {
@@ -190,3 +190,39 @@ Deno.test("Columns.set with invalid data types in collection", () => {
     const invalidCollection = [{ title: 123, field: null }]; // Invalid data types
     assertThrows(() => columns.set(invalidCollection), Error, "Column title and field are required");
 });
+
+// Deno.test("Columns.move method - toIndex is not the last item", () => {
+//     const columns = new Columns();
+//     columns.add("Title1", "Field1");
+//     columns.add("Title2", "Field2");
+//     columns.add("Title3", "Field3");
+//     columns.add("Title4", "Field4");
+//     columns.add("Title5", "Field5");
+//
+//     columns.move(0, 3, ColumnMoveLocation.BEFORE);
+//     const actual = columns.get();
+//
+//     assert(actual[0].title === "Title2");
+//     assert(actual[1].title === "Title3");
+//     assert(actual[2].title === "Title1");
+//     assert(actual[3].title === "Title4");
+//     assert(actual[4].title === "Title5");
+// })
+//
+// Deno.test("Columns.move method - toIndex is the last item", () => {
+//     const columns = new Columns();
+//     columns.add("Title1", "Field1");
+//     columns.add("Title2", "Field2");
+//     columns.add("Title3", "Field3");
+//     columns.add("Title4", "Field4");
+//     columns.add("Title5", "Field5");
+//
+//     columns.move(0, 3, ColumnMoveLocation.AFTER);
+//     const actual = columns.get();
+//
+//     assert(actual[0].title === "Title2");
+//     assert(actual[1].title === "Title3");
+//     assert(actual[3].title === "Title4");
+//     assert(actual[2].title === "Title1");
+//     assert(actual[4].title === "Title5");
+// })
