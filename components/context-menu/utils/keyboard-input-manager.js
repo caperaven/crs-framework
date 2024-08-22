@@ -14,7 +14,7 @@ export class KeyboardInputManager {
         "Enter": this.#enter.bind(this),
         "Escape": this.#escape.bind(this)
     });
-    #liPosition = Object.freeze({
+    #listItemPosition = Object.freeze({
         nextElementSibling: "firstElementChild",
         previousElementSibling: "lastElementChild"
     });
@@ -44,7 +44,7 @@ export class KeyboardInputManager {
         this.#options = null;
         this.#filterHeader = null;
         this.#actions = null;
-        this.#liPosition = null;
+        this.#listItemPosition = null;
     }
 
     /**
@@ -110,12 +110,12 @@ export class KeyboardInputManager {
      * @returns {Promise<void>}
      */
     async #arrowLeft(element) {
-        const li = element.parentElement?.parentElement;
+        const listItem = element.parentElement?.parentElement;
 
-        if (li == null || li.tagName.toLowerCase() !== "li") return
+        if (listItem == null || listItem.tagName.toLowerCase() !== "li") return
 
-        li.setAttribute("aria-expanded", "false");
-        li.focus();
+        listItem.setAttribute("aria-expanded", "false");
+        listItem.focus();
     }
 
     /**
@@ -132,8 +132,8 @@ export class KeyboardInputManager {
         await this.#setFocusOnFirstElement(element);
     }
 
-    async #setFocusOnFirstElement(li) {
-        const ul = li.querySelector(".submenu");
+    async #setFocusOnFirstElement(listItem) {
+        const ul = listItem.querySelector(".submenu");
         await setFocusState(ul.firstElementChild);
     }
 
@@ -152,27 +152,27 @@ export class KeyboardInputManager {
      * @returns {Promise<void>}
      */
     async keyboardVerticalNavigation(element, siblingType = null) {
-        let li = element[siblingType];
+        let listItem = element[siblingType];
 
-        // If there is no sibling element (li is null), it means either:
-        // 1. The current element is in a submenu, so we need to set li to the first or last item in the submenu.
-        // 2. We've reached the end of the main menu, so we set li to the filter input field.
-        if (li == null) {
+        // If there is no sibling element (listItem is null), it means either:
+        // 1. The current element is in a submenu, so we need to set listItem to the first or last item in the submenu.
+        // 2. We've reached the end of the main menu, so we set listItem to the filter input field.
+        if (listItem == null) {
             const subMenu = element.parentElement;
-            li = subMenu.className === "submenu"
-                ? subMenu[this.#liPosition[siblingType]]  // Get the first/last item in the submenu.
-                : this.#contextMenu.filter.filterInput;   // Set li to the filter input field.
+            listItem = subMenu.className === "submenu"
+                ? subMenu[this.#listItemPosition[siblingType]]  // Get the first/last item in the submenu.
+                : this.#contextMenu.filter.filterInput;   // Set listItem to the filter input field.
         }
 
         // If the sibling element is a horizontal rule (<hr>), skip it and move to the next sibling.
-        if (li.tagName.toLowerCase() === "hr") {
-            li = li[siblingType];
+        if (listItem.tagName.toLowerCase() === "hr") {
+            listItem = listItem[siblingType];
         }
 
         // Remove focus from the current element.
         element.tabIndex = -1;
 
         // Set focus on the new target element.
-        await setFocusState(li);
+        await setFocusState(listItem);
     }
 }
