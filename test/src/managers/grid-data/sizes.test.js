@@ -5,36 +5,36 @@ import {Sizes} from "../../../../src/managers/grid-data/sizes.js";
 
 describe("Grid Data Tests", () => {
     it("constructor", () => {
-        let finder = new Sizes(3, 10).setSizes({
+        let sizes = new Sizes(3, 10).setSizes({
             1: 20,
             2: 30
         })
 
-        assertEquals(finder.length, 3);
-        assertEquals(finder.at(0), 10);
-        assertEquals(finder.at(1), 20);
-        assertEquals(finder.at(2), 30);
+        assertEquals(sizes.length, 3);
+        assertEquals(sizes.at(0), 10);
+        assertEquals(sizes.at(1), 20);
+        assertEquals(sizes.at(2), 30);
 
-        assertEquals(finder.acculative(0), 10);
-        assertEquals(finder.acculative(1), 30);
-        assertEquals(finder.acculative(2), 60);
+        assertEquals(sizes.acculative(0), 10);
+        assertEquals(sizes.acculative(1), 30);
+        assertEquals(sizes.acculative(2), 60);
 
-        assertEquals(finder.getIndex(0), 0);
-        assertEquals(finder.getIndex(10), 0);
-        assertEquals(finder.getIndex(11), 1);
-        assertEquals(finder.getIndex(30), 1);
-        assertEquals(finder.getIndex(31), 2);
-        assertEquals(finder.getIndex(60), 2);
+        assertEquals(sizes.getIndex(0), 0);
+        assertEquals(sizes.getIndex(10), 0);
+        assertEquals(sizes.getIndex(11), 1);
+        assertEquals(sizes.getIndex(30), 1);
+        assertEquals(sizes.getIndex(31), 2);
+        assertEquals(sizes.getIndex(60), 2);
 
-        assertEquals(finder.totalSize, 60);
+        assertEquals(sizes.totalSize, 60);
     })
 
     it ("set", () => {
-        let finder = new Sizes(3, 10);
-        finder.set(0, 100);
+        let sizes = new Sizes(3, 10);
+        sizes.set(0, 100);
 
-        assertEquals(finder.at(0), 100);
-        assertEquals(finder.totalSize, 120);
+        assertEquals(sizes.at(0), 100);
+        assertEquals(sizes.totalSize, 120);
     })
 
     it ("performance", () => {

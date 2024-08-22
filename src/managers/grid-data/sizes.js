@@ -13,7 +13,7 @@ export class Sizes {
 
     constructor(count, defaultSize) {
         this.#sizes = new Float32Array(count);
-        this.#cumulativeSizes = new Float64Array(count);
+        this.#cumulativeSizes = new Float32Array(count);
 
         let total = 0;
         for (let i = 0; i < count; i++) {
