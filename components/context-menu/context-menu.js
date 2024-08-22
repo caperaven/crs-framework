@@ -26,13 +26,8 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     #filterHeader;
     #keyboardInputManager;
     #isHierarchical = false;
-    #ignoreList = Object.freeze({
-        "input-filter": true,
-        "resize": true,
-        "list-container": true,
-        "popup-container": true,
-        "filter-header": true,
-        "no-content": true
+    #IgnoreList = Object.freeze({
+        InputFilter: "input-filter",
     });
 
     get shadowDom() {
@@ -126,7 +121,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
         this.popup = null;
         this.container = null;
         this.filter = null;
-        this.#ignoreList = null;
+        this.#IgnoreList = null;
         await super.disconnectedCallback();
     }
 
@@ -138,7 +133,7 @@ class ContextMenu extends crsbinding.classes.BindableElement {
     async #click(event) {
         let element = event.composedPath()[0];
 
-        if (this.#ignoreList[element.id] === true || element.dataset.ignoreClick === "true") return;
+        if (element.id === this.#IgnoreList.InputFilter || element.dataset.ignoreClick === "true") return;
 
         if (element.parentElement?.dataset.closable == null) {
             await this.#closeContextMenu();
