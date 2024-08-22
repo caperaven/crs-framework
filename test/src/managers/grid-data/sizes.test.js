@@ -15,9 +15,9 @@ describe("Grid Data Tests", () => {
         assertEquals(sizes.at(1), 20);
         assertEquals(sizes.at(2), 30);
 
-        assertEquals(sizes.acculative(0), 10);
-        assertEquals(sizes.acculative(1), 30);
-        assertEquals(sizes.acculative(2), 60);
+        assertEquals(sizes.cumulative(0), 10);
+        assertEquals(sizes.cumulative(1), 30);
+        assertEquals(sizes.cumulative(2), 60);
 
         assertEquals(sizes.getIndex(0), 0);
         assertEquals(sizes.getIndex(10), 0);

@@ -85,7 +85,7 @@ export class Sizes {
         this.#recalculateSizes();
     }
 
-    acculative(index) {
+    cumulative(index) {
         return this.#cumulativeSizes[index];
     }
 }
