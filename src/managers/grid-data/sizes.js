@@ -88,4 +88,10 @@ export class Sizes {
     cumulative(index) {
         return this.#cumulativeSizes[index];
     }
+
+    /**
+     * todo: for a given scroll index, calculate the page that must be rendered
+     * todo: calculate the number of pages from the given sizes
+     * todo: calculate the start and end index for a given page
+     */
 }
