@@ -59,12 +59,15 @@
 
     ul[role="menu"] {
         overflow: auto;
-        pointer-events: none;
     }
 
     ul, .submenu,
     ul[data-no-content="true"] ~ .no-content {
         background: var(--window);
+    }
+
+    ul[role="menu"][data-no-content="true"] {
+        display: none;
     }
 
     ul, .popup,
@@ -260,14 +263,14 @@
     </symbol>
 </svg>
 
-<div class="popup" data-ignore-click="true" ref="popup" tabindex="-1">
-    <filter-header data-ignore-click="true" for="ul" ref="filter"></filter-header>
-    <ul id="list-container" ref="container" role="menu" tabindex="-1" class="narrow-scrollbar" data-closable="true"></ul>
-    <div class="no-content">
+<div id="popup-container" data-ignore-click="true" class="popup" ref="popup" tabindex="-1">
+    <filter-header id="filter-header" data-ignore-click="true" for="ul" ref="filter"></filter-header>
+    <ul id="list-container" data-ignore-click="true" ref="container" role="menu" tabindex="-1" class="narrow-scrollbar" data-closable="true"></ul>
+    <div id="no-content"  data-ignore-click="true" class="no-content">
         <h2 id="no-result-header">&{contextMenu.labels.noResultsFound}</h2>
         <p id="no-result-info">&{contextMenu.labels.noResultsMessage}</p>
     </div>
-    <svg id="resize" width="16" height="16">
+    <svg id="resize" data-ignore-click="true" width="16" height="16">
         <use href="#resize-handle"></use>
     </svg>
 </div>
