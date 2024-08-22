@@ -10,15 +10,14 @@ describe("Grid Data Tests", () => {
             2: 30
         })
 
-        assertEquals(finder.sizes.length, 3);
-        assertEquals(finder.sizes[0], 10);
-        assertEquals(finder.sizes[1], 20);
-        assertEquals(finder.sizes[2], 30);
+        assertEquals(finder.length, 3);
+        assertEquals(finder.at(0), 10);
+        assertEquals(finder.at(1), 20);
+        assertEquals(finder.at(2), 30);
 
-        assertEquals(finder.cumulativeSizes.length, 3);
-        assertEquals(finder.cumulativeSizes[0], 10);
-        assertEquals(finder.cumulativeSizes[1], 30);
-        assertEquals(finder.cumulativeSizes[2], 60);
+        assertEquals(finder.acculative(0), 10);
+        assertEquals(finder.acculative(1), 30);
+        assertEquals(finder.acculative(2), 60);
 
         assertEquals(finder.getIndex(0), 0);
         assertEquals(finder.getIndex(10), 0);
@@ -26,6 +25,16 @@ describe("Grid Data Tests", () => {
         assertEquals(finder.getIndex(30), 1);
         assertEquals(finder.getIndex(31), 2);
         assertEquals(finder.getIndex(60), 2);
+
+        assertEquals(finder.totalSize, 60);
+    })
+
+    it ("set", () => {
+        let finder = new Sizes(3, 10);
+        finder.set(0, 100);
+
+        assertEquals(finder.at(0), 100);
+        assertEquals(finder.totalSize, 120);
     })
 
     it ("performance", () => {

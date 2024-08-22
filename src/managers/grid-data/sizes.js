@@ -11,14 +11,6 @@ export class Sizes {
         return this.#totalSize;
     }
 
-    get cumulativeSizes() {
-        return this.#cumulativeSizes;
-    }
-
-    get sizes() {
-        return this.#sizes;
-    }
-
     constructor(count, defaultSize) {
         this.#sizes = new Float32Array(count);
         this.#cumulativeSizes = new Float64Array(count);
