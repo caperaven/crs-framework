@@ -105,6 +105,13 @@ export class GridData {
         return {x: this.#colSizes.totalSize, y: this.#rowSizes.totalSize};
     }
 
+    getPageDetails(scrollX, scrollY, width, height) {
+        const columns = this.#colSizes.getVisibleRange(scrollX, width);
+        const rows = this.#rowSizes.getVisibleRange(scrollY, height);
+
+        return null;
+    }
+
     getCellAtPoint(x, y, scrollX, scrollY) {
     }
 }

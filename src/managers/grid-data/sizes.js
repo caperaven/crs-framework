@@ -12,8 +12,8 @@ export class Sizes {
     }
 
     constructor(count, defaultSize) {
-        this.#sizes = new Float32Array(count);
-        this.#cumulativeSizes = new Float32Array(count);
+        this.#sizes = new Uint16Array(count);
+        this.#cumulativeSizes = new Uint16Array(count);
 
         let total = 0;
         for (let i = 0; i < count; i++) {
@@ -89,9 +89,17 @@ export class Sizes {
         return this.#cumulativeSizes[index];
     }
 
+    getVisibleRange(scroll, containerSize) {
+        const start = this.getIndex(scroll);
+        const end = this.getIndex(scroll + containerSize);
+
+        return {start, end};
+    }
+
     /**
      * todo: for a given scroll index, calculate the page that must be rendered
      * todo: calculate the number of pages from the given sizes
      * todo: calculate the start and end index for a given page
+     * todo: manage frozen columns in calculations
      */
 }
