@@ -1,6 +1,6 @@
 import {GridData} from "../../../src/managers/grid-data/grid-data.js";
 import {canvasInit} from "./canvas-init.js";
-import {drawOnCanvas} from "./drawing/outline.js";
+import {drawOnCanvas} from "./drawing/draw-on-canvas.js";
 
 export default class MatrixCanvas extends crs.classes.BindableElement {
     #gridData;
@@ -67,7 +67,7 @@ export default class MatrixCanvas extends crs.classes.BindableElement {
             });
         }
 
-        drawOnCanvas(this.#ctx, this.#scrollLeft, this.#scrollTop, this.#gridData, this.#columns);
+        drawOnCanvas(this.#ctx, this.#scrollLeft, this.#scrollTop, this.#gridData, this.#columns, this.#rows);
         this.#oldScrollLeft = this.#scrollLeft;
         this.#oldScrollTop = this.#scrollTop;
     }
@@ -96,7 +96,6 @@ export default class MatrixCanvas extends crs.classes.BindableElement {
         this.#gridData.setColumnGroups(columnGroups);
 
         if (this.#ctx != null) {
-            createMarker(this.shadowRoot.querySelector(".scroller"), this.#gridData);
             drawOnCanvas(this.#ctx, 0, 0, this.#gridData, this.#columns, this.#rows);
         }
     }

@@ -15,6 +15,7 @@ canvas, .scroller {
 
 .scroller {
     overflow: auto;
+    will-change: transform;
 }
 
 .marker {
