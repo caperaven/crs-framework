@@ -1,9 +1,8 @@
 import {GridData} from "../../../src/managers/grid-data/grid-data.js";
 import {canvasInit} from "./canvas-init.js";
-import {drawOutline} from "./drawing/outline.js";
+import {drawOnCanvas} from "./drawing/outline.js";
 
 export default class MatrixCanvas extends crs.classes.BindableElement {
-    #fields;
     #gridData;
     #ctx;
     #animating = false;
@@ -31,7 +30,10 @@ export default class MatrixCanvas extends crs.classes.BindableElement {
         await super.connectedCallback();
         const scroller = this.shadowRoot.querySelector(".scroller");
         this.registerEvent(scroller, "scroll", this.#scrollHandler);
-        await crs.call("component", "on_ready", {element: this, callback: this.onReady, caller: this})
+
+        requestAnimationFrame(async () => {
+            await crs.call("component", "on_ready", {element: this, callback: this.onReady, caller: this})
+        })
     }
 
     onReady() {
@@ -41,7 +43,7 @@ export default class MatrixCanvas extends crs.classes.BindableElement {
             this.#ctx = canvasInit(this.shadowRoot, width, height, this.#gridData);
 
             if (this.#gridData != null) {
-                drawOutline(this.#ctx, 0, 0, this.#gridData, this.#columns, this.#rows);
+                drawOnCanvas(this.#ctx, 0, 0, this.#gridData, this.#columns, this.#rows);
             }
         })
     }
@@ -65,7 +67,7 @@ export default class MatrixCanvas extends crs.classes.BindableElement {
             });
         }
 
-        drawOutline(this.#ctx, this.#scrollLeft, this.#scrollTop, this.#gridData, this.#columns);
+        drawOnCanvas(this.#ctx, this.#scrollLeft, this.#scrollTop, this.#gridData, this.#columns);
         this.#oldScrollLeft = this.#scrollLeft;
         this.#oldScrollTop = this.#scrollTop;
     }
@@ -95,7 +97,7 @@ export default class MatrixCanvas extends crs.classes.BindableElement {
 
         if (this.#ctx != null) {
             createMarker(this.shadowRoot.querySelector(".scroller"), this.#gridData);
-            drawOutline(this.#ctx, 0, 0, this.#gridData, this.#columns, this.#rows);
+            drawOnCanvas(this.#ctx, 0, 0, this.#gridData, this.#columns, this.#rows);
         }
     }
 }

@@ -1,4 +1,4 @@
-export function drawOutline(ctx, scrollX, scrollY, gridData, columns, rows) {
+export function drawOnCanvas(ctx, scrollX, scrollY, gridData, columns, rows) {
     const pageDetails = gridData.getPageDetails(scrollX, scrollY, ctx.canvas.width, ctx.canvas.height);
 
     ctx.save();
