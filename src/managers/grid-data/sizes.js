@@ -2,6 +2,7 @@ export class Sizes {
     #sizes;
     #cumulativeSizes;
     #totalSize;
+    #defaultSize;
 
     get length() {
         return this.#sizes.length;
@@ -11,7 +12,12 @@ export class Sizes {
         return this.#totalSize;
     }
 
+    get defaultSize() {
+        return this.#defaultSize;
+    }
+
     constructor(count, defaultSize) {
+        this.#defaultSize = defaultSize;
         this.#sizes = new Uint16Array(count);
         this.#cumulativeSizes = new Uint16Array(count);
 

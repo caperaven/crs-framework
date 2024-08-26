@@ -109,7 +109,24 @@ export class GridData {
         const columns = this.#colSizes.getVisibleRange(scrollX, width);
         const rows = this.#rowSizes.getVisibleRange(scrollY, height);
 
-        return null;
+        const columnsCumulative = [];
+        const rowsCumulative = [];
+
+        for (let i = columns.start; i <= columns.end; i++) {
+            columnsCumulative.push(this.#colSizes.cumulative(i));
+        }
+
+        for (let i = rows.start; i <= rows.end; i++) {
+            rowsCumulative.push(this.#rowSizes.cumulative(i));
+        }
+
+        return {
+            visibleColumns: columns,
+            columnsCumulative: columnsCumulative,
+            visibleRows: rows,
+            rowsCumulative: rowsCumulative,
+            groups: this.#groups
+        };
     }
 
     getCellAtPoint(x, y, scrollX, scrollY) {

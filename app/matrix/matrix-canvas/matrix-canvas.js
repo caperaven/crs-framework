@@ -59,7 +59,7 @@ export default class MatrixCanvas extends crs.classes.BindableElement {
             });
         }
 
-        drawOutline(this.#ctx, this.#scrollLeft, this.#scrollTop, this.#gridData);
+        drawOutline(this.#ctx, this.#scrollLeft, this.#scrollTop, this.#gridData, this.#columns);
         this.#oldScrollLeft = this.#scrollLeft;
         this.#oldScrollTop = this.#scrollTop;
     }
@@ -88,7 +88,7 @@ export default class MatrixCanvas extends crs.classes.BindableElement {
         this.#gridData.setColumnGroups(columnGroups);
         createMarker(this.shadowRoot.querySelector(".scroller"), this.#gridData);
 
-        drawOutline(this.#ctx, 0, 0, this.#gridData);
+        drawOutline(this.#ctx, 0, 0, this.#gridData, this.#columns, this.#rows);
     }
 }
 
