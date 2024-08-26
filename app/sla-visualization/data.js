@@ -2109,7 +2109,7 @@ const data2 = {
                     "description": "something",
                     "start_status": 10,
                     "end_status": 11,
-                    "progress": 25,
+                    "progress": 7,
                     "status": "active",
                     "duration": "00:27:00:07",
                     "triggers": [
@@ -2155,7 +2155,7 @@ const data2 = {
                     "description": "something",
                     "start_status": 5000001003,
                     "end_status": 5000001005,
-                    "progress": 50,
+                    "progress": 150.99,
                     "status": "active",
                     "duration": "2:30:45:07",
                     "triggers": [

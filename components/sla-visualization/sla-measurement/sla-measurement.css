@@ -65,8 +65,8 @@ sla-measurement[aria-selected='true'] {
 :host::after {
     content: attr(data-progress);
     display: flex;
-    width: 2rem;
-    height: 1.25rem;
+    max-width: fit-content;
+    height: 0.75rem;
     justify-content: center;
     align-items: center;
     color: var(--cl-text);
@@ -79,6 +79,7 @@ sla-measurement[aria-selected='true'] {
     border-radius: var(--double-radius);
     bottom: 0.375rem;
     position: absolute;
+    padding: 0.25rem
 }
 
 :host([data-parent-phase="setup"])::after {
