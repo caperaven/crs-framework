@@ -32,7 +32,11 @@ export class SlaTooltipManager {
         visualization.removeEventListener("measurement-hovered", this.#measurementHoverHandler);
         await crs.call("styles", "unload_file", {id: `${this.#templateId}-sla-tooltip-styles`});
         await crsbinding.inflationManager.unregister(`${this.#templateId}-sla-tooltip-template`);
-        await crsbinding.inflationManager.unregister("triggers-template");
+        if (this.#phase === "runtime") {
+            // This is to prevent the scenario where both the setup and runtime visualisations are visible and the setup closes
+            // which fires the dispose function, in this case we do not want to unregister the triggers-template prematurely.
+            await crsbinding.inflationManager.unregister("triggers-template");
+        }
         this.#measurementHoverHandler = null
         this.#phase = null;
         this.#templateId = null;
@@ -52,10 +56,12 @@ export class SlaTooltipManager {
         if (this.#phase === "runtime") {
             dynamicPath = "-runtime.html";
             this.#templateId = "runtime-tooltip";
+
+            //registers the triggers template if the phase is runtime.
+            await this.#registerTemplate("-triggers.html", "triggers-template");
         }
 
         await this.#registerTemplate(dynamicPath,`${this.#templateId}-sla-tooltip-template`);
-        await this.#registerTemplate("-triggers.html", "triggers-template");
 
         // here we are going to add the link to the document head to load the css file
         await crs.call("styles", "load_file", {id: `${this.#templateId}-sla-tooltip-styles`, file: import.meta.url.replace("-manager.js", ".css")});
@@ -131,6 +137,9 @@ export class SlaTooltipManager {
      * @returns {Promise<void>}
      */
     async #inflateTriggersContainerContent(measurementId, triggerArray) {
+        //return if the phase is not runtime, this is because the trigger template is not required on setup
+        if (this.#phase !== "runtime") return;
+
         // clears the trigger container innerHTML
         await this.#resetTriggersContainer();
         const fragment = await crsbinding.inflationManager.get("triggers-template", triggerArray);
