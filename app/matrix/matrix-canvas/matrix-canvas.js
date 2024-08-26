@@ -1,5 +1,4 @@
 import {GridData} from "../../../src/managers/grid-data/grid-data.js";
-import {createMarker} from "./marker.js";
 import {canvasInit} from "./canvas-init.js";
 import {drawOutline} from "./drawing/outline.js";
 
@@ -28,15 +27,22 @@ export default class MatrixCanvas extends crs.classes.BindableElement {
         return true;
     }
 
-    load() {
-        return new Promise(resolve => {
-            const scroller = this.shadowRoot.querySelector(".scroller");
-            this.registerEvent(scroller, "scroll", this.#scrollHandler);
+    async connectedCallback() {
+        await super.connectedCallback();
+        const scroller = this.shadowRoot.querySelector(".scroller");
+        this.registerEvent(scroller, "scroll", this.#scrollHandler);
+        await crs.call("component", "on_ready", {element: this, callback: this.onReady, caller: this})
+    }
 
-            requestAnimationFrame(() => {
-                this.#ctx = canvasInit(this.shadowRoot.querySelector("canvas"));
-                resolve();
-            });
+    onReady() {
+        requestAnimationFrame(() => {
+            const width = this.offsetWidth;
+            const height = this.offsetHeight;
+            this.#ctx = canvasInit(this.shadowRoot, width, height, this.#gridData);
+
+            if (this.#gridData != null) {
+                drawOutline(this.#ctx, 0, 0, this.#gridData, this.#columns, this.#rows);
+            }
         })
     }
 
@@ -86,9 +92,11 @@ export default class MatrixCanvas extends crs.classes.BindableElement {
 
         this.#gridData = new GridData(rows.length, rowHeight, columns.length, columnWidth);
         this.#gridData.setColumnGroups(columnGroups);
-        createMarker(this.shadowRoot.querySelector(".scroller"), this.#gridData);
 
-        drawOutline(this.#ctx, 0, 0, this.#gridData, this.#columns, this.#rows);
+        if (this.#ctx != null) {
+            createMarker(this.shadowRoot.querySelector(".scroller"), this.#gridData);
+            drawOutline(this.#ctx, 0, 0, this.#gridData, this.#columns, this.#rows);
+        }
     }
 }
 

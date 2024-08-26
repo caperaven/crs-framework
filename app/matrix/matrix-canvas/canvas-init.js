@@ -1,11 +1,22 @@
-export function canvasInit(canvas) {
+import {createMarker} from "./marker.js";
+
+export function canvasInit(parent, width, height, gridData) {
+    const canvas = parent.querySelector("canvas");
+    const scroller = parent.querySelector(".scroller");
+    createMarker(scroller, gridData);
+
+    scroller.style.width = `${width}px`;
+    scroller.style.height = `${height}px`;
+
     const dpr = window.devicePixelRatio;
-    const rect = canvas.getBoundingClientRect();
-    canvas.width = rect.width * dpr;
-    canvas.height = rect.height * dpr;
-    canvas.style.width = `${rect.width}px`;
-    canvas.style.height = `${rect.height}px`;
+    canvas.width = width * dpr;
+    canvas.height = height * dpr;
+    canvas.style.width = `${width}px`;
+    canvas.style.height = `${height}px`;
     const ctx = canvas.getContext("2d", {alpha: false});
     ctx.scale(dpr, dpr);
     return ctx;
 }
+
+
+
