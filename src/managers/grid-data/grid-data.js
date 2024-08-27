@@ -106,31 +106,25 @@ export class GridData {
     }
 
     getPageDetails(scrollX, scrollY, width, height) {
-        const columns = this.#colSizes.getVisibleRange(scrollX, width);
-        const rows = this.#rowSizes.getVisibleRange(scrollY, height);
+        const visibleColumns = this.#colSizes.getVisibleRange(scrollX, width);
+        const visibleRows = this.#rowSizes.getVisibleRange(scrollY, height);
 
-        const columnsCumulative = [];
-        const columnsActual = [];
-        const rowsCumulative = [];
-        const rowsActual = [];
+        const columnsActualSizes = [];
+        const rowsActualSizes = [];
 
-        for (let i = columns.start; i <= columns.end; i++) {
-            columnsCumulative.push(this.#colSizes.cumulative(i));
-            columnsActual.push(this.#colSizes.at(i));
+        for (let i = visibleColumns.start; i <= visibleColumns.end; i++) {
+            columnsActualSizes.push(this.#colSizes.at(i));
         }
 
-        for (let i = rows.start; i <= rows.end; i++) {
-            rowsCumulative.push(this.#rowSizes.cumulative(i));
-            rowsActual.push(this.#rowSizes.at(i));
+        for (let i = visibleRows.start; i <= visibleRows.end; i++) {
+            rowsActualSizes.push(this.#rowSizes.at(i));
         }
 
         return {
-            visibleColumns: columns,
-            columnsCumulative: columnsCumulative,
-            columnsActual: columnsActual,
-            visibleRows: rows,
-            rowsCumulative: rowsCumulative,
-            rowsActual: rowsActual,
+            visibleColumns,
+            columnsActualSizes,
+            visibleRows,
+            rowsActualSizes,
             groups: this.#groups
         };
     }
