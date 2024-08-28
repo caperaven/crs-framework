@@ -42,6 +42,7 @@ export default class MatrixCanvas extends crs.classes.BindableElement {
             const height = this.offsetHeight;
             this.#ctx = canvasInit(this.shadowRoot, width, height, this.#gridData);
 
+            this.#gridData.calculateRegions(width, height);
             if (this.#gridData != null) {
                 drawOnCanvas(this.#ctx, 0, 0, this.#gridData, this.#columns, this.#rows);
             }

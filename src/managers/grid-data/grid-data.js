@@ -20,6 +20,7 @@ export class GridData {
     #rowSizes;
     #colSizes;
     #groups = {};
+    #regions;
 
     get rowCount() {
         return this.#rowSizes.length;
@@ -95,6 +96,34 @@ export class GridData {
         this.#colSizes.setSizes(colSizes);
     }
 
+    calculateRegions(canvasWidth, canvasHeight) {
+        const regions = {
+            widths: {
+                left: 0,
+                right: canvasWidth,
+            },
+            heights: {
+                groups: { top: 0, bottom: 0 },
+                columns: { top: 0, bottom: 0 },
+                cells: { top: 0, bottom: 0, height: 0 }
+            }
+        };
+
+        if (this.#groups != null) {
+            regions.heights.groups.top = 0;
+            regions.heights.groups.bottom = this.#rowSizes.defaultSize;
+        }
+
+        regions.heights.columns.top = regions.heights.groups.bottom;
+        regions.heights.columns.bottom = regions.heights.columns.top + this.#rowSizes.defaultSize;
+
+        regions.heights.cells.top = regions.heights.columns.bottom;
+        regions.heights.cells.bottom = canvasHeight;
+        regions.heights.cells.height = regions.heights.cells.bottom - regions.heights.cells.top;
+
+        this.#regions = regions;
+    }
+
     /**
      * When doing scrolling, you need to know the total size of the grid.
      * This method returns the total size of the grid in the x and y directions.
@@ -102,7 +131,16 @@ export class GridData {
      * @returns {{x: Number, y: Number}}
      */
     getScrollMarkerVector() {
-        return {x: this.#colSizes.totalSize, y: this.#rowSizes.totalSize};
+        // for the y, you need to also add the header space required for headers and groups
+
+        const x = this.#colSizes.totalSize;
+        let y = this.#rowSizes.totalSize + this.#rowSizes.defaultSize;
+
+        if (this.#groups != null) {
+            y += this.#rowSizes.defaultSize;
+        }
+
+        return {x, y};
     }
 
     getPageDetails(scrollX, scrollY, containerWidth, containerHeight) {
@@ -136,8 +174,7 @@ export class GridData {
             rowsActualSizes,
             rowsCumulativeSizes,
             columnLocation,
-            rowLocation,
-            groups: this.#groups
+            rowLocation
         };
     }
 
