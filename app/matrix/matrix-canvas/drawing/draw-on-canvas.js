@@ -13,7 +13,6 @@ export function drawOnCanvas(ctx, scrollX, scrollY, gridData, columns, rows) {
     ctx.font = "12px Arial";
     ctx.fillStyle = "#000000";
 
-
     const topY = columnsTop + (rowSize / 2) + 5;
     const cellsTop = topY + rowSize;
 

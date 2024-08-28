@@ -97,10 +97,19 @@ export class Sizes {
     }
 
     getVisibleRange(scroll, containerSize) {
-        const start = this.getIndex(scroll);
-        const end = this.getIndex(scroll + containerSize);
+        let x1 = scroll;
+        let x2 = scroll + containerSize;
 
-        return {start, end};
+        if (x2 > this.totalSize) {
+            // calculate last page
+            x2 = this.#cumulativeSizes[this.#sizes.length - 1];
+            x1 = x2 - containerSize;
+        }
+
+        return {
+            start: this.getIndex(x1),
+            end: this.getIndex(x2)
+        }
     }
 
     /**
