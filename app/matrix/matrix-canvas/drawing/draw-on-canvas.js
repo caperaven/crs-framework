@@ -14,7 +14,7 @@ export function drawOnCanvas(ctx, scrollX, scrollY, gridData, columns, rows) {
     ctx.fillStyle = "#000000";
 
     ctx.beginPath();
-    // drawCells(ctx, pageDetails, columns, rows, scrollX, scrollY);
+    drawCells(ctx, gridData, pageDetails, columns, rows, scrollX, scrollY);
     drawColumnHeaders(ctx, gridData, pageDetails, columns, scrollX);
     drawColumnLines(ctx, gridData, pageDetails, scrollX);
     drawRowLines(ctx, gridData, pageDetails, scrollY);
@@ -71,26 +71,26 @@ function drawColumnHeaders(ctx, gridData, pageDetails, fields, scrollX) {
     }
 }
 
-function drawCells(ctx, pageDetails, columns, rows, scrollX, scrollY) {
-    let rowIndex = pageDetails.visibleRows.start;
+function drawCells(ctx, gridData, pageDetails, columns, rows, scrollX, scrollY) {
+    let currentRowIndex = pageDetails.visibleRows.start;
 
-    for (let i = 0; i < pageDetails.rowsActualSizes.length; i++) {
-        const size = pageDetails.rowsActualSizes[i];
-        const y = pageDetails.rowsCumulativeSizes[i] - scrollY - size + top;
-        const row = rows[rowIndex];
+    const cellsTop = gridData.regions.heights.cells.top;
+
+    for (let rowIndex = 0; rowIndex < pageDetails.rowsActualSizes.length; rowIndex++) {
+        const y = cellsTop + pageDetails.rowsCumulativeSizes[rowIndex] - scrollY - 5;
+        const row = rows[currentRowIndex];
 
         let fieldIndex = pageDetails.visibleColumns.start;
-
-        for (let i = 0; i < pageDetails.columnsActualSizes.length; i++) {
-            const size = pageDetails.columnsActualSizes[i];
-            const x = pageDetails.columnsCumulativeSizes[i] - scrollX - size;
+        for (let columnIndex  = 0; columnIndex < pageDetails.columnsActualSizes.length; columnIndex++) {
+            const size = pageDetails.columnsActualSizes[columnIndex];
+            const x = pageDetails.columnsCumulativeSizes[columnIndex] - scrollX - size + 5;
 
             const value = row[columns[fieldIndex].field];
+            ctx.fillText(value, x, y);
 
-            ctx.fillText(value, x + 5, y);
             fieldIndex++;
         }
 
-        rowIndex++;
+        currentRowIndex++;
     }
 }
