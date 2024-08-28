@@ -143,10 +143,6 @@ export class GridData {
         const x = this.#colSizes.totalSize;
         let y = this.#rowSizes.totalSize + this.#rowSizes.defaultSize;
 
-        if (this.#groups != null) {
-            y += this.#rowSizes.defaultSize;
-        }
-
         return {x, y};
     }
 
