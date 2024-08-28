@@ -12,6 +12,8 @@ export function drawOnCanvas(ctx, scrollX, scrollY, gridData, columns, rows) {
     ctx.strokeStyle = "#c1c1c1";
     ctx.font = "12px Arial";
     ctx.fillStyle = "#000000";
+    ctx.textAlign="left";
+    ctx.textBaseline = "middle";
 
     ctx.beginPath();
     drawCells(ctx, gridData, pageDetails, columns, rows, scrollX, scrollY);
@@ -54,6 +56,7 @@ function drawColumnHeaders(ctx, gridData, pageDetails, fields, scrollX) {
     const columnsTop = gridData.regions.heights.columns.top;
     const columnsBottom = gridData.regions.heights.columns.bottom;
     const defaultHeight = gridData.rowSizes.defaultSize;
+    const halfRowHeight = gridData.regions.constants.halfRowHeight;
 
     ctx.save();
     ctx.fillStyle = "#DADADA";
@@ -65,7 +68,7 @@ function drawColumnHeaders(ctx, gridData, pageDetails, fields, scrollX) {
         const x = pageDetails.columnsCumulativeSizes[i] - scrollX - size;
 
         const title = fields[fieldIndex].title;
-        ctx.fillText(title, x + 5, columnsBottom - 5);
+        ctx.fillText(title, x + 5, columnsBottom - halfRowHeight);
 
         fieldIndex++;
     }
@@ -75,15 +78,16 @@ function drawCells(ctx, gridData, pageDetails, columns, rows, scrollX, scrollY) 
     let currentRowIndex = pageDetails.visibleRows.start;
 
     const cellsTop = gridData.regions.heights.cells.top;
+    const halfRowHeight = gridData.regions.constants.halfRowHeight;
 
     for (let rowIndex = 0; rowIndex < pageDetails.rowsActualSizes.length; rowIndex++) {
-        const y = cellsTop + pageDetails.rowsCumulativeSizes[rowIndex] - scrollY - 5;
+        const y = cellsTop + pageDetails.rowsCumulativeSizes[rowIndex] - scrollY - halfRowHeight;
         const row = rows[currentRowIndex];
 
         let fieldIndex = pageDetails.visibleColumns.start;
         for (let columnIndex  = 0; columnIndex < pageDetails.columnsActualSizes.length; columnIndex++) {
             const size = pageDetails.columnsActualSizes[columnIndex];
-            const x = pageDetails.columnsCumulativeSizes[columnIndex] - scrollX - size + 5;
+            const x = pageDetails.columnsCumulativeSizes[columnIndex] - scrollX - size + 8;
 
             const value = row[columns[fieldIndex].field];
             ctx.fillText(value, x, y);

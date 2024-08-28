@@ -39,7 +39,7 @@ export default class MatrixViewModel extends crs.classes.BindableElement {
                     rows,
                     columns,
                     columnWidth: 100,
-                    rowHeight: 20,
+                    rowHeight: 32,
                     columnGroups: {
                         "Group 1": {start: 2, end: 10},
                         "Group 2": {start: 11, end: 100},

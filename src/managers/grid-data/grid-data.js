@@ -110,6 +110,9 @@ export class GridData {
                 groups: { top: 0, bottom: 0 },
                 columns: { top: 0, bottom: 0 },
                 cells: { top: 0, bottom: 0, height: 0 }
+            },
+            constants: {
+                halfRowHeight: Math.ceil(this.#rowSizes.defaultSize / 2)
             }
         };
 

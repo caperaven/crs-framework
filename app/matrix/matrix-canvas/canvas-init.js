@@ -15,6 +15,7 @@ export function canvasInit(parent, width, height, gridData) {
     canvas.style.height = `${height}px`;
     const ctx = canvas.getContext("2d", {alpha: false});
     ctx.scale(dpr, dpr);
+
     return ctx;
 }
 
