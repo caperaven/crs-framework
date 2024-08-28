@@ -1,10 +1,4 @@
 export function drawOnCanvas(ctx, scrollX, scrollY, gridData, columns, rows) {
-    // const rowSize = gridData.rowSizes.defaultSize;
-    // const columnsTop = gridData.groups == null ? 0 : rowSize;
-    // const columnsBottom = ctx.canvas.offsetHeight;
-    // const topY = columnsTop + (rowSize / 2) + 5;
-    // const cellsTop = topY + rowSize;
-
     const pageDetails = gridData.getPageDetails(scrollX, scrollY, ctx.canvas.width, ctx.canvas.height);
 
     ctx.fillStyle = "rgba(255, 255, 255, 1)";
