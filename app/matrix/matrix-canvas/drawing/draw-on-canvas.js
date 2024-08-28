@@ -14,39 +14,40 @@ export function drawOnCanvas(ctx, scrollX, scrollY, gridData, columns, rows) {
     ctx.fillStyle = "#000000";
 
 
+    const topY = columnsTop + (rowSize / 2) + 5;
+    const cellsTop = topY + rowSize;
+
     ctx.beginPath();
-    const cellsTop = drawColumnHeaders(ctx, columnsTop, pageDetails, columns, rowSize);
-    drawColumnLines(ctx, columnsTop, columnsBottom, pageDetails);
-    drawRowLines(ctx, columnsTop, pageDetails);
-    drawCells(ctx, cellsTop, pageDetails, columns, rows);
+    drawCells(ctx, cellsTop, pageDetails, columns, rows, scrollX, scrollY);
+    drawColumnHeaders(ctx, columnsTop, pageDetails, columns, rowSize, scrollX, topY);
+    drawColumnLines(ctx, columnsTop, columnsBottom, pageDetails, scrollX);
+    drawRowLines(ctx, columnsTop, pageDetails, scrollY, cellsTop);
     ctx.stroke();
 }
 
-function drawColumnLines(ctx, top, bottom, pageDetails) {
-    let columnX = 0;
-    for (const size of pageDetails.columnsActualSizes) {
-        const x = columnX + size;
+function drawRowLines(ctx, top, pageDetails, scrollY, cellsTop) {
+    for (let i = 0; i < pageDetails.rowsActualSizes.length; i++) {
+        const size = pageDetails.rowsActualSizes[i];
+        const y = pageDetails.rowsCumulativeSizes[i] - scrollY - size;
+
+        if (y > cellsTop) {
+            ctx.moveTo(0, y);
+            ctx.lineTo(ctx.canvas.offsetWidth, y);
+        }
+    }
+}
+
+function drawColumnLines(ctx, top, bottom, pageDetails, scrollX) {
+    for (let i = 0; i < pageDetails.columnsActualSizes.length; i++) {
+        const size = pageDetails.columnsActualSizes[i];
+        const x = pageDetails.columnsCumulativeSizes[i] - scrollX - size;
+
         ctx.moveTo(x, top);
         ctx.lineTo(x, bottom);
-
-        columnX = x;
     }
 }
 
-function drawRowLines(ctx, top, pageDetails) {
-    let rowY = top;
-
-    for (const size of pageDetails.rowsActualSizes) {
-        const y = rowY + size;
-        ctx.moveTo(0, y);
-        ctx.lineTo(ctx.canvas.offsetWidth, y);
-
-        rowY = y;
-    }
-}
-
-function drawColumnHeaders(ctx, columnsTop, pageDetails, fields, defaultHeight) {
-    const topY = columnsTop + (defaultHeight / 2) + 5;
+function drawColumnHeaders(ctx, columnsTop, pageDetails, fields, defaultHeight, scrollX, topY) {
     let fieldIndex = pageDetails.visibleColumns.start;
 
     ctx.save();
@@ -54,38 +55,35 @@ function drawColumnHeaders(ctx, columnsTop, pageDetails, fields, defaultHeight) 
     ctx.fillRect(0, 0, ctx.canvas.width, columnsTop + defaultHeight );
     ctx.restore();
 
-    let columnX = 0;
-    for (const size of pageDetails.columnsActualSizes) {
-        const title = fields[fieldIndex].title;
-        ctx.fillText(title, columnX + 5, topY);
+    for (let i = 0; i < pageDetails.columnsActualSizes.length; i++) {
+        const size = pageDetails.columnsActualSizes[i];
+        const x = pageDetails.columnsCumulativeSizes[i] - scrollX - size;
 
-        columnX += size;
+        const title = fields[fieldIndex].title;
+        ctx.fillText(title, x + 5, topY);
+
         fieldIndex++;
     }
-
-    return topY + defaultHeight;
 }
 
-function drawCells(ctx, top, pageDetails, columns, rows) {
-    let rowY = top;
+function drawCells(ctx, top, pageDetails, columns, rows, scrollX, scrollY) {
+    let rowIndex = pageDetails.visibleRows.start;
 
-    let rowSizeIndex = 0;
-    for (let rowIndex = pageDetails.visibleRows.start; rowIndex <= pageDetails.visibleRows.end; rowIndex++) {
+    for (let i = 0; i < pageDetails.rowsActualSizes.length; i++) {
+        const size = pageDetails.rowsActualSizes[i];
+        const y = pageDetails.rowsCumulativeSizes[i] - scrollY - size + top;
         const row = rows[rowIndex];
 
-        let columnX = 0;
         let fieldIndex = pageDetails.visibleColumns.start;
 
-        for (const columnSize of pageDetails.columnsActualSizes) {
+        for (let i = 0; i < pageDetails.columnsActualSizes.length; i++) {
+            const size = pageDetails.columnsActualSizes[i];
+            const x = pageDetails.columnsCumulativeSizes[i] - scrollX - size;
+
             const value = row[columns[fieldIndex].field];
 
-            ctx.fillText(value, columnX + 5, rowY);
-
-            columnX += columnSize;
+            ctx.fillText(value, x + 5, y);
             fieldIndex++;
         }
-
-        rowY += pageDetails.rowsActualSizes[rowSizeIndex];
-        rowSizeIndex++;
     }
 }

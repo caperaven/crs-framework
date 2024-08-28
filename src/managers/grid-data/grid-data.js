@@ -112,19 +112,31 @@ export class GridData {
         const columnsActualSizes = [];
         const rowsActualSizes = [];
 
+        const columnsCumulativeSizes = [];
+        const rowsCumulativeSizes = [];
+
         for (let i = visibleColumns.start; i <= visibleColumns.end; i++) {
             columnsActualSizes.push(this.#colSizes.at(i));
+            columnsCumulativeSizes.push(this.#colSizes.cumulative(i));
         }
 
         for (let i = visibleRows.start; i <= visibleRows.end; i++) {
             rowsActualSizes.push(this.#rowSizes.at(i));
+            rowsCumulativeSizes.push(this.#rowSizes.cumulative(i));
         }
+
+        const columnLocation = this.#colSizes.cumulative(visibleColumns.start);
+        const rowLocation = this.#rowSizes.cumulative(visibleRows.start);
 
         return {
             visibleColumns,
             columnsActualSizes,
+            columnsCumulativeSizes,
             visibleRows,
             rowsActualSizes,
+            rowsCumulativeSizes,
+            columnLocation,
+            rowLocation,
             groups: this.#groups
         };
     }
