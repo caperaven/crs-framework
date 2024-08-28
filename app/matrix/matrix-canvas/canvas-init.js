@@ -3,7 +3,7 @@ import {createMarker} from "./marker.js";
 export function canvasInit(parent, width, height, gridData) {
     const canvas = parent.querySelector("canvas");
     const scroller = parent.querySelector(".scroller");
-    createMarker(scroller, gridData);
+    createMarker(scroller, gridData, width, height);
 
     scroller.style.width = `${width}px`;
     scroller.style.height = `${height}px`;

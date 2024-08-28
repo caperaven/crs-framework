@@ -13,6 +13,7 @@ export function drawOnCanvas(ctx, scrollX, scrollY, gridData, columns, rows) {
     ctx.font = "12px Arial";
     ctx.fillStyle = "#000000";
 
+
     ctx.beginPath();
     const cellsTop = drawColumnHeaders(ctx, columnsTop, pageDetails, columns, rowSize);
     drawColumnLines(ctx, columnsTop, columnsBottom, pageDetails);

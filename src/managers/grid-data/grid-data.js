@@ -105,9 +105,9 @@ export class GridData {
         return {x: this.#colSizes.totalSize, y: this.#rowSizes.totalSize};
     }
 
-    getPageDetails(scrollX, scrollY, width, height) {
-        const visibleColumns = this.#colSizes.getVisibleRange(scrollX, width);
-        const visibleRows = this.#rowSizes.getVisibleRange(scrollY, height);
+    getPageDetails(scrollX, scrollY, containerWidth, containerHeight) {
+        const visibleColumns = this.#colSizes.getVisibleRange(scrollX, containerWidth);
+        const visibleRows = this.#rowSizes.getVisibleRange(scrollY, containerHeight);
 
         const columnsActualSizes = [];
         const rowsActualSizes = [];

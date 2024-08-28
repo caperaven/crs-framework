@@ -73,8 +73,8 @@ export default class MatrixCanvas extends crs.classes.BindableElement {
     }
 
     async #scroll(event) {
-        this.#scrollLeft = event.target.scrollLeft;
-        this.#scrollTop = event.target.scrollTop;
+        this.#scrollLeft = Math.ceil(event.target.scrollLeft);
+        this.#scrollTop = Math.ceil(event.target.scrollTop);
 
         if (!this.#animating) {
             this.#animating = true;

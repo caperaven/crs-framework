@@ -27,7 +27,8 @@ export class Sizes {
             this.#sizes[i] = defaultSize;
             this.#cumulativeSizes[i] = total;
         }
-        this.#totalSize = total;
+
+        this.#totalSize = total - this.#sizes[count - 1];
     }
 
     /**

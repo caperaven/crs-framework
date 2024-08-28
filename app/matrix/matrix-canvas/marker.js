@@ -1,4 +1,4 @@
-export function createMarker(parentElement, gridData) {
+export function createMarker(parentElement, gridData, width, height) {
     const oldMarker = parentElement.querySelector(".marker");
     oldMarker?.remove();
 
