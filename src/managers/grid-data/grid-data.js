@@ -42,6 +42,10 @@ export class GridData {
         return Object.freeze(this.#groups);
     }
 
+    get regions() {
+        return Object.freeze(this.#regions);
+    }
+
     constructor(rowCount, rowSize, colCount, colSize) {
         this.#rowSizes = new Sizes(rowCount, rowSize);
         this.#colSizes = new Sizes(colCount, colSize);

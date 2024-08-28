@@ -1,9 +1,9 @@
 export function drawOnCanvas(ctx, scrollX, scrollY, gridData, columns, rows) {
-    const rowSize = gridData.rowSizes.defaultSize;
-    const columnsTop = gridData.groups == null ? 0 : rowSize;
-    const columnsBottom = ctx.canvas.offsetHeight;
-    const topY = columnsTop + (rowSize / 2) + 5;
-    const cellsTop = topY + rowSize;
+    // const rowSize = gridData.rowSizes.defaultSize;
+    // const columnsTop = gridData.groups == null ? 0 : rowSize;
+    // const columnsBottom = ctx.canvas.offsetHeight;
+    // const topY = columnsTop + (rowSize / 2) + 5;
+    // const cellsTop = topY + rowSize;
 
     const pageDetails = gridData.getPageDetails(scrollX, scrollY, ctx.canvas.width, ctx.canvas.height);
 
@@ -14,14 +14,16 @@ export function drawOnCanvas(ctx, scrollX, scrollY, gridData, columns, rows) {
     ctx.fillStyle = "#000000";
 
     ctx.beginPath();
-    drawCells(ctx, cellsTop, pageDetails, columns, rows, scrollX, scrollY);
-    drawColumnHeaders(ctx, columnsTop, pageDetails, columns, rowSize, scrollX, topY);
-    drawColumnLines(ctx, columnsTop, columnsBottom, pageDetails, scrollX);
-    drawRowLines(ctx, columnsTop, pageDetails, scrollY, cellsTop);
+    // drawCells(ctx, pageDetails, columns, rows, scrollX, scrollY);
+    drawColumnHeaders(ctx, gridData, pageDetails, columns, scrollX);
+    drawColumnLines(ctx, gridData, pageDetails, scrollX);
+    drawRowLines(ctx, gridData, pageDetails, scrollY);
     ctx.stroke();
 }
 
-function drawRowLines(ctx, top, pageDetails, scrollY, cellsTop) {
+function drawRowLines(ctx, gridData, pageDetails, scrollY) {
+    const cellsTop = gridData.regions.heights.cells.top;
+
     for (let i = 0; i < pageDetails.rowsActualSizes.length; i++) {
         const size = pageDetails.rowsActualSizes[i];
         const y = pageDetails.rowsCumulativeSizes[i] - scrollY - size;
@@ -33,7 +35,10 @@ function drawRowLines(ctx, top, pageDetails, scrollY, cellsTop) {
     }
 }
 
-function drawColumnLines(ctx, top, bottom, pageDetails, scrollX) {
+function drawColumnLines(ctx, gridData, pageDetails, scrollX) {
+    const top = gridData.regions.heights.cells.top;
+    const bottom = gridData.regions.heights.cells.bottom;
+
     for (let i = 0; i < pageDetails.columnsActualSizes.length; i++) {
         const size = pageDetails.columnsActualSizes[i];
         const x = pageDetails.columnsCumulativeSizes[i] - scrollX - size;
@@ -43,12 +48,16 @@ function drawColumnLines(ctx, top, bottom, pageDetails, scrollX) {
     }
 }
 
-function drawColumnHeaders(ctx, columnsTop, pageDetails, fields, defaultHeight, scrollX, topY) {
+function drawColumnHeaders(ctx, gridData, pageDetails, fields, scrollX) {
     let fieldIndex = pageDetails.visibleColumns.start;
+
+    const columnsTop = gridData.regions.heights.columns.top;
+    const columnsBottom = gridData.regions.heights.columns.bottom;
+    const defaultHeight = gridData.rowSizes.defaultSize;
 
     ctx.save();
     ctx.fillStyle = "#DADADA";
-    ctx.fillRect(0, 0, ctx.canvas.width, columnsTop + defaultHeight );
+    ctx.fillRect(0, 0, ctx.canvas.width, columnsTop + defaultHeight);
     ctx.restore();
 
     for (let i = 0; i < pageDetails.columnsActualSizes.length; i++) {
@@ -56,13 +65,13 @@ function drawColumnHeaders(ctx, columnsTop, pageDetails, fields, defaultHeight, 
         const x = pageDetails.columnsCumulativeSizes[i] - scrollX - size;
 
         const title = fields[fieldIndex].title;
-        ctx.fillText(title, x + 5, topY);
+        ctx.fillText(title, x + 5, columnsBottom - 5);
 
         fieldIndex++;
     }
 }
 
-function drawCells(ctx, top, pageDetails, columns, rows, scrollX, scrollY) {
+function drawCells(ctx, pageDetails, columns, rows, scrollX, scrollY) {
     let rowIndex = pageDetails.visibleRows.start;
 
     for (let i = 0; i < pageDetails.rowsActualSizes.length; i++) {
