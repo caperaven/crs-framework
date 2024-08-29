@@ -30,6 +30,36 @@ Each cell can be clicked to toggle its state.
 }
 ```
 
+All rendering is done in the middle of the cell but can be aligned.
+
+Feature: Alignment
+
+    Enum: Align
+        Description: The alignment of the cell content
+    
+        Left: 1, Align the content to the left
+      Center: 2, Align the content to the center
+       Right: 3, Align the content to the right
+
+    Scenario: Boolean Column
+        Given: A column has a boolean data type
+          And: No alignment is defined
+         Then: The content should be centered by default
+
+    Scenario: Text Column
+        Given: A column has a text data type
+          And: The alignment is not set
+         Then: The content should be aligned to the left by default
+
+    Scenario: Other Columns
+        Given: A column has a data type other than boolean or text
+          And: The alignment is not set
+         Then: The content should be aligned to the left by default
+
+    Scenario: Custom Alignment
+        Given: A column has a custom alignment defined
+         Then: The content should be aligned according to the custom alignment
+
 **Data Types:**
 
 1. Text
@@ -221,3 +251,99 @@ Feature: Cell Condition Rendering
         Given: I have a matrix with a cell in error condition
          When: I render the matrix
          Then: The cell should be displayed with an error indicator, this could be a red border and background
+
+## Matrix Canvas Component
+
+The matrix canvas is a custom component that uses canvas to render a matrix of cells.
+It is process api driven so all communications to the matrix are done through the api.
+
+The custom element is "matrix-canvas".
+The process api module name is "matrix_canvas".
+
+Feature: Matrix Canvas
+
+    Class: MatrixCanvas
+        Fields:
+            Ctx        : Type: Canvas 2d context, The canvas element handle we are drawing on
+            Animating  : Type: Boolean, True if the canvas is currently animating, caused by scrolling
+            ScrollLeft : Type: Integer, The current scroll left position
+            ScrollTop  : Type: Integer, The current scroll top position
+            Config     : Type: Dictionary, The configuration for the matrix
+
+        Private Methods:
+            Animate : 
+                Description: Animate the canvas using "requestAnimationFrame"
+
+            Scroll : 
+                Description: Scroll event handler, this updates the scroll position fields 
+
+
+        Public Methods:
+            Initialize: 
+                Description: Initialize the canvas, see initialization scenario for more details
+
+                Parameters: 
+                    Config: Type: Dictionary, The configuration for the matrix
+
+                Returns: Boolean, True if successful
+
+            Refresh: 
+                Description: Refresh the canvas
+
+                Parameters: 
+                    Reset: Type: Boolean, Default: False, True if the canvas should be reset, 
+                           This means the scroll position is reset to 0,0
+
+            SetWidths: 
+                Description: Set the widths of the columns
+
+                Parameters: 
+                    Widths: Type: Dictionary, The key is the field name and the value is the width
+
+                Step: Update the column information in the config
+                Step: Refresh the canvas
+                    Call: #Refresh
+
+                Returns: Boolean, True if successful
+
+        Events:
+            Change: 
+                Description: Notify that data changes were made to a particular cell
+
+                Parameters: 
+                    RowIndex  : Type: Integer, The row index of the cell
+                    FieldName : Type: String, The field name of the cell based on it's column
+                    Value     : Type: Any, The new value of the cell
+
+    Scenario: Initialization
+        Description: The canvas is initialized with the configuration
+
+        Step: Initialize the canvas and ctx
+        Step: Initialize the scroller by creating a scroll marker in the scroller div
+        Step: Calculate the regions for the different row heights
+        Step: Render the canvas
+            Call: #Refresh
+
+
+### Config - regions dictionary
+
+```json
+{
+    "grouping": {
+        "top": 0,
+        "bottom": 30
+    },
+    "header": {
+        "top": 30,
+        "bottom": 60
+    },
+    "cells": {
+        "top": 60,
+        "bottom": 900
+    },
+    "frozenColumns": {
+        "left": 0,
+        "right": 100
+    }
+}
+```
