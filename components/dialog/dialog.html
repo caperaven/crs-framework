@@ -19,8 +19,8 @@
     }
 
     :host(.fullscreen) .popup {
-        top: 0;
         left: 0;
+        top: 0;
         bottom: 0;
         right: 0;
         z-index: 100;
@@ -40,6 +40,12 @@
     }
 
     .popup {
+        /*
+       Offscreen rendering
+       We translate offscreen to prevent the popping effect.
+       The element still has to be visible as it is measured when the fixed layout actions are performed.
+       */
+        translate: -9999px;
         position: absolute;
         display: grid;
         grid-template-rows: auto 1fr auto;

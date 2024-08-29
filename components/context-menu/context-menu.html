@@ -3,8 +3,16 @@
     :host {
         --icon-font: "";
         --height: max-content;
-
         display: block;
+
+        /*
+       Offscreen rendering
+       We translate offscreen to prevent the popping effect.
+       The element still has to be visible as it is measured when the fixed layout actions are performed.
+        */
+        position: fixed;
+        translate: -9999px;
+
         background: transparent;
         z-index: 999999;
         user-select: none;
