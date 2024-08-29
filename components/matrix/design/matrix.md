@@ -125,7 +125,7 @@ Feature: Clickable Cells
 Different data types need different renderers to ensure the data is displayed correctly.
 Displaying text for example is different from displaying a boolean as the boolean is more graphical in nature.
 
-** Renderer Lookup Table **
+**Renderer Lookup Table**
 ```json
 {
     "boolean": Function,
@@ -161,7 +161,7 @@ When editing text however you need editable text fields to receive input.
 Because each data type has its own set of problems, instead of trying to be generic it is better to be explicit about the data type and provide a custom editor for it.
 The matrix has some control over this but should be extendable for custom scenarios.
 
-** Editor Lookup Table **
+**Editor Lookup Table**
 ```json
 {
     "boolean": Function,
