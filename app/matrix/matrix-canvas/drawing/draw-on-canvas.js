@@ -1,3 +1,5 @@
+const PADDING = 8;
+
 export function drawOnCanvas(ctx, scrollX, scrollY, gridData, columns, rows) {
     const pageDetails = gridData.getPageDetails(scrollX, scrollY, ctx.canvas.width, ctx.canvas.height);
 
@@ -62,7 +64,7 @@ function drawColumnHeaders(ctx, gridData, pageDetails, fields, scrollX) {
         const x = pageDetails.columnsCumulativeSizes[i] - scrollX - size;
 
         const title = fields[fieldIndex].title;
-        ctx.fillText(title, x + 5, columnsBottom - halfRowHeight);
+        ctx.fillText(title, x + PADDING, columnsBottom - halfRowHeight);
 
         fieldIndex++;
     }
@@ -81,7 +83,7 @@ function drawCells(ctx, gridData, pageDetails, columns, rows, scrollX, scrollY) 
         let fieldIndex = pageDetails.visibleColumns.start;
         for (let columnIndex  = 0; columnIndex < pageDetails.columnsActualSizes.length; columnIndex++) {
             const size = pageDetails.columnsActualSizes[columnIndex];
-            const x = pageDetails.columnsCumulativeSizes[columnIndex] - scrollX - size + 8;
+            const x = pageDetails.columnsCumulativeSizes[columnIndex] - scrollX - size + PADDING;
 
             const value = row[columns[fieldIndex].field];
             ctx.fillText(value, x, y);

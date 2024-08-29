@@ -146,6 +146,14 @@ export class GridData {
         return {x, y};
     }
 
+    /**
+     * Based on my current scroll positions, what rows and what columns are visible.
+     * @param scrollX
+     * @param scrollY
+     * @param containerWidth
+     * @param containerHeight
+     * @returns {{visibleColumns: {start: *, end: *}, rowLocation: *, columnLocation: *, visibleRows: {start: *, end: *}, rowsCumulativeSizes: *[], columnsActualSizes: *[], columnsCumulativeSizes: *[], rowsActualSizes: *[]}}
+     */
     getPageDetails(scrollX, scrollY, containerWidth, containerHeight) {
         const visibleColumns = this.#colSizes.getVisibleRange(scrollX, containerWidth);
         const visibleRows = this.#rowSizes.getVisibleRange(scrollY, containerHeight);

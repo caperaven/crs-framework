@@ -57,11 +57,13 @@ export default class MatrixCanvas extends crs.classes.BindableElement {
     }
 
     #animate() {
+        // if I am not scrolling stop the animation loop
         if (this.#scrollLeft === this.#oldScrollLeft && this.#scrollTop === this.#oldScrollTop) {
             this.#animating = false;
             return;
         }
 
+        // run the animation loop again
         if (this.#animating) {
             requestAnimationFrame(() => {
                 this.#animate();
