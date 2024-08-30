@@ -2,7 +2,8 @@ import "./../../components/filter-header/filter-header.js"
 
 export default class Icons extends crsbinding.classes.ViewBase {
     async preLoad(setProperty) {
-        const definition = await fetch("/resources/fonts/icons/crs-framework.json").then((response) => response.json());
+        const url = import.meta.url.replace("/app/icons/icons.js", "/resources/fonts/icons/crs-framework.json");
+        const definition = await fetch(url).then((response) => response.json());
         const icons = definition.selection.map(_ => _.name).sort();
         setProperty("icons", icons);
         setProperty("copyText", "Click to copy icon name.");

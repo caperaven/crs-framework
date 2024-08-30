@@ -1,4 +1,4 @@
-import "/components/group-box/group-box.js";
+import "./../../components/group-box/group-box.js";
 
 export default class GroupBox extends crsbinding.classes.ViewBase {
 

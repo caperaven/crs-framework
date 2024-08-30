@@ -12,17 +12,17 @@
 
 @font-face {
     font-family: SourceSansPro;
-    src: url(/resources/fonts/Source_Sans_Pro/SourceSansPro-Regular.ttf);
+    src: url(../resources/fonts/Source_Sans_Pro/SourceSansPro-Regular.ttf);
 }
 
 @font-face {
     font-family: selection;
-    src: url(/resources/fonts/icons/selection.ttf);
+    src: url(../resources/fonts/icons/selection.ttf);
 }
 
 @font-face {
     font-family: crsfrw;
-    src: url('/resources/fonts/icons/crs-framework.woff?ydxlqn');
+    src: url('../resources/fonts/icons/crs-framework.woff?ydxlqn');
     font-weight: normal;
     font-style: normal;
     font-display: block;
