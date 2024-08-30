@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width">
-    <link href="/styles/styles.css" rel="stylesheet">
+    <link href="./styles/styles.css" rel="stylesheet">
+    <!--    favicon-->
+    <link rel="icon" href="./favicon.ico" type="image/x-icon">
     <title>My Application</title>
 
     <style>
@@ -36,7 +38,7 @@
         }
     </style>
 </head>
-<body style="visibility: hidden" oncontextmenu="return false;">
+<body style="visibility: hidden" oncontextmenu="return false;" data-app-path="/framework">
     <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
         <symbol id="menu" viewBox="0 0 24 24">
             <path d="M0 0h24v24H0z" fill="none"/><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
@@ -79,8 +81,8 @@
         import "./src/index.js";
         import IndexViewModel from "./index.js";
         import {HTMLParser} from "./packages/crs-schema/html/crs-html-parser.js";
-        import "/src/binding-extensions/markdown-template.js";
-        import "/src/binding-extensions/schema-template.js";
+        import "./src/binding-extensions/markdown-template.js";
+        import "./src/binding-extensions/schema-template.js";
 
         window.addEventListener("load", async (event) => {
             import ("./packages/crs-process-api/action-systems/data-processing-actions.js");

@@ -7,5 +7,13 @@ localhost {
         Cache-Control "no-cache, no-store, must-revalidate"
     }
     encode zstd gzip
-    file_server browse
+
+    handle /framework/* {
+        uri strip_prefix /framework
+        file_server browse
+    }
+
+    handle {
+        respond "Access Denied" 403
+    }
 }

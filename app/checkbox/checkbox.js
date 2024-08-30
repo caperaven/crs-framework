@@ -1,4 +1,4 @@
-import "/components/checkbox/checkbox.js";
+import "./../../components/checkbox/checkbox.js";
 
 export default class Checkbox extends crsbinding.classes.ViewBase {
     async preLoad() {
