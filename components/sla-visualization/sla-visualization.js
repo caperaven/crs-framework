@@ -59,7 +59,8 @@ export class SlaVisualization extends HTMLElement {
 
     async connectedCallback() {
         const html = await fetch(import.meta.url.replace(".js", ".html")).then(result => result.text());
-        this.shadowRoot.innerHTML = html;
+        const css = `<link rel="stylesheet" href="${import.meta.url.replace(".js", ".css")}">`;
+        this.shadowRoot.innerHTML = `${css}${html}`;
         this.#container = this.shadowRoot.querySelector("#sla-grid-container");
         this.#statusLabelContainer = this.shadowRoot.querySelector("#grid-label-container");
         this.addEventListener("measurement-selected", this.#selectionChangedHandler);

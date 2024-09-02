@@ -13,7 +13,9 @@ class SlaMeasurement extends HTMLElement {
     }
 
     async connectedCallback() {
-        this.shadowRoot.innerHTML = await fetch(import.meta.url.replace(".js", ".html")).then(response => response.text());
+        const html = await fetch(import.meta.url.replace(".js", ".html")).then(response => response.text());
+        const css = `<link rel="stylesheet" href="${import.meta.url.replace(".js", ".css")}">`;
+        this.shadowRoot.innerHTML = `${css}${html}`;
         await this.load();
         this.addEventListener("mouseenter", this.#mouseEnterHandler);
         this.addEventListener("mouseleave", this.#mouseLeaveHandler);
