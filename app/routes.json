@@ -11,6 +11,11 @@
             "hasStyle": true
         },
         {
+            "title": "Matrix Renderer",
+            "hash": "#matrix-renderer",
+            "view": "matrix-renderer"
+        },
+        {
             "title": "Icons",
             "hash": "#icons",
             "view": "icons"
