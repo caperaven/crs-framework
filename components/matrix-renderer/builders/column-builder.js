@@ -1,5 +1,5 @@
-import { Align } from "./align.js";
-import { DataType } from "./data-type.js";
+import { Align } from "../enums/align.js";
+import { DataType } from "../enums/data-type.js";
 
 class ColumnBuilder {
     #data = {
