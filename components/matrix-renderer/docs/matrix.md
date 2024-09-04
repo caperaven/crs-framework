@@ -347,3 +347,37 @@ Feature: Matrix Canvas
     }
 }
 ```
+
+## Matrix Renderer
+
+This looks at how render is done for the matrix.
+
+Feature: Matrix Renderer
+
+    Class: MatrixRenderer
+        Fields:
+            Ctx        : Type: Canvas 2d context, The canvas element handle we are drawing on
+            Config     : Type: Dictionary, The configuration for the matrix
+            Data       : Type: Array, The data to render
+            Columns    : Type: Array, The columns to render
+            Widths     : Type: Dictionary, The widths of the columns
+            Regions    : Type: Dictionary, The regions for the different row heights
+
+        Private Methods:
+            RenderGrouping: 
+                Description: Render the grouping region
+
+            RenderHeader: 
+                Description: Render the header region
+
+            RenderCells: 
+                Description: Render the cells region
+
+            RenderFrozenColumns: 
+                Description: Render the frozen columns region
+
+        Public Methods:
+            Render: 
+                Description: Render the matrix
+
+                Returns: Boolean, True if successful
