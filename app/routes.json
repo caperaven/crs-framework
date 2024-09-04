@@ -200,6 +200,11 @@
             "view": "percentage-bar"
         },
         {
+            "title": "sla-visualization",
+            "view": "sla-visualization",
+            "hash": "#sla-visualization"
+        },
+        {
             "title": "map",
             "hash": "#map",
             "view": "map"

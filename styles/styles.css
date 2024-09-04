@@ -45,5 +45,5 @@ i {
 }
 
 [hidden = "true"] {
-    display: none;
+    display: none !important;
 }

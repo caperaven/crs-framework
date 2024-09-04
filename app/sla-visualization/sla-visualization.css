@@ -1,0 +1,17 @@
+h2#setup-header, h2#runtime-header {
+    margin-top: 2rem;
+}
+
+.run-tab, .setup-tab {
+    height: 600px;
+    width: 800px;
+}
+
+button#start-setup, button#start-runtime {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+button.icon {
+    font-family: "crsfrw";
+}

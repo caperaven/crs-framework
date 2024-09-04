@@ -40,9 +40,10 @@ export default class Map extends crsbinding.classes.ViewBase {
 
     async disconnectedCallback() {
         await crs.call("toast_notification", "disable");
-        await crs.call("data_manager", "unregister", {
+        await crs.call("data_manager", "dispose", {
             manager: "my_data"
-        });
+        })
+
         await crsbinding.events.emitter.remove("toast", this.#toastHandler);
         this.#toastHandler = null;
         globalThis.translations.labels = null;
