@@ -1,7 +1,6 @@
-import { beforeAll, afterAll, afterEach, beforeEach, describe, it} from "https://deno.land/std@0.157.0/testing/bdd.ts";
-import { assertEquals, assertExists, assert } from "https://deno.land/std@0.149.0/testing/asserts.ts";
+import { describe, it} from "https://deno.land/std@0.157.0/testing/bdd.ts";
+import { assertEquals } from "https://deno.land/std@0.149.0/testing/asserts.ts";
 import {ColumnBuilder, DataType, Align} from "../../../../components/matrix-renderer/builders/column-builder.js";
-
 
 describe("column builder tests", () => {
     it("default", async () => {
@@ -30,5 +29,16 @@ describe("column builder tests", () => {
         assertEquals(column.type, DataType.NUMBER);
         assertEquals(column.align, Align.RIGHT);
         assertEquals(column.editable, true);
+    })
+
+    it ("from", async () => {
+        const column = ColumnBuilder.from({ title: "Title", field: "field" }).build();
+
+        assertEquals(column.title, "Title");
+        assertEquals(column.field, "field");
+        assertEquals(column.width, 100);
+        assertEquals(column.type, DataType.TEXT);
+        assertEquals(column.align, Align.LEFT);
+        assertEquals(column.editable, false);
     })
 })

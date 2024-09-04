@@ -19,13 +19,14 @@ const COLUMNS_DEFINITION = [
 describe("regions factory", () => {
     it ("default", async () => {
         const definition = {
+            frozenColumns: 2,
             heights: {
                 groupHeader: 50,
                 header: 40,
                 row: 30
             },
             columns: Columns.from(COLUMNS_DEFINITION),
-            headers: [
+            groups: [
                 { from: 0, to: 3, title: "Group 1" },
                 { from: 4, title: "Group 2" }
             ],
@@ -36,5 +37,13 @@ describe("regions factory", () => {
         }
 
         const regions = Regions.from(definition);
+        assertEquals(regions.grouping.top, 0);
+        assertEquals(regions.grouping.bottom, 50);
+        assertEquals(regions.header.top, 50);
+        assertEquals(regions.header.bottom, 90);
+        assertEquals(regions.cells.top, 90);
+        assertEquals(regions.cells.bottom, 768);
+        assertEquals(regions.frozenColumns.left, 0);
+        assertEquals(regions.frozenColumns.right, 200);
     })
 })
