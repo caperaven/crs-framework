@@ -1,0 +1,247 @@
+:host {
+    --scale: 1;
+    --translate-x: 0;
+    --transformation: translateX(var(--translate-x)) scale(var(--scale));
+
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+#sla-grid-container {
+    display: none;
+    position: relative;
+    height: 100%;
+    width: max-content;
+    margin: 1rem 0;
+    grid-column-gap: 0.5rem;
+    transform-origin: left center;
+    transition: transform 0.3s ease 0s;
+    grid-column: 2 / 3;
+    transform: var(--transformation);
+}
+
+.status-label {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: sticky;
+    color: var(--grey-s1);
+    padding: 0 0.25rem 0 2rem;
+    left: 0;
+    z-index: 3;
+    font-size: 0.75rem;
+    height: 100%;
+}
+
+.status-label:not([data-status-order="undefined"])::before,
+.status-label:not([data-status-order="undefined"])::after {
+    max-width: 8.5rem;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-align: right;
+}
+
+.status-label:not([data-status-order="undefined"])::before {
+    content: attr(data-code);
+}
+.status-label:not([data-status-order="undefined"])::after {
+    content: attr(data-description);
+}
+
+.status-row {
+    border-bottom: var(--border-width) solid var(--grey-s6);
+    grid-column: 2 / -1;
+}
+
+.status-background {
+    grid-column: 1;
+    grid-row: 1 / -1;
+    background: var(--window);
+    position: sticky;
+    left: 0;
+    z-index: 2;
+    min-width: 10.5rem;
+}
+
+.sla-layer {
+    z-index: -1;
+    width: 100%;
+    background: var(--grey-s7);
+    margin-left: 0.25rem;
+    border: var(--double-border-width) solid var(--grey-s6);
+    border-radius: var(--radius);
+}
+
+.active-status-label {
+    color: var(--blue);
+    font-weight: bold;
+}
+
+.active-status-row {
+    background: var(--blue-s2);
+    z-index: 0;
+}
+
+.sla-footer-border {
+    border-top: 2px solid var(--grey-s1);
+    border-bottom: none;
+    margin-left: 0.5rem;
+    box-sizing: border-box;
+}
+
+.status-description {
+    position: sticky;
+    top: 50%;
+    left: 0;
+    z-index: 3;
+    margin-left: 0.5rem;
+    writing-mode: vertical-lr;
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--cl-text);
+    rotate: 180deg;
+}
+
+#measurement-name{
+    display: flex;
+    justify-content: center;
+    padding: 0.5rem;
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--cl-text);
+}
+
+:host([data-phase="setup"]) .active-status-label {
+    color: var(--grey-s1);
+    font-weight: normal;
+}
+
+:host([data-phase="setup"]) .active-status-row {
+    background: transparent;
+    z-index: 0;
+}
+
+:host([data-phase="setup"]) #sla-legend {
+    display: none;
+}
+
+:host([data-phase="runtime"]) #sla-legend {
+    display: none;
+    flex-direction: row;
+    list-style-type: none;
+    color: var(--grey-s1);
+    background-color: var(--grey-s3);
+    padding: 0.25rem 0.5rem;
+    justify-content: flex-start;
+    width: fit-content;
+    height: 2.5rem;
+    border-radius: 0.5rem;
+    margin: 1rem;
+}
+
+:host([data-phase="runtime"]) #sla-legend li {
+    display: flex;
+    align-items: center;
+    margin-right: 1rem;
+    height: 2rem;
+}
+
+:host([data-phase="runtime"]) #sla-legend li:last-child {
+    margin-right: 0;
+}
+
+:host([data-phase="runtime"]) #sla-legend li::before {
+    content: "";
+    display: flex;
+    width: 1rem;
+    height: 1rem;
+    margin-right: 0.5rem;
+    border-radius: var(--radius);
+}
+
+:host([data-phase="runtime"]) #sla-legend li span {
+    margin-left: 0.5rem;
+}
+
+:host([data-phase="runtime"]) #sla-legend li h2.sla-legend-labels {
+    font-size: 0.875rem;
+    font-weight: normal;
+    color: var(--cl-text);
+}
+
+:host([data-phase="runtime"]) #sla-legend li#in-range::before {
+    display: flex;
+    width: 1rem;
+    height: 1rem;
+    background-color: var(--blue);
+}
+
+:host([data-phase="runtime"]) #sla-legend li#out-of-range::before {
+    display: flex;
+    width: 1rem;
+    height: 1rem;
+    background-color: var(--grey-s2);
+}
+
+:host([data-phase="runtime"]) #sla-legend li#warning::before {
+    display: flex;
+    width: 1rem;
+    height: 1rem;
+    background-color: var(--orange);
+}
+
+:host([data-phase="runtime"]) #sla-legend li#warning {
+    border-left: 1px solid var(--grey-s2);
+    padding-left: 1rem;
+}
+
+:host([data-phase="runtime"]) #sla-legend li#overdue::before {
+    display: flex;
+    width: 1rem;
+    height: 1rem;
+    background-color: var(--red);
+}
+
+:host(.no-content) #sla-legend, :host(.no-content) #measurement-name {
+    display: none;
+}
+
+:host(.no-content) #sla-grid-container {
+    display: flex;
+    justify-content: center;
+}
+
+#grid-parent-container {
+    display: grid;
+    grid-template-columns: 10.5rem 1fr;
+    grid-template-rows: 1fr;
+    overflow: auto;
+    height: 100%;
+    padding-bottom: 1rem;
+}
+
+#grid-label-container {
+    display: grid;
+    position: sticky;
+    left: 0;
+    z-index: 5;
+    background: var(--window);
+    height: 100%;
+    width: 100%;
+    margin: 1rem 0;
+    transform-origin: right center;
+    transition: transform 0.3s ease 0s;
+    transform: var(--transformation);
+}
+
+#grid-label-container {
+    grid-area: 1 / 1 / 1 / 1;
+}
+
+#grid-parent-container > no-content {
+    grid-area: 1 / 1 / 1 / 3;
+    z-index: 6;
+}

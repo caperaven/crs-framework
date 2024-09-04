@@ -6,11 +6,16 @@ html {
 
     /* form */
     --cl-text: #232731;
+    --cl-text-alt: #6C6C6C;
     --window: white;
 
     --blue: #0276C2;
     --blue-s1: #B9D8EC;
     --blue-s2: #ECF7FF;
+    --blue-s3: #8BC0E3;
+    --blue-s4: #55A3D6;
+    --dark-blue: #075E96;
+
 
     --red: #E00000;
     --red-s1: #ED7D7D;
@@ -40,6 +45,10 @@ html {
     --grey-s3: #F4F4F4;
     --grey-surface: #F4F4F4;
     --grey-s4: #F4F6F8;
+    --grey-s5: #BBBBBB;
+    --grey-s6: #DDDDDD;
+    --grey-s7: #FAFAFA;
+    --grey-s8: #9D9D9D;
 
     --alt-fg: #FFFFFF;
     --cl-li-hover: #EEEEEE;
@@ -50,6 +59,7 @@ html {
     --input-height: 2rem;
     --input-width: 15rem;
     --radius: 0.25rem;
+    --double-radius: 0.375rem;
     --margin: 0.5rem;
     --padding: 0.5rem;
     --half-padding: 0.25rem;

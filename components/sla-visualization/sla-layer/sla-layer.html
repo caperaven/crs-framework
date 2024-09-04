@@ -1,0 +1,15 @@
+<!--SLA-LAYER-HTML-->
+<template class="sla-header-template">
+    <div class="sla-header-container">
+        <span id="label-container">
+            <span class="sla-header-label">${codeLabel} : </span>
+            <span class="sla-header-label">${descriptionLabel} : </span>
+            <span class="sla-header-label">${mainMeasurePercentageLabel} : </span>
+        </span>
+        <span id="label-content-container">
+            <span title.attr="${code}" id="sla-code" class="sla-header-content">${code}</span>
+            <span title.attr="${description}" id="sla-description" class="sla-header-content">${description}</span>
+            <span title.attr="${mainMeasurePercentage}" id="sla-duration" class="sla-header-content">${mainMeasurePercentage}</span>
+        </span>
+    </div>
+</template>

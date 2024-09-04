@@ -1,0 +1,158 @@
+:host {
+    --clock-outline: "update";
+    --trigger-indicator: "arrow-drop-up";
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    justify-self: center;
+    height: 100%;
+    border: 1px solid silver;
+    border-radius: var(--radius);
+    position: relative;
+    background: var(--blue);
+    color: var(--cl-primary-alt);
+    z-index: auto;
+    padding: 0.125rem;
+    box-sizing: border-box;
+}
+
+:host([data-state="inactive"]) {
+    background: var(--grey-s5);
+}
+
+:host([data-state="inactive"]) div.progress-bar {
+    background: var(--grey-s6);
+}
+:host(:hover) {
+    background: var(--dark-blue);
+}
+
+:host([data-state="inactive"]:hover) {
+    background: var(--grey-s8);
+}
+
+:host::before {
+    content:' 'var(--clock-outline)'  'attr(data-formatted-duration)' ';
+    position: absolute;
+    display: block;
+    color: var(--grey-s1);
+    top: -1rem;
+    font-family: crsfrw, Source Sans Pro, SourceSansPro;
+    font-size: 0.75rem;
+    font-weight: 400;
+}
+
+div.progress-bar {
+    display: flex;
+    width: 100%;
+    background-color: var(--blue-s4);
+    border-radius: var(--radius);
+    transition: transform 0.7s ease;
+    transform-origin: bottom;
+    transform: scaleY(0);
+    justify-content: center;
+    pointer-events: none;
+}
+
+:host([data-parent-phase="setup"]) div.progress-bar {
+    display: none;
+}
+
+sla-measurement[aria-selected='true'] {
+    background: var(--dark-blue);
+}
+
+:host::after {
+    content: attr(data-progress);
+    display: flex;
+    max-width: fit-content;
+    height: 0.75rem;
+    justify-content: center;
+    align-items: center;
+    color: var(--cl-text);
+    font-family: Source Sans Pro, SourceSansPro, sans-serif;
+    text-align: center;
+    font-size: 0.75rem;
+    font-weight: bold;
+    background: var(--blue-s2);
+    border: 1px solid silver;
+    border-radius: var(--double-radius);
+    bottom: 0.375rem;
+    position: absolute;
+    padding: 0.25rem
+}
+
+:host([data-parent-phase="setup"])::after {
+    display: none;
+}
+
+:host([data-state="inactive"])::after {
+    /*opacity: 0;*/
+    background: var(--grey-s3);
+}
+
+.icon {
+    font-family: crsfrw;
+}
+
+:host div.measurement-trigger-indicator {
+    display: flex;
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background-image: linear-gradient(to right, var(--orange) 50%, transparent 50%);
+    background-size: 0.75rem 2px; /* Adjust the size and spacing of the dashes */
+    background-repeat: repeat-x;
+    pointer-events: none;
+}
+
+.measurement-trigger-indicator::before {
+    content: var(--trigger-indicator);
+    position: relative;
+    left: -12%; /* Position at the end of the dashed line */
+    transform: translateY(-50%);
+    color: var(--orange);
+    rotate: 90deg;
+    font-family: 'crsfrw';
+}
+
+:host(.measurement-warning-state) {
+    background: var(--orange);
+}
+
+:host(.measurement-warning-state) div.progress-bar {
+    background: var(--orange-s1);
+}
+
+:host(.measurement-warning-state)::after {
+    background: var(--orange-s2);
+}
+
+/* Styles for measurement overdue state */
+:host(.measurement-overdue-state) {
+    background: var(--red);
+}
+
+:host(.measurement-overdue-state) div.progress-bar {
+    background: var(--red-s2);
+}
+
+:host(.measurement-overdue-state)::after {
+    background: var(--red-s3);
+}
+
+/* Additional styles for inactive state */
+:host([data-state="inactive"].measurement-warning-state),
+:host([data-state="inactive"].measurement-overdue-state) {
+    background: var(--grey-s2);
+}
+
+:host([data-state="inactive"].measurement-warning-state) div.progress-bar,
+:host([data-state="inactive"].measurement-overdue-state) div.progress-bar {
+    background: var(--grey-s3);
+}
+
+:host([data-state="inactive"].measurement-warning-state)::after,
+:host([data-state="inactive"].measurement-overdue-state)::after {
+    background: var(--grey-s3);
+}
