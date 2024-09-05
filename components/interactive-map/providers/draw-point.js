@@ -8,13 +8,16 @@ export default class DrawPoint {
     #point = null;
     #isEditing = false;
 
-    async initialize(instance, point) {
+    async initialize(instance, point, options = {}) {
         this.#instance = instance;
         this.#instance.map.on("click", this.#clickHandler);
 
         if (point != null) {
             this.#point = point;
-            this.#isEditing = true;
+            // We pass in options.isEditing because when adding a marker from drawing tools externally we want to assume its a new point
+            // e.g. coordinateInput
+            this.#isEditing =  options.isEditing ?? true;
+            await this.#setMarkerColor(this.#instance.map.selectionColor);
             notifyCoordinatesChanged(this.#instance, this.#point);
         }
     }
@@ -28,14 +31,21 @@ export default class DrawPoint {
 
     async #click(event) {
         if (this.#point != null) {
-            this.#point.remove();
+            this.#point.setLatLng(event.latlng);
+        }
+        else {
+            await this.#addNewMarker(event.latlng);
         }
 
+        notifyCoordinatesChanged(this.#instance, this.#point);
+    }
+
+    async #addNewMarker(latlng) {
         this.#point = await crs.call("interactive_map", "add_shape", {
             layer: this.#instance.activeLayer,
             data: {
                 type: "point",
-                coordinates: [event.latlng.lat, event.latlng.lng],
+                coordinates: [latlng.lat, latlng.lng],
                 options: {
                     color: this.#instance.map.selectionColor,
                     draggable: true
@@ -43,7 +53,12 @@ export default class DrawPoint {
             },
             element: this.#instance
         });
-        notifyCoordinatesChanged(this.#instance, this.#point);
+    }
+
+    async #setMarkerColor(color){
+        const element = this.#point.getElement();
+        const icon = element.querySelector(".point");
+        icon.style.color = color;
     }
 
     async cancel() {

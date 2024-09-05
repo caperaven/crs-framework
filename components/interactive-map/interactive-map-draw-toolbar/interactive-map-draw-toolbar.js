@@ -1,5 +1,5 @@
-import {getShapeProperty} from "../interactive-map-utils.js";
 import {CHANGE_TYPES} from "../../../src/managers/data-manager/data-manager-types.js";
+import {notifyCoordinatesChanged} from "../interactive-map-utils.js";
 
 export class InteractiveMapDrawToolbar extends crsbinding.classes.BindableElement {
     #instance = null;
@@ -140,6 +140,8 @@ export class InteractiveMapDrawToolbar extends crsbinding.classes.BindableElemen
                     });
 
                     this.setProperty("selectedIndex", null);
+
+                    notifyCoordinatesChanged(this.#instance);
 
                     dialog.close();
                 }

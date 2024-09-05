@@ -57,6 +57,7 @@ export class InteractiveMapActions {
 
         const mode = await crs.process.getValue(step.args.mode ?? "none", context, process, item);
         const shape = await crs.process.getValue(step.args.shape, context, process, item);
+        const options = await crs.process.getValue(step.args.options, context, process, item);
 
         if (instance.currentMode != null) {
             instance.currentMode.dispose(instance);
@@ -66,7 +67,7 @@ export class InteractiveMapActions {
         if (mode !== "none") {
             const modeClass = await getModeProvider(mode);
             instance.currentMode = await modeClass;
-            await modeClass.initialize(instance, shape);
+            await modeClass.initialize(instance, shape, options);
         }
 
         instance.dispatchEvent(new CustomEvent("mode-changed", {detail: {mode: mode}}));
@@ -388,10 +389,12 @@ export class ShapeFactory {
             className: 'marker',
             html: `<div style="color: ${color}" class="point">${iconName}</div>`,
             iconSize: [48, 48], // Size of the icon
-            iconAnchor: [24, 48] // Point of the icon which will correspond to marker's location
+            iconAnchor: [24, 48], // Point of the icon which will correspond to marker's location
+            //Add color to the icon
+
         });
 
-        const marker = L.marker(data.coordinates, {icon: customIcon, index: data.options.index});
+        const marker = L.marker(data.coordinates, {icon: customIcon, index: data.options?.index});
 
         if (layer != null) {
             marker.addTo(layer);

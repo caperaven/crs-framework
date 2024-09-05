@@ -143,14 +143,21 @@ export class InteractiveMap extends HTMLElement {
                 layer: this.#activeLayer,
                 data: {
                     coordinates: coordinates,
-                    type: "point"
+                    type: "point",
+                    options: {
+                        color: this.#map.selectionColor,
+                        draggable: true
+                    }
                 }
             });
 
             await crs.call("interactive_map", "set_mode", {
                 element: this,
                 mode: "draw-point",
-                shape: shape
+                shape: shape,
+                options: {
+                    isEditing: false
+                }
             });
 
             await crs.call("interactive_map", "fit_bounds", {element: this, layer: this.#activeLayer});
