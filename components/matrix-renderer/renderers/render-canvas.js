@@ -1,8 +1,9 @@
 const LINE_COLOR = "#c1c1c1";
+const CLEAR_COLOR = "#ffffff";
+const TEXT_COLOR = "#000000";
+const FONT = "12px Arial";
 
 export function renderCanvas(ctx, def, pageDetails, scrollX, scrollY) {
-    console.log(pageDetails);
-
     // prepare for rendering
     clearCanvas(ctx);
     initialize(ctx);
@@ -15,15 +16,14 @@ export function renderCanvas(ctx, def, pageDetails, scrollX, scrollY) {
 }
 
 function initialize(ctx) {
-    ctx.strokeStyle = "#c1c1c1";
-    ctx.font = "12px Arial";
-    ctx.fillStyle = "#000000";
+    ctx.font = FONT;
+    ctx.fillStyle = TEXT_COLOR;
     ctx.textAlign="left";
     ctx.textBaseline = "middle";
 }
 
 function clearCanvas(ctx) {
-    ctx.fillStyle = "rgba(255, 255, 255, 1)";
+    ctx.fillStyle = CLEAR_COLOR;
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 }
 
@@ -46,11 +46,30 @@ function drawLines(ctx, def, pageDetails, scrollX, scrollY) {
 }
 
 function drawColumnLines(ctx, def, pageDetails, scrollX) {
+    const top = def.regions.cells.top;
+    const bottom = def.regions.cells.bottom;
 
+    for (let i = 0; i < pageDetails.columnsActualSizes.length; i++) {
+        const size = pageDetails.columnsActualSizes[i];
+        const x = pageDetails.columnsCumulativeSizes[i] - scrollX - size;
+
+        ctx.moveTo(x, top);
+        ctx.lineTo(x, bottom);
+    }
 }
 
 function drawRowLines(ctx, def, pageDetails, scrollY) {
+    const cellsTop = def.regions.cells.top;
 
+    for (let i = 0; i < pageDetails.rowsActualSizes.length; i++) {
+        const size = pageDetails.rowsActualSizes[i];
+        const y = pageDetails.rowsCumulativeSizes[i] - scrollY - size;
+
+        if (y > cellsTop) {
+            ctx.moveTo(0, y);
+            ctx.lineTo(ctx.canvas.offsetWidth, y);
+        }
+    }
 }
 
 function drawGroups(ctx, def, pageDetails, scrollX, scrollY) {

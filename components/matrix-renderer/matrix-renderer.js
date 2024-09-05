@@ -32,7 +32,7 @@ class MatrixRenderer extends HTMLElement {
 
     async disconnectedCallback() {
         const scrollElement = this.shadowRoot.querySelector("#scroller");
-        scrollElement.addEventListener("scroll", this.#onScrollHandler);
+        scrollElement.removeEventListener("scroll", this.#onScrollHandler);
 
         this.#ctx = null;
         this.#config = null;
@@ -42,7 +42,7 @@ class MatrixRenderer extends HTMLElement {
         this.#animateHandler = null;
     }
 
-    #animate(currentTime) {
+    #animate() {
         if (this.#animating) {
             requestAnimationFrame(this.#animateHandler);
         }
