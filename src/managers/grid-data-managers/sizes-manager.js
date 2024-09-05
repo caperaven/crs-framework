@@ -28,6 +28,13 @@ export class SizesManager {
         }
     }
 
+    dispose() {
+        this.#defaultSize = null;
+        this.#sizes = null;
+        this.#cumulativeSizes = null;
+        return null;
+    }
+
     /**
      * Calculate the cumulative sizes from the sizes.
      */
