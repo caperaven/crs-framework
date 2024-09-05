@@ -4,20 +4,16 @@ import {Regions} from "./factories/regions-factory.js";
 import {SizesManager} from "./../../src/managers/grid-data-managers/sizes-manager.js";
 import {renderCanvas} from "./renderers/render-canvas.js";
 
-const FPS = 60;
-const INTERVAL = 1000 / FPS;
-
 class MatrixRenderer extends HTMLElement {
     #ctx;
     #config;
     #columnSizes;
     #rowSizes;
-    #lastTime = 0;
     #animating = false;
-    #scrollLeft;
-    #scrollTop;
-    #oldScrollLeft;
-    #oldScrollTop;
+    #scrollLeft = 0;
+    #scrollTop = 0;
+    #oldScrollLeft = 0;
+    #oldScrollTop = 0;
     #onScrollHandler = this.#onScroll.bind(this);
     #animateHandler = this.#animate.bind(this);
 
@@ -57,12 +53,8 @@ class MatrixRenderer extends HTMLElement {
             return;
         }
 
-        // apply throttling so that we only call it at 60fps
-        const deltaTime = currentTime - this.#lastTime;
-        if (deltaTime < INTERVAL) {
-            this.#lastTime = currentTime - (deltaTime % INTERVAL);
-            renderCanvas(this.#ctx, this.#config, this.#scrollLeft, this.#scrollTop);
-        }
+        const pageDetails = this.#getPageDetails();
+        renderCanvas(this.#ctx, this.#config, pageDetails, this.#scrollLeft, this.#scrollTop);
 
         // update the old scroll values
         this.#oldScrollLeft = this.#scrollLeft;
@@ -74,10 +66,43 @@ class MatrixRenderer extends HTMLElement {
         this.#scrollTop = Math.ceil(event.target.scrollTop);
 
         if (!this.#animating) {
-            this.#lastTime = 0;
             this.#animating = true;
             this.#animate();
         }
+    }
+
+    #getPageDetails() {
+        const visibleColumns = this.#columnSizes.getVisibleRange(this.#scrollLeft, this.#ctx.canvas.width);
+        const visibleRows = this.#rowSizes.getVisibleRange(this.#scrollTop, this.#ctx.canvas.height);
+
+        const columnsActualSizes = [];
+        const columnsCumulativeSizes = [];
+        const rowsActualSizes = [];
+        const rowsCumulativeSizes = [];
+
+        for (let i = visibleColumns.start; i <= visibleColumns.end; i++) {
+            columnsActualSizes.push(this.#columnSizes.at(i));
+            columnsCumulativeSizes.push(this.#columnSizes.cumulative(i));
+        }
+
+        for (let i = visibleRows.start; i <= visibleRows.end; i++) {
+            rowsActualSizes.push(this.#rowSizes.at(i));
+            rowsCumulativeSizes.push(this.#rowSizes.cumulative(i));
+        }
+
+        const columnLocation = this.#columnSizes.cumulative(visibleColumns.start);
+        const rowLocation = this.#rowSizes.cumulative(visibleRows.start);
+
+        return {
+            visibleColumns,
+            columnsActualSizes,
+            columnsCumulativeSizes,
+            visibleRows,
+            rowsActualSizes,
+            rowsCumulativeSizes,
+            columnLocation,
+            rowLocation
+        };
     }
 
     async load() {
@@ -105,6 +130,10 @@ class MatrixRenderer extends HTMLElement {
         // 3. move marker to the bottom right corner to enable scrolling
         const markerElement = this.shadowRoot.querySelector("#marker");
         moveScrollMarker(markerElement, this.#columnSizes, this.#rowSizes);
+
+        // 4. render the canvas
+        const pageDetails = this.#getPageDetails();
+        renderCanvas(this.#ctx, this.#config, pageDetails, this.#scrollLeft, this.#scrollTop);
     }
 }
 
