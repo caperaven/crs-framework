@@ -34,6 +34,9 @@ function createScroller(parent, width, height) {
 function createMarker(parent) {
     const marker = document.createElement("div");
     marker.id = "marker";
-    marker.classList.add("marker");
+    marker.style.width = "1px";
+    marker.style.height = "1px";
+    marker.style.position = "absolute";
+    marker.style.translate = "0px 0px";
     parent.appendChild(marker);
 }

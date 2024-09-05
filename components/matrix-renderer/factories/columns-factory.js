@@ -1,6 +1,6 @@
 import {ColumnBuilder} from "../builders/column-builder.js";
 
-export class ColumnsFactory {
+export class Columns {
     static from(definition) {
         const result = [];
         for (const column of definition) {

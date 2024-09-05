@@ -324,6 +324,33 @@ Feature: Matrix Canvas
         Step: Render the canvas
             Call: #Refresh
 
+### Config - structure
+
+```json
+{
+	"frozenColumns": 2,
+	"heights": {
+		"groupHeader": 50,
+		"header": 40,
+		"row": 30
+	},
+	"columns": [
+		{ "title":  "title", "field":  "field1" }
+    ],
+    "rows": [
+        { "field1": "value1" }
+    ],
+	"groups": [
+		{ "from": 0, "to": 3, "title": "Group 1" },
+		{ "from": 4, "title": "Group 2" }
+	],
+	"canvas": {
+		"width": 1024,
+		"height": 768
+	}
+}
+```
+
 
 ### Config - regions dictionary
 
@@ -356,12 +383,12 @@ Feature: Matrix Renderer
 
     Class: MatrixRenderer
         Fields:
-            Ctx        : Type: Canvas 2d context, The canvas element handle we are drawing on
-            Config     : Type: Dictionary, The configuration for the matrix
-            Data       : Type: Array, The data to render
-            Columns    : Type: Array, The columns to render
-            Widths     : Type: Dictionary, The widths of the columns
-            Regions    : Type: Dictionary, The regions for the different row heights
+            Ctx         : Type: Canvas 2d context, The canvas element handle we are drawing on
+            Config      : Type: Dictionary, The configuration for the matrix
+                Data    : Type: Array, The data to render
+                Columns : Type: Array, The columns to render
+                Widths  : Type: Dictionary, The widths of the columns
+                Regions : Type: Dictionary, The regions for the different row heights
 
         Private Methods:
             RenderGrouping: 

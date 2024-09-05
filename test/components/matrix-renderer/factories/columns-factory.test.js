@@ -1,12 +1,10 @@
 import { describe, it} from "https://deno.land/std@0.157.0/testing/bdd.ts";
 import { assertEquals } from "https://deno.land/std@0.149.0/testing/asserts.ts";
-import {ColumnsFactory} from "../../../../components/matrix-renderer/factories/columns-factory.js";
-import {DataType, Align} from "../../../../components/matrix-renderer/builders/column-builder.js";
-
+import { Columns, DataType, Align } from "../../../../components/matrix-renderer/columns.js";
 
 describe("column builder tests", () => {
     it ("from", () => {
-        const columns = ColumnsFactory.from([
+        const columns = Columns.from([
             {title: "Title 1", field: "field1"},
             {title: "Title 2", field: "field2"}
         ]);
