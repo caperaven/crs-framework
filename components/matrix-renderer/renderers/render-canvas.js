@@ -50,8 +50,7 @@ function drawColumnLines(ctx, def, pageDetails, scrollX) {
     const bottom = def.regions.cells.bottom;
 
     for (let i = 0; i < pageDetails.columnsActualSizes.length; i++) {
-        const size = pageDetails.columnsActualSizes[i];
-        const x = pageDetails.columnsCumulativeSizes[i] - scrollX - size;
+        const x = pageDetails.columnsCumulativeSizes[i] - scrollX;
 
         ctx.moveTo(x, top);
         ctx.lineTo(x, bottom);
@@ -62,8 +61,7 @@ function drawRowLines(ctx, def, pageDetails, scrollY) {
     const cellsTop = def.regions.cells.top;
 
     for (let i = 0; i < pageDetails.rowsActualSizes.length; i++) {
-        const size = pageDetails.rowsActualSizes[i];
-        const y = pageDetails.rowsCumulativeSizes[i] - scrollY - size;
+        const y = pageDetails.rowsCumulativeSizes[i] - scrollY;
 
         if (y > cellsTop) {
             ctx.moveTo(0, y);
