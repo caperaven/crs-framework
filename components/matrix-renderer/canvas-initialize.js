@@ -5,16 +5,18 @@ export function initialize(parent, width, height) {
 
 function createCanvas(parent, width, height) {
     const canvas = document.createElement("canvas")
-
-    const dpr = window.devicePixelRatio;
-    canvas.width = width * dpr;
-    canvas.height = height * dpr;
     canvas.style.width = `${width}px`;
     canvas.style.height = `${height}px`;
-    const ctx = canvas.getContext("2d", {alpha: false});
-    ctx.scale(dpr, dpr);
-
     parent.appendChild(canvas);
+
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = width * dpr;
+    canvas.height = height * dpr;
+
+    const ctx = canvas.getContext("2d");
+    ctx.scale(dpr, dpr);
+    ctx.imageSmoothingEnabled = true;
+
     return ctx;
 }
 

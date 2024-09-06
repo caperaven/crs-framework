@@ -2,7 +2,7 @@ const LINE_COLOR = "#c1c1c1";
 const CLEAR_COLOR = "#ffffff";
 const TEXT_COLOR = "#000000";
 const HEADER_BACKGROUND_COLOR = "#DADADA";
-const FONT = "12px Arial";
+const FONT = `${16 * devicePixelRatio}px Arial`;
 
 export function renderCanvas(ctx, def, pageDetails, renderLT, scrollX, scrollY, isFinalRender) {
     // prepare for rendering
@@ -19,6 +19,7 @@ export function renderCanvas(ctx, def, pageDetails, renderLT, scrollX, scrollY, 
 function initialize(ctx) {
     ctx.font = FONT;
     ctx.fillStyle = TEXT_COLOR;
+    ctx.fontStyle = "normal";
     ctx.textAlign="left";
     ctx.textBaseline = "middle";
 }
