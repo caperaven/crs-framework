@@ -100,7 +100,7 @@ function drawRowLines(ctx, def, pageDetails, scrollY) {
     const cellsTop = def.regions.cells.top;
 
     for (let i = 0; i < pageDetails.rowsActualSizes.length; i++) {
-        const y = pageDetails.rowsCumulativeSizes[i] - scrollY;
+        const y = pageDetails.rowsCumulativeSizes[i] - scrollY + cellsTop;
 
         if (y > cellsTop) {
             ctx.moveTo(0, y);
