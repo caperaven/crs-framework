@@ -41,6 +41,7 @@ function setHeader(definition, result) {
 function setCells(definition, result) {
     result.cells.top = result.header.bottom;
     result.cells.bottom = definition.canvas.height;
+    result.cells.height = result.cells.bottom - result.cells.top;
 }
 
 function setFrozenColumns(definition, result) {

@@ -5,8 +5,6 @@ const HEADER_BACKGROUND_COLOR = "#DADADA";
 const FONT = "12px Arial";
 
 export function renderCanvas(ctx, def, pageDetails, renderLT, scrollX, scrollY, isFinalRender) {
-    console.log(isFinalRender);
-
     // prepare for rendering
     clearCanvas(ctx);
     initialize(ctx);

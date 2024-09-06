@@ -73,7 +73,7 @@ class MatrixRenderer extends HTMLElement {
 
     #getPageDetails() {
         const visibleColumns = this.#columnSizes.getVisibleRange(this.#scrollLeft, this.#ctx.canvas.width);
-        const visibleRows = this.#rowSizes.getVisibleRange(this.#scrollTop, this.#ctx.canvas.height);
+        const visibleRows = this.#rowSizes.getVisibleRange(this.#scrollTop, this.#config.regions.cells.height);
 
         const columnsActualSizes = [];
         const columnsCumulativeSizes = [];
