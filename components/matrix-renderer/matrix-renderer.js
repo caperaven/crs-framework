@@ -12,8 +12,7 @@ class MatrixRenderer extends HTMLElement {
     #animating = false;
     #scrollLeft = 0;
     #scrollTop = 0;
-    #oldScrollLeft = 0;
-    #oldScrollTop = 0;
+    #lastTime = 0;
     #onScrollHandler = this.#onScroll.bind(this);
     #animateHandler = this.#animate.bind(this);
     #renderLT = createRenderLT();
@@ -44,26 +43,25 @@ class MatrixRenderer extends HTMLElement {
         this.#renderLT = null;
     }
 
-    #animate() {
-        if (this.#animating) {
-            requestAnimationFrame(this.#animateHandler);
-        }
+    #animate(currentTime) {
+        const pageDetails = this.#getPageDetails();
+        renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, false);
 
-        // if I am not scrolling stop the animation loop
-        if (this.#scrollLeft === this.#oldScrollLeft && this.#scrollTop === this.#oldScrollTop) {
+        // if we stop scrolling render the final frame
+        const deltaTime = currentTime - this.#lastTime;
+        if (deltaTime > 10) {
             this.#animating = false;
+            renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, true);
             return;
         }
 
-        const pageDetails = this.#getPageDetails();
-        renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop);
-
-        // update the old scroll values
-        this.#oldScrollLeft = this.#scrollLeft;
-        this.#oldScrollTop = this.#scrollTop;
+        if (this.#animating) {
+            requestAnimationFrame(this.#animateHandler);
+        }
     }
 
     #onScroll(event) {
+        this.#lastTime = performance.now();
         this.#scrollLeft = Math.ceil(event.target.scrollLeft);
         this.#scrollTop = Math.ceil(event.target.scrollTop);
 
@@ -135,7 +133,7 @@ class MatrixRenderer extends HTMLElement {
 
         // 4. render the canvas
         const pageDetails = this.#getPageDetails();
-        renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop);
+        renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, true);
     }
 }
 

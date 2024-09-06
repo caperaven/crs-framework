@@ -19,9 +19,12 @@ export function renderHeader(ctx, def, column, aabb) {
     // 1. save the current state
     ctx.save();
 
+    // todo: JHR: add dots at the end of the text if the text is too long
+    // todo: only do this on the last render, not during scrolling to save on frames.
+
     // 2. set the clip region
     ctx.beginPath();
-    ctx.rect(aabb.x1, aabb.y1, aabb.x2 - aabb.x1 - PADDING_X, aabb.y2 - aabb.y1);
+    ctx.rect(aabb.x1 + PADDING_X, aabb.y1, aabb.x2 - aabb.x1 - PADDING_X, aabb.y2 - aabb.y1);
     ctx.clip();
 
     // 3. render the header

@@ -1,10 +1,12 @@
 const LINE_COLOR = "#c1c1c1";
 const CLEAR_COLOR = "#ffffff";
 const TEXT_COLOR = "#000000";
+const HEADER_BACKGROUND_COLOR = "#DADADA";
 const FONT = "12px Arial";
-const PADDING = 8;
 
-export function renderCanvas(ctx, def, pageDetails, renderLT, scrollX, scrollY) {
+export function renderCanvas(ctx, def, pageDetails, renderLT, scrollX, scrollY, isFinalRender) {
+    console.log(isFinalRender);
+
     // prepare for rendering
     clearCanvas(ctx);
     initialize(ctx);
@@ -29,10 +31,11 @@ function clearCanvas(ctx) {
 }
 
 function drawCells(ctx, def, pageDetails, renderLT, scrollX, scrollY) {
+    let rowIndex = 0;
 }
 
 function drawHeaders(ctx, def, pageDetails, renderLT, scrollX) {
-    let fieldIndex = pageDetails.visibleColumns.start;
+    let columnIndex = pageDetails.visibleColumns.start;
 
     drawHeaderBackground(ctx, def);
 
@@ -40,14 +43,14 @@ function drawHeaders(ctx, def, pageDetails, renderLT, scrollX) {
 
     for (let i = 0; i < pageDetails.columnsActualSizes.length; i++) {
         setAABB(aabb, def, pageDetails, i, scrollX);
-        renderLT["header"](ctx, def, def.columns[fieldIndex], aabb)
-        fieldIndex++;
+        renderLT["header"](ctx, def, def.columns[columnIndex], aabb)
+        columnIndex++;
     }
 }
 
 function drawHeaderBackground(ctx, def) {
     ctx.save();
-    ctx.fillStyle = "#DADADA";
+    ctx.fillStyle = HEADER_BACKGROUND_COLOR;
     ctx.fillRect(0, 0, ctx.canvas.width, def.regions.header.top + def.heights.header);
     ctx.restore();
 }
