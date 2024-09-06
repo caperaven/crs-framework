@@ -2,7 +2,7 @@ import {initialize} from "./canvas-initialize.js";
 import {Columns, Align, DataType} from "./columns.js";
 import {Regions} from "./factories/regions-factory.js";
 import {SizesManager} from "./../../src/managers/grid-data-managers/sizes-manager.js";
-import {renderCanvas} from "./renderers/render-canvas.js";
+import {renderCanvas, createRenderLT} from "./renderers/render.js";
 
 class MatrixRenderer extends HTMLElement {
     #ctx;
@@ -16,6 +16,7 @@ class MatrixRenderer extends HTMLElement {
     #oldScrollTop = 0;
     #onScrollHandler = this.#onScroll.bind(this);
     #animateHandler = this.#animate.bind(this);
+    #renderLT = createRenderLT();
 
     constructor() {
         super();
@@ -40,6 +41,7 @@ class MatrixRenderer extends HTMLElement {
         this.#columnSizes = this.#columnSizes.dispose();
         this.#onScrollHandler = null;
         this.#animateHandler = null;
+        this.#renderLT = null;
     }
 
     #animate() {
@@ -54,7 +56,7 @@ class MatrixRenderer extends HTMLElement {
         }
 
         const pageDetails = this.#getPageDetails();
-        renderCanvas(this.#ctx, this.#config, pageDetails, this.#scrollLeft, this.#scrollTop);
+        renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop);
 
         // update the old scroll values
         this.#oldScrollLeft = this.#scrollLeft;
@@ -133,7 +135,7 @@ class MatrixRenderer extends HTMLElement {
 
         // 4. render the canvas
         const pageDetails = this.#getPageDetails();
-        renderCanvas(this.#ctx, this.#config, pageDetails, this.#scrollLeft, this.#scrollTop);
+        renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop);
     }
 }
 

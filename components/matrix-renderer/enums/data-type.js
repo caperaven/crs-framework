@@ -1,9 +1,11 @@
 export const DataType = Object.freeze({
-    TEXT: 1,
-    BOOLEAN: 2,
-    NUMBER: 3,
-    DATE: 4,
-    TIME: 5,
-    DURATION: 6,
-    GEO: 7
+    TEXT     : "text",
+    BOOLEAN  : "boolean",
+    NUMBER   : "number",
+    DATE     : "date",
+    TIME     : "time",
+    DURATION : "duration",
+    GEO      : "geo",
+    IMAGE    : "image",
+    LINK     : "link",
 });

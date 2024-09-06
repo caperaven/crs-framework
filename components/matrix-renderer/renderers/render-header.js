@@ -11,3 +11,10 @@
  *
  * We can also have a boolean type column for select all.
  */
+
+const PADDING_X = 8;
+const PADDING_Y = 16;
+
+export function renderHeader(ctx, def, column, aabb) {
+    ctx.fillText(column.title, aabb.x1 + PADDING_X, aabb.y2 - PADDING_Y);
+}

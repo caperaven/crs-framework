@@ -6,3 +6,7 @@
  *
  * Q: How do I get the correct image for the True / False state to render.
  */
+
+export function renderBoolean() {
+    return;
+}
