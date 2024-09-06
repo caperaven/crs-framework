@@ -57,7 +57,7 @@ function getColumns() {
     ]
 
     for (let i = 0; i < 1000; i++) {
-        columns.push({ title: `Column ${i} with extra text`, field: `column${i}`, dataType: DataType.BOOLEAN });
+        columns.push({ title: `Column ${i} with extra text`, field: `column${i}`, type: DataType.BOOLEAN });
     }
 
     return columns;

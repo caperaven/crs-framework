@@ -2,8 +2,7 @@
  * Standard text renderer
  */
 
-const PADDING_X = 8;
-const PADDING_Y = 16;
+import { PADDING_X, PADDING_Y } from "./constants.js";
 
 export function renderText(ctx, def, column, aabb, value) {
     // 1. save the current state

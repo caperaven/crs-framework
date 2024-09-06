@@ -60,8 +60,9 @@ function drawHeaders(ctx, def, pageDetails, renderLT, scrollX) {
     const aabb = { x1: 0, x2: 0, y1: 0, y2: 0 }
 
     for (let i = 0; i < pageDetails.columnsActualSizes.length; i++) {
+        const column = def.columns[columnIndex]
         setHeaderAABB(aabb, def, pageDetails, i, scrollX);
-        renderLT["header"](ctx, def, def.columns[columnIndex], aabb)
+        renderLT["header"](ctx, def, column, aabb, column.title)
         columnIndex++;
     }
 }

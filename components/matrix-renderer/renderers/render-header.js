@@ -12,10 +12,9 @@
  * We can also have a boolean type column for select all.
  */
 
-const PADDING_X = 8;
-const PADDING_Y = 16;
+import { PADDING_X, PADDING_Y } from "./constants.js";
 
-export function renderHeader(ctx, def, column, aabb) {
+export function renderHeader(ctx, def, column, aabb, value) {
     // 1. save the current state
     ctx.save();
 
@@ -28,7 +27,7 @@ export function renderHeader(ctx, def, column, aabb) {
     ctx.clip();
 
     // 3. render the header
-    ctx.fillText(column.title, aabb.x1 + PADDING_X, aabb.y2 - PADDING_Y);
+    ctx.fillText(value, aabb.x1 + PADDING_X, aabb.y2 - PADDING_Y);
 
     // 4. restore the state
     ctx.restore();
