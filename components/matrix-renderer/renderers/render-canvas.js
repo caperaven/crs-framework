@@ -31,26 +31,21 @@ function clearCanvas(ctx) {
 }
 
 function drawCells(ctx, def, pageDetails, renderLT, scrollX, scrollY) {
+    const aabb = { x1: 0, x2: 0, y1: 0, y2: 0 }
     let currentRowIndex = pageDetails.visibleRows.start;
 
-    const cellsTop = def.regions.cells.top;
-    const halfRowHeight = def.heights.row / 2;
-    const rows = def.rows;
-    const columns = def.columns;
-
     for (let rowIndex = 0; rowIndex < pageDetails.rowsActualSizes.length; rowIndex++) {
-        const y = cellsTop + pageDetails.rowsCumulativeSizes[rowIndex] - scrollY - halfRowHeight;
-        const row = rows[currentRowIndex];
+        const row = def.rows[currentRowIndex];
 
-        let fieldIndex = pageDetails.visibleColumns.start;
+        let currentFieldIndex = pageDetails.visibleColumns.start;
         for (let columnIndex  = 0; columnIndex < pageDetails.columnsActualSizes.length; columnIndex++) {
-            const size = pageDetails.columnsActualSizes[columnIndex];
-            const x = pageDetails.columnsCumulativeSizes[columnIndex] - scrollX - size;
+            const column = def.columns[currentFieldIndex];
+            const value = row[def.columns[currentFieldIndex].field];
 
-            const value = row[columns[fieldIndex].field];
-            ctx.fillText(value, x, y);
+            setCellAABB(aabb, def, pageDetails, columnIndex, rowIndex, scrollX, scrollY);
+            renderLT[column.type](ctx, def, column, aabb, value);
 
-            fieldIndex++;
+            currentFieldIndex++;
         }
 
         currentRowIndex++;
@@ -138,15 +133,15 @@ function setHeaderAABB(aabb, def, pageDetails, columnIndex, scrollX) {
 }
 
 function setCellAABB(aabb, def, pageDetails, columnIndex, rowIndex, scrollX, scrollY) {
-    const columnSize = pageDetails.columnsActualSizes[columnIndex];
-    const x = pageDetails.columnsCumulativeSizes[columnIndex] - scrollX - columnSize;
+    const size = pageDetails.columnsActualSizes[columnIndex];
+    const x = pageDetails.columnsCumulativeSizes[columnIndex] - scrollX - size;
 
     const cellsTop = def.regions.cells.top;
-    const y = cellsTop + pageDetails.rowsCumulativeSizes[rowIndex] - scrollY
-    const y2 = y + pageDetails.rowsActualSizes[rowIndex];
+    const halfRowHeight = def.heights.row / 2;
+    const y = cellsTop + pageDetails.rowsCumulativeSizes[rowIndex] - scrollY - halfRowHeight;
 
     aabb.x1 = x;
-    aabb.x2 = x + columnSize;
-    aabb.y1 = y;
-    aabb.y2 = y2;
+    aabb.x2 = x + size;
+    aabb.y1 = y - halfRowHeight;
+    aabb.y2 = y + halfRowHeight;
 }
