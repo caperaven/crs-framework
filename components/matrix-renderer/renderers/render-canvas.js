@@ -31,7 +31,30 @@ function clearCanvas(ctx) {
 }
 
 function drawCells(ctx, def, pageDetails, renderLT, scrollX, scrollY) {
-    let rowIndex = 0;
+    let currentRowIndex = pageDetails.visibleRows.start;
+
+    const cellsTop = def.regions.cells.top;
+    const halfRowHeight = def.heights.row / 2;
+    const rows = def.rows;
+    const columns = def.columns;
+
+    for (let rowIndex = 0; rowIndex < pageDetails.rowsActualSizes.length; rowIndex++) {
+        const y = cellsTop + pageDetails.rowsCumulativeSizes[rowIndex] - scrollY - halfRowHeight;
+        const row = rows[currentRowIndex];
+
+        let fieldIndex = pageDetails.visibleColumns.start;
+        for (let columnIndex  = 0; columnIndex < pageDetails.columnsActualSizes.length; columnIndex++) {
+            const size = pageDetails.columnsActualSizes[columnIndex];
+            const x = pageDetails.columnsCumulativeSizes[columnIndex] - scrollX - size;
+
+            const value = row[columns[fieldIndex].field];
+            ctx.fillText(value, x, y);
+
+            fieldIndex++;
+        }
+
+        currentRowIndex++;
+    }
 }
 
 function drawHeaders(ctx, def, pageDetails, renderLT, scrollX) {
@@ -42,7 +65,7 @@ function drawHeaders(ctx, def, pageDetails, renderLT, scrollX) {
     const aabb = { x1: 0, x2: 0, y1: 0, y2: 0 }
 
     for (let i = 0; i < pageDetails.columnsActualSizes.length; i++) {
-        setAABB(aabb, def, pageDetails, i, scrollX);
+        setHeaderAABB(aabb, def, pageDetails, i, scrollX);
         renderLT["header"](ctx, def, def.columns[columnIndex], aabb)
         columnIndex++;
     }
@@ -104,7 +127,7 @@ function drawGroups(ctx, def, pageDetails, scrollX, scrollY) {
  * @param columnIndex - current column index
  * @param scrollX - horizontal scroll position
  */
-function setAABB(aabb, def, pageDetails, columnIndex, scrollX) {
+function setHeaderAABB(aabb, def, pageDetails, columnIndex, scrollX) {
     const size = pageDetails.columnsActualSizes[columnIndex];
     const x = pageDetails.columnsCumulativeSizes[columnIndex] - scrollX - size;
 
@@ -112,4 +135,18 @@ function setAABB(aabb, def, pageDetails, columnIndex, scrollX) {
     aabb.x2 = x + size;
     aabb.y1 = def.regions.header.top;
     aabb.y2 = def.regions.header.bottom;
+}
+
+function setCellAABB(aabb, def, pageDetails, columnIndex, rowIndex, scrollX, scrollY) {
+    const columnSize = pageDetails.columnsActualSizes[columnIndex];
+    const x = pageDetails.columnsCumulativeSizes[columnIndex] - scrollX - columnSize;
+
+    const cellsTop = def.regions.cells.top;
+    const y = cellsTop + pageDetails.rowsCumulativeSizes[rowIndex] - scrollY
+    const y2 = y + pageDetails.rowsActualSizes[rowIndex];
+
+    aabb.x1 = x;
+    aabb.x2 = x + columnSize;
+    aabb.y1 = y;
+    aabb.y2 = y2;
 }
