@@ -31,6 +31,25 @@ export default class Map extends crsbinding.classes.ViewBase {
             manager: "my_data",
             id_field: "id",
             type: "memory",
+            request_callback: async (request) => {
+                const polygons =  await this.#generateRandomPolygonsGeoJson(2);
+                const points = await this.#generateRandomPointsGeoJson(2);
+
+                const shapes = [...polygons, ...points];
+
+                const data = [];
+                for (const shape of shapes) {
+                    data.push({
+                        id: data.length,
+                        name: `Shape ${data.length}`,
+                        age: Math.floor(Math.random() * 100),
+                        address: `Address ${data.length}`,
+                        geographicLocation: shape
+                    });
+                }
+
+                return data;
+            }
         });
 
         this.setProperty("map", "#openstreetmap");
@@ -63,33 +82,13 @@ export default class Map extends crsbinding.classes.ViewBase {
 
     async mapReady() {
         requestAnimationFrame(async () => {
-            await crs.call("interactive_map", "initialize", { element: "#openstreetmap",  "max_shapes": 2 });
+            this.setLayerGeoJson();
         });
     }
 
     async setLayerGeoJson() {
-        const polygons =  await this.#generateRandomPolygonsGeoJson(2);
-        const points = await this.#generateRandomPointsGeoJson(2);
-
-        const shapes = [...polygons, ...points];
-
-        const data = [];
-        for (const shape of shapes) {
-            data.push({
-                id: data.length,
-                name: `Shape ${data.length}`,
-                age: Math.floor(Math.random() * 100),
-                address: `Address ${data.length}`,
-                geographicLocation: shape
-            });
-        }
-
-        await crs.call("data_manager", "set_records", {
-            manager: "my_data",
-            id_field: "id",
-            type: "memory",
-            records: data
-        })
+        const element = document.querySelector("#openstreetmap");
+        element.enable();
     }
 
     async #generateRandomPolygonsGeoJson(count) {

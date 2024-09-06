@@ -7,6 +7,14 @@
         overflow: hidden;
     }
 
+    interactive-map > div{
+        opacity: 0;
+    }
+
+    interactive-map:not(.loading) > div{
+        opacity: 1;
+    }
+
     interactive-map #map {
         height: 100%;
         width: 100%;
