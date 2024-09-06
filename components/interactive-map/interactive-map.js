@@ -3,6 +3,7 @@ import {addDynamicPopup, createImageMap, createStandardMap, isValidCoordinates} 
 import {MAP_SELECTION_MODE} from "./interactive-map-selection-modes.js";
 import "./../expanding-input/expanding-input.js";
 import {ShapeFactory} from "./interactive-map-actions.js";
+import "./../busy-ui/busy-ui-actions.js"
 
 export class InteractiveMap extends HTMLElement {
     #map;
@@ -310,7 +311,13 @@ export class InteractiveMap extends HTMLElement {
             });
 
             await crs.call("interactive_map", "fit_bounds", {element: this, layer: this.#activeLayer});
+
         }
+
+        this.classList.remove("loading");
+        await crs.call("busy_ui", "hide", {
+            "element": this
+        });
     }
 
     async #selectionChanged(args) {
@@ -319,11 +326,15 @@ export class InteractiveMap extends HTMLElement {
     }
 
     async enable() {
+        await crs.call("busy_ui", "show", {
+            "element": this
+        });
+        this.classList.add("loading");
         if (this.#map == null) {
             await crs.call("interactive_map", "initialize", {element: this});
         }
-
         await crs.call("data_manager", "request_records", {manager: this.dataset.manager});
+
     }
 
     async #createDefaultLayer() {
