@@ -129,7 +129,7 @@ class MatrixRenderer extends HTMLElement {
 
         // 3. move marker to the bottom right corner to enable scrolling
         const markerElement = this.shadowRoot.querySelector("#marker");
-        moveScrollMarker(markerElement, this.#columnSizes, this.#rowSizes);
+        moveScrollMarker(markerElement, this.#columnSizes, this.#rowSizes, this.#config);
 
         // 4. render the canvas
         const pageDetails = this.#getPageDetails();
@@ -143,10 +143,11 @@ class MatrixRenderer extends HTMLElement {
  * @param element (HTMLElement) - The element to move
  * @param columnSizes (SizesManager) - The column sizes manager
  * @param rowSizes (SizesManager) - The row sizes manager
+ * @param config
  */
-function moveScrollMarker(element, columnSizes, rowSizes) {
+function moveScrollMarker(element, columnSizes, rowSizes, config) {
     const x = columnSizes.totalSize;
-    const y = rowSizes.totalSize + rowSizes.defaultSize;
+    const y = rowSizes.totalSize + config.regions.cells.top;
 
     element.style.translate = `${x}px ${y}px`;
 }
