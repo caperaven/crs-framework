@@ -7,6 +7,11 @@ function createCanvas(parent, width, height) {
     const canvas = document.createElement("canvas")
     canvas.style.width = `${width}px`;
     canvas.style.height = `${height}px`;
+    canvas.style.imageRendering = "pixelated";
+    canvas.style.position = "absolute";
+    canvas.style.top = "0px";
+    canvas.style.left = "0px";
+    canvas.style.zIndex = -1;
     parent.appendChild(canvas);
 
     const dpr = window.devicePixelRatio.toFixed(4);

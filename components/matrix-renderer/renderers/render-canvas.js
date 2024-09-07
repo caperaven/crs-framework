@@ -2,7 +2,7 @@ const LINE_COLOR = "#c1c1c1";
 const CLEAR_COLOR = "#ffffff";
 const TEXT_COLOR = "#000000";
 const HEADER_BACKGROUND_COLOR = "#DADADA";
-const FONT = `${16}px Arial`;
+const FONT = `${12}px Arial`;
 
 export function renderCanvas(ctx, def, pageDetails, renderLT, scrollX, scrollY, isFinalRender) {
     // prepare for rendering
