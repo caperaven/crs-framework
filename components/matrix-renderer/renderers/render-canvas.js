@@ -12,16 +12,14 @@ export function renderCanvas(ctx, def, pageDetails, renderLT, scrollX, scrollY, 
     // render the matrix
     drawCells   (ctx, def, pageDetails, renderLT, scrollX, scrollY);
     drawHeaders (ctx, def, pageDetails, renderLT, scrollX);
+    drawGroups  (ctx, def, pageDetails, renderLT, scrollX);
     drawLines   (ctx, def, pageDetails, scrollX, scrollY);
-    drawGroups  (ctx, def, pageDetails, scrollX, scrollY);
 }
 
 function initialize(ctx) {
     ctx.font = FONT;
     ctx.fillStyle = TEXT_COLOR;
     ctx.fontStyle = "normal";
-    // ctx.textAlign="left";
-    // ctx.textBaseline = "middle";
 }
 
 function clearCanvas(ctx) {
@@ -63,6 +61,18 @@ function drawHeaders(ctx, def, pageDetails, renderLT, scrollX) {
         setHeaderAABB(aabb, def, pageDetails, i, scrollX);
         renderLT["header"](ctx, def, column, aabb, column.title)
         columnIndex++;
+    }
+}
+
+function drawGroups(ctx, def, pageDetails, renderLT, scrollX) {
+    let groupIndex = pageDetails.visibleGroups.start;
+    const aabb = { x1: 0, x2: 0, y1: 0, y2: 0 }
+
+    for (let i = 0; i < pageDetails.groupsActualSizes.length; i++) {
+        const group = def.groups[groupIndex];
+        setGroupAABB(aabb, def, pageDetails, i, scrollX);
+        renderLT["group"](ctx, def, group, aabb, group.title);
+        groupIndex++;
     }
 }
 
@@ -110,9 +120,6 @@ function drawRowLines(ctx, def, pageDetails, scrollY) {
     }
 }
 
-function drawGroups(ctx, def, pageDetails, scrollX, scrollY) {
-
-}
 
 /**
  * Update the bounding box for the given column index.
@@ -130,6 +137,16 @@ function setHeaderAABB(aabb, def, pageDetails, columnIndex, scrollX) {
     aabb.x2 = Math.ceil(x + size);
     aabb.y1 = Math.ceil(def.regions.header.top);
     aabb.y2 = Math.ceil(def.regions.header.bottom);
+}
+
+function setGroupAABB(aabb, def, pageDetails, groupIndex, scrollX) {
+    const size = pageDetails.groupsActualSizes[groupIndex];
+    const x = pageDetails.groupsCumulativeSizes[groupIndex] - scrollX - size;
+
+    aabb.x1 = Math.ceil(x);
+    aabb.x2 = Math.ceil(x + size);
+    aabb.y1 = Math.ceil(def.regions.grouping.top);
+    aabb.y2 = Math.ceil(def.regions.grouping.bottom);
 }
 
 function setCellAABB(aabb, def, pageDetails, columnIndex, rowIndex, scrollX, scrollY) {

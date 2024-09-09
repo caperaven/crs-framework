@@ -3,6 +3,7 @@ import {renderHeader} from "./render-header.js";
 import {renderText} from "./render-text.js";
 import {renderBoolean} from "./render-boolean.js";
 import {renderCanvas} from "./render-canvas.js";
+import {renderGroup} from "./render-group.js";
 
 /**
  * Create a render lookup table for the given data type and areas
@@ -10,6 +11,7 @@ import {renderCanvas} from "./render-canvas.js";
 function createRenderLT() {
     return {
         "header"            : renderHeader,
+        "group"             : renderGroup,
         [DataType.TEXT]     : renderText,
         [DataType.BOOLEAN]  : renderBoolean,
         [DataType.NUMBER]   : renderText,

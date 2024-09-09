@@ -17,7 +17,7 @@ export class SizesManager {
 
     constructor(count, defaultSize = 0, sizes = null) {
         this.#defaultSize = defaultSize;
-        this.#sizes = new Uint16Array(count);
+        this.#sizes = new Uint32Array(count);
         this.#cumulativeSizes = new Uint32Array(count);
 
         let total = 0;

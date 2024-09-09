@@ -82,6 +82,8 @@ class MatrixRenderer extends HTMLElement {
         const columnsCumulativeSizes = [];
         const rowsActualSizes = [];
         const rowsCumulativeSizes = [];
+        const groupsActualSizes = [];
+        const groupsCumulativeSizes = [];
 
         for (let i = visibleColumns.start; i <= visibleColumns.end; i++) {
             columnsActualSizes.push(this.#columnSizes.at(i));
@@ -91,6 +93,11 @@ class MatrixRenderer extends HTMLElement {
         for (let i = visibleRows.start; i <= visibleRows.end; i++) {
             rowsActualSizes.push(this.#rowSizes.at(i));
             rowsCumulativeSizes.push(this.#rowSizes.cumulative(i));
+        }
+
+        for (let i = visibleGroups.start; i <= visibleGroups.end; i++) {
+            groupsActualSizes.push(this.#groupSizes.at(i));
+            groupsCumulativeSizes.push(this.#groupSizes.cumulative(i));
         }
 
         const columnLocation = this.#columnSizes.cumulative(visibleColumns.start);
@@ -103,6 +110,9 @@ class MatrixRenderer extends HTMLElement {
             visibleRows,
             rowsActualSizes,
             rowsCumulativeSizes,
+            visibleGroups,
+            groupsActualSizes,
+            groupsCumulativeSizes,
             columnLocation,
             rowLocation
         };
@@ -146,13 +156,13 @@ function getGroupsSize(config, columnSizes) {
     const columns = config.columns;
     const result = [];
 
+    let lastSize = 0;
     for (const group of groups) {
-        const from = group.from;
         const to = group.to ?? columns.length - 1;
 
-        const sizeFrom = columnSizes.cumulative(from);
         const sizeTo = columnSizes.cumulative(to);
-        const size = sizeTo - sizeFrom;
+        const size = sizeTo - lastSize;
+        lastSize = size;
         result.push(size);
     }
 
