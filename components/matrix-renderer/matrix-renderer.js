@@ -137,9 +137,16 @@ class MatrixRenderer extends HTMLElement {
         this.#config.regions = Regions.from(this.#config);
 
         // 2. initialize sizes for rendering
-        this.#columnSizes = new SizesManager(this.#config.columns.length, 100);
+        // 2.1 calculate row sizes
         this.#rowSizes = new SizesManager(this.#config.rows.length, this.#config.heights.row);
-        this.#groupSizes = new SizesManager(this.#config.groups.length, 0, getGroupsSize(this.#config, this.#columnSizes));
+
+        // 2.2 calculate column sizes
+        this.columnWidthValues = this.#config.columns.map(column => column.width);
+        this.#columnSizes = new SizesManager(this.#config.columns.length, 0, this.columnWidthValues);
+
+        // 2.3 calculate group sizes
+        const groupWidthValues = getGroupsSize(this.#config, this.#columnSizes);
+        this.#groupSizes = new SizesManager(this.#config.groups.length, 0, groupWidthValues);
 
         // 3. move marker to the bottom right corner to enable scrolling
         const markerElement = this.shadowRoot.querySelector("#marker");
