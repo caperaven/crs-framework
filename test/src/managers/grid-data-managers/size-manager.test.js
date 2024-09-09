@@ -30,7 +30,10 @@ describe("Grid Data Tests", () => {
     })
 
     it ("constructor - sizes", () => {
-        const sizes = new SizesManager(3, 0, [20, 30, 40]);
+        const sizes = new SizesManager(30, 0, [20, 30, 40]);
+
+        assertEquals(sizes.length, 3);
+
         assertEquals(sizes.at(0), 20);
         assertEquals(sizes.at(1), 30);
         assertEquals(sizes.at(2), 40);

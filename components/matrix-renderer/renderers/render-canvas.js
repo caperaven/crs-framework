@@ -96,8 +96,11 @@ function drawLines(ctx, def, pageDetails, scrollX, scrollY) {
 }
 
 function drawColumnLines(ctx, def, pageDetails, scrollX) {
-    const top = def.regions.cells.top;
+    const top = def.regions.header.top;
     const bottom = def.regions.cells.bottom;
+
+    ctx.moveTo(0, 0);
+    ctx.lineTo(0, bottom);
 
     for (let i = 0; i < pageDetails.columnsActualSizes.length; i++) {
         const x = pageDetails.columnsCumulativeSizes[i] - scrollX;
@@ -108,12 +111,16 @@ function drawColumnLines(ctx, def, pageDetails, scrollX) {
 }
 
 function drawRowLines(ctx, def, pageDetails, scrollY) {
-    const cellsTop = def.regions.cells.top;
+    ctx.moveTo(0, 0);
+    ctx.lineTo(ctx.canvas.offsetWidth, 0);
+
+    ctx.moveTo(0, def.regions.header.top);
+    ctx.lineTo(ctx.canvas.offsetWidth, def.regions.header.top);
 
     for (let i = 0; i < pageDetails.rowsActualSizes.length; i++) {
-        const y = pageDetails.rowsCumulativeSizes[i] - scrollY + cellsTop;
+        const y = pageDetails.rowsCumulativeSizes[i] - scrollY + def.regions.cells.top;
 
-        if (y > cellsTop) {
+        if (y > def.regions.cells.top) {
             ctx.moveTo(0, y);
             ctx.lineTo(ctx.canvas.offsetWidth, y);
         }

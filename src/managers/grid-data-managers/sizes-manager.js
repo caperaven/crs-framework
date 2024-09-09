@@ -17,10 +17,11 @@ export class SizesManager {
 
     constructor(count, defaultSize = 0, sizes = null) {
         this.#defaultSize = defaultSize;
+
+        count = sizes?.length ?? count;
+
         this.#sizes = new Uint32Array(count);
         this.#cumulativeSizes = new Uint32Array(count);
-
-        let total = 0;
 
         // 1. if we have default sizes then initialize the array with the default size
         if (defaultSize !== 0) {
