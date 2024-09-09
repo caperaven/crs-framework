@@ -72,6 +72,7 @@ function drawGroups(ctx, def, pageDetails, renderLT, scrollX) {
         const group = def.groups[groupIndex];
         setGroupAABB(aabb, def, pageDetails, i, scrollX);
         renderLT["group"](ctx, def, group, aabb, group.title);
+
         groupIndex++;
     }
 }
@@ -90,6 +91,7 @@ function drawLines(ctx, def, pageDetails, scrollX, scrollY) {
 
     drawColumnLines(ctx, def, pageDetails, scrollX);
     drawRowLines(ctx, def, pageDetails, scrollY);
+    drawGroupLines(ctx, def, pageDetails, scrollX);
 
     ctx.stroke();
     ctx.restore();
@@ -127,6 +129,13 @@ function drawRowLines(ctx, def, pageDetails, scrollY) {
     }
 }
 
+function drawGroupLines(ctx, def, pageDetails, scrollX) {
+    for (let i = 0; i < pageDetails.groupsCumulativeSizes.length; i++) {
+        const x = pageDetails.groupsCumulativeSizes[i] - scrollX;
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, def.regions.grouping.bottom);
+    }
+}
 
 /**
  * Update the bounding box for the given column index.
