@@ -13,6 +13,7 @@ export function renderCanvas(ctx, def, pageDetails, renderLT, scrollX, scrollY, 
     drawCells   (ctx, def, pageDetails, renderLT, scrollX, scrollY);
     drawHeaders (ctx, def, pageDetails, renderLT, scrollX);
     drawGroups  (ctx, def, pageDetails, renderLT, scrollX);
+    drawFrozen  (ctx, def, pageDetails, renderLT, scrollX, scrollY);
     drawLines   (ctx, def, pageDetails, scrollX, scrollY);
 }
 
@@ -87,13 +88,26 @@ function drawHeaderBackground(ctx, def) {
 function drawLines(ctx, def, pageDetails, scrollX, scrollY) {
     ctx.save();
     ctx.strokeStyle = LINE_COLOR;
+    ctx.lineWidth = 1;
     ctx.beginPath();
-
     drawColumnLines(ctx, def, pageDetails, scrollX);
     drawRowLines(ctx, def, pageDetails, scrollY);
     drawGroupLines(ctx, def, pageDetails, scrollX);
-
     ctx.stroke();
+    ctx.restore();
+
+    drawFrozenLines(ctx, def, pageDetails, scrollX, scrollY);
+}
+
+function drawFrozen(ctx, def, pageDetails, renderLT, scrollX, scrollY) {
+    ctx.save();
+
+    ctx.fillStyle = HEADER_BACKGROUND_COLOR;
+    ctx.fillRect(0, def.regions.header.top, def.regions.frozenColumns.right, def.regions.header.bottom);
+
+    ctx.fillStyle = CLEAR_COLOR;
+    ctx.fillRect(0, def.regions.cells.top, def.regions.frozenColumns.right, def.regions.cells.bottom);
+
     ctx.restore();
 }
 
@@ -106,6 +120,10 @@ function drawColumnLines(ctx, def, pageDetails, scrollX) {
 
     for (let i = 0; i < pageDetails.columnsActualSizes.length; i++) {
         const x = pageDetails.columnsCumulativeSizes[i] - scrollX;
+
+        if (x < def.regions.frozenColumns.right) {
+            continue;
+        }
 
         ctx.moveTo(x, top);
         ctx.lineTo(x, bottom);
@@ -135,6 +153,17 @@ function drawGroupLines(ctx, def, pageDetails, scrollX) {
         ctx.moveTo(x, 0);
         ctx.lineTo(x, def.regions.grouping.bottom);
     }
+}
+
+function drawFrozenLines(ctx, def, pageDetails, scrollX, scrollY) {
+    ctx.save();
+    ctx.strokeStyle = "#00000050";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(def.regions.frozenColumns.right, def.regions.header.top);
+    ctx.lineTo(def.regions.frozenColumns.right, def.regions.cells.bottom);
+    ctx.stroke();
+    ctx.restore();
 }
 
 /**
