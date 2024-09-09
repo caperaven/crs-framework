@@ -15,16 +15,21 @@ export class SizesManager {
         return this.#defaultSize;
     }
 
-    constructor(count, defaultSize) {
+    constructor(count, defaultSize = 0, sizes = null) {
         this.#defaultSize = defaultSize;
         this.#sizes = new Uint16Array(count);
         this.#cumulativeSizes = new Uint32Array(count);
 
         let total = 0;
-        for (let i = 0; i < count; i++) {
-            total += defaultSize;
-            this.#sizes[i] = defaultSize;
-            this.#cumulativeSizes[i] = total;
+
+        // 1. if we have default sizes then initialize the array with the default size
+        if (defaultSize !== 0) {
+            this.#fillSizes(count, defaultSize);
+        }
+
+        // 2. if we have sizes then initialize the array with the sizes
+        if (sizes != null) {
+            this.#fillWithSizes(sizes);
         }
     }
 
@@ -33,6 +38,33 @@ export class SizesManager {
         this.#sizes = null;
         this.#cumulativeSizes = null;
         return null;
+    }
+
+    /**
+     * Fill the sizes and cumulative sizes with the default size.
+     * @param count
+     * @param defaultSize
+     */
+    #fillSizes(count, defaultSize) {
+        let total = 0;
+        for (let i = 0; i < count; i++) {
+            total += defaultSize;
+            this.#sizes[i] = defaultSize;
+            this.#cumulativeSizes[i] = total;
+        }
+    }
+
+    /**
+     * Given an array, set the sizes and accumulative sizes.
+     * @param sizes {Array} - array of sizes
+     */
+    #fillWithSizes(sizes) {
+        let total = 0;
+        for (let i = 0; i < sizes.length; i++) {
+            total += sizes[i];
+            this.#sizes[i] = sizes[i];
+            this.#cumulativeSizes[i] = total;
+        }
     }
 
     /**

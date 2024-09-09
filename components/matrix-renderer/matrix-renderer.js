@@ -7,6 +7,7 @@ import {renderCanvas, createRenderLT} from "./renderers/render.js";
 class MatrixRenderer extends HTMLElement {
     #ctx;
     #config;
+    #groupSizes;
     #columnSizes;
     #rowSizes;
     #animating = false;
@@ -36,6 +37,7 @@ class MatrixRenderer extends HTMLElement {
 
         this.#ctx = null;
         this.#config = null;
+        this.#groupSizes = this.#groupSizes.dispose();
         this.#rowSizes = this.#rowSizes.dispose();
         this.#columnSizes = this.#columnSizes.dispose();
         this.#onScrollHandler = null;
@@ -72,6 +74,7 @@ class MatrixRenderer extends HTMLElement {
     }
 
     #getPageDetails() {
+        const visibleGroups = this.#groupSizes.getVisibleRange(this.#scrollLeft, this.#ctx.canvas.width - 16);
         const visibleColumns = this.#columnSizes.getVisibleRange(this.#scrollLeft, this.#ctx.canvas.width - 16);
         const visibleRows = this.#rowSizes.getVisibleRange(this.#scrollTop, this.#config.regions.cells.height -16);
 
@@ -126,6 +129,7 @@ class MatrixRenderer extends HTMLElement {
         // 2. initialize sizes for rendering
         this.#columnSizes = new SizesManager(this.#config.columns.length, 100);
         this.#rowSizes = new SizesManager(this.#config.rows.length, this.#config.heights.row);
+        this.#groupSizes = new SizesManager(this.#config.groups.length, 0, getGroupsSize(this.#config, this.#columnSizes));
 
         // 3. move marker to the bottom right corner to enable scrolling
         const markerElement = this.shadowRoot.querySelector("#marker");
@@ -135,6 +139,24 @@ class MatrixRenderer extends HTMLElement {
         const pageDetails = this.#getPageDetails();
         renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, true);
     }
+}
+
+function getGroupsSize(config, columnSizes) {
+    const groups = config.groups;
+    const columns = config.columns;
+    const result = [];
+
+    for (const group of groups) {
+        const from = group.from;
+        const to = group.to ?? columns.length - 1;
+
+        const sizeFrom = columnSizes.cumulative(from);
+        const sizeTo = columnSizes.cumulative(to);
+        const size = sizeTo - sizeFrom;
+        result.push(size);
+    }
+
+    return result;
 }
 
 /**

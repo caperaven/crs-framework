@@ -29,6 +29,16 @@ describe("Grid Data Tests", () => {
         assertEquals(sizes.totalSize, 60);
     })
 
+    it ("constructor - sizes", () => {
+        const sizes = new SizesManager(3, 0, [20, 30, 40]);
+        assertEquals(sizes.at(0), 20);
+        assertEquals(sizes.at(1), 30);
+        assertEquals(sizes.at(2), 40);
+        assertEquals(sizes.cumulative(0), 20);
+        assertEquals(sizes.cumulative(1), 50);
+        assertEquals(sizes.cumulative(2), 90);
+    })
+
     it ("set", () => {
         const sizes = new SizesManager(3, 10);
         sizes.set(0, 100);
