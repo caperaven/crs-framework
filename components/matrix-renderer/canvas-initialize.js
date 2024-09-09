@@ -1,26 +1,27 @@
 export function initialize(parent, width, height) {
+    const ctx = createCanvas(parent, width, height);
     createScroller(parent, width, height);
-    return createCanvas(parent, width, height);
+    return ctx;
 }
 
 function createCanvas(parent, width, height) {
     const canvas = document.createElement("canvas")
     canvas.style.width = `${width}px`;
     canvas.style.height = `${height}px`;
-    canvas.style.imageRendering = "pixelated";
+
+    // avoid half pixels by explicitly setting the position
+    // once you do that the element
     canvas.style.position = "absolute";
     canvas.style.top = "0px";
     canvas.style.left = "0px";
-    canvas.style.zIndex = -1;
     parent.appendChild(canvas);
 
-    const dpr = window.devicePixelRatio.toFixed(4);
+    const dpr = window.devicePixelRatio;
     canvas.width = width * dpr;
     canvas.height = height * dpr;
 
     const ctx = canvas.getContext("2d");
     ctx.scale(dpr, dpr);
-    ctx.imageSmoothingEnabled = true;
 
     return ctx;
 }
@@ -31,6 +32,8 @@ function createScroller(parent, width, height) {
     scroller.style.width = `${width}px`;
     scroller.style.height = `${height}px`;
     scroller.style.position = "absolute";
+    scroller.style.top = "0px";
+    scroller.style.left = "0px";
     scroller.style.overflow = "auto";
 
     createMarker(scroller);
