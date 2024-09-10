@@ -14,6 +14,7 @@ function createCanvas(parent, width, height) {
     canvas.style.position = "absolute";
     canvas.style.top = "0px";
     canvas.style.left = "0px";
+    canvas.style.imageRendering = "pixelated";
     parent.appendChild(canvas);
 
     const dpr = window.devicePixelRatio;
