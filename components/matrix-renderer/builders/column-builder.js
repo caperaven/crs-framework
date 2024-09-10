@@ -9,6 +9,8 @@ class ColumnBuilder {
         type: DataType.TEXT,
         align: Align.LEFT,
         editable: false,
+        background: null,
+        foreground: null
     }
 
     static from(column) {
@@ -36,6 +38,14 @@ class ColumnBuilder {
 
         if (column.editable) {
             builder.setEditable(column.editable);
+        }
+
+        if (column.background) {
+            builder.setBackground(column.background);
+        }
+
+        if (column.foreground) {
+            builder.setForeground(column.foreground);
         }
 
         return builder;
@@ -69,6 +79,16 @@ class ColumnBuilder {
 
     setEditable(value) {
         this.#data.editable = value;
+        return this;
+    }
+
+    setBackground(value) {
+        this.#data.background = value;
+        return this;
+    }
+
+    setForeground(value) {
+        this.#data.foreground = value;
         return this;
     }
 
