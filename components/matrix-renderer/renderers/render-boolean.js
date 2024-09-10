@@ -15,10 +15,10 @@ export function renderBoolean(ctx, def, column, aabb, value) {
 
     // 2. calculate center offset
     const center = (aabb.x2 - aabb.x1) / 2;
-    const xOffset = center - 16;
+    const xOffset = center - 12;
 
     // 3. draw image on canvas.
-    ctx.drawImage(def.images.boolean[value], aabb.x1 + xOffset, aabb.y1 - 1);
+    ctx.drawImage(def.images.boolean[value], aabb.x1 + xOffset, aabb.y1 + 3, 24, 24);
 
     // 4. restore the state
     ctx.restore();

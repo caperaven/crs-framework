@@ -16,9 +16,10 @@ export function renderCanvas(ctx, def, pageDetails, renderLT, scrollX, scrollY, 
 function initialize(ctx) {
     ctx.font = FONT;
     ctx.fillStyle = TEXT_COLOR;
-    ctx.fontStyle = "normal";
-    ctx.textAlign = "left";
-    ctx.textBaseline = "middle";
+
+    // JHR: NB: DO NOT USE textAlign and textBaseline. They can cause crispness issues.
+    // ctx.textAlign = "left";
+    // ctx.textBaseline = "middle";
 }
 
 function clearCanvas(ctx) {

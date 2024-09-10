@@ -7,6 +7,8 @@ const CLEAR_COLOR = "#ffffff";
 const TEXT_COLOR = "#000000";
 const HEADER_BACKGROUND_COLOR = "#DADADA";
 const FONT = `${16}px SourceSansPro`;
+const BOLD = `bold ${16}px SourceSansPro`;
+const TEXT_Y_OFFSET = 6;
 
 export {
     PADDING_X,
@@ -16,5 +18,7 @@ export {
     CLEAR_COLOR,
     TEXT_COLOR,
     HEADER_BACKGROUND_COLOR,
-    FONT
+    FONT,
+    BOLD,
+    TEXT_Y_OFFSET
 };

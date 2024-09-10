@@ -7,7 +7,7 @@
  * Q: How do I get the correct image for the True / False state to render.
  */
 
-import { PADDING_X, PADDING_Y } from "./constants.js";
+import {BOLD, PADDING_X, TEXT_Y_OFFSET} from "./constants.js";
 
 export function renderGroup(ctx, def, column, aabb, value) {
     // 1. save the current state
@@ -22,9 +22,10 @@ export function renderGroup(ctx, def, column, aabb, value) {
     ctx.rect(aabb.x1, aabb.y1, aabb.x2 - aabb.x1 - PADDING_X, aabb.y2 - aabb.y1);
     ctx.clip();
 
-    const halfHeight = Math.round((aabb.y2 - aabb.y1) / 2) - 2;
+    const halfHeight = Math.round((aabb.y2 - aabb.y1) / 2) - TEXT_Y_OFFSET;
 
     // 3. render the header
+    ctx.font = BOLD;
     ctx.fillText(value, aabb.x1 + PADDING_X, aabb.y2 - halfHeight);
 
     // 4. restore the state
