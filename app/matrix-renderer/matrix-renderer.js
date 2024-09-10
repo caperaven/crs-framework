@@ -28,7 +28,9 @@ export default class MatrixRendererViewModel extends crsbinding.classes.ViewBase
             })
 
             await matrix.initialize({
-                frozenColumns: 1,
+                frozenColumns: {
+                    count: 1
+                },
                 heights: {
                     groupHeader: 50,
                     header: 40,

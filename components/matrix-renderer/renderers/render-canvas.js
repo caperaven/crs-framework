@@ -13,7 +13,7 @@ export function renderCanvas(ctx, def, pageDetails, renderLT, scrollX, scrollY, 
     drawCells   (ctx, def, pageDetails, renderLT, scrollX, scrollY);
     drawHeaders (ctx, def, pageDetails, renderLT, scrollX);
     drawGroups  (ctx, def, pageDetails, renderLT, scrollX);
-    drawFrozen  (ctx, def, pageDetails, renderLT, scrollX, scrollY);
+    drawFrozen  (ctx, def, pageDetails, renderLT, scrollY);
     drawLines   (ctx, def, pageDetails, scrollX, scrollY);
 }
 
@@ -96,19 +96,72 @@ function drawLines(ctx, def, pageDetails, scrollX, scrollY) {
     ctx.stroke();
     ctx.restore();
 
-    drawFrozenLines(ctx, def, pageDetails, scrollX, scrollY);
+    if (def.frozenColumns != null) {
+        drawFrozenLines(ctx, def, pageDetails, scrollX, scrollY);
+    }
 }
 
-function drawFrozen(ctx, def, pageDetails, renderLT, scrollX, scrollY) {
-    ctx.save();
+function drawFrozen(ctx, def, pageDetails, renderLT, scrollY) {
+    if (def.frozenColumns == null) {
+        return;
+    }
 
-    ctx.fillStyle = HEADER_BACKGROUND_COLOR;
-    ctx.fillRect(0, def.regions.header.top, def.regions.frozenColumns.right, def.regions.header.bottom);
+    ctx.save();
 
     ctx.fillStyle = CLEAR_COLOR;
     ctx.fillRect(0, def.regions.cells.top, def.regions.frozenColumns.right, def.regions.cells.bottom);
 
+    ctx.fillStyle = TEXT_COLOR;
+    drawFrozenCells(ctx, def, pageDetails, renderLT, scrollY);
+
+    ctx.fillStyle = HEADER_BACKGROUND_COLOR;
+    ctx.fillRect(0, def.regions.header.top, def.regions.frozenColumns.right, def.heights.header);
+
+    ctx.fillStyle = TEXT_COLOR;
+    drawFrozenHeaders(ctx, def, pageDetails, renderLT);
+
     ctx.restore();
+}
+
+function drawFrozenHeaders(ctx, def, pageDetails, renderLT) {
+    const aabb = {
+        x1: 0,
+        x2: 0,
+        y1: Math.ceil(def.regions.header.top),
+        y2: Math.ceil(def.regions.header.bottom)
+    }
+
+    let x = 0;
+
+    for (let i = 0; i < def.frozenColumns.count; i++) {
+        const column = def.columns[i];
+        const size = column.width;
+
+        aabb.x1 = x;
+        aabb.x2 = Math.ceil(x + size);
+
+        renderLT["header"](ctx, def, column, aabb, column.title);
+        x += size;
+    }
+}
+
+function drawFrozenCells(ctx, def, pageDetails, renderLT, scrollY) {
+    const aabb = { x1: 0, x2: 0, y1: 0, y2: 0 }
+    let currentRowIndex = pageDetails.visibleRows.start;
+
+    for (let rowIndex = 0; rowIndex < pageDetails.rowsActualSizes.length; rowIndex++) {
+        const row = def.rows[currentRowIndex];
+
+        for (let columnIndex  = 0; columnIndex < def.frozenColumns.count; columnIndex++) {
+            const column = def.columns[columnIndex];
+            const value = row[def.columns[columnIndex].field];
+
+            setFrozenAABB(aabb, def, pageDetails, columnIndex, rowIndex, scrollY);
+            renderLT[column.type](ctx, def, column, aabb, value);
+        }
+
+        currentRowIndex++;
+    }
 }
 
 function drawColumnLines(ctx, def, pageDetails, scrollX) {
@@ -199,7 +252,21 @@ function setCellAABB(aabb, def, pageDetails, columnIndex, rowIndex, scrollX, scr
     const x = pageDetails.columnsCumulativeSizes[columnIndex] - scrollX - size;
 
     const cellsTop = def.regions.cells.top;
-    const halfRowHeight = def.heights.row / 2;
+    const halfRowHeight = pageDetails.rowsActualSizes[rowIndex] / 2;
+    const y = cellsTop + pageDetails.rowsCumulativeSizes[rowIndex] - scrollY - halfRowHeight;
+
+    aabb.x1 = Math.ceil(x);
+    aabb.x2 = Math.ceil(x + size);
+    aabb.y1 = Math.ceil(y - halfRowHeight);
+    aabb.y2 = Math.ceil(y + halfRowHeight);
+}
+
+function setFrozenAABB(aabb, def, pageDetails, columnIndex, rowIndex, scrollY) {
+    const size = def.frozenColumns.columnsActualSizes[columnIndex];
+    const x = def.frozenColumns.columnsCumulativeSizes[columnIndex] - size;
+
+    const cellsTop = def.regions.cells.top;
+    const halfRowHeight = pageDetails.rowsActualSizes[rowIndex] / 2;
     const y = cellsTop + pageDetails.rowsCumulativeSizes[rowIndex] - scrollY - halfRowHeight;
 
     aabb.x1 = Math.ceil(x);

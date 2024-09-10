@@ -73,6 +73,23 @@ class MatrixRenderer extends HTMLElement {
         }
     }
 
+    #getFrozenDetails() {
+        if (this.#config.frozenColumns == null) {
+            return;
+        }
+
+        const columnsActualSizes = [];
+        const columnsCumulativeSizes = [];
+
+        for (let i = 0; i < this.#config.frozenColumns.count; i++) {
+            columnsActualSizes.push(this.#columnSizes.at(i));
+            columnsCumulativeSizes.push(this.#columnSizes.cumulative(i));
+        }
+
+        this.#config.frozenColumns.columnsActualSizes = columnsActualSizes;
+        this.#config.frozenColumns.columnsCumulativeSizes = columnsCumulativeSizes;
+    }
+
     #getPageDetails() {
         const visibleGroups = this.#groupSizes.getVisibleRange(this.#scrollLeft, this.#ctx.canvas.width - 16);
         const visibleColumns = this.#columnSizes.getVisibleRange(this.#scrollLeft, this.#ctx.canvas.width - 16);
@@ -148,11 +165,14 @@ class MatrixRenderer extends HTMLElement {
         const groupWidthValues = getGroupsSize(this.#config, this.#columnSizes);
         this.#groupSizes = new SizesManager(this.#config.groups.length, 0, groupWidthValues);
 
-        // 3. move marker to the bottom right corner to enable scrolling
+        // 3. get frozen details
+        this.#getFrozenDetails();
+
+        // 4. move marker to the bottom right corner to enable scrolling
         const markerElement = this.shadowRoot.querySelector("#marker");
         moveScrollMarker(markerElement, this.#columnSizes, this.#rowSizes, this.#config);
 
-        // 4. render the canvas
+        // 5. render the canvas
         const pageDetails = this.#getPageDetails();
         renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, true);
     }

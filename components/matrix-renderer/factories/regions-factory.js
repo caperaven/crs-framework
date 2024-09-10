@@ -51,7 +51,7 @@ function setFrozenColumns(definition, result) {
 
     const left = 0;
     let right = 0;
-    for (let i = 0; i < Number(definition.frozenColumns); i++) {
+    for (let i = 0; i < Number(definition.frozenColumns.count); i++) {
         right += definition.columns[i].width;
     }
 
