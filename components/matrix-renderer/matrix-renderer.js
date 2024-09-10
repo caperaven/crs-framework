@@ -1,6 +1,7 @@
 import {initialize} from "./canvas-initialize.js";
 import {Columns, Align, DataType} from "./columns.js";
 import {Regions} from "./factories/regions-factory.js";
+import {BooleanImages} from "./factories/boolean-images-factory.js";
 import {SizesManager} from "./../../src/managers/grid-data-managers/sizes-manager.js";
 import {renderCanvas, createRenderLT} from "./renderers/render.js";
 
@@ -15,6 +16,7 @@ class MatrixRenderer extends HTMLElement {
     #scrollTop = 0;
     #lastTime = 0;
     #onScrollHandler = this.#onScroll.bind(this);
+    #onClickHandler = this.#onClick.bind(this);
     #animateHandler = this.#animate.bind(this);
     #renderLT = createRenderLT();
 
@@ -34,6 +36,8 @@ class MatrixRenderer extends HTMLElement {
     async disconnectedCallback() {
         const scrollElement = this.shadowRoot.querySelector("#scroller");
         scrollElement.removeEventListener("scroll", this.#onScrollHandler);
+
+        this.removeEventListener("click", this.#onClickHandler);
 
         this.#ctx = null;
         this.#config = null;
@@ -71,6 +75,28 @@ class MatrixRenderer extends HTMLElement {
             this.#animating = true;
             this.#animate();
         }
+    }
+
+    #onClick(event) {
+        // clicked on grouping region
+        if (event.offsetY < this.#config.regions.header.top) {
+            return;
+        }
+
+        if (event.offsetY < this.#config.regions.cells.top) {
+            return this.#onClickHeader(event);
+        }
+
+        this.#onClickCells(event);
+    }
+
+    #onClickHeader(event) {
+        // JHR: required for data grid but for now a placeholder
+        return;
+    }
+
+    #onClickCells(event) {
+        console.log(event.clientX, event.clientY);
     }
 
     #getFrozenDetails() {
@@ -138,6 +164,7 @@ class MatrixRenderer extends HTMLElement {
     async load() {
         requestAnimationFrame(async () => {
             this.#ctx = initialize(this.shadowRoot, this.offsetWidth, this.offsetHeight);
+            this.addEventListener("click", this.#onClickHandler);
 
             const scrollElement = this.shadowRoot.querySelector("#scroller");
             scrollElement.addEventListener("scroll", this.#onScrollHandler);
@@ -152,6 +179,9 @@ class MatrixRenderer extends HTMLElement {
         this.#config.columns = Columns.from(this.#config.columns);
         this.#config.rows = await crs.call("data_manager", "get_all", { manager: this.#config.manager });
         this.#config.regions = Regions.from(this.#config);
+        this.#config.images = {
+            [DataType.BOOLEAN]: await BooleanImages.from(new URL("./images/boolean/", import.meta.url))
+        }
 
         // 2. initialize sizes for rendering
         // 2.1 calculate row sizes

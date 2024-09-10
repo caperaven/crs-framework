@@ -35,6 +35,7 @@ function createScroller(parent, width, height) {
     scroller.style.top = "0px";
     scroller.style.left = "0px";
     scroller.style.overflow = "auto";
+    scroller.style.willChange = "transform";
 
     createMarker(scroller);
 
