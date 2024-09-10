@@ -17,6 +17,8 @@ function initialize(ctx) {
     ctx.font = FONT;
     ctx.fillStyle = TEXT_COLOR;
     ctx.fontStyle = "normal";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "middle";
 }
 
 function clearCanvas(ctx) {
@@ -186,6 +188,9 @@ function drawRowLines(ctx, def, pageDetails, scrollY) {
 
     ctx.moveTo(0, def.regions.header.top);
     ctx.lineTo(ctx.canvas.offsetWidth, def.regions.header.top);
+
+    ctx.moveTo(0, def.regions.header.bottom);
+    ctx.lineTo(ctx.canvas.offsetWidth, def.regions.header.bottom);
 
     for (let i = 0; i < pageDetails.rowsActualSizes.length; i++) {
         const y = pageDetails.rowsCumulativeSizes[i] - scrollY + def.regions.cells.top;

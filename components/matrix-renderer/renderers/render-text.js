@@ -22,8 +22,10 @@ export function renderText(ctx, def, column, aabb, value) {
     ctx.rect(aabb.x1, aabb.y1, aabb.x2 - aabb.x1 - PADDING_X, aabb.y2 - aabb.y1);
     ctx.clip();
 
+    const halfHeight = Math.round((aabb.y2 - aabb.y1) / 2) - 2;
+
     // 3. render the header
-    ctx.fillText(value, aabb.x1 + PADDING_X, aabb.y2 - PADDING_Y);
+    ctx.fillText(value, aabb.x1 + PADDING_X, aabb.y2 - halfHeight);
 
     // 4. restore the state
     ctx.restore();
