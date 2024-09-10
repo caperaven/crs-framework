@@ -30,7 +30,7 @@ export function renderHeader(ctx, def, column, aabb, value) {
 
     ctx.font = BOLD;
     // 3. render the header
-    ctx.fillText(value, aabb.x1 + PADDING_X, aabb.y2 - halfHeight);
+    ctx.fillText(value, Math.round(aabb.x1 + PADDING_X), Math.round(aabb.y2 - halfHeight));
 
     // 4. restore the state
     ctx.restore();

@@ -25,7 +25,7 @@ export function renderText(ctx, def, column, aabb, value) {
     ctx.fillStyle = column.foreground ?? TEXT_COLOR;
 
     // 3. render the header
-    ctx.fillText(value, aabb.x1 + PADDING_X, aabb.y2 - halfHeight);
+    ctx.fillText(value, Math.round(aabb.x1 + PADDING_X), Math.round(aabb.y2 - halfHeight));
 
     // 4. restore the state
     ctx.restore();
