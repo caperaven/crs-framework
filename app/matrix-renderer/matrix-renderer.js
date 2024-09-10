@@ -32,9 +32,9 @@ export default class MatrixRendererViewModel extends crsbinding.classes.ViewBase
                     count: 1
                 },
                 heights: {
-                    groupHeader: 50,
-                    header: 40,
-                    row: 30
+                    groupHeader: 32,
+                    header: 32,
+                    row: 32
                 },
                 groups: [
                     { from: 0, to: 3, title: "Group1" },

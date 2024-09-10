@@ -5,9 +5,9 @@ const HARD_STROKE_COLOR = "#00000050";
 const LINE_COLOR = "#c1c1c1";
 const CLEAR_COLOR = "#ffffff";
 const TEXT_COLOR = "#000000";
-const HEADER_BACKGROUND_COLOR = "#DADADA";
-const FONT = `${16}px SourceSansPro`;
-const BOLD = `bold ${16}px SourceSansPro`;
+const HEADER_BACKGROUND_COLOR = "#f4f4f4";
+const FONT = `${16}px Arial`;
+const BOLD = `bold ${14}px Arial`;
 const TEXT_Y_OFFSET = 6;
 
 export {
