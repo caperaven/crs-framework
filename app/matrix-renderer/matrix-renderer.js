@@ -55,11 +55,11 @@ export default class MatrixRendererViewModel extends crsbinding.classes.ViewBase
 
 function getColumns() {
     const columns = [
-        { title: "Status", field: "status", width: 200 }
+        { title: "Status", field: "status", width: 200, editable: false }
     ]
 
     for (let i = 0; i < 1000; i++) {
-        columns.push({ title: `Column ${i}`, field: `column${i}`, type: DataType.BOOLEAN });
+        columns.push({ title: `Column ${i}`, field: `column${i}`, type: DataType.BOOLEAN, editable: true });
     }
 
     return columns;

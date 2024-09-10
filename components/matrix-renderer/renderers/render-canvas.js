@@ -1,8 +1,4 @@
-const LINE_COLOR = "#c1c1c1";
-const CLEAR_COLOR = "#ffffff";
-const TEXT_COLOR = "#000000";
-const HEADER_BACKGROUND_COLOR = "#DADADA";
-const FONT = `${16}px SourceSansPro`;
+import { FONT, HARD_STROKE_COLOR, TEXT_COLOR, CLEAR_COLOR, HEADER_BACKGROUND_COLOR, LINE_COLOR } from "./constants.js";
 
 export function renderCanvas(ctx, def, pageDetails, renderLT, scrollX, scrollY, isFinalRender) {
     // prepare for rendering
@@ -41,6 +37,7 @@ function drawCells(ctx, def, pageDetails, renderLT, scrollX, scrollY) {
             const value = row[def.columns[currentFieldIndex].field];
 
             setCellAABB(aabb, def, pageDetails, columnIndex, rowIndex, scrollX, scrollY);
+
             renderLT[column.type](ctx, def, column, aabb, value);
 
             currentFieldIndex++;
@@ -97,7 +94,7 @@ function drawLines(ctx, def, pageDetails, scrollX, scrollY) {
     ctx.restore();
 
     if (def.frozenColumns != null) {
-        drawFrozenLines(ctx, def, pageDetails, scrollX, scrollY);
+        drawHardStrokeLines(ctx, def, pageDetails, scrollX, scrollY);
     }
 }
 
@@ -208,25 +205,20 @@ function drawGroupLines(ctx, def, pageDetails, scrollX) {
     }
 }
 
-function drawFrozenLines(ctx, def, pageDetails, scrollX, scrollY) {
+function drawHardStrokeLines(ctx, def, pageDetails, scrollX, scrollY) {
     ctx.save();
-    ctx.strokeStyle = "#00000050";
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = HARD_STROKE_COLOR;
+    ctx.lineWidth = 1;
     ctx.beginPath();
+
+    // draw frozen columns separator
     ctx.moveTo(def.regions.frozenColumns.right, def.regions.header.top);
     ctx.lineTo(def.regions.frozenColumns.right, def.regions.cells.bottom);
+
     ctx.stroke();
     ctx.restore();
 }
 
-/**
- * Update the bounding box for the given column index.
- * @param aabb - existing bounding box to update
- * @param def - matrix definition
- * @param pageDetails - page details
- * @param columnIndex - current column index
- * @param scrollX - horizontal scroll position
- */
 function setHeaderAABB(aabb, def, pageDetails, columnIndex, scrollX) {
     const size = pageDetails.columnsActualSizes[columnIndex];
     const x = pageDetails.columnsCumulativeSizes[columnIndex] - scrollX - size;
