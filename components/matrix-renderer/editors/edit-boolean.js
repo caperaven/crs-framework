@@ -1,8 +1,11 @@
 export function editBoolean(ctx, def, rowIndex, column, aabb) {
-    console.log(aabb)
+    const boolValue = def.rows[rowIndex][column.field];
 
-    ctx.save()
-    ctx.fillStyle = "red";
-    ctx.fillRect(aabb.x1, aabb.y1, aabb.x2 - aabb.x1, aabb.y2 - aabb.y1);
-    ctx.restore()
+    crs.call("data_manager", "update", {
+        manager: def.manager,
+        index: rowIndex,
+        changes: {
+            [column.field]: !boolValue
+        }
+    })
 }

@@ -17,6 +17,7 @@ class MatrixRenderer extends HTMLElement {
     #scrollLeft = 0;
     #scrollTop = 0;
     #lastTime = 0;
+    #dataManagerChangedHandler = this.#dataManagerChange.bind(this);
     #onScrollHandler = this.#onScroll.bind(this);
     #onClickHandler = this.#onClick.bind(this);
     #animateHandler = this.#animate.bind(this);
@@ -38,6 +39,13 @@ class MatrixRenderer extends HTMLElement {
     }
 
     async disconnectedCallback() {
+        await crs.call("data_manager", "remove_change", {
+            manager: this.#config.manager,
+            callback: this.#dataManagerChangedHandler
+        });
+
+        this.#dataManagerChangedHandler = null;
+
         const scrollElement = this.shadowRoot.querySelector("#scroller");
         scrollElement.removeEventListener("scroll", this.#onScrollHandler);
 
@@ -117,8 +125,7 @@ class MatrixRenderer extends HTMLElement {
         const visibleRowIndex = rowIndex - pageDetails.visibleRows.start;
 
         if (isInFrozenZone) {
-            const visibleColumnIndex = columnIndex;
-            setFrozenAABB(this.#cellAABB, this.#config, pageDetails, visibleColumnIndex, visibleRowIndex, this.#scrollTop);
+            setFrozenAABB(this.#cellAABB, this.#config, pageDetails, columnIndex, visibleRowIndex, this.#scrollTop);
         }
         else {
             const visibleColumnIndex = columnIndex - pageDetails.visibleColumns.start;
@@ -191,6 +198,11 @@ class MatrixRenderer extends HTMLElement {
         };
     }
 
+    #dataManagerChange(args) {
+        const pageDetails = this.#getPageDetails();
+        renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, true);
+    }
+
     async load() {
         requestAnimationFrame(async () => {
             this.#ctx = initialize(this.shadowRoot, this.offsetWidth, this.offsetHeight);
@@ -235,6 +247,12 @@ class MatrixRenderer extends HTMLElement {
         // 5. render the canvas
         const pageDetails = this.#getPageDetails();
         renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, true);
+
+        // 6. register for changes on data manager
+        await crs.call("data_manager", "on_change", {
+            manager: this.#config.manager,
+            callback: this.#dataManagerChangedHandler
+        });
     }
 }
 
