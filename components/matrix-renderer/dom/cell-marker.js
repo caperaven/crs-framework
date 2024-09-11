@@ -8,7 +8,7 @@ export function setCellMarker(element, parentElement, aabb) {
 
 function createCellMarker(parentElement) {
     const element = document.createElement("div");
-    element.style.border = "1px solid blue";
+    element.style.border = "1px solid var(--dark-blue)";
     element.style.position = "absolute";
     element.style.top = "0px";
     element.style.left = "0px";
