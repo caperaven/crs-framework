@@ -4,6 +4,8 @@ import {Regions} from "./factories/regions-factory.js";
 import {BooleanImages} from "./factories/boolean-images-factory.js";
 import {SizesManager} from "./../../src/managers/grid-data-managers/sizes-manager.js";
 import {renderCanvas, createRenderLT} from "./renderers/render.js";
+import {createEditorLT} from "./editors/editor.js";
+import {setCellAABB} from "./aabb/cell-aabb.js";
 
 class MatrixRenderer extends HTMLElement {
     #ctx;
@@ -19,6 +21,8 @@ class MatrixRenderer extends HTMLElement {
     #onClickHandler = this.#onClick.bind(this);
     #animateHandler = this.#animate.bind(this);
     #renderLT = createRenderLT();
+    #editorLT = createEditorLT();
+    #cellAABB = { x1: 0, x2: 0, y1: 0, y2: 0 };
 
     constructor() {
         super();
@@ -96,7 +100,18 @@ class MatrixRenderer extends HTMLElement {
     }
 
     #onClickCells(event) {
-        console.log(event.clientX, event.clientY);
+        // editorLT
+        const y = this.#scrollTop + event.offsetY - this.#config.regions.cells.top;
+        const x = this.#scrollLeft + event.offsetX;
+
+        const rowIndex = this.#rowSizes.getIndex(y);
+        const columnIndex = this.#columnSizes.getIndex(x);
+        const column = this.#config.columns[columnIndex];
+
+        const pageDetails = this.#getPageDetails();
+        setCellAABB(this.#cellAABB, this.#config, pageDetails, columnIndex, rowIndex, this.#scrollLeft, this.#scrollTop);
+
+        this.#editorLT[column.type](this.#ctx, this.#config, rowIndex, column, this.#cellAABB);
     }
 
     #getFrozenDetails() {

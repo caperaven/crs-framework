@@ -1,4 +1,7 @@
 import { FONT, HARD_STROKE_COLOR, TEXT_COLOR, CLEAR_COLOR, HEADER_BACKGROUND_COLOR, LINE_COLOR } from "./constants.js";
+import { setCellAABB, setHeaderAABB, setGroupAABB, setFrozenAABB } from "../aabb/aabb.js";
+
+const AABB = { x1: 0, x2: 0, y1: 0, y2: 0 }
 
 export function renderCanvas(ctx, def, pageDetails, renderLT, scrollX, scrollY, isFinalRender) {
     // prepare for rendering
@@ -28,7 +31,6 @@ function clearCanvas(ctx) {
 }
 
 function drawCells(ctx, def, pageDetails, renderLT, scrollX, scrollY) {
-    const aabb = { x1: 0, x2: 0, y1: 0, y2: 0 }
     let currentRowIndex = pageDetails.visibleRows.start;
 
     for (let rowIndex = 0; rowIndex < pageDetails.rowsActualSizes.length; rowIndex++) {
@@ -39,9 +41,9 @@ function drawCells(ctx, def, pageDetails, renderLT, scrollX, scrollY) {
             const column = def.columns[currentFieldIndex];
             const value = row[def.columns[currentFieldIndex].field];
 
-            setCellAABB(aabb, def, pageDetails, columnIndex, rowIndex, scrollX, scrollY);
+            setCellAABB(AABB, def, pageDetails, columnIndex, rowIndex, scrollX, scrollY);
 
-            renderLT[column.type](ctx, def, column, aabb, value);
+            renderLT[column.type](ctx, def, column, AABB, value);
 
             currentFieldIndex++;
         }
@@ -55,24 +57,21 @@ function drawHeaders(ctx, def, pageDetails, renderLT, scrollX) {
 
     drawHeaderBackground(ctx, def);
 
-    const aabb = { x1: 0, x2: 0, y1: 0, y2: 0 }
-
     for (let i = 0; i < pageDetails.columnsActualSizes.length; i++) {
         const column = def.columns[columnIndex]
-        setHeaderAABB(aabb, def, pageDetails, i, scrollX);
-        renderLT["header"](ctx, def, column, aabb, column.title)
+        setHeaderAABB(AABB, def, pageDetails, i, scrollX);
+        renderLT["header"](ctx, def, column, AABB, column.title)
         columnIndex++;
     }
 }
 
 function drawGroups(ctx, def, pageDetails, renderLT, scrollX) {
     let groupIndex = pageDetails.visibleGroups.start;
-    const aabb = { x1: 0, x2: 0, y1: 0, y2: 0 }
 
     for (let i = 0; i < pageDetails.groupsActualSizes.length; i++) {
         const group = def.groups[groupIndex];
-        setGroupAABB(aabb, def, pageDetails, i, scrollX);
-        renderLT["group"](ctx, def, group, aabb, group.title);
+        setGroupAABB(AABB, def, pageDetails, i, scrollX);
+        renderLT["group"](ctx, def, group, AABB, group.title);
 
         groupIndex++;
     }
@@ -124,12 +123,8 @@ function drawFrozen(ctx, def, pageDetails, renderLT, scrollY) {
 }
 
 function drawFrozenHeaders(ctx, def, pageDetails, renderLT) {
-    const aabb = {
-        x1: 0,
-        x2: 0,
-        y1: Math.ceil(def.regions.header.top),
-        y2: Math.ceil(def.regions.header.bottom)
-    }
+    AABB.y1 = Math.ceil(def.regions.header.top);
+    AABB.y2 = Math.ceil(def.regions.header.bottom);
 
     let x = 0;
 
@@ -137,16 +132,15 @@ function drawFrozenHeaders(ctx, def, pageDetails, renderLT) {
         const column = def.columns[i];
         const size = column.width;
 
-        aabb.x1 = x;
-        aabb.x2 = Math.ceil(x + size);
+        AABB.x1 = x;
+        AABB.x2 = Math.ceil(x + size);
 
-        renderLT["header"](ctx, def, column, aabb, column.title);
+        renderLT["header"](ctx, def, column, AABB, column.title);
         x += size;
     }
 }
 
 function drawFrozenCells(ctx, def, pageDetails, renderLT, scrollY) {
-    const aabb = { x1: 0, x2: 0, y1: 0, y2: 0 }
     let currentRowIndex = pageDetails.visibleRows.start;
 
     for (let rowIndex = 0; rowIndex < pageDetails.rowsActualSizes.length; rowIndex++) {
@@ -156,8 +150,8 @@ function drawFrozenCells(ctx, def, pageDetails, renderLT, scrollY) {
             const column = def.columns[columnIndex];
             const value = row[def.columns[columnIndex].field];
 
-            setFrozenAABB(aabb, def, pageDetails, columnIndex, rowIndex, scrollY);
-            renderLT[column.type](ctx, def, column, aabb, value);
+            setFrozenAABB(AABB, def, pageDetails, columnIndex, rowIndex, scrollY);
+            renderLT[column.type](ctx, def, column, AABB, value);
         }
 
         currentRowIndex++;
@@ -223,52 +217,4 @@ function drawHardStrokeLines(ctx, def, pageDetails, scrollX, scrollY) {
 
     ctx.stroke();
     ctx.restore();
-}
-
-function setHeaderAABB(aabb, def, pageDetails, columnIndex, scrollX) {
-    const size = pageDetails.columnsActualSizes[columnIndex];
-    const x = pageDetails.columnsCumulativeSizes[columnIndex] - scrollX - size;
-
-    aabb.x1 = Math.ceil(x);
-    aabb.x2 = Math.ceil(x + size);
-    aabb.y1 = Math.ceil(def.regions.header.top);
-    aabb.y2 = Math.ceil(def.regions.header.bottom);
-}
-
-function setGroupAABB(aabb, def, pageDetails, groupIndex, scrollX) {
-    const size = pageDetails.groupsActualSizes[groupIndex];
-    const x = pageDetails.groupsCumulativeSizes[groupIndex] - scrollX - size;
-
-    aabb.x1 = Math.ceil(x);
-    aabb.x2 = Math.ceil(x + size);
-    aabb.y1 = Math.ceil(def.regions.grouping.top);
-    aabb.y2 = Math.ceil(def.regions.grouping.bottom);
-}
-
-function setCellAABB(aabb, def, pageDetails, columnIndex, rowIndex, scrollX, scrollY) {
-    const size = pageDetails.columnsActualSizes[columnIndex];
-    const x = pageDetails.columnsCumulativeSizes[columnIndex] - scrollX - size;
-
-    const cellsTop = def.regions.cells.top;
-    const halfRowHeight = pageDetails.rowsActualSizes[rowIndex] / 2;
-    const y = cellsTop + pageDetails.rowsCumulativeSizes[rowIndex] - scrollY - halfRowHeight;
-
-    aabb.x1 = Math.ceil(x);
-    aabb.x2 = Math.ceil(x + size);
-    aabb.y1 = Math.ceil(y - halfRowHeight);
-    aabb.y2 = Math.ceil(y + halfRowHeight);
-}
-
-function setFrozenAABB(aabb, def, pageDetails, columnIndex, rowIndex, scrollY) {
-    const size = def.frozenColumns.columnsActualSizes[columnIndex];
-    const x = def.frozenColumns.columnsCumulativeSizes[columnIndex] - size;
-
-    const cellsTop = def.regions.cells.top;
-    const halfRowHeight = pageDetails.rowsActualSizes[rowIndex] / 2;
-    const y = cellsTop + pageDetails.rowsCumulativeSizes[rowIndex] - scrollY - halfRowHeight;
-
-    aabb.x1 = Math.ceil(x);
-    aabb.x2 = Math.ceil(x + size);
-    aabb.y1 = Math.ceil(y - halfRowHeight);
-    aabb.y2 = Math.ceil(y + halfRowHeight);
 }

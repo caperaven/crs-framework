@@ -68,7 +68,7 @@ function getColumns() {
 function getRows() {
     const rows = [];
 
-    for (let i = 0; i < 1000; i++) {
+    for (let i = 0; i < 10000; i++) {
         const row = { id: i, status: `Status ${i}` };
 
         for (let j = 0; j < 1000; j++) {
