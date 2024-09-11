@@ -5,7 +5,7 @@ import {BooleanImages} from "./factories/boolean-images-factory.js";
 import {SizesManager} from "./../../src/managers/grid-data-managers/sizes-manager.js";
 import {renderCanvas, createRenderLT} from "./renderers/render.js";
 import {createEditorLT} from "./editors/editor.js";
-import {setCellAABB} from "./aabb/cell-aabb.js";
+import {setCellAABB, setFrozenAABB} from "./aabb/aabb.js";
 
 class MatrixRenderer extends HTMLElement {
     #ctx;
@@ -100,17 +100,32 @@ class MatrixRenderer extends HTMLElement {
     }
 
     #onClickCells(event) {
-        // editorLT
+        const isInFrozenZone = event.offsetX < (this.#config.regions.frozenColumns?.right ?? 0);
+
+        // 1. get the column and row values
         const y = this.#scrollTop + event.offsetY - this.#config.regions.cells.top;
-        const x = this.#scrollLeft + event.offsetX;
+        const x = isInFrozenZone ? event.offsetX : event.offsetX + this.#scrollLeft;
+
+        this.#getFrozenDetails();
+        const pageDetails = this.#getPageDetails();
 
         const rowIndex = this.#rowSizes.getIndex(y);
         const columnIndex = this.#columnSizes.getIndex(x);
         const column = this.#config.columns[columnIndex];
 
-        const pageDetails = this.#getPageDetails();
-        setCellAABB(this.#cellAABB, this.#config, pageDetails, columnIndex, rowIndex, this.#scrollLeft, this.#scrollTop);
+        // 2. calculate the cell location
+        const visibleRowIndex = rowIndex - pageDetails.visibleRows.start;
 
+        if (isInFrozenZone) {
+            const visibleColumnIndex = columnIndex;
+            setFrozenAABB(this.#cellAABB, this.#config, pageDetails, visibleColumnIndex, visibleRowIndex, this.#scrollTop);
+        }
+        else {
+            const visibleColumnIndex = columnIndex - pageDetails.visibleColumns.start;
+            setCellAABB(this.#cellAABB, this.#config, pageDetails, visibleColumnIndex, visibleRowIndex, this.#scrollLeft, this.#scrollTop);
+        }
+
+        // 3. perform the edit
         this.#editorLT[column.type](this.#ctx, this.#config, rowIndex, column, this.#cellAABB);
     }
 
