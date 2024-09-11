@@ -6,6 +6,7 @@ import {SizesManager} from "./../../src/managers/grid-data-managers/sizes-manage
 import {renderCanvas, createRenderLT} from "./renderers/render.js";
 import {createEditorLT} from "./editors/editor.js";
 import {setCellAABB, setFrozenAABB} from "./aabb/aabb.js";
+import {setCellMarker} from "./dom/cell-marker.js"
 
 class MatrixRenderer extends HTMLElement {
     #ctx;
@@ -24,6 +25,7 @@ class MatrixRenderer extends HTMLElement {
     #renderLT = createRenderLT();
     #editorLT = createEditorLT();
     #cellAABB = { x1: 0, x2: 0, y1: 0, y2: 0 };
+    #markerElement;
 
     constructor() {
         super();
@@ -59,6 +61,7 @@ class MatrixRenderer extends HTMLElement {
         this.#onScrollHandler = null;
         this.#animateHandler = null;
         this.#renderLT = null;
+        this.#markerElement = null;
     }
 
     #animate(currentTime) {
@@ -84,6 +87,7 @@ class MatrixRenderer extends HTMLElement {
         this.#scrollTop = Math.ceil(event.target.scrollTop);
 
         if (!this.#animating) {
+            this.#markerElement = this.#markerElement?.remove();
             this.#animating = true;
             this.#animate();
         }
@@ -131,6 +135,8 @@ class MatrixRenderer extends HTMLElement {
             const visibleColumnIndex = columnIndex - pageDetails.visibleColumns.start;
             setCellAABB(this.#cellAABB, this.#config, pageDetails, visibleColumnIndex, visibleRowIndex, this.#scrollLeft, this.#scrollTop);
         }
+
+        this.#markerElement = setCellMarker(this.#markerElement, this.shadowRoot, this.#cellAABB);
 
         // 3. perform the edit
         this.#editorLT[column.type](this.#ctx, this.#config, rowIndex, column, this.#cellAABB);
