@@ -228,27 +228,34 @@ class MatrixRenderer extends HTMLElement {
     async #ensureMarkerVisible() {
         let changed = false;
 
-        // 1. Check for conditions to the right of the scrollable area
+        // Check for conditions to the right of the scrollable area
         if (this.#cellAABB.x2 > this.offsetWidth) {
             const diff = this.#cellAABB.x2 - this.offsetWidth;
             this.#scrollElement.scrollLeft += diff + 16;
             changed = true;
         }
 
-        // 2. check for conditions to the left referencing the frozen columns right edge
+        // check for conditions to the left referencing the frozen columns right edge
         if (this.#cellAABB.x1 < this.#config.regions.frozenColumns.right) {
             const diff = this.#config.regions.frozenColumns.right - this.#cellAABB.x1;
             this.#scrollElement.scrollLeft -= diff;
             changed = true;
         }
 
+        // check if the selected is overflowing at the bottom
         if (this.#cellAABB.y2 + 16 > this.offsetHeight) {
             const diff = this.#cellAABB.y2 - this.offsetHeight;
             this.#scrollElement.scrollTop += diff + 16;
             changed = true;
         }
 
-        // 3. if change were made, update the page accordingly
+        if (this.#cellAABB.y1 < this.#config.regions.cells.top) {
+            const diff = this.#cellAABB.y1 - this.#config.regions.cells.top;
+            this.#scrollElement.scrollTop += diff;
+            changed = true;
+        }
+
+        // if change were made, update the page accordingly
         if (changed) {
             const pageDetails = this.#getPageDetails();
             renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, true);
@@ -336,6 +343,10 @@ class MatrixRenderer extends HTMLElement {
     }
 
     async selectLeft(event) {
+        if (this.#selection.column === 0) {
+            return;
+        }
+
         this.#selection.column = Math.max(this.#selection.column - 1, 0);
 
         if (this.#markerElement) {
@@ -349,6 +360,10 @@ class MatrixRenderer extends HTMLElement {
     }
 
     async selectRight(event) {
+        if (this.#selection.column === this.#columnSizes.length - 1) {
+            return;
+        }
+
         this.#selection.column = Math.min(this.#selection.column + 1, this.#columnSizes.length - 1);
 
         const pageDetails = this.#getPageDetails();
@@ -363,11 +378,27 @@ class MatrixRenderer extends HTMLElement {
     }
 
     async selectUp(event) {
+        if (this.#selection.row === 0) {
+            return;
+        }
+
         this.#selection.row = Math.max(this.#selection.row - 1, 0);
+
+        if (this.#markerElement) {
+            this.#markerElement.style.display = "none";
+        }
+
         await this.#updateMarkerPosition();
+        await this.#ensureMarkerVisible();
+
+        this.#markerElement.style.display = "block";
     }
 
     async selectDown(event) {
+        if (this.#selection.row === this.#rowSizes.length - 1) {
+            return;
+        }
+
         this.#selection.row = Math.min(this.#selection.row + 1, this.#rowSizes.length - 1);
 
         const pageDetails = this.#getPageDetails();
