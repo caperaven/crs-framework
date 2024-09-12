@@ -345,8 +345,8 @@ class MatrixRenderer extends HTMLElement {
     }
 
     async editCell(event) {
-        // 3. perform the edit
-        // this.#editorLT[column.type](this.#ctx, this.#config, rowIndex, column, this.#cellAABB, this.shadowRoot);
+        const column = this.#config.columns[this.#selection.column];
+        this.#editorLT[column.type](this.#ctx, this.#config, this.#selection.row, column, this.#cellAABB, this.shadowRoot);
     }
 
     async editRow(event) {

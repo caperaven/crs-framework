@@ -35,7 +35,7 @@ export class InputManager {
             return this.#data[event.type];
         }
 
-        let key = event.key;
+        let key = event.code;
 
         if (event.ctrlKey) {
             key = `Ctrl+${key}`;
