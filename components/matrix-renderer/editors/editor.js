@@ -1,9 +1,10 @@
 import {editBoolean} from "./edit-boolean.js";
+import {editText} from "./edit-text.js";
 import {DataType} from "../enums/data-type.js";
 
 export function createEditorLT() {
     return {
-        [DataType.TEXT]     : todo,
+        [DataType.TEXT]     : editText,
         [DataType.BOOLEAN]  : editBoolean,
         [DataType.NUMBER]   : todo,
         [DataType.DATE]     : todo,

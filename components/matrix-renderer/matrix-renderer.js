@@ -2,7 +2,8 @@ import {initialize} from "./canvas-initialize.js";
 import {Columns, Align, DataType} from "./columns.js";
 import {Regions} from "./factories/regions-factory.js";
 import {BooleanImages} from "./factories/boolean-images-factory.js";
-import {SizesManager} from "./../../src/managers/grid-data-managers/sizes-manager.js";
+import {SizesManager} from "../../src/managers/grid-data-managers/sizes-manager.js";
+import {InputManager} from "./managers/input-manager.js";
 import {renderCanvas, createRenderLT} from "./renderers/render.js";
 import {createEditorLT} from "./editors/editor.js";
 import {setCellAABB, setFrozenAABB} from "./aabb/aabb.js";
@@ -10,6 +11,7 @@ import {setCellMarker} from "./dom/cell-marker.js"
 
 class MatrixRenderer extends HTMLElement {
     #ctx;
+    #scrollElement;
     #config;
     #groupSizes;
     #columnSizes;
@@ -18,14 +20,20 @@ class MatrixRenderer extends HTMLElement {
     #scrollLeft = 0;
     #scrollTop = 0;
     #lastTime = 0;
+    #inputManager = new InputManager();
     #dataManagerChangedHandler = this.#dataManagerChange.bind(this);
     #onScrollHandler = this.#onScroll.bind(this);
     #onClickHandler = this.#onClick.bind(this);
+    #onKeyDownHandler = this.#onKeyDown.bind(this);
     #animateHandler = this.#animate.bind(this);
     #renderLT = createRenderLT();
     #editorLT = createEditorLT();
     #cellAABB = { x1: 0, x2: 0, y1: 0, y2: 0 };
     #markerElement;
+    #selection = {
+        row: 0,
+        column: 0
+    }
 
     constructor() {
         super();
@@ -34,6 +42,7 @@ class MatrixRenderer extends HTMLElement {
         this.style.width    = "100%";
         this.style.height   = "100%";
         this.style.position = "relative";
+        this.setAttribute("tabindex", 0);
     }
 
     async connectedCallback() {
@@ -48,10 +57,11 @@ class MatrixRenderer extends HTMLElement {
 
         this.#dataManagerChangedHandler = null;
 
-        const scrollElement = this.shadowRoot.querySelector("#scroller");
-        scrollElement.removeEventListener("scroll", this.#onScrollHandler);
+        this.#scrollElement.removeEventListener("scroll", this.#onScrollHandler);
+        this.#scrollElement = null;
 
         this.removeEventListener("click", this.#onClickHandler);
+        this.removeEventListener("keydown", this.#onKeyDownHandler);
 
         this.#ctx = null;
         this.#config = null;
@@ -62,6 +72,8 @@ class MatrixRenderer extends HTMLElement {
         this.#animateHandler = null;
         this.#renderLT = null;
         this.#markerElement = null;
+        this.#inputManager = this.#inputManager.dispose();
+        this.#selection = null;
     }
 
     #animate(currentTime) {
@@ -93,6 +105,11 @@ class MatrixRenderer extends HTMLElement {
         }
     }
 
+    #onKeyDown(event) {
+        const action = this.#inputManager.getInputAction(event);
+        this[action]?.(event);
+    }
+
     #onClick(event) {
         // clicked on grouping region
         if (event.offsetY < this.#config.regions.header.top) {
@@ -112,34 +129,8 @@ class MatrixRenderer extends HTMLElement {
     }
 
     #onClickCells(event) {
-        const isInFrozenZone = event.offsetX < (this.#config.regions.frozenColumns?.right ?? 0);
-
-        // 1. get the column and row values
-        const y = this.#scrollTop + event.offsetY - this.#config.regions.cells.top;
-        const x = isInFrozenZone ? event.offsetX : event.offsetX + this.#scrollLeft;
-
-        this.#getFrozenDetails();
-        const pageDetails = this.#getPageDetails();
-
-        const rowIndex = this.#rowSizes.getIndex(y);
-        const columnIndex = this.#columnSizes.getIndex(x);
-        const column = this.#config.columns[columnIndex];
-
-        // 2. calculate the cell location
-        const visibleRowIndex = rowIndex - pageDetails.visibleRows.start;
-
-        if (isInFrozenZone) {
-            setFrozenAABB(this.#cellAABB, this.#config, pageDetails, columnIndex, visibleRowIndex, this.#scrollTop);
-        }
-        else {
-            const visibleColumnIndex = columnIndex - pageDetails.visibleColumns.start;
-            setCellAABB(this.#cellAABB, this.#config, pageDetails, visibleColumnIndex, visibleRowIndex, this.#scrollLeft, this.#scrollTop);
-        }
-
-        this.#markerElement = setCellMarker(this.#markerElement, this.shadowRoot, this.#cellAABB);
-
-        // 3. perform the edit
-        this.#editorLT[column.type](this.#ctx, this.#config, rowIndex, column, this.#cellAABB);
+        const action = this.#inputManager.getInputAction(event);
+        this[action]?.(event);
     }
 
     #getFrozenDetails() {
@@ -209,13 +200,32 @@ class MatrixRenderer extends HTMLElement {
         renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, true);
     }
 
+    #updateMarkerPosition() {
+        requestAnimationFrame(() => {
+            const pageDetails = this.#getPageDetails();
+            const visibleRowIndex = this.#selection.row - pageDetails.visibleRows.start;
+            const isInFrozenZone = this.#selection.column < this.#config.frozenColumns.count;
+
+            if (isInFrozenZone) {
+                setFrozenAABB(this.#cellAABB, this.#config, pageDetails, this.#selection.column, visibleRowIndex, this.#scrollTop);
+            }
+            else {
+                const visibleColumnIndex = this.#selection.column - pageDetails.visibleColumns.start;
+                setCellAABB(this.#cellAABB, this.#config, pageDetails, visibleColumnIndex, visibleRowIndex, this.#scrollLeft, this.#scrollTop);
+            }
+
+            this.#markerElement = setCellMarker(this.#markerElement, this.shadowRoot, this.#cellAABB);
+        })
+    }
+
     async load() {
         requestAnimationFrame(async () => {
             this.#ctx = initialize(this.shadowRoot, this.offsetWidth, this.offsetHeight);
             this.addEventListener("click", this.#onClickHandler);
+            this.addEventListener("keydown", this.#onKeyDownHandler);
 
-            const scrollElement = this.shadowRoot.querySelector("#scroller");
-            scrollElement.addEventListener("scroll", this.#onScrollHandler);
+            this.#scrollElement = this.shadowRoot.querySelector("#scroller");
+            this.#scrollElement.addEventListener("scroll", this.#onScrollHandler);
 
             await crs.call("component", "notify_ready", { element: this });
         })
@@ -254,11 +264,93 @@ class MatrixRenderer extends HTMLElement {
         const pageDetails = this.#getPageDetails();
         renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, true);
 
+        this.#updateMarkerPosition();
+
         // 6. register for changes on data manager
         await crs.call("data_manager", "on_change", {
             manager: this.#config.manager,
             callback: this.#dataManagerChangedHandler
         });
+
+        this.focus();
+    }
+
+    async select(event) {
+        const isInFrozenZone = event.offsetX < (this.#config.regions.frozenColumns?.right ?? 0);
+
+        // 1. get the column and row values
+        const y = this.#scrollTop + event.offsetY - this.#config.regions.cells.top;
+        const x = isInFrozenZone ? event.offsetX : event.offsetX + this.#scrollLeft;
+
+        this.#selection.row = this.#rowSizes.getIndex(y);
+        this.#selection.column = this.#columnSizes.getIndex(x);
+
+        this.#updateMarkerPosition();
+    }
+
+    async selectLeft(event) {
+        this.#selection.column = Math.max(this.#selection.column - 1, 0);
+        this.#updateMarkerPosition();
+    }
+
+    async selectRight(event) {
+        this.#selection.column = Math.min(this.#selection.column + 1, this.#config.columns.length - 1);
+        this.#updateMarkerPosition();
+    }
+
+    async selectUp(event) {
+        this.#selection.row = Math.max(this.#selection.row - 1, 0);
+        this.#updateMarkerPosition();
+    }
+
+    async selectDown(event) {
+        this.#selection.row = Math.max(this.#selection.row + 1, 0);
+        this.#updateMarkerPosition();
+    }
+
+    async selectPageUp(event) {
+
+    }
+
+    async selectPageDown(event) {
+
+    }
+
+    async selectRowHome(event) {
+        this.#selection.column = 0;
+        this.#scrollElement.scrollLeft = 0;
+        this.#updateMarkerPosition();
+    }
+
+    async selectRowEnd(event) {
+        this.#selection.column = this.#config.columns.length - 1;
+        this.#scrollElement.scrollLeft = this.#scrollElement.scrollWidth - this.#scrollElement.clientWidth;
+        this.#updateMarkerPosition();
+    }
+
+    async home(event) {
+        this.#selection.row = 0;
+        this.#selection.column = 0;
+        this.#scrollElement.scrollLeft = 0;
+        this.#scrollElement.scrollTop = 0;
+        this.#updateMarkerPosition();
+    }
+
+    async end(event) {
+        this.#selection.row = this.#config.rows.length - 1;
+        this.#selection.column = this.#config.columns.length - 1;
+        this.#scrollElement.scrollLeft = this.#scrollElement.scrollWidth - this.#scrollElement.clientWidth;
+        this.#scrollElement.scrollTop = this.#scrollElement.scrollHeight - this.#scrollElement.clientHeight;
+        this.#updateMarkerPosition();
+    }
+
+    async editCell(event) {
+        // 3. perform the edit
+        // this.#editorLT[column.type](this.#ctx, this.#config, rowIndex, column, this.#cellAABB, this.shadowRoot);
+    }
+
+    async editRow(event) {
+
     }
 }
 

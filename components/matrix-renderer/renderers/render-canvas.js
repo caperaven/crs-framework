@@ -19,6 +19,10 @@ export function renderCanvas(ctx, def, pageDetails, renderLT, scrollX, scrollY, 
 function initialize(ctx) {
     ctx.font = FONT;
     ctx.fillStyle = TEXT_COLOR;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+    ctx.shadowColor = "transparent";
+
 
     // JHR: NB: DO NOT USE textAlign and textBaseline. They can cause crispness issues.
     // ctx.textAlign = "left";
