@@ -43,6 +43,7 @@ class MatrixRenderer extends HTMLElement {
         this.style.height   = "100%";
         this.style.position = "relative";
         this.style.overflow = "hidden";
+        this.style.willChange = "transform";
         this.setAttribute("tabindex", 0);
     }
 
