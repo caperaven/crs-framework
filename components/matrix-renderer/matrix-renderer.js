@@ -282,6 +282,14 @@ class MatrixRenderer extends HTMLElement {
         const y = this.#scrollTop + event.offsetY - this.#config.regions.cells.top;
         const x = isInFrozenZone ? event.offsetX : event.offsetX + this.#scrollLeft;
 
+        const selectedRow = this.#rowSizes.getIndex(y);
+        const selectedColumn = this.#columnSizes.getIndex(x);
+
+        // we clicked on the current selected cell so edit it.
+        if (selectedRow === this.#selection.row && selectedColumn === this.#selection.column) {
+            return this.editCell(event);
+        }
+
         this.#selection.row = this.#rowSizes.getIndex(y);
         this.#selection.column = this.#columnSizes.getIndex(x);
 
