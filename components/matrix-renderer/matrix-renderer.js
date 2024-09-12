@@ -234,10 +234,17 @@ class MatrixRenderer extends HTMLElement {
             this.#scrollElement.scrollLeft += diff + 16;
             changed = true;
         }
+
         // 2. check for conditions to the left referencing the frozen columns right edge
-        else if (this.#cellAABB.x1 < this.#config.regions.frozenColumns.right) {
+        if (this.#cellAABB.x1 < this.#config.regions.frozenColumns.right) {
             const diff = this.#config.regions.frozenColumns.right - this.#cellAABB.x1;
             this.#scrollElement.scrollLeft -= diff;
+            changed = true;
+        }
+
+        if (this.#cellAABB.y2 + 16 > this.offsetHeight) {
+            const diff = this.#cellAABB.y2 - this.offsetHeight;
+            this.#scrollElement.scrollTop += diff + 16;
             changed = true;
         }
 
@@ -342,12 +349,12 @@ class MatrixRenderer extends HTMLElement {
     }
 
     async selectRight(event) {
-        this.#selection.column = Math.min(this.#selection.column + 1, this.#config.columns.length - 1);
+        this.#selection.column = Math.min(this.#selection.column + 1, this.#columnSizes.length - 1);
 
         const pageDetails = this.#getPageDetails();
 
         if (this.#selection.column > pageDetails.visibleColumns.end - 1) {
-            this.#scrollElement.scrollLeft += this.#config.columns[this.#selection.column].width;
+            this.#scrollElement.scrollLeft += this.#columnSizes.at(this.#selection.column);
             renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, true);
         }
 
@@ -361,8 +368,17 @@ class MatrixRenderer extends HTMLElement {
     }
 
     async selectDown(event) {
-        this.#selection.row = Math.max(this.#selection.row + 1, 0);
+        this.#selection.row = Math.min(this.#selection.row + 1, this.#rowSizes.length - 1);
+
+        const pageDetails = this.#getPageDetails();
+
+        if (this.#selection.row > pageDetails.visibleRows.end - 1) {
+            this.#scrollElement.scrollTop += this.#rowSizes.at(this.#selection.row);
+            renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, true);
+        }
+
         await this.#updateMarkerPosition();
+        await this.#ensureMarkerVisible();
     }
 
     async selectPageUp(event) {
