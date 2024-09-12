@@ -205,21 +205,35 @@ class MatrixRenderer extends HTMLElement {
     }
 
     #updateMarkerPosition() {
-        requestAnimationFrame(() => {
-            const pageDetails = this.#getPageDetails();
-            const visibleRowIndex = this.#selection.row - pageDetails.visibleRows.start;
-            const isInFrozenZone = this.#selection.column < this.#config.frozenColumns.count;
+        return new Promise(resolve => {
+            requestAnimationFrame(() => {
+                const pageDetails = this.#getPageDetails();
+                const visibleRowIndex = this.#selection.row - pageDetails.visibleRows.start;
+                const isInFrozenZone = this.#selection.column < this.#config.frozenColumns.count;
 
-            if (isInFrozenZone) {
-                setFrozenAABB(this.#cellAABB, this.#config, pageDetails, this.#selection.column, visibleRowIndex, this.#scrollTop);
-            }
-            else {
-                const visibleColumnIndex = this.#selection.column - pageDetails.visibleColumns.start;
-                setCellAABB(this.#cellAABB, this.#config, pageDetails, visibleColumnIndex, visibleRowIndex, this.#scrollLeft, this.#scrollTop);
-            }
+                if (isInFrozenZone) {
+                    setFrozenAABB(this.#cellAABB, this.#config, pageDetails, this.#selection.column, visibleRowIndex, this.#scrollTop);
+                }
+                else {
+                    const visibleColumnIndex = this.#selection.column - pageDetails.visibleColumns.start;
+                    setCellAABB(this.#cellAABB, this.#config, pageDetails, visibleColumnIndex, visibleRowIndex, this.#scrollLeft, this.#scrollTop);
+                }
 
-            this.#markerElement = setCellMarker(this.#markerElement, this.shadowRoot, this.#cellAABB);
+                this.#markerElement = setCellMarker(this.#markerElement, this.shadowRoot, this.#cellAABB);
+                resolve();
+            })
         })
+    }
+
+    async #ensureMarkerVisible() {
+        if (this.#cellAABB.x2 > this.offsetWidth) {
+            const diff = this.#cellAABB.x2 - this.offsetWidth;
+            this.#scrollElement.scrollLeft += diff + 16;
+
+            const pageDetails = this.#getPageDetails();
+            renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, true);
+            await this.#updateMarkerPosition();
+        }
     }
 
     async load() {
@@ -268,7 +282,7 @@ class MatrixRenderer extends HTMLElement {
         const pageDetails = this.#getPageDetails();
         renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, true);
 
-        this.#updateMarkerPosition();
+        await this.#updateMarkerPosition();
 
         // 6. register for changes on data manager
         await crs.call("data_manager", "on_change", {
@@ -297,21 +311,14 @@ class MatrixRenderer extends HTMLElement {
         this.#selection.row = this.#rowSizes.getIndex(y);
         this.#selection.column = this.#columnSizes.getIndex(x);
 
-        this.#updateMarkerPosition();
-
-        if (this.#cellAABB.x2 > this.offsetWidth) {
-            const diff = this.#cellAABB.x2 - this.offsetWidth;
-            this.#scrollElement.scrollLeft += diff;
-
-            const pageDetails = this.#getPageDetails();
-            renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, true);
-        }
+        await this.#updateMarkerPosition();
+        await this.#ensureMarkerVisible();
     }
 
     async selectLeft(event) {
         this.#selection.column = Math.max(this.#selection.column - 1, 0);
 
-        this.#updateMarkerPosition();
+        await this.#updateMarkerPosition();
     }
 
     async selectRight(event) {
@@ -324,17 +331,18 @@ class MatrixRenderer extends HTMLElement {
             renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, true);
         }
 
-        this.#updateMarkerPosition();
+        await this.#updateMarkerPosition();
+        await this.#ensureMarkerVisible();
     }
 
     async selectUp(event) {
         this.#selection.row = Math.max(this.#selection.row - 1, 0);
-        this.#updateMarkerPosition();
+        await this.#updateMarkerPosition();
     }
 
     async selectDown(event) {
         this.#selection.row = Math.max(this.#selection.row + 1, 0);
-        this.#updateMarkerPosition();
+        await this.#updateMarkerPosition();
     }
 
     async selectPageUp(event) {
@@ -348,13 +356,13 @@ class MatrixRenderer extends HTMLElement {
     async selectRowHome(event) {
         this.#selection.column = 0;
         this.#scrollElement.scrollLeft = 0;
-        this.#updateMarkerPosition();
+        await this.#updateMarkerPosition();
     }
 
     async selectRowEnd(event) {
         this.#selection.column = this.#config.columns.length - 1;
         this.#scrollElement.scrollLeft = this.#scrollElement.scrollWidth - this.#scrollElement.clientWidth;
-        this.#updateMarkerPosition();
+        await this.#updateMarkerPosition();
     }
 
     async home(event) {
@@ -362,7 +370,7 @@ class MatrixRenderer extends HTMLElement {
         this.#selection.column = 0;
         this.#scrollElement.scrollLeft = 0;
         this.#scrollElement.scrollTop = 0;
-        this.#updateMarkerPosition();
+        await this.#updateMarkerPosition();
     }
 
     async end(event) {
@@ -370,7 +378,7 @@ class MatrixRenderer extends HTMLElement {
         this.#selection.column = this.#config.columns.length - 1;
         this.#scrollElement.scrollLeft = this.#scrollElement.scrollWidth - this.#scrollElement.clientWidth;
         this.#scrollElement.scrollTop = this.#scrollElement.scrollHeight - this.#scrollElement.clientHeight;
-        this.#updateMarkerPosition();
+        await this.#updateMarkerPosition();
     }
 
     async editCell(event) {
