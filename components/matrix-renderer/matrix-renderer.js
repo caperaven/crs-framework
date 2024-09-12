@@ -107,9 +107,11 @@ class MatrixRenderer extends HTMLElement {
     }
 
     #onKeyDown(event) {
-        const action = this.#inputManager.getInputAction(event);
-        this[action]?.(event);
-        event.preventDefault();
+        requestAnimationFrame(() => {
+            const action = this.#inputManager.getInputAction(event);
+            this[action]?.(event);
+            event.preventDefault();
+        })
     }
 
     #onClick(event) {
