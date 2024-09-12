@@ -226,10 +226,19 @@ class MatrixRenderer extends HTMLElement {
     }
 
     async #ensureMarkerVisible() {
+        let changed = false;
         if (this.#cellAABB.x2 > this.offsetWidth) {
             const diff = this.#cellAABB.x2 - this.offsetWidth;
             this.#scrollElement.scrollLeft += diff + 16;
+            changed = true;
+        }
+        else if (this.#cellAABB.x1 < this.#config.regions.frozenColumns.right) {
+            const diff = this.#config.regions.frozenColumns.right - this.#cellAABB.x1;
+            this.#scrollElement.scrollLeft -= diff;
+            changed = true;
+        }
 
+        if (changed) {
             const pageDetails = this.#getPageDetails();
             renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, true);
             await this.#updateMarkerPosition();
@@ -317,8 +326,8 @@ class MatrixRenderer extends HTMLElement {
 
     async selectLeft(event) {
         this.#selection.column = Math.max(this.#selection.column - 1, 0);
-
         await this.#updateMarkerPosition();
+        await this.#ensureMarkerVisible();
     }
 
     async selectRight(event) {
