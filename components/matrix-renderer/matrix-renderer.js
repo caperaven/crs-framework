@@ -42,6 +42,7 @@ class MatrixRenderer extends HTMLElement {
         this.style.width    = "100%";
         this.style.height   = "100%";
         this.style.position = "relative";
+        this.style.overflow = "hidden";
         this.setAttribute("tabindex", 0);
     }
 
@@ -108,6 +109,7 @@ class MatrixRenderer extends HTMLElement {
     #onKeyDown(event) {
         const action = this.#inputManager.getInputAction(event);
         this[action]?.(event);
+        event.preventDefault();
     }
 
     #onClick(event) {
@@ -294,15 +296,32 @@ class MatrixRenderer extends HTMLElement {
         this.#selection.column = this.#columnSizes.getIndex(x);
 
         this.#updateMarkerPosition();
+
+        if (this.#cellAABB.x2 > this.offsetWidth) {
+            const diff = this.#cellAABB.x2 - this.offsetWidth;
+            this.#scrollElement.scrollLeft += diff;
+
+            const pageDetails = this.#getPageDetails();
+            renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, true);
+        }
     }
 
     async selectLeft(event) {
         this.#selection.column = Math.max(this.#selection.column - 1, 0);
+
         this.#updateMarkerPosition();
     }
 
     async selectRight(event) {
         this.#selection.column = Math.min(this.#selection.column + 1, this.#config.columns.length - 1);
+
+        const pageDetails = this.#getPageDetails();
+
+        if (this.#selection.column > pageDetails.visibleColumns.end - 1) {
+            this.#scrollElement.scrollLeft += this.#config.columns[this.#selection.column].width;
+            renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, true);
+        }
+
         this.#updateMarkerPosition();
     }
 

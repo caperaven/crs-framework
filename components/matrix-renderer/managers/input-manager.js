@@ -6,8 +6,8 @@ export class InputManager {
         "dblclick"      : InputActions.EDIT_CELL,
         "Enter"         : InputActions.EDIT_CELL,
         "Space"         : InputActions.EDIT_CELL,
+        "Ctrl+click"    : InputActions.EDIT_ROW,
         "Ctrl+Space"    : InputActions.EDIT_ROW,
-        "Ctrl+dblclick" : InputActions.EDIT_ROW,
         "ArrowLeft"     : InputActions.SELECT_LEFT,
         "ArrowRight"    : InputActions.SELECT_RIGHT,
         "ArrowUp"       : InputActions.SELECT_UP,
@@ -18,6 +18,8 @@ export class InputManager {
         "End"           : InputActions.SELECT_ROW_END,
         "Shift+Home"    : InputActions.HOME,
         "Shift+End"     : InputActions.END,
+        "Tab"           : InputActions.SELECT_RIGHT,
+        "Shift+Tab"     : InputActions.SELECT_LEFT,
     }
 
     dispose() {
