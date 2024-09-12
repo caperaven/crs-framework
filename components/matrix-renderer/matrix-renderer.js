@@ -227,17 +227,21 @@ class MatrixRenderer extends HTMLElement {
 
     async #ensureMarkerVisible() {
         let changed = false;
+
+        // 1. Check for conditions to the right of the scrollable area
         if (this.#cellAABB.x2 > this.offsetWidth) {
             const diff = this.#cellAABB.x2 - this.offsetWidth;
             this.#scrollElement.scrollLeft += diff + 16;
             changed = true;
         }
+        // 2. check for conditions to the left referencing the frozen columns right edge
         else if (this.#cellAABB.x1 < this.#config.regions.frozenColumns.right) {
             const diff = this.#config.regions.frozenColumns.right - this.#cellAABB.x1;
             this.#scrollElement.scrollLeft -= diff;
             changed = true;
         }
 
+        // 3. if change were made, update the page accordingly
         if (changed) {
             const pageDetails = this.#getPageDetails();
             renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, true);
@@ -326,8 +330,15 @@ class MatrixRenderer extends HTMLElement {
 
     async selectLeft(event) {
         this.#selection.column = Math.max(this.#selection.column - 1, 0);
+
+        if (this.#markerElement) {
+            this.#markerElement.style.display = "none";
+        }
+
         await this.#updateMarkerPosition();
         await this.#ensureMarkerVisible();
+
+        this.#markerElement.style.display = "block";
     }
 
     async selectRight(event) {
