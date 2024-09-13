@@ -2,6 +2,7 @@ import {DataType} from  "./../../components/matrix-renderer/matrix-renderer.js";
 
 export default class MatrixRendererViewModel extends crsbinding.classes.ViewBase {
     #manager = "matrix-data";
+    #matrix;
 
     async connectedCallback() {
         await super.connectedCallback();
@@ -12,13 +13,18 @@ export default class MatrixRendererViewModel extends crsbinding.classes.ViewBase
             manager: this.#manager
         })
 
+        this.#matrix.removeEventListener("edit-row", this.#editRow);
+        this.#matrix = null;
+
         await super.disconnectedCallback();
     }
 
     async load() {
         requestAnimationFrame(async () => {
-            const matrix = this.element.querySelector("matrix-renderer");
+            this.#matrix = this.element.querySelector("matrix-renderer");
             const columns = getColumns();
+
+            this.#matrix.addEventListener("edit-row", this.#editRow);
 
             await crs.call("data_manager", "register", {
                 manager: this.#manager,
@@ -27,7 +33,7 @@ export default class MatrixRendererViewModel extends crsbinding.classes.ViewBase
                 records: getRows()
             })
 
-            await matrix.initialize({
+            await this.#matrix.initialize({
                 frozenColumns: {
                     count: 1
                 },
@@ -43,13 +49,17 @@ export default class MatrixRendererViewModel extends crsbinding.classes.ViewBase
                 columns,
                 manager: this.#manager,
                 canvas: {
-                    height: matrix.offsetHeight,
-                    width: matrix.offsetWidth
+                    height: this.#matrix.offsetHeight,
+                    width: this.#matrix.offsetWidth
                 }
             });
 
             super.load();
         });
+    }
+
+    #editRow(event) {
+        console.log(event.detail);
     }
 }
 

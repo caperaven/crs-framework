@@ -6,7 +6,7 @@ export class InputManager {
         "dblclick"      : InputActions.EDIT_CELL,
         "Enter"         : InputActions.EDIT_CELL,
         "Space"         : InputActions.EDIT_CELL,
-        "Ctrl+click"    : InputActions.EDIT_ROW,
+        "Ctrl+dblclick" : InputActions.EDIT_ROW,
         "Ctrl+Space"    : InputActions.EDIT_ROW,
         "ArrowLeft"     : InputActions.SELECT_LEFT,
         "ArrowRight"    : InputActions.SELECT_RIGHT,

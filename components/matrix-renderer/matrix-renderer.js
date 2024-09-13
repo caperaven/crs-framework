@@ -458,7 +458,12 @@ class MatrixRenderer extends HTMLElement {
     }
 
     async editRow(event) {
-
+        this.dispatchEvent(new CustomEvent("edit-row", {
+            detail: {
+                row: this.#selection.row,
+                manager: this.#config.manager
+            }
+        }));
     }
 }
 
