@@ -33,11 +33,7 @@ export class InputManager {
     }
 
     getInputAction(event) {
-        if (event instanceof(PointerEvent)) {
-            return this.#data[event.type];
-        }
-
-        let key = event.code;
+        let key = event.code || event.type;
 
         if (event.ctrlKey) {
             key = `Ctrl+${key}`;

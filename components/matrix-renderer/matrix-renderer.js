@@ -23,7 +23,7 @@ class MatrixRenderer extends HTMLElement {
     #inputManager = new InputManager();
     #dataManagerChangedHandler = this.#dataManagerChange.bind(this);
     #onScrollHandler = this.#onScroll.bind(this);
-    #onClickHandler = this.#onClick.bind(this);
+    #onMouseEventHandler = this.#onMouseEvent.bind(this);
     #onKeyDownHandler = this.#onKeyDown.bind(this);
     #animateHandler = this.#animate.bind(this);
     #renderLT = createRenderLT();
@@ -62,7 +62,8 @@ class MatrixRenderer extends HTMLElement {
         this.#scrollElement.removeEventListener("scroll", this.#onScrollHandler);
         this.#scrollElement = null;
 
-        this.removeEventListener("click", this.#onClickHandler);
+        this.removeEventListener("click", this.#onMouseEventHandler);
+        this.removeEventListener("dblclick", this.#onMouseEventHandler);
         this.removeEventListener("keydown", this.#onKeyDownHandler);
 
         this.#ctx = null;
@@ -115,7 +116,7 @@ class MatrixRenderer extends HTMLElement {
         })
     }
 
-    #onClick(event) {
+    #onMouseEvent(event) {
         // clicked on grouping region
         if (event.offsetY < this.#config.regions.header.top) {
             return;
@@ -127,6 +128,7 @@ class MatrixRenderer extends HTMLElement {
 
         this.#onClickCells(event);
     }
+
 
     #onClickHeader(event) {
         // JHR: required for data grid but for now a placeholder
@@ -267,7 +269,8 @@ class MatrixRenderer extends HTMLElement {
     async load() {
         requestAnimationFrame(async () => {
             this.#ctx = initialize(this.shadowRoot, this.offsetWidth, this.offsetHeight);
-            this.addEventListener("click", this.#onClickHandler);
+            this.addEventListener("click", this.#onMouseEventHandler);
+            this.addEventListener("dblclick", this.#onMouseEventHandler);
             this.addEventListener("keydown", this.#onKeyDownHandler);
 
             this.#scrollElement = this.shadowRoot.querySelector("#scroller");
@@ -332,9 +335,9 @@ class MatrixRenderer extends HTMLElement {
         const selectedColumn = this.#columnSizes.getIndex(x);
 
         // we clicked on the current selected cell so edit it.
-        if (selectedRow === this.#selection.row && selectedColumn === this.#selection.column) {
-            return this.editCell(event);
-        }
+        // if (selectedRow === this.#selection.row && selectedColumn === this.#selection.column) {
+        //     return this.editCell(event);
+        // }
 
         this.#selection.row = this.#rowSizes.getIndex(y);
         this.#selection.column = this.#columnSizes.getIndex(x);
