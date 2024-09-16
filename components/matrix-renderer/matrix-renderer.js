@@ -230,7 +230,9 @@ class MatrixRenderer extends HTMLElement {
                     setCellAABB(this.#cellAABB, this.#config, pageDetails, visibleColumnIndex, visibleRowIndex, this.#scrollLeft, this.#scrollTop);
                 }
 
-                this.#markerElement = setCellMarker(this.#markerElement, this.shadowRoot, this.#cellAABB);
+                const errorKey = `${this.#selection.row},${this.#selection.column}`;
+                const hasError = this.#config.errors?.[errorKey] != null;
+                this.#markerElement = setCellMarker(this.#markerElement, this.shadowRoot, this.#cellAABB, hasError);
                 resolve();
             })
         })

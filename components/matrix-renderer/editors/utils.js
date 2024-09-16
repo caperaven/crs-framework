@@ -3,7 +3,7 @@ export function onKeyDown(event, updateDataManagerCallback, stopPropagation = tr
         event.target.blur();
     }
 
-    if (event.code === "Enter") {
+    if (event.code === "Enter" || event.code === "NumpadEnter") {
         // call data manager
         updateDataManagerCallback();
         event.target.blur();
