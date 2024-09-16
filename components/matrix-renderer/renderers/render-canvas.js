@@ -9,10 +9,10 @@ export function renderCanvas(ctx, def, pageDetails, renderLT, scrollX, scrollY, 
     initialize(ctx);
 
     // render the matrix
-    drawCells   (ctx, def, pageDetails, renderLT, scrollX, scrollY);
+    drawCells   (ctx, def, pageDetails, renderLT, scrollX, scrollY, isFinalRender);
     drawHeaders (ctx, def, pageDetails, renderLT, scrollX);
     drawGroups  (ctx, def, pageDetails, renderLT, scrollX);
-    drawFrozen  (ctx, def, pageDetails, renderLT, scrollY);
+    drawFrozen  (ctx, def, pageDetails, renderLT, scrollY, isFinalRender);
     drawLines   (ctx, def, pageDetails, scrollX, scrollY);
 }
 
@@ -29,7 +29,7 @@ function clearCanvas(ctx) {
     ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 }
 
-function drawCells(ctx, def, pageDetails, renderLT, scrollX, scrollY) {
+function drawCells(ctx, def, pageDetails, renderLT, scrollX, scrollY, isFinalRender) {
     let currentRowIndex = pageDetails.visibleRows.start;
 
     for (let rowIndex = 0; rowIndex < pageDetails.rowsActualSizes.length; rowIndex++) {
@@ -42,6 +42,7 @@ function drawCells(ctx, def, pageDetails, renderLT, scrollX, scrollY) {
 
             setCellAABB(AABB, def, pageDetails, columnIndex, rowIndex, scrollX, scrollY);
             renderLT[column.type](ctx, def, column, AABB, value, rowIndex, currentFieldIndex);
+
             addErrors(ctx, AABB, def, currentRowIndex, currentFieldIndex, renderLT)
 
             currentFieldIndex++;
@@ -99,7 +100,7 @@ function drawLines(ctx, def, pageDetails, scrollX, scrollY) {
     }
 }
 
-function drawFrozen(ctx, def, pageDetails, renderLT, scrollY, errorDetails) {
+function drawFrozen(ctx, def, pageDetails, renderLT, scrollY, errorDetails, isFinalRender) {
     if (def.frozenColumns == null) {
         return;
     }
@@ -110,7 +111,7 @@ function drawFrozen(ctx, def, pageDetails, renderLT, scrollY, errorDetails) {
     ctx.fillRect(0, def.regions.cells.top, def.regions.frozenColumns.right, def.regions.cells.bottom);
 
     ctx.fillStyle = TEXT_COLOR;
-    drawFrozenCells(ctx, def, pageDetails, renderLT, scrollY, errorDetails);
+    drawFrozenCells(ctx, def, pageDetails, renderLT, scrollY, errorDetails, isFinalRender);
 
     ctx.fillStyle = HEADER_BACKGROUND_COLOR;
     ctx.fillRect(0, def.regions.header.top, def.regions.frozenColumns.right, def.heights.header);
@@ -139,7 +140,7 @@ function drawFrozenHeaders(ctx, def, pageDetails, renderLT) {
     }
 }
 
-function drawFrozenCells(ctx, def, pageDetails, renderLT, scrollY, errorDetails) {
+function drawFrozenCells(ctx, def, pageDetails, renderLT, scrollY, isFinalRender) {
     let currentRowIndex = pageDetails.visibleRows.start;
 
     for (let rowIndex = 0; rowIndex < pageDetails.rowsActualSizes.length; rowIndex++) {
@@ -151,6 +152,7 @@ function drawFrozenCells(ctx, def, pageDetails, renderLT, scrollY, errorDetails)
 
             setFrozenAABB(AABB, def, pageDetails, columnIndex, rowIndex, scrollY);
             renderLT[column.type](ctx, def, column, AABB, value);
+
             addErrors(ctx, AABB, def, currentRowIndex, columnIndex, renderLT)
         }
 

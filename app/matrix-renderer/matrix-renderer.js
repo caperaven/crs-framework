@@ -36,7 +36,9 @@ export default class MatrixRendererViewModel extends crsbinding.classes.ViewBase
             await this.#matrix.initialize({
                 errors: {
                     "1,0": {"message": "Something went wrong"},
-                    "2,1": {"message": "This is not correct"}
+                    "2,1": {"message": "This is not correct"},
+                    "25,10": {"message": "Error 25, 10"},
+                    "100,100": {"message": "Error 100, 100"}
                 },
 
                 frozenColumns: {
@@ -70,7 +72,8 @@ export default class MatrixRendererViewModel extends crsbinding.classes.ViewBase
 
 function getColumns() {
     const columns = [
-        { title: "Status", field: "status", width: 200, editable: false }
+        { title: "Status", field: "status", width: 200, editable: false },
+        { title: "Values", field: "values", width: 100, editable: true }
     ]
 
     for (let i = 0; i < 1000; i++) {
@@ -84,7 +87,7 @@ function getRows() {
     const rows = [];
 
     for (let i = 0; i < 10000; i++) {
-        const row = { id: i, status: `Status ${i}` };
+        const row = { id: i, status: `Status ${i}`, values: `Value ${i}` };
 
         for (let j = 0; j < 1000; j++) {
             // add random boolean value
