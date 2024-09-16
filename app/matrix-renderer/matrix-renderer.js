@@ -34,6 +34,11 @@ export default class MatrixRendererViewModel extends crsbinding.classes.ViewBase
             })
 
             await this.#matrix.initialize({
+                errors: {
+                    "1,0": {"message": "Something went wrong"},
+                    "2,1": {"message": "This is not correct"}
+                },
+
                 frozenColumns: {
                     count: 1
                 },

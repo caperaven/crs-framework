@@ -41,8 +41,8 @@ function drawCells(ctx, def, pageDetails, renderLT, scrollX, scrollY) {
             const value = row[def.columns[currentFieldIndex].field];
 
             setCellAABB(AABB, def, pageDetails, columnIndex, rowIndex, scrollX, scrollY);
-
             renderLT[column.type](ctx, def, column, AABB, value, rowIndex, currentFieldIndex);
+            addErrors(ctx, AABB, def, currentRowIndex, currentFieldIndex, renderLT)
 
             currentFieldIndex++;
         }
@@ -95,11 +95,11 @@ function drawLines(ctx, def, pageDetails, scrollX, scrollY) {
     ctx.restore();
 
     if (def.frozenColumns != null) {
-        drawHardStrokeLines(ctx, def, pageDetails, scrollX, scrollY);
+        drawHardStrokeLines(ctx, def);
     }
 }
 
-function drawFrozen(ctx, def, pageDetails, renderLT, scrollY) {
+function drawFrozen(ctx, def, pageDetails, renderLT, scrollY, errorDetails) {
     if (def.frozenColumns == null) {
         return;
     }
@@ -110,7 +110,7 @@ function drawFrozen(ctx, def, pageDetails, renderLT, scrollY) {
     ctx.fillRect(0, def.regions.cells.top, def.regions.frozenColumns.right, def.regions.cells.bottom);
 
     ctx.fillStyle = TEXT_COLOR;
-    drawFrozenCells(ctx, def, pageDetails, renderLT, scrollY);
+    drawFrozenCells(ctx, def, pageDetails, renderLT, scrollY, errorDetails);
 
     ctx.fillStyle = HEADER_BACKGROUND_COLOR;
     ctx.fillRect(0, def.regions.header.top, def.regions.frozenColumns.right, def.heights.header);
@@ -139,7 +139,7 @@ function drawFrozenHeaders(ctx, def, pageDetails, renderLT) {
     }
 }
 
-function drawFrozenCells(ctx, def, pageDetails, renderLT, scrollY) {
+function drawFrozenCells(ctx, def, pageDetails, renderLT, scrollY, errorDetails) {
     let currentRowIndex = pageDetails.visibleRows.start;
 
     for (let rowIndex = 0; rowIndex < pageDetails.rowsActualSizes.length; rowIndex++) {
@@ -151,6 +151,7 @@ function drawFrozenCells(ctx, def, pageDetails, renderLT, scrollY) {
 
             setFrozenAABB(AABB, def, pageDetails, columnIndex, rowIndex, scrollY);
             renderLT[column.type](ctx, def, column, AABB, value);
+            addErrors(ctx, AABB, def, currentRowIndex, columnIndex, renderLT)
         }
 
         currentRowIndex++;
@@ -204,7 +205,7 @@ function drawGroupLines(ctx, def, pageDetails, scrollX) {
     }
 }
 
-function drawHardStrokeLines(ctx, def, pageDetails, scrollX, scrollY) {
+function drawHardStrokeLines(ctx, def) {
     ctx.save();
     ctx.strokeStyle = HARD_STROKE_COLOR;
     ctx.lineWidth = 1;
@@ -216,4 +217,16 @@ function drawHardStrokeLines(ctx, def, pageDetails, scrollX, scrollY) {
 
     ctx.stroke();
     ctx.restore();
+}
+
+function addErrors(ctx, aabb, def, rowIndex, columnIndex, renderLT) {
+    if (def.errors == null) return;
+
+    const key = `${rowIndex},${columnIndex}`;
+
+    // if there is a error for that row and column set the aabb for it
+    if (def.errors[key] != null) {
+        def.errors[key].aabb = structuredClone(aabb);
+        renderLT["error"](ctx, null, null, aabb);
+    }
 }

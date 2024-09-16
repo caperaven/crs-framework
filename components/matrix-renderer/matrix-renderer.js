@@ -299,10 +299,6 @@ class MatrixRenderer extends HTMLElement {
             [DataType.BOOLEAN]: await BooleanImages.from(new URL("./images/boolean/", import.meta.url))
         }
 
-        this.#config.errors = {
-            "1,0": "Something went wrong"
-        }
-
         // 2. initialize sizes for rendering
         // 2.1 calculate row sizes
         this.#rowSizes = new SizesManager(this.#config.rows.length, this.#config.heights.row);
