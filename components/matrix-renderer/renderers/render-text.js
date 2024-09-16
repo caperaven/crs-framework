@@ -2,18 +2,22 @@
  * Standard text renderer
  */
 
-import { PADDING_X, HEADER_BACKGROUND_COLOR, TEXT_COLOR, TEXT_Y_OFFSET } from "./constants.js";
 
-export function renderText(ctx, def, column, aabb, value) {
+// "10,3": "error: message"
+
+import { PADDING_X, HEADER_BACKGROUND_COLOR, ERROR_BACKGROUND_COLOR, TEXT_COLOR, TEXT_Y_OFFSET } from "./constants.js";
+
+export function renderText(ctx, def, column, aabb, value, rowIndex, columnIndex) {
     // 1. save the current state
     ctx.save();
 
     // 2. set the clip region
     ctx.beginPath();
-
     // Update the background if the column is read-only
+    const hasErrors = def.errors[`${rowIndex},${columnIndex}`] != null;
+
     if (column.editable === false) {
-        ctx.fillStyle = HEADER_BACKGROUND_COLOR;
+        ctx.fillStyle = hasErrors ? ERROR_BACKGROUND_COLOR : HEADER_BACKGROUND_COLOR;
         ctx.fillRect(aabb.x1, aabb.y1, aabb.x2 - aabb.x1, aabb.y2 - aabb.y1);
     }
 

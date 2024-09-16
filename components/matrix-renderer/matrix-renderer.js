@@ -26,6 +26,7 @@ class MatrixRenderer extends HTMLElement {
     #onMouseEventHandler = this.#onMouseEvent.bind(this);
     #onKeyDownHandler = this.#onKeyDown.bind(this);
     #animateHandler = this.#animate.bind(this);
+    #focusHandler = this.#focus.bind(this);
     #renderLT = createRenderLT();
     #editorLT = createEditorLT();
     #cellAABB = { x1: 0, x2: 0, y1: 0, y2: 0 };
@@ -57,6 +58,8 @@ class MatrixRenderer extends HTMLElement {
             callback: this.#dataManagerChangedHandler
         });
 
+        await crsbinding.events.emitter.remove("matrix-editing-removed", this.#focusHandler);
+
         this.#dataManagerChangedHandler = null;
 
         this.#scrollElement.removeEventListener("scroll", this.#onScrollHandler);
@@ -77,6 +80,10 @@ class MatrixRenderer extends HTMLElement {
         this.#markerElement = null;
         this.#inputManager = this.#inputManager.dispose();
         this.#selection = null;
+    }
+
+    #focus() {
+        this.focus();
     }
 
     #animate(currentTime) {
@@ -112,8 +119,9 @@ class MatrixRenderer extends HTMLElement {
         requestAnimationFrame(() => {
             const action = this.#inputManager.getInputAction(event);
             this[action]?.(event);
-            event.preventDefault();
         })
+        event.preventDefault();
+        event.stopPropagation();
     }
 
     #onMouseEvent(event) {
@@ -276,6 +284,7 @@ class MatrixRenderer extends HTMLElement {
             this.#scrollElement = this.shadowRoot.querySelector("#scroller");
             this.#scrollElement.addEventListener("scroll", this.#onScrollHandler);
 
+            await crsbinding.events.emitter.on("matrix-editing-removed", this.#focusHandler);
             await crs.call("component", "notify_ready", { element: this });
         })
     }
@@ -288,6 +297,10 @@ class MatrixRenderer extends HTMLElement {
         this.#config.regions = Regions.from(this.#config);
         this.#config.images = {
             [DataType.BOOLEAN]: await BooleanImages.from(new URL("./images/boolean/", import.meta.url))
+        }
+
+        this.#config.errors = {
+            "1,0": "Something went wrong"
         }
 
         // 2. initialize sizes for rendering
@@ -330,14 +343,6 @@ class MatrixRenderer extends HTMLElement {
         // 1. get the column and row values
         const y = this.#scrollTop + event.offsetY - this.#config.regions.cells.top;
         const x = isInFrozenZone ? event.offsetX : event.offsetX + this.#scrollLeft;
-
-        const selectedRow = this.#rowSizes.getIndex(y);
-        const selectedColumn = this.#columnSizes.getIndex(x);
-
-        // we clicked on the current selected cell so edit it.
-        // if (selectedRow === this.#selection.row && selectedColumn === this.#selection.column) {
-        //     return this.editCell(event);
-        // }
 
         this.#selection.row = this.#rowSizes.getIndex(y);
         this.#selection.column = this.#columnSizes.getIndex(x);

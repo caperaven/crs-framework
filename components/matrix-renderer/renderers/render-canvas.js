@@ -22,11 +22,6 @@ function initialize(ctx) {
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = 0;
     ctx.shadowColor = "transparent";
-
-
-    // JHR: NB: DO NOT USE textAlign and textBaseline. They can cause crispness issues.
-    // ctx.textAlign = "left";
-    // ctx.textBaseline = "middle";
 }
 
 function clearCanvas(ctx) {
@@ -47,7 +42,7 @@ function drawCells(ctx, def, pageDetails, renderLT, scrollX, scrollY) {
 
             setCellAABB(AABB, def, pageDetails, columnIndex, rowIndex, scrollX, scrollY);
 
-            renderLT[column.type](ctx, def, column, AABB, value);
+            renderLT[column.type](ctx, def, column, AABB, value, rowIndex, currentFieldIndex);
 
             currentFieldIndex++;
         }

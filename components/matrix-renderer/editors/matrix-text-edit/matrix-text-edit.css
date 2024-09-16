@@ -1,0 +1,19 @@
+matrix-text-editor {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    box-sizing: border-box;
+}
+
+matrix-text-editor input {
+    font-family: Arial !important;
+    font-size: 16px !important;
+    width: 100%;
+    height: 100%;
+    outline: none;
+    padding-left: 0.5rem;
+    padding-top: 0.2rem;
+    background: white;
+    border: 0;
+}
