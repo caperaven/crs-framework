@@ -43,7 +43,7 @@ function drawCells(ctx, def, pageDetails, renderLT, scrollX, scrollY, isFinalRen
             setCellAABB(AABB, def, pageDetails, columnIndex, rowIndex, scrollX, scrollY);
             renderLT[column.type](ctx, def, column, AABB, value, rowIndex, currentFieldIndex);
 
-            addErrors(ctx, AABB, def, currentRowIndex, currentFieldIndex, renderLT)
+            drawErrors(ctx, AABB, def, currentRowIndex, currentFieldIndex, renderLT)
 
             currentFieldIndex++;
         }
@@ -66,6 +66,8 @@ function drawHeaders(ctx, def, pageDetails, renderLT, scrollX) {
 }
 
 function drawGroups(ctx, def, pageDetails, renderLT, scrollX) {
+    if (pageDetails.visibleGroups == null) return;
+
     let groupIndex = pageDetails.visibleGroups.start;
 
     for (let i = 0; i < pageDetails.groupsActualSizes.length; i++) {
@@ -153,7 +155,7 @@ function drawFrozenCells(ctx, def, pageDetails, renderLT, scrollY, isFinalRender
             setFrozenAABB(AABB, def, pageDetails, columnIndex, rowIndex, scrollY);
             renderLT[column.type](ctx, def, column, AABB, value);
 
-            addErrors(ctx, AABB, def, currentRowIndex, columnIndex, renderLT)
+            drawErrors(ctx, AABB, def, currentRowIndex, columnIndex, renderLT)
         }
 
         currentRowIndex++;
@@ -167,10 +169,12 @@ function drawColumnLines(ctx, def, pageDetails, scrollX) {
     ctx.moveTo(0, 0);
     ctx.lineTo(0, bottom);
 
+    const frozenRight = def.regions.frozenColumns?.right || 0;
+
     for (let i = 0; i < pageDetails.columnsActualSizes.length; i++) {
         const x = pageDetails.columnsCumulativeSizes[i] - scrollX;
 
-        if (x < def.regions.frozenColumns.right) {
+        if (x < frozenRight) {
             continue;
         }
 
@@ -221,7 +225,7 @@ function drawHardStrokeLines(ctx, def) {
     ctx.restore();
 }
 
-function addErrors(ctx, aabb, def, rowIndex, columnIndex, renderLT) {
+function drawErrors(ctx, aabb, def, rowIndex, columnIndex, renderLT) {
     if (def.errors == null) return;
 
     const key = `${rowIndex},${columnIndex}`;

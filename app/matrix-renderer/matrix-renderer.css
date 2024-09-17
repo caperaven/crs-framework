@@ -1,0 +1,5 @@
+crs-router {
+    display: grid;
+    grid-template-rows: 2rem 1fr;
+}
+

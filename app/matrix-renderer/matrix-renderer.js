@@ -22,7 +22,7 @@ export default class MatrixRendererViewModel extends crsbinding.classes.ViewBase
     async load() {
         requestAnimationFrame(async () => {
             this.#matrix = this.element.querySelector("matrix-renderer");
-            const columns = getColumns();
+            const columns = getColumns("A");
 
             this.#matrix.addEventListener("edit-row", this.#editRow);
 
@@ -45,8 +45,8 @@ export default class MatrixRendererViewModel extends crsbinding.classes.ViewBase
                     count: 1
                 },
                 heights: {
-                    groupHeader: 32,
-                    header: 32,
+                    groupHeader: 50,
+                    header: 40,
                     row: 32
                 },
                 groups: [
@@ -65,19 +65,36 @@ export default class MatrixRendererViewModel extends crsbinding.classes.ViewBase
         });
     }
 
+    async update() {
+        const columns = getColumns("B");
+
+        await this.#matrix.initialize({
+            heights: {
+                header: 32,
+                row: 32
+            },
+            columns,
+            manager: this.#manager,
+            canvas: {
+                height: this.#matrix.offsetHeight,
+                width: this.#matrix.offsetWidth
+            }
+        });
+    }
+
     #editRow(event) {
         console.log(event.detail);
     }
 }
 
-function getColumns() {
+function getColumns(prefix = "A") {
     const columns = [
         { title: "Status", field: "status", width: 200, editable: false },
         { title: "Values", field: "values", width: 100, editable: true }
     ]
 
     for (let i = 0; i < 1000; i++) {
-        columns.push({ title: `Column ${i}`, field: `column${i}`, type: DataType.BOOLEAN, editable: true });
+        columns.push({ title: `${prefix}_Column ${i}`, field: `column${i}`, type: DataType.BOOLEAN, editable: true });
     }
 
     return columns;
