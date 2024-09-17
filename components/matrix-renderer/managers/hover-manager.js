@@ -24,8 +24,8 @@ export class HoverManager extends EventTarget {
     }
 
     #mouseMove(event) {
-        this.#clientX = event.clientX;
-        this.#clientY = event.clientY;
+        this.#clientX = event.offsetX;
+        this.#clientY = event.offsetY;
         this.#lastMoved = performance.now();
 
         if (this.#animationId == null) {

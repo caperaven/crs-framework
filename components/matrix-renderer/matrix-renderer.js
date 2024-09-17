@@ -9,6 +9,7 @@ import {createEditorLT} from "./editors/editor.js";
 import {setCellAABB, setFrozenAABB} from "./aabb/aabb.js";
 import {setCellMarker} from "./dom/cell-marker.js"
 import {HoverManager} from "./managers/hover-manager.js";
+import {hover} from "./hovering/hovering.js";
 
 class MatrixRenderer extends HTMLElement {
     #ctx;
@@ -94,7 +95,11 @@ class MatrixRenderer extends HTMLElement {
     }
 
     #hover(event) {
-        console.log(event);
+        const x = event.detail.x;
+        const y = event.detail.y;
+
+        const pageDetails = this.#getPageDetails();
+        hover(this, x, y, this.#config, pageDetails)
     }
 
     #animate() {
