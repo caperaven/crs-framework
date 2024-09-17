@@ -5,6 +5,7 @@ export class HoverManager extends EventTarget {
     #lastMoved;
     #mouseMoveHandler = this.#mouseMove.bind(this);
     #timerHandler = this.#timer.bind(this);
+    #animationId;
 
     initialize(element) {
         this.#element = element;
@@ -26,15 +27,22 @@ export class HoverManager extends EventTarget {
         this.#clientX = event.clientX;
         this.#clientY = event.clientY;
         this.#lastMoved = performance.now();
+
+        if (this.#animationId == null) {
+            this.#timer();
+        }
     }
 
     #timer() {
         const now = performance.now();
 
-        if (now - this.#lastMoved < 500) {
-            requestAnimationFrame(this.#timerHandler);
+        if (now - this.#lastMoved < 100) {
+            this.#animationId = requestAnimationFrame(this.#timerHandler);
             return;
         }
+
+        cancelAnimationFrame(this.#animationId);
+        this.#animationId = null;
 
         this.#hovering();
     }

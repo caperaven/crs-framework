@@ -29,6 +29,7 @@ class MatrixRenderer extends HTMLElement {
     #onKeyDownHandler = this.#onKeyDown.bind(this);
     #animateHandler = this.#animate.bind(this);
     #focusHandler = this.#focus.bind(this);
+    #hoverHandler = this.#hover.bind(this);
     #renderLT = createRenderLT();
     #editorLT = createEditorLT();
     #hoverManager = new HoverManager();
@@ -83,11 +84,17 @@ class MatrixRenderer extends HTMLElement {
         this.#markerElement = null;
         this.#inputManager = this.#inputManager.dispose();
         this.#selection = null;
+
+        this.#hoverManager.removeEventListener("hover", this.#hoverHandler);
         this.#hoverManager = this.#hoverManager.dispose();
     }
 
     #focus() {
         this.focus();
+    }
+
+    #hover(event) {
+        console.log(event);
     }
 
     #animate() {
@@ -329,7 +336,9 @@ class MatrixRenderer extends HTMLElement {
 
             await crsbinding.events.emitter.on("matrix-editing-removed", this.#focusHandler);
             await crs.call("component", "notify_ready", { element: this });
+
             this.#hoverManager.initialize(this);
+            this.#hoverManager.addEventListener("hover", this.#hoverHandler);
         })
     }
 
