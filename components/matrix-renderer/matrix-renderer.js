@@ -143,7 +143,7 @@ class MatrixRenderer extends HTMLElement {
     }
 
 
-    #onClickHeader(event) {
+    #onClickHeader() {
         // JHR: required for data grid but for now a placeholder
         return;
     }
@@ -217,7 +217,7 @@ class MatrixRenderer extends HTMLElement {
         };
     }
 
-    #dataManagerChange(args) {
+    #dataManagerChange() {
         const pageDetails = this.#getPageDetails();
         renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, true);
     }
@@ -284,25 +284,6 @@ class MatrixRenderer extends HTMLElement {
         }
     }
 
-    async load() {
-        requestAnimationFrame(async () => {
-            this.#ctx = initialize(this.shadowRoot, this.offsetWidth, this.offsetHeight);
-            this.addEventListener("click", this.#onMouseEventHandler);
-            this.addEventListener("dblclick", this.#onMouseEventHandler);
-            this.addEventListener("keydown", this.#onKeyDownHandler);
-
-            this.#scrollElement = this.shadowRoot.querySelector("#scroller");
-
-            await crsbinding.events.emitter.on("matrix-editing-removed", this.#focusHandler);
-            await crs.call("component", "notify_ready", { element: this });
-            this.#hoverManager.initialize(this);
-        })
-    }
-
-    async resize() {
-
-    }
-
     async #disposeParts() {
         // if there are no changes don't try and clean it up
         if (this.#config == null) {
@@ -335,6 +316,25 @@ class MatrixRenderer extends HTMLElement {
         }
         this.#lastTime = 0;
         this.#animating = false;
+    }
+
+    async load() {
+        requestAnimationFrame(async () => {
+            this.#ctx = initialize(this.shadowRoot, this.offsetWidth, this.offsetHeight);
+            this.addEventListener("click", this.#onMouseEventHandler);
+            this.addEventListener("dblclick", this.#onMouseEventHandler);
+            this.addEventListener("keydown", this.#onKeyDownHandler);
+
+            this.#scrollElement = this.shadowRoot.querySelector("#scroller");
+
+            await crsbinding.events.emitter.on("matrix-editing-removed", this.#focusHandler);
+            await crs.call("component", "notify_ready", { element: this });
+            this.#hoverManager.initialize(this);
+        })
+    }
+
+    async resize() {
+
     }
 
     async initialize(config) {
@@ -400,7 +400,7 @@ class MatrixRenderer extends HTMLElement {
         await this.#ensureMarkerVisible();
     }
 
-    async selectLeft(event) {
+    async selectLeft() {
         if (this.#selection.column === 0) {
             return;
         }
@@ -417,7 +417,7 @@ class MatrixRenderer extends HTMLElement {
         this.#markerElement.style.display = "block";
     }
 
-    async selectRight(event) {
+    async selectRight() {
         if (this.#selection.column === this.#columnSizes.length - 1) {
             return;
         }
@@ -435,7 +435,7 @@ class MatrixRenderer extends HTMLElement {
         await this.#ensureMarkerVisible();
     }
 
-    async selectUp(event) {
+    async selectUp() {
         if (this.#selection.row === 0) {
             return;
         }
@@ -452,7 +452,7 @@ class MatrixRenderer extends HTMLElement {
         this.#markerElement.style.display = "block";
     }
 
-    async selectDown(event) {
+    async selectDown() {
         if (this.#selection.row === this.#rowSizes.length - 1) {
             return;
         }

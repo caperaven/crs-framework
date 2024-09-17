@@ -50,8 +50,10 @@ export default class MatrixRendererViewModel extends crsbinding.classes.ViewBase
                     row: 32
                 },
                 groups: [
-                    { from: 0, to: 3, title: "Group1" },
-                    { from: 3, title: "Group2" },
+                    { from: 0, to: 1, title: "" },
+                    { from: 1, to: 3, title: "Group1" },
+                    { from: 3, to: 29, title: "Group3" },
+                    { from: 29, title: "Group4" },
                 ],
                 columns,
                 manager: this.#manager,
