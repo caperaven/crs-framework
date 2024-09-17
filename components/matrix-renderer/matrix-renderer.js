@@ -95,11 +95,20 @@ class MatrixRenderer extends HTMLElement {
     }
 
     #hover(event) {
-        const x = event.detail.x;
-        const y = event.detail.y;
-
         const pageDetails = this.#getPageDetails();
-        hover(this, x, y, this.#config, pageDetails)
+
+        const details = {
+            pageDetails,
+            offsetX     : event.detail.x,
+            offsetY     : event.detail.y,
+            def         : this.#config,
+            scrollLeft  : this.#scrollLeft,
+            scrollTop   : this.#scrollTop,
+            columnSizes : this.#columnSizes,
+            rowSizes    : this.#rowSizes,
+        }
+
+        hover(this.#ctx, this, details);
     }
 
     #animate() {

@@ -9,14 +9,14 @@ const HoverLT = Object.freeze({
     [RegionType.CELLS]    : hoverCells
 })
 
-export function hover(parentElement, x, y, def, pageDetails) {
+export function hover(ctx, parentElement, details) {
     let region = RegionType.CELLS;
-    if (y < def.regions.grouping?.bottom) {
+    if (details.offsetY < details.def.regions.grouping?.bottom) {
         region = RegionType.GROUPING;
     }
-    else if (y < def.regions.header.bottom) {
+    else if (details.offsetY < details.def.regions.header.bottom) {
         region = RegionType.HEADER;
     }
 
-    HoverLT[region](parentElement, x, y, def, pageDetails);
+    HoverLT[region](ctx, parentElement, details);
 }

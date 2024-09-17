@@ -1,3 +1,3 @@
-export function hoverGrouping(parentElement, x, y, def, pageDetails) {
+export function hoverGrouping(ctx, parentElement, details) {
     return console.log("hover on grouping");
 }

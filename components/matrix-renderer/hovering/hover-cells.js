@@ -1,3 +1,3 @@
-export function hoverCells(parentElement, x, y, def, pageDetails) {
+export function hoverCells(ctx, parentElement, details) {
     return console.log("hover on cell")
 }
