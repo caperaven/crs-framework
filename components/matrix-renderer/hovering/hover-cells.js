@@ -7,10 +7,22 @@ export function hoverCells(ctx, parentElement, details) {
     const rowIndex = details.rowSizes.getIndex(y);
     const columnIndex = details.columnSizes.getIndex(x);
 
+    if (checkForErrors(details, rowIndex, columnIndex) === true) {
+        return;
+    }
+
+    // place future hover checks here.
+}
+
+function checkForErrors(details, rowIndex, columnIndex) {
     if (details.def.errors != null) {
         const error = details.def.errors[`${rowIndex},${columnIndex}`];
         if (error != null) {
             console.log(`hovered on error: ${error.message}`);
+
+            return true;
         }
     }
+
+    return false;
 }

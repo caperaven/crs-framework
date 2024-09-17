@@ -523,8 +523,8 @@ class MatrixRenderer extends HTMLElement {
 
     async end() {
         this.#selection.row = this.#config.rows.length - 1;
-        this.#selection.column = this.#config.columns.length - 1;
-        this.#scrollElement.scrollLeft = this.#scrollElement.scrollWidth - this.#scrollElement.clientWidth;
+        this.#selection.column = 0;
+        this.#scrollElement.scrollLeft = 0;
         this.#scrollElement.scrollTop = this.#scrollElement.scrollHeight - this.#scrollElement.clientHeight;
         await this.#updateMarkerPosition();
     }
