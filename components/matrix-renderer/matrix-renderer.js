@@ -494,11 +494,11 @@ class MatrixRenderer extends HTMLElement {
     }
 
     async selectPageUp(event) {
-
+        this.#scrollElement.scrollTop -= this.#config.regions.cells.height;
     }
 
     async selectPageDown(event) {
-
+        this.#scrollElement.scrollTop += this.#config.regions.cells.height;
     }
 
     async selectRowHome() {

@@ -4,23 +4,30 @@ export class InputManager {
     #data = {
         "click"         : InputActions.SELECT,
         "dblclick"      : InputActions.EDIT_CELL,
-        "Enter"         : InputActions.EDIT_CELL,
-        "NumpadEnter"   : InputActions.EDIT_CELL,
-        "Space"         : InputActions.EDIT_CELL,
-        "Ctrl+dblclick" : InputActions.EDIT_ROW,
-        "Ctrl+Space"    : InputActions.EDIT_ROW,
-        "ArrowLeft"     : InputActions.SELECT_LEFT,
-        "ArrowRight"    : InputActions.SELECT_RIGHT,
-        "ArrowUp"       : InputActions.SELECT_UP,
-        "ArrowDown"     : InputActions.SELECT_DOWN,
-        "PageUp"        : InputActions.SELECT_PAGE_UP,
-        "PageDown"      : InputActions.SELECT_PAGE_DOWN,
-        "Home"          : InputActions.SELECT_ROW_HOME,
-        "End"           : InputActions.SELECT_ROW_END,
-        "Shift+Home"    : InputActions.HOME,
-        "Shift+End"     : InputActions.END,
-        "Tab"           : InputActions.SELECT_RIGHT,
-        "Shift+Tab"     : InputActions.SELECT_LEFT,
+        "enter"         : InputActions.EDIT_CELL,
+        "numpadenter"   : InputActions.EDIT_CELL,
+        "space"         : InputActions.EDIT_CELL,
+        "ctrl+dblclick" : InputActions.EDIT_ROW,
+        "ctrl+Space"    : InputActions.EDIT_ROW,
+        "arrowleft"     : InputActions.SELECT_LEFT,
+        "arrowright"    : InputActions.SELECT_RIGHT,
+        "arrowup"       : InputActions.SELECT_UP,
+        "arrowdown"     : InputActions.SELECT_DOWN,
+        "pageup"        : InputActions.SELECT_PAGE_UP,
+        "pagedown"      : InputActions.SELECT_PAGE_DOWN,
+        "home"          : InputActions.SELECT_ROW_HOME,
+        "end"           : InputActions.SELECT_ROW_END,
+        "shift+home"    : InputActions.HOME,
+        "shift+end"     : InputActions.END,
+        "tab"           : InputActions.SELECT_RIGHT,
+        "shift+tab"     : InputActions.SELECT_LEFT,
+    }
+
+    #numKeyMap = {
+        "numpad9": "pageup",
+        "numpad3": "pagedown",
+        "numpad7": "home",
+        "numpad1": "end"
     }
 
     dispose() {
@@ -34,14 +41,21 @@ export class InputManager {
     }
 
     getInputAction(event) {
-        let key = event.code || event.type;
+        let key = (event.code || event.type).toLowerCase();
+
+        if (key.startsWith("numpad")) {
+            let numLock = event.getModifierState("NumLock");
+            if (numLock === true) return;
+
+            key = this.#numKeyMap[key];
+        }
 
         if (event.ctrlKey) {
-            key = `Ctrl+${key}`;
+            key = `ctrl+${key}`;
         }
 
         if (event.shiftKey) {
-            key = `Shift+${key}`;
+            key = `shift+${key}`;
         }
 
         return this.#data[key];
