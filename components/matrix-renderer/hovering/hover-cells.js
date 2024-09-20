@@ -7,18 +7,30 @@ export function hoverCells(ctx, parentElement, details) {
     const rowIndex = details.rowSizes.getIndex(y);
     const columnIndex = details.columnSizes.getIndex(x);
 
-    if (checkForErrors(details, rowIndex, columnIndex) === true) {
+    if (checkForErrors(details, rowIndex, columnIndex, x, y) === true) {
         return;
     }
 
     // place future hover checks here.
 }
 
-function checkForErrors(details, rowIndex, columnIndex) {
+function checkForErrors(details, rowIndex, columnIndex, x, y) {
     if (details.def.errors != null) {
         const error = details.def.errors[`${rowIndex},${columnIndex}`];
         if (error != null) {
-            console.log(`hovered on error: ${error.message}`);
+            const toolX = details.canvasAABB.left + details.offsetX;
+            const toolY = details.canvasAABB.top + details.offsetY;
+
+            crsbinding.events.emitter.emit("tooltip", {
+                action: "show",
+                tooltip: error.message,
+                point: {x: toolX, y: toolY},
+                styles: {
+                   border: "solid 1px red",
+                   color: "red"
+                },
+                duration: 3000
+            })
 
             return true;
         }

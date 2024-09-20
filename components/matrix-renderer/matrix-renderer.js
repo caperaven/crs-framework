@@ -106,6 +106,7 @@ class MatrixRenderer extends HTMLElement {
             scrollTop   : this.#scrollTop,
             columnSizes : this.#columnSizes,
             rowSizes    : this.#rowSizes,
+            canvasAABB  : this.#ctx.canvas.getBoundingClientRect()
         }
 
         hover(this.#ctx, this, details);

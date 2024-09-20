@@ -7,6 +7,14 @@ export function hoverHeader(ctx, parentElement, details) {
     const measurement = ctx.measureText(column.title);
 
     if (measurement.width > column.width) {
-        console.log(`hovered on header: ${column.title}`);
+        const toolX = details.canvasAABB.left + details.offsetX;
+        const toolY = details.canvasAABB.top + details.offsetY;
+
+        crsbinding.events.emitter.emit("tooltip", {
+            action: "show",
+            tooltip: column.title,
+            point: {x: toolX, y: toolY},
+            duration: 3000
+        })
     }
 }

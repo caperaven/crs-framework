@@ -1,6 +1,8 @@
 export class ToolTips extends HTMLElement {
     #element = document.createElement("div");
     #handleEventHandler = this.#handleEvent.bind(this);
+    #timeout;
+    #stylesBackup;
 
     async connectedCallback() {
         this.style.position = "fixed";
@@ -40,20 +42,45 @@ export class ToolTips extends HTMLElement {
             this.#element.appendChild(event.tooltip);
         }
 
+        this.#applyStyles(event);
+
         this.appendChild(this.#element);
         await showOnScreen(this.#element, event);
 
         if (event.duration != null) {
-            const timeout = setTimeout(() => {
-                clearTimeout(timeout);
+            this.#timeout = setTimeout(() => {
+                clearTimeout(this.#timeout);
                 this.#hide();
             }, event.duration);
         }
     }
 
     async #hide() {
+        clearTimeout(this.#timeout);
+
+        if (this.#stylesBackup != null) {
+            for (const key in this.#stylesBackup) {
+                this.#element.style[key] = this.#stylesBackup[key];
+            }
+
+            this.#stylesBackup = null;
+        }
+
         this.#element.remove();
         this.#element.innerHTML = "";
+    }
+
+    #applyStyles(event) {
+        if (event.styles == null) return;
+
+        const backup = {};
+
+        for (const key in event.styles) {
+            backup[key] = this.#element.style[key];
+            this.#element.style[key] = event.styles[key];
+        }
+
+        this.#stylesBackup = backup
     }
 }
 
