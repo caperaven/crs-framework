@@ -89,7 +89,7 @@ function applyElementStyles(element) {
     element.style.top = "0";
     element.style.left = "0";
     element.style.border = "1px solid silver";
-    element.style.backgroundColor = "white";
+    element.style.background = "var(--grey-s3)";
     element.style.padding = "0.5rem";
 }
 
