@@ -91,6 +91,7 @@ function applyElementStyles(element) {
     element.style.border = "1px solid silver";
     element.style.background = "var(--grey-s3)";
     element.style.padding = "0.5rem";
+    element.style.boxShadow = "var(--drop-shadow)";
 }
 
 async function showOnScreen(element, event) {
