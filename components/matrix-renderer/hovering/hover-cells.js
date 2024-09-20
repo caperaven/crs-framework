@@ -26,8 +26,9 @@ function checkForErrors(details, rowIndex, columnIndex, x, y) {
                 tooltip: error.message,
                 point: {x: toolX, y: toolY},
                 styles: {
-                   border: "solid 1px red",
-                   color: "red"
+                    border: "solid 1px var(--red)",
+                    background: "var(--red-s3)",
+                    color: "var(--red)"
                 },
                 duration: 3000
             })
