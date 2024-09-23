@@ -1,3 +1,6 @@
+import {checkForErrors} from "./hover-cell-error.js";
+import {checkCellOverflow} from "./hover-cell-overflow.js";
+
 export function hoverCells(ctx, parentElement, details) {
     const isInFrozenZone = details.offsetX < (details.def.regions.frozenColumns?.right ?? 0);
 
@@ -11,31 +14,8 @@ export function hoverCells(ctx, parentElement, details) {
         return;
     }
 
-    // place future hover checks here.
-}
-
-function checkForErrors(details, rowIndex, columnIndex, x, y) {
-    if (details.def.errors != null) {
-        const error = details.def.errors[`${rowIndex},${columnIndex}`];
-        if (error != null) {
-            const toolX = details.canvasAABB.left + details.offsetX;
-            const toolY = details.canvasAABB.top + details.offsetY;
-
-            crsbinding.events.emitter.emit("tooltip", {
-                action: "show",
-                tooltip: error.message,
-                point: {x: toolX, y: toolY},
-                styles: {
-                    border: "solid 1px var(--red)",
-                    background: "var(--red-s3)",
-                    color: "var(--red)"
-                },
-                duration: 3000
-            })
-
-            return true;
-        }
+    if (checkCellOverflow(ctx, details, rowIndex, columnIndex) === true) {
+        return;
     }
-
-    return false;
 }
+
