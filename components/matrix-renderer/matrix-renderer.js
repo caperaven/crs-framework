@@ -28,6 +28,7 @@ class MatrixRenderer extends HTMLElement {
     #onScrollHandler = this.#onScroll.bind(this);
     #onMouseEventHandler = this.#onMouseEvent.bind(this);
     #onKeyDownHandler = this.#onKeyDown.bind(this);
+    #onMouseWheelHandler = this.#onMouseWheel.bind(this);
     #animateHandler = this.#animate.bind(this);
     #focusHandler = this.#focus.bind(this);
     #hoverHandler = this.#hover.bind(this);
@@ -73,6 +74,7 @@ class MatrixRenderer extends HTMLElement {
         this.removeEventListener("click", this.#onMouseEventHandler);
         this.removeEventListener("dblclick", this.#onMouseEventHandler);
         this.removeEventListener("keydown", this.#onKeyDownHandler);
+        this.removeEventListener("wheel", this.#onMouseWheelHandler);
 
         this.#ctx = null;
         this.#config = null;
@@ -127,10 +129,9 @@ class MatrixRenderer extends HTMLElement {
 
         // if we stop scrolling render the final frame
         const deltaTime = currentTime - this.#lastTime;
-        if (deltaTime > 20) {
+        if (deltaTime > 200) {
             this.#animating = false;
-            renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, true);
-            return;
+            return this.#finalRender(pageDetails);
         }
 
         if (this.#animating) {
@@ -144,7 +145,10 @@ class MatrixRenderer extends HTMLElement {
         this.#scrollTop = Math.ceil(event.target.scrollTop);
 
         if (!this.#animating) {
-            this.#markerElement = this.#markerElement?.remove();
+            if (this.#selection.column >= this.#config.frozenColumns?.count) {
+                this.#markerElement = this.#markerElement?.remove();
+            }
+
             this.#animating = true;
             this.#animate(this.#lastTime);
         }
@@ -172,6 +176,18 @@ class MatrixRenderer extends HTMLElement {
         this.#onClickCells(event);
     }
 
+    // prevent over scrolling
+    // this causes the navigation to kick in on touch pads.
+    // preventing this code ensures you stay on the same page
+    #onMouseWheel(event) {
+        if (event.deltaX < 0 && this.#scrollElement.scrollLeft === 0) {
+            event.preventDefault();
+        }
+
+        if (event.deltaX > 0 && this.#scrollElement.scrollLeft === this.#scrollElement.scrollWidth - this.#scrollElement.clientWidth) {
+            event.preventDefault();
+        }
+    }
 
     #onClickHeader() {
         // JHR: required for data grid but for now a placeholder
@@ -354,12 +370,33 @@ class MatrixRenderer extends HTMLElement {
         this.#animating = false;
     }
 
+    async #finalRender(pageDetails) {
+        pageDetails ||= this.#getPageDetails();
+        renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, true);
+
+        // is the selected row and column in the visible range.
+        // if it is, update the marker position.
+        // if it is not lave it as invisible.
+
+        const visibleRows = pageDetails.visibleRows;
+        const rowIsVisible = this.#selection.row >= visibleRows.start && this.#selection.row <= visibleRows.end;
+        const visibleColumns = pageDetails.visibleColumns;
+        const columnIsVisible =
+            (this.#selection.column >= visibleColumns.start && this.#selection.column <= visibleColumns.end) ||
+            this.#selection.column < this.#config.frozenColumns?.count;
+
+        if (rowIsVisible && columnIsVisible) {
+            await this.#updateMarkerPosition();
+        }
+    }
+
     async load() {
         requestAnimationFrame(async () => {
             this.#ctx = initialize(this.shadowRoot, this.offsetWidth, this.offsetHeight);
             this.addEventListener("click", this.#onMouseEventHandler);
             this.addEventListener("dblclick", this.#onMouseEventHandler);
             this.addEventListener("keydown", this.#onKeyDownHandler);
+            this.addEventListener("wheel", this.#onMouseWheelHandler);
 
             this.#scrollElement = this.shadowRoot.querySelector("#scroller");
 
