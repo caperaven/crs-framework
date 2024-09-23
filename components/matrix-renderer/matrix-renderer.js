@@ -129,10 +129,9 @@ class MatrixRenderer extends HTMLElement {
 
         // if we stop scrolling render the final frame
         const deltaTime = currentTime - this.#lastTime;
-        if (deltaTime > 20) {
+        if (deltaTime > 200) {
             this.#animating = false;
-            renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, true);
-            return;
+            return this.#finalRender(pageDetails);
         }
 
         if (this.#animating) {
@@ -146,7 +145,10 @@ class MatrixRenderer extends HTMLElement {
         this.#scrollTop = Math.ceil(event.target.scrollTop);
 
         if (!this.#animating) {
-            this.#markerElement = this.#markerElement?.remove();
+            if (this.#selection.column >= this.#config.frozenColumns?.count) {
+                this.#markerElement = this.#markerElement?.remove();
+            }
+
             this.#animating = true;
             this.#animate(this.#lastTime);
         }
@@ -366,6 +368,26 @@ class MatrixRenderer extends HTMLElement {
         }
         this.#lastTime = 0;
         this.#animating = false;
+    }
+
+    async #finalRender(pageDetails) {
+        pageDetails ||= this.#getPageDetails();
+        renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, true);
+
+        // is the selected row and column in the visible range.
+        // if it is, update the marker position.
+        // if it is not lave it as invisible.
+
+        const visibleRows = pageDetails.visibleRows;
+        const rowIsVisible = this.#selection.row >= visibleRows.start && this.#selection.row <= visibleRows.end;
+        const visibleColumns = pageDetails.visibleColumns;
+        const columnIsVisible =
+            (this.#selection.column >= visibleColumns.start && this.#selection.column <= visibleColumns.end) ||
+            this.#selection.column < this.#config.frozenColumns?.count;
+
+        if (rowIsVisible && columnIsVisible) {
+            await this.#updateMarkerPosition();
+        }
     }
 
     async load() {
