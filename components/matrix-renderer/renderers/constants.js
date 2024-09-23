@@ -1,7 +1,7 @@
 const PADDING_X = 8;
 const PADDING_Y = 8;
 
-const HARD_STROKE_COLOR = "#00000050";
+const HARD_STROKE_COLOR = "#00000070";
 const LINE_COLOR = "#c1c1c1";
 const CLEAR_COLOR = "#ffffff";
 const TEXT_COLOR = "#000000";

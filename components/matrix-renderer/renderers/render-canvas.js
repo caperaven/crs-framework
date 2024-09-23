@@ -223,7 +223,7 @@ function drawGroupLines(ctx, def, pageDetails, scrollX) {
 function drawHardStrokeLines(ctx, def) {
     ctx.save();
     ctx.strokeStyle = HARD_STROKE_COLOR;
-    ctx.lineWidth = 1;
+    ctx.lineWidth = 2;
     ctx.beginPath();
 
     // draw frozen columns separator
