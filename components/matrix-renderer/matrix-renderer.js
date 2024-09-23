@@ -270,19 +270,23 @@ class MatrixRenderer extends HTMLElement {
     async #ensureMarkerVisible() {
         let changed = false;
         const frozenRight = this.#config.regions.frozenColumns?.right ?? 0;
+        const isInFrozenZone = this.#selection.column < this.#config.frozenColumns?.count ?? 0;
 
-        // Check for conditions to the right of the scrollable area
-        if (this.#cellAABB.x2 > this.offsetWidth) {
-            const diff = this.#cellAABB.x2 - this.offsetWidth;
-            this.#scrollElement.scrollLeft += diff + 16;
-            changed = true;
-        }
+        // only check this if you are not in the frozen zone
+        if (!isInFrozenZone) {
+            // Check for conditions to the right of the scrollable area
+            if (this.#cellAABB.x2 > this.offsetWidth) {
+                const diff = this.#cellAABB.x2 - this.offsetWidth;
+                this.#scrollElement.scrollLeft += diff + 16;
+                changed = true;
+            }
 
-        // check for conditions to the left referencing the frozen columns right edge
-        if (this.#cellAABB.x1 < frozenRight) {
-            const diff = frozenRight - this.#cellAABB.x1;
-            this.#scrollElement.scrollLeft -= diff;
-            changed = true;
+            // check for conditions to the left referencing the frozen columns right edge
+            if (this.#cellAABB.x1 < frozenRight) {
+                const diff = frozenRight - this.#cellAABB.x1;
+                this.#scrollElement.scrollLeft -= diff;
+                changed = true;
+            }
         }
 
         // check if the selected is overflowing at the bottom
@@ -439,7 +443,12 @@ class MatrixRenderer extends HTMLElement {
         }
 
         await this.#updateMarkerPosition();
-        await this.#ensureMarkerVisible();
+
+        const isInFrozenZone = this.#selection.column < this.#config.frozenColumns?.count ?? 0;
+
+        if (!isInFrozenZone) {
+            await this.#ensureMarkerVisible();
+        }
 
         this.#markerElement.style.display = "block";
     }
@@ -555,6 +564,11 @@ class MatrixRenderer extends HTMLElement {
         const column = this.#config.columns[this.#selection.column];
         if (column.editable === true) {
             this.#editorLT[column.type](this.#ctx, this.#config, this.#selection.row, column, this.#cellAABB, this.shadowRoot);
+
+            // if a tooltip is active, remove it so that we can see the input
+            await crsbinding.events.emitter.emit("tooltip", {
+                action: "hide"
+            })
         }
     }
 
