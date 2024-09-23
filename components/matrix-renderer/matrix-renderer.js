@@ -28,6 +28,7 @@ class MatrixRenderer extends HTMLElement {
     #onScrollHandler = this.#onScroll.bind(this);
     #onMouseEventHandler = this.#onMouseEvent.bind(this);
     #onKeyDownHandler = this.#onKeyDown.bind(this);
+    #onMouseWheelHandler = this.#onMouseWheel.bind(this);
     #animateHandler = this.#animate.bind(this);
     #focusHandler = this.#focus.bind(this);
     #hoverHandler = this.#hover.bind(this);
@@ -73,6 +74,7 @@ class MatrixRenderer extends HTMLElement {
         this.removeEventListener("click", this.#onMouseEventHandler);
         this.removeEventListener("dblclick", this.#onMouseEventHandler);
         this.removeEventListener("keydown", this.#onKeyDownHandler);
+        this.removeEventListener("wheel", this.#onMouseWheelHandler);
 
         this.#ctx = null;
         this.#config = null;
@@ -172,6 +174,18 @@ class MatrixRenderer extends HTMLElement {
         this.#onClickCells(event);
     }
 
+    // prevent over scrolling
+    // this causes the navigation to kick in on touch pads.
+    // preventing this code ensures you stay on the same page
+    #onMouseWheel(event) {
+        if (event.deltaX < 0 && this.#scrollElement.scrollLeft === 0) {
+            event.preventDefault();
+        }
+
+        if (event.deltaX > 0 && this.#scrollElement.scrollLeft === this.#scrollElement.scrollWidth - this.#scrollElement.clientWidth) {
+            event.preventDefault();
+        }
+    }
 
     #onClickHeader() {
         // JHR: required for data grid but for now a placeholder
@@ -360,6 +374,7 @@ class MatrixRenderer extends HTMLElement {
             this.addEventListener("click", this.#onMouseEventHandler);
             this.addEventListener("dblclick", this.#onMouseEventHandler);
             this.addEventListener("keydown", this.#onKeyDownHandler);
+            this.addEventListener("wheel", this.#onMouseWheelHandler);
 
             this.#scrollElement = this.shadowRoot.querySelector("#scroller");
 
