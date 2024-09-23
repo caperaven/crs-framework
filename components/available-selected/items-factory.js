@@ -26,15 +26,14 @@ export class ItemsFactory {
      * @param parent {HTMLElement} - The element to use as parent.
      * @param action {String} - The action to use.
      * @param text_content {String} - The text content to use as button text.
+     * @param attributes {Object} - The attributes to use.
      * @returns {Promise<void>}
      */
-    static async #button(parent, action, text_content) {
+    static async #button(parent, action, text_content, attributes = {}) {
         await this.createElement("button", parent, {
             classes: ["icon"],
             dataset: {action: action},
-            attributes: {
-                draggable: true
-            },
+            attributes: attributes,
             text_content: text_content,
         });
     }
@@ -65,7 +64,7 @@ export class ItemsFactory {
 
         const label = await this.#label(null, idFieldText);
         if(element.dataset.drag === "true" && collection === "selected") {
-            await this.#button(li,  "drag", "drag-hori");
+            await this.#button(li,  "drag", "drag-hori", {draggable: true});
             label.dataset.action = "drag";
         }
 
