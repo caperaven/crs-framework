@@ -572,6 +572,8 @@ class MatrixRenderer extends HTMLElement {
 
     async editCell() {
         const column = this.#config.columns[this.#selection.column];
+        column.index = this.#selection.column;
+
         if (column.editable === true) {
             this.#editorLT[column.type](this.#ctx, this.#config, this.#selection.row, column, this.#cellAABB, this.shadowRoot);
 
