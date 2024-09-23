@@ -90,6 +90,14 @@ class MatrixRenderer extends HTMLElement {
         this.#hoverManager = this.#hoverManager.dispose();
     }
 
+    #updateAccessibility() {
+        const field = this.#config.columns[this.#selection.column].field;
+        const row = this.#config.rows[this.#selection.row];
+        const value = row[field];
+        const accessibilityText = `row ${this.#selection.row}, field ${field}, value ${value}`;
+        this.setAttribute("aria-label", accessibilityText);
+    }
+
     #focus() {
         this.focus();
     }
@@ -246,6 +254,8 @@ class MatrixRenderer extends HTMLElement {
 
     #updateMarkerPosition() {
         return new Promise(resolve => {
+            this.#updateAccessibility();
+
             requestAnimationFrame(() => {
                 const pageDetails = this.#getPageDetails();
                 const visibleRowIndex = this.#selection.row - pageDetails.visibleRows.start;
