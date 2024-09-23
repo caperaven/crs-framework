@@ -421,7 +421,10 @@ class MatrixRenderer extends HTMLElement {
         this.#selection.column = this.#columnSizes.getIndex(x);
 
         await this.#updateMarkerPosition();
-        await this.#ensureMarkerVisible();
+
+        if (isInFrozenZone === false) {
+            await this.#ensureMarkerVisible();
+        }
     }
 
     async selectLeft() {
