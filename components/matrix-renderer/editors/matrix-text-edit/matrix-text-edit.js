@@ -71,7 +71,7 @@ class MatrixTextEdit extends HTMLElement {
         this.#manager = manager;
 
         this.style.translate = `${aabb.x1 + 1}px ${aabb.y1 + 1}px`;
-        this.style.width = `${aabb.x2 - aabb.x1 - 14}px`;
+        this.style.width = `${aabb.x2 - aabb.x1 - 12}px`;
         this.style.height = `${aabb.y2 - aabb.y1 - 6}px`;
 
         crs.call("component", "on_ready", {

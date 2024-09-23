@@ -449,17 +449,35 @@ class MatrixRenderer extends HTMLElement {
             return;
         }
 
-        this.#selection.column = Math.min(this.#selection.column + 1, this.#columnSizes.length - 1);
+        const frozenCount = this.#config.frozenColumns?.count ?? 0;
+        const isInFrozenZone = this.#selection.column < frozenCount;
+        const isLastFrozenZone = this.#selection.column === frozenCount - 1;
 
-        const pageDetails = this.#getPageDetails();
+        // if the current selected column is the last frozen column, and you select right
+        // but there is scrolling, instead of selecting the next column, select the next visible column.
+        if (isLastFrozenZone) {
+            const x = this.#scrollLeft + this.#config.regions.frozenColumns.right + 1;
+            this.#selection.column = this.#columnSizes.getIndex(x);
+        }
+        else {
+            this.#selection.column = Math.min(this.#selection.column + 1, this.#columnSizes.length - 1);
+        }
 
-        if (this.#selection.column > pageDetails.visibleColumns.end - 1) {
-            this.#scrollElement.scrollLeft += this.#columnSizes.at(this.#selection.column);
-            renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, true);
+        // we are currently navigating in the frozen zone so we don't need to do page scrolling.
+        if (!isInFrozenZone) {
+            const pageDetails = this.#getPageDetails();
+
+            if (this.#selection.column > pageDetails.visibleColumns.end - 1) {
+                this.#scrollElement.scrollLeft += this.#columnSizes.at(this.#selection.column);
+                renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, true);
+            }
         }
 
         await this.#updateMarkerPosition();
-        await this.#ensureMarkerVisible();
+
+        if (!isInFrozenZone || isLastFrozenZone) {
+            await this.#ensureMarkerVisible();
+        }
     }
 
     async selectUp() {
