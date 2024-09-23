@@ -145,10 +145,7 @@ class MatrixRenderer extends HTMLElement {
         this.#scrollTop = Math.ceil(event.target.scrollTop);
 
         if (!this.#animating) {
-            if (this.#selection.column >= this.#config.frozenColumns?.count) {
-                this.#markerElement = this.#markerElement?.remove();
-            }
-
+            this.#markerElement = this.#markerElement?.remove();
             this.#animating = true;
             this.#animate(this.#lastTime);
         }
