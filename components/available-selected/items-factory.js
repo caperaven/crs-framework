@@ -32,6 +32,9 @@ export class ItemsFactory {
         await this.createElement("button", parent, {
             classes: ["icon"],
             dataset: {action: action},
+            attributes: {
+                draggable: true
+            },
             text_content: text_content,
         });
     }
