@@ -181,6 +181,15 @@ function drawColumnLines(ctx, def, pageDetails, scrollX) {
         ctx.moveTo(x, top);
         ctx.lineTo(x, bottom);
     }
+
+    if (frozenRight > 0) {
+        let x = 0;
+        for (let i = 0; i < def.frozenColumns.count; i++) {
+            x += def.columns[i].width;
+            ctx.moveTo(x, top)
+            ctx.lineTo(x, bottom)
+        }
+    }
 }
 
 function drawRowLines(ctx, def, pageDetails, scrollY) {
