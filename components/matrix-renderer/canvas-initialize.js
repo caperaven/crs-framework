@@ -1,7 +1,20 @@
 export function initialize(parent, width, height) {
     const ctx = createCanvas(parent, width, height);
+    createOverlayContainer(parent, width, height);
     createScroller(parent, width, height);
     return ctx;
+}
+
+function createOverlayContainer(parent, width, height) {
+    const overlay = document.createElement("div");
+    overlay.id = "overlay";
+    overlay.style.width = `${width}px`;
+    overlay.style.height = `${height}px`;
+    overlay.style.position = "absolute";
+    overlay.style.top = "0px";
+    overlay.style.left = "0px";
+    overlay.style.willChange = "transform";
+    parent.appendChild(overlay);
 }
 
 function createCanvas(parent, width, height) {

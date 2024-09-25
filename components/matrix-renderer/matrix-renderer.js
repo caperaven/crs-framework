@@ -10,6 +10,7 @@ import {setCellAABB, setFrozenAABB} from "./aabb/aabb.js";
 import {setCellMarker} from "./dom/cell-marker.js"
 import {HoverManager} from "./managers/hover-manager.js";
 import {hover} from "./hovering/hovering.js";
+import {OverlayManager, OverlayChanges} from "./managers/overlay-manager.js";
 
 class MatrixRenderer extends HTMLElement {
     #ctx;
@@ -37,6 +38,7 @@ class MatrixRenderer extends HTMLElement {
     #hoverManager = new HoverManager();
     #cellAABB = { x1: 0, x2: 0, y1: 0, y2: 0 };
     #markerElement;
+    #overlayManager;
     #selection = {
         row: 0,
         column: 0
@@ -86,6 +88,7 @@ class MatrixRenderer extends HTMLElement {
         this.#renderLT = null;
         this.#markerElement = null;
         this.#inputManager = this.#inputManager.dispose();
+        this.#overlayManager = this.#overlayManager.dispose();
         this.#selection = null;
 
         this.#hoverManager.removeEventListener("hover", this.#hoverHandler);
@@ -346,6 +349,7 @@ class MatrixRenderer extends HTMLElement {
             callback: this.#dataManagerChangedHandler
         });
 
+        this.#overlayManager = this.#overlayManager?.dispose();
         this.#rowSizes = this.#rowSizes.dispose();
         this.#columnSizes = this.#columnSizes.dispose();
         this.#groupSizes = this.#groupSizes?.dispose();
@@ -393,15 +397,17 @@ class MatrixRenderer extends HTMLElement {
             this.addEventListener("click", this.#onMouseEventHandler);
             this.addEventListener("dblclick", this.#onMouseEventHandler);
             this.addEventListener("keydown", this.#onKeyDownHandler);
-            this.addEventListener("wheel", this.#onMouseWheelHandler);
+            this.addEventListener("wheel", this.#onMouseWheelHandler, { passive: true });
 
             this.#scrollElement = this.shadowRoot.querySelector("#scroller");
 
             await crsbinding.events.emitter.on("matrix-editing-removed", this.#focusHandler);
-            await crs.call("component", "notify_ready", { element: this });
 
+            // set up hovering
             this.#hoverManager.initialize(this);
             this.#hoverManager.addEventListener("hover", this.#hoverHandler);
+
+            await crs.call("component", "notify_ready", { element: this });
         })
     }
 
@@ -442,6 +448,10 @@ class MatrixRenderer extends HTMLElement {
             // 5. render the canvas
             const pageDetails = this.#getPageDetails();
             renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, true);
+
+            const overlayElement = this.shadowRoot.querySelector("#overlay");
+            this.#overlayManager = new OverlayManager(overlayElement);
+            this.#overlayManager.updatePage(OverlayChanges.COLUMNS | OverlayChanges.ROWS, this.#config, pageDetails);
 
             await this.#updateMarkerPosition();
 
