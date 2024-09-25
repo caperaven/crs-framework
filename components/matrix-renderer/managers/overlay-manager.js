@@ -21,17 +21,18 @@ export class OverlayManager {
         return null;
     }
 
-    updatePage(overlayChanges, def, pageDetails) {
+    // The args differ from call to call so use the spread operator
+    update(overlayChanges, ...args) {
         if (overlayChanges & OverlayChanges.COLUMNS) {
-            this.#headerOverlay.updatePage(def, pageDetails);
+            this.#headerOverlay.updatePage(...args);
         }
 
         if (overlayChanges & OverlayChanges.ROWS) {
-            this.#cellsOverlay.updatePage(def, pageDetails);
+            this.#cellsOverlay.updatePage(...args);
         }
 
         if (overlayChanges & OverlayChanges.SELECTION) {
-            this.#cellsOverlay.updateSelection(pageDetails);
+            this.#cellsOverlay.updateSelection(...args);
         }
     }
 }

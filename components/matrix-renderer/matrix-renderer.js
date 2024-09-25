@@ -6,8 +6,6 @@ import {SizesManager} from "../../src/managers/grid-data-managers/sizes-manager.
 import {InputManager} from "./managers/input-manager.js";
 import {renderCanvas, createRenderLT} from "./renderers/render.js";
 import {createEditorLT} from "./editors/editor.js";
-import {setCellAABB, setFrozenAABB} from "./aabb/aabb.js";
-import {setCellMarker} from "./dom/cell-marker.js"
 import {HoverManager} from "./managers/hover-manager.js";
 import {hover} from "./hovering/hovering.js";
 import {OverlayManager, OverlayChanges} from "./managers/overlay-manager.js";
@@ -29,15 +27,14 @@ class MatrixRenderer extends HTMLElement {
     #onScrollHandler = this.#onScroll.bind(this);
     #onMouseEventHandler = this.#onMouseEvent.bind(this);
     #onKeyDownHandler = this.#onKeyDown.bind(this);
-    #onMouseWheelHandler = this.#onMouseWheel.bind(this);
     #animateHandler = this.#animate.bind(this);
     #focusHandler = this.#focus.bind(this);
     #hoverHandler = this.#hover.bind(this);
     #renderLT = createRenderLT();
     #editorLT = createEditorLT();
+    #updateAABBCallbackHandler = this.#updateAABBCallback.bind(this);
     #hoverManager = new HoverManager();
     #cellAABB = { x1: 0, x2: 0, y1: 0, y2: 0 };
-    #markerElement;
     #overlayManager;
     #selection = {
         row: 0,
@@ -76,7 +73,6 @@ class MatrixRenderer extends HTMLElement {
         this.removeEventListener("click", this.#onMouseEventHandler);
         this.removeEventListener("dblclick", this.#onMouseEventHandler);
         this.removeEventListener("keydown", this.#onKeyDownHandler);
-        this.removeEventListener("wheel", this.#onMouseWheelHandler);
 
         this.#ctx = null;
         this.#config = null;
@@ -85,8 +81,8 @@ class MatrixRenderer extends HTMLElement {
         this.#columnSizes = this.#columnSizes.dispose();
         this.#onScrollHandler = null;
         this.#animateHandler = null;
+        this.#updateAABBCallbackHandler = null;
         this.#renderLT = null;
-        this.#markerElement = null;
         this.#inputManager = this.#inputManager.dispose();
         this.#overlayManager = this.#overlayManager.dispose();
         this.#selection = null;
@@ -128,8 +124,9 @@ class MatrixRenderer extends HTMLElement {
     #animate() {
         const currentTime = performance.now();
         const pageDetails = this.#getPageDetails();
-        renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, false);
 
+        renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, false);
+this.#updateMarkerPosition()
         // if we stop scrolling render the final frame
         const deltaTime = currentTime - this.#lastTime;
         if (deltaTime > 200) {
@@ -148,7 +145,6 @@ class MatrixRenderer extends HTMLElement {
         this.#scrollTop = Math.ceil(event.target.scrollTop);
 
         if (!this.#animating) {
-            this.#markerElement = this.#markerElement?.remove();
             this.#animating = true;
             this.#animate(this.#lastTime);
         }
@@ -174,19 +170,6 @@ class MatrixRenderer extends HTMLElement {
         }
 
         this.#onClickCells(event);
-    }
-
-    // prevent over scrolling
-    // this causes the navigation to kick in on touch pads.
-    // preventing this code ensures you stay on the same page
-    #onMouseWheel(event) {
-        if (event.deltaX < 0 && this.#scrollElement.scrollLeft === 0) {
-            event.preventDefault();
-        }
-
-        if (event.deltaX > 0 && this.#scrollElement.scrollLeft === this.#scrollElement.scrollWidth - this.#scrollElement.clientWidth) {
-            event.preventDefault();
-        }
     }
 
     #onClickHeader() {
@@ -259,7 +242,8 @@ class MatrixRenderer extends HTMLElement {
             groupsActualSizes,
             groupsCumulativeSizes,
             columnLocation,
-            rowLocation
+            rowLocation,
+            selection: this.#selection
         };
     }
 
@@ -269,28 +253,17 @@ class MatrixRenderer extends HTMLElement {
     }
 
     #updateMarkerPosition() {
-        return new Promise(resolve => {
-            this.#updateAccessibility();
+        this.#updateAccessibility();
 
-            requestAnimationFrame(() => {
-                const pageDetails = this.#getPageDetails();
-                const visibleRowIndex = this.#selection.row - pageDetails.visibleRows.start;
-                const isInFrozenZone = this.#selection.column < this.#config.frozenColumns?.count ?? 0;
+        const pageDetails = this.#getPageDetails();
 
-                if (isInFrozenZone) {
-                    setFrozenAABB(this.#cellAABB, this.#config, pageDetails, this.#selection.column, visibleRowIndex, this.#scrollTop);
-                }
-                else {
-                    const visibleColumnIndex = this.#selection.column - pageDetails.visibleColumns.start;
-                    setCellAABB(this.#cellAABB, this.#config, pageDetails, visibleColumnIndex, visibleRowIndex, this.#scrollLeft, this.#scrollTop);
-                }
-
-                const errorKey = `${this.#selection.row},${this.#selection.column}`;
-                const hasError = this.#config.errors?.[errorKey] != null;
-                this.#markerElement = setCellMarker(this.#markerElement, this.shadowRoot, this.#cellAABB, hasError);
-                resolve();
-            })
-        })
+        this.#overlayManager.update(
+            OverlayChanges.SELECTION,
+            this.#config,
+            pageDetails,
+            this.#scrollLeft,
+            this.#scrollTop,
+            this.#updateAABBCallbackHandler);
     }
 
     async #ensureMarkerVisible() {
@@ -391,13 +364,16 @@ class MatrixRenderer extends HTMLElement {
         }
     }
 
+    #updateAABBCallback(aabb) {
+        this.#cellAABB = aabb;
+    }
+
     async load() {
         requestAnimationFrame(async () => {
             this.#ctx = initialize(this.shadowRoot, this.offsetWidth, this.offsetHeight);
             this.addEventListener("click", this.#onMouseEventHandler);
             this.addEventListener("dblclick", this.#onMouseEventHandler);
             this.addEventListener("keydown", this.#onKeyDownHandler);
-            this.addEventListener("wheel", this.#onMouseWheelHandler, { passive: true });
 
             this.#scrollElement = this.shadowRoot.querySelector("#scroller");
 
@@ -451,7 +427,11 @@ class MatrixRenderer extends HTMLElement {
 
             const overlayElement = this.shadowRoot.querySelector("#overlay");
             this.#overlayManager = new OverlayManager(overlayElement);
-            this.#overlayManager.updatePage(OverlayChanges.COLUMNS | OverlayChanges.ROWS, this.#config, pageDetails);
+
+            this.#overlayManager.update(
+                OverlayChanges.COLUMNS | OverlayChanges.ROWS,
+                this.#config,
+                pageDetails);
 
             await this.#updateMarkerPosition();
 
@@ -492,10 +472,6 @@ class MatrixRenderer extends HTMLElement {
 
         this.#selection.column = Math.max(this.#selection.column - 1, 0);
 
-        if (this.#markerElement) {
-            this.#markerElement.style.display = "none";
-        }
-
         await this.#updateMarkerPosition();
 
         const isInFrozenZone = this.#selection.column < this.#config.frozenColumns?.count ?? 0;
@@ -503,8 +479,6 @@ class MatrixRenderer extends HTMLElement {
         if (!isInFrozenZone) {
             await this.#ensureMarkerVisible();
         }
-
-        this.#markerElement.style.display = "block";
     }
 
     async selectRight() {
@@ -550,14 +524,8 @@ class MatrixRenderer extends HTMLElement {
 
         this.#selection.row = Math.max(this.#selection.row - 1, 0);
 
-        if (this.#markerElement) {
-            this.#markerElement.style.display = "none";
-        }
-
         await this.#updateMarkerPosition();
         await this.#ensureMarkerVisible();
-
-        this.#markerElement.style.display = "block";
     }
 
     async selectDown() {

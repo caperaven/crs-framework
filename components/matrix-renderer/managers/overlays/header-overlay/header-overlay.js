@@ -8,6 +8,11 @@ export class HeaderOverlay extends OverlayBase {
         super(parentElement, "header-overlay", import.meta.url.replace(".js", ".css"));
     }
 
+    dispose() {
+        this.#currentCount = null;
+        return null;
+    }
+
     updatePage(def, pageDetails) {
         const count = def.frozenColumns.count + pageDetails.visibleColumns.end - pageDetails.visibleColumns.start;
         if (this.#currentCount < count) {

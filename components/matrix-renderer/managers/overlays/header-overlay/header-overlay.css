@@ -8,8 +8,6 @@
     width: 100%;
     height: var(--header-height);
     translate: 0 var(--header-top);
-    background: red;
-    display: none;
 }
 
 .header-overlay.visible {
