@@ -36,6 +36,10 @@ export class HeaderOverlayBuilder {
     }
 
     build() {
+        if (!this.#data.resize && !this.#data.filter && !this.#data.sort) {
+            return null;
+        }
+
         return createColumnsControl(this.#data);
     }
 }

@@ -327,7 +327,7 @@ class MatrixRenderer extends HTMLElement {
             callback: this.#dataManagerChangedHandler
         });
 
-        this.#overlayManager = this.#overlayManager?.dispose();
+        this.#overlayManager = this.#overlayManager.dispose();
         this.#rowSizes = this.#rowSizes.dispose();
         this.#columnSizes = this.#columnSizes.dispose();
         this.#groupSizes = this.#groupSizes?.dispose();

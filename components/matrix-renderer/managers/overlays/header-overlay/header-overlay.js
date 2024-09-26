@@ -12,8 +12,17 @@ export class HeaderOverlay extends OverlayBase {
         this.#settings = settings;
 
         if (settings != null) {
+            // the template can be null if the settings indicate that there is nothing to show
+            // in that case we treat it as if there were no settings at all
+            // this is important because the updatePage method will do nothing if the settings are null
             this.#template = new HeaderOverlayBuilder(this.#settings).build();
-            parentElement.appendChild(this.#template);
+
+            if (this.#template == null) {
+                this.#settings = null;
+            }
+            else {
+                parentElement.appendChild(this.#template);
+            }
         }
     }
 

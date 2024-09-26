@@ -50,7 +50,7 @@ export default class MatrixRendererViewModel extends crsbinding.classes.ViewBase
                             header: {
                                 sort: false,
                                 filter: false,
-                                resize: true
+                                resize: false
                             }
                         },
 
