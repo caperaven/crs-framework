@@ -60,7 +60,7 @@ export class HeaderOverlay extends OverlayBase {
     updatePage(def, pageDetails) {
         if (this.#settings == null) return;
 
-        const count = def.frozenColumns.count + pageDetails.visibleColumns.end - pageDetails.visibleColumns.start;
+        const count = (def.frozenColumns?.count ?? 0) + pageDetails.visibleColumns.end - pageDetails.visibleColumns.start;
         if (this.#currentCount < count) {
             createHeaderOverlays(count - this.#currentCount, this.element, this.#template);
             this.#currentCount = count;

@@ -57,9 +57,9 @@ export default class MatrixRendererViewModel extends crsbinding.classes.ViewBase
                             }
                         },
 
-                        frozenColumns: {
-                            count: 3
-                        },
+                        // frozenColumns: {
+                        //     count: 3
+                        // },
                         heights: {
                             groupHeader: 50,
                             header: 40,

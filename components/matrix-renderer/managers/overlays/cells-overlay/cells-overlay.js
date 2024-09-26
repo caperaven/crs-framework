@@ -49,11 +49,11 @@ function isMarkerVisible(def, pageDetails, aabb) {
     }
 
     // 2. is the marker on a frozen column, if so it is always visible and we don't need other checks.
-    if (pageDetails.selection.column < def.frozenColumns.count) {
+    if (pageDetails.selection.column < (def.frozenColumns?.count ?? 0)) {
         return true;
     }
 
-    if (aabb.x1 < def.regions.frozenColumns.right) {
+    if (aabb.x1 < (def.regions.frozenColumns?.right ?? 0)) {
         return false;
     }
 
