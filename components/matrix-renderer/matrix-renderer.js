@@ -19,8 +19,11 @@ class MatrixRenderer extends HTMLElement {
     #rowSizes;
     #animating = false;
     #animationId;
+    #updateOptions = OverlayChanges.SELECTION;
     #scrollLeft = 0;
     #scrollTop = 0;
+    #scrollOldLeft = 0;
+    #scrollOldTop = 0;
     #lastTime = 0;
     #inputManager = new InputManager();
     #dataManagerChangedHandler = this.#dataManagerChange.bind(this);
@@ -44,7 +47,6 @@ class MatrixRenderer extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: "open" });
-        this.setAttribute("tabindex", "0");
     }
 
     async connectedCallback() {
@@ -148,6 +150,22 @@ class MatrixRenderer extends HTMLElement {
         this.#lastTime = performance.now();
         this.#scrollLeft = Math.ceil(event.target.scrollLeft);
         this.#scrollTop = Math.ceil(event.target.scrollTop);
+
+        const deltaX = this.#scrollLeft - this.#scrollOldLeft;
+        const deltaY = this.#scrollTop - this.#scrollOldTop;
+
+        this.#scrollOldLeft = this.#scrollLeft;
+        this.#scrollOldTop = this.#scrollTop;
+
+        this.#updateOptions = OverlayChanges.SELECTION;
+
+        if (deltaX !== 0) {
+            this.#updateOptions |= OverlayChanges.COLUMNS;
+        }
+
+        if (deltaY !== 0) {
+            this.#updateOptions |= OverlayChanges.ROWS;
+        }
 
         if (!this.#animating) {
             this.#animating = true;
@@ -263,7 +281,7 @@ class MatrixRenderer extends HTMLElement {
         const pageDetails = this.#getPageDetails();
 
         this.#overlayManager.update(
-            OverlayChanges.SELECTION,
+            this.#updateOptions,
             this.#config,
             pageDetails,
             this.#scrollLeft,
@@ -375,6 +393,7 @@ class MatrixRenderer extends HTMLElement {
 
     async load() {
         requestAnimationFrame(async () => {
+            this.setAttribute("tabindex", "0");
             this.#ctx = initialize(this.shadowRoot, this.offsetWidth, this.offsetHeight);
             this.addEventListener("click", this.#onMouseEventHandler);
             this.addEventListener("dblclick", this.#onMouseEventHandler);
@@ -436,7 +455,9 @@ class MatrixRenderer extends HTMLElement {
             this.#overlayManager.update(
                 OverlayChanges.COLUMNS | OverlayChanges.ROWS,
                 this.#config,
-                pageDetails);
+                pageDetails,
+                this.#scrollLeft,
+                this.#scrollTop);
 
             await this.#updateMarkerPosition();
 

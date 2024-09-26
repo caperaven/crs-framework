@@ -33,12 +33,12 @@ export class HeaderOverlay extends OverlayBase {
         return null;
     }
 
-    #updatePositions(def, pageDetails) {
-        const startIndex = this.#updateFrozenHeaders(def, pageDetails);
-        this.#updateCellHeaders(def, pageDetails, startIndex);
+    #updatePositions(def, pageDetails, scrollLeft, scrollTop) {
+        const startIndex = this.#updateFrozenHeaders(def);
+        this.#updateCellHeaders(def, pageDetails, startIndex, scrollLeft, scrollTop);
     }
 
-    #updateFrozenHeaders(def, pageDetails) {
+    #updateFrozenHeaders(def) {
         if ((def.frozenColumns?.count ?? 0) === 0) {
             return 1;
         }
@@ -46,18 +46,34 @@ export class HeaderOverlay extends OverlayBase {
         for (let i = 0; i < def.frozenColumns.count; i++) {
             const overlay = this.element.children[i + 1];
             const x = def.frozenColumns.columnsCumulativeSizes[i] - this.#width;
-            const y = 0;
-            overlay.style.translate = `${x}px ${y}px`;
+            overlay.style.translate = `${x}px`;
+            overlay.dataset.index = i;
+            overlay.dataset.field = def.columns[i].field;
         }
 
-        return def.frozenColumns.count;
+        return def.frozenColumns.count + 1;
     }
 
-    #updateCellHeaders(def, pageDetails) {
+    #updateCellHeaders(def, pageDetails, startIndex, scrollLeft, scrollTop) {
+        let index = startIndex;
 
+        for (let i = 0; i < pageDetails.columnsCumulativeSizes.length; i++) {
+            const x = pageDetails.columnsCumulativeSizes[i] - scrollLeft;
+            if (x <= def.regions.frozenColumns.right) {
+                continue;
+            }
+
+            const overlay = this.element.children[index];
+            const columnIndex = pageDetails.visibleColumns.start + i;
+
+            overlay.style.translate = `${x - this.#width}px`;
+            overlay.dataset.index = columnIndex;
+            overlay.dataset.field = def.columns[columnIndex].field;
+            index++;
+        }
     }
 
-    updatePage(def, pageDetails) {
+    updatePage(def, pageDetails, scrollLeft, scrollTop) {
         if (this.#settings == null) return;
 
         const count = (def.frozenColumns?.count ?? 0) + pageDetails.visibleColumns.end - pageDetails.visibleColumns.start;
@@ -69,7 +85,7 @@ export class HeaderOverlay extends OverlayBase {
         this.element.style.setProperty("--header-height", `${def.heights.header}px`);
         this.element.style.setProperty("--header-top", `${def.regions.header.top}px`);
 
-        this.#updatePositions(def, pageDetails);
+        this.#updatePositions(def, pageDetails, scrollLeft, scrollTop);
     }
 }
 

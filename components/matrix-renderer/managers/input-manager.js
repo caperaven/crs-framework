@@ -17,8 +17,8 @@ export class InputManager {
         "pagedown"      : InputActions.SELECT_PAGE_DOWN,
         "home"          : InputActions.SELECT_ROW_HOME,
         "end"           : InputActions.SELECT_ROW_END,
-        "shift+home"    : InputActions.HOME,
-        "shift+end"     : InputActions.END,
+        "ctrl+home"    : InputActions.HOME,
+        "ctrl+end"     : InputActions.END,
         "tab"           : InputActions.SELECT_RIGHT,
         "shift+tab"     : InputActions.SELECT_LEFT,
     }
