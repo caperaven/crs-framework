@@ -24,9 +24,7 @@ canvas {
     position: absolute;
     top: 0;
     left: 0;
-    width: var(--width);
-    height: var(--height);
-    z-index: 2;
+    z-index: 3;
 }
 
 #scroller {
@@ -37,7 +35,7 @@ canvas {
     height: var(--height);
     overflow: auto;
     will-change: transform;
-    z-index: 3;
+    z-index: 2;
 }
 
 #marker {
@@ -46,4 +44,8 @@ canvas {
     left: 0;
     width: 1px;
     height: 1px;
+}
+
+.editor {
+    z-index: 4;
 }
