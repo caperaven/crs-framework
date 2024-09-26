@@ -469,6 +469,9 @@ class MatrixRenderer extends HTMLElement {
 
             this.focus();
         }
+        catch(error) {
+            console.error(error);
+        }
         finally {
             this.#scrollElement.addEventListener("scroll", this.#onScrollHandler);
         }
@@ -481,8 +484,19 @@ class MatrixRenderer extends HTMLElement {
         const y = this.#scrollTop + event.offsetY - this.#config.regions.cells.top;
         const x = isInFrozenZone ? event.offsetX : event.offsetX + this.#scrollLeft;
 
-        this.#selection.row = this.#rowSizes.getIndex(y);
-        this.#selection.column = this.#columnSizes.getIndex(x);
+        let selectedRow = this.#rowSizes.getIndex(y);
+        let selectedColumn = this.#columnSizes.getIndex(x);
+
+        if (selectedRow === -1) {
+            selectedRow = this.#selection.row;
+        }
+
+        if (selectedColumn === -1) {
+            selectedColumn = this.#selection.column;
+        }
+
+        this.#selection.row = selectedRow;
+        this.#selection.column = selectedColumn;
 
         await this.#updateMarkerPosition();
 

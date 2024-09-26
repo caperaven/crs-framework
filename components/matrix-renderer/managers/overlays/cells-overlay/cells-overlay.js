@@ -42,7 +42,7 @@ export class CellsOverlay extends OverlayBase {
 
 function isMarkerVisible(def, pageDetails, aabb) {
     // 1. is the marker row visible, if not it does not matter what column it is on, don't show it.
-    const isRowVisible = aabb.y1 > def.regions.cells.top && aabb.y2 < def.regions.cells.bottom;
+    const isRowVisible = aabb.y1 >= def.regions.cells.top && aabb.y2 <= def.regions.cells.bottom;
 
     if (!isRowVisible) {
         return false;
