@@ -445,6 +445,10 @@ class MatrixRenderer extends HTMLElement {
             const markerElement = this.shadowRoot.querySelector("#marker");
             moveScrollMarker(markerElement, this.#columnSizes, this.#rowSizes, this.#config);
 
+            const canvasBottom = this.#config.regions.cells.bottom;
+            const contentBottom = this.#config.regions.cells.top + this.#rowSizes.totalSize;
+            this.#config.regions.cells.bottom = Math.min(canvasBottom, contentBottom);
+
             // 5. render the canvas
             const pageDetails = this.#getPageDetails();
             renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, true);

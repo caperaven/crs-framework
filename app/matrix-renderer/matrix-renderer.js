@@ -1,6 +1,6 @@
 import {DataType} from  "./../../components/matrix-renderer/matrix-renderer.js";
 
-const ROW_COUNT = 3;
+const ROW_COUNT = 10;
 const COL_COUNT = 2;
 
 export default class MatrixRendererViewModel extends crsbinding.classes.ViewBase {

@@ -3,6 +3,10 @@ export function hoverHeader(ctx, parentElement, details) {
     const x = isInFrozenZone ? details.offsetX : details.offsetX + details.scrollLeft;
 
     const columnIndex = details.columnSizes.getIndex(x);
+    if (columnIndex === -1) {
+        return;
+    }
+
     const column = details.def.columns[columnIndex];
     const measurement = ctx.measureText(column.title);
 
