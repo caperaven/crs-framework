@@ -1,7 +1,8 @@
 export class HeaderOverlayBuilder {
     #data = {
         resize: true,
-        filter: true,
+        filter: false,
+        sort: false,
         fieldName: "",
         columnIndex: 0
     }
@@ -39,12 +40,12 @@ function createColumnsControl(data) {
     result.dataset.resize = data.resize;
     result.dataset.filter = data.filter;
 
-    if (data.resize) {
-        result.appendChild(createResize());
-    }
-
     if (data.filter) {
         result.appendChild(createFilter());
+    }
+
+    if (data.resize) {
+        result.appendChild(createResize());
     }
 
     return result;
@@ -58,6 +59,7 @@ function createResize() {
 
 function createFilter() {
     const result = document.createElement("div");
+    result.textContent = "filter";
     result.classList.add("filter");
     return result;
 }

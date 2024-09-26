@@ -1,33 +1,11 @@
-export function initialize(parent, width, height) {
-    const ctx = createCanvas(parent, width, height);
-    createOverlayContainer(parent, width, height);
-    createScroller(parent, width, height);
-    return ctx;
-}
-
-function createOverlayContainer(parent, width, height) {
-    const overlay = document.createElement("div");
-    overlay.id = "overlay";
-    overlay.style.width = `${width}px`;
-    overlay.style.height = `${height}px`;
-    overlay.style.position = "absolute";
-    overlay.style.top = "0px";
-    overlay.style.left = "0px";
-    overlay.style.willChange = "transform";
-    parent.appendChild(overlay);
+export function initialize(parentElement, width, height) {
+    parentElement.host.style.setProperty("--width", `${width}px`);
+    parentElement.host.style.setProperty("--height", `${height}px`);
+    return createCanvas(parentElement, width, height);
 }
 
 function createCanvas(parent, width, height) {
-    const canvas = document.createElement("canvas")
-    canvas.style.width = `${width}px`;
-    canvas.style.height = `${height}px`;
-
-    // avoid half pixels by explicitly setting the position
-    // once you do that the element
-    canvas.style.position = "absolute";
-    canvas.style.top = "0px";
-    canvas.style.left = "0px";
-    canvas.style.imageRendering = "pixelated";
+    const canvas = parent.querySelector("canvas");
     parent.appendChild(canvas);
 
     const dpr = window.devicePixelRatio;
@@ -38,30 +16,4 @@ function createCanvas(parent, width, height) {
     ctx.scale(dpr, dpr);
 
     return ctx;
-}
-
-function createScroller(parent, width, height) {
-    const scroller = document.createElement("div");
-    scroller.id = "scroller";
-    scroller.style.width = `${width}px`;
-    scroller.style.height = `${height}px`;
-    scroller.style.position = "absolute";
-    scroller.style.top = "0px";
-    scroller.style.left = "0px";
-    scroller.style.overflow = "auto";
-    scroller.style.willChange = "transform";
-
-    createMarker(scroller);
-
-    parent.appendChild(scroller);
-}
-
-function createMarker(parent) {
-    const marker = document.createElement("div");
-    marker.id = "marker";
-    marker.style.width = "1px";
-    marker.style.height = "1px";
-    marker.style.position = "absolute";
-    marker.style.translate = "0px 0px";
-    parent.appendChild(marker);
 }

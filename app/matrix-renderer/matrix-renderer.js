@@ -22,44 +22,51 @@ export default class MatrixRendererViewModel extends crsbinding.classes.ViewBase
     async load() {
         requestAnimationFrame(async () => {
             this.#matrix = this.element.querySelector("matrix-renderer");
-            const columns = getColumns("A");
 
-            this.#matrix.addEventListener("edit-row", this.#editRow);
+            await crs.call("component", "on_ready", {
+                element: this.#matrix,
+                caller: this,
+                callback: async () => {
+                    const columns = getColumns("A");
 
-            await crs.call("data_manager", "register", {
-                manager: this.#manager,
-                id_field: "id",
-                type: "memory",
-                records: getRows()
-            })
+                    this.#matrix.addEventListener("edit-row", this.#editRow);
 
-            await this.#matrix.initialize({
-                errors: {
-                    "1,0": {"message": "Something went wrong"},
-                    "2,1": {"message": "This is not correct"},
-                    "25,10": {"message": "Error 25, 10"},
-                    "100,100": {"message": "Error 100, 100"}
-                },
+                    await crs.call("data_manager", "register", {
+                        manager: this.#manager,
+                        id_field: "id",
+                        type: "memory",
+                        records: getRows()
+                    })
 
-                frozenColumns: {
-                    count: 3
-                },
-                heights: {
-                    groupHeader: 50,
-                    header: 40,
-                    row: 32
-                },
-                groups: [
-                    { from: 0, to: 1, title: "" },
-                    { from: 1, to: 3, title: "Group1" },
-                    { from: 3, to: 29, title: "Group3" },
-                    { from: 29, title: "Group4" },
-                ],
-                columns,
-                manager: this.#manager,
-                canvas: {
-                    height: this.#matrix.offsetHeight,
-                    width: this.#matrix.offsetWidth
+                    await this.#matrix.initialize({
+                        errors: {
+                            "1,0": {"message": "Something went wrong"},
+                            "2,1": {"message": "This is not correct"},
+                            "25,10": {"message": "Error 25, 10"},
+                            "100,100": {"message": "Error 100, 100"}
+                        },
+
+                        frozenColumns: {
+                            count: 3
+                        },
+                        heights: {
+                            groupHeader: 50,
+                            header: 40,
+                            row: 32
+                        },
+                        groups: [
+                            { from: 0, to: 1, title: "" },
+                            { from: 1, to: 3, title: "Group1" },
+                            { from: 3, to: 29, title: "Group3" },
+                            { from: 29, title: "Group4" },
+                        ],
+                        columns,
+                        manager: this.#manager,
+                        canvas: {
+                            height: this.#matrix.offsetHeight,
+                            width: this.#matrix.offsetWidth
+                        }
+                    });
                 }
             });
 

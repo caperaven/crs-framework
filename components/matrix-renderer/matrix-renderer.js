@@ -44,17 +44,21 @@ class MatrixRenderer extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: "open" });
-        this.style.display  = "block";
-        this.style.width    = "100%";
-        this.style.height   = "100%";
-        this.style.position = "relative";
-        this.style.overflow = "hidden";
-        this.style.willChange = "transform";
-        this.setAttribute("tabindex", 0);
+        this.setAttribute("tabindex", "0");
     }
 
     async connectedCallback() {
+        await this.#loadHTML();
         await this.load();
+    }
+
+    async #loadHTML() {
+        const currentURL = import.meta.url;
+        const htmlURL = new URL("./matrix-renderer.html", currentURL);
+        const cssURL = new URL("./matrix-renderer.css", currentURL);
+
+        const html = await fetch(htmlURL).then(result => result.text());
+        this.shadowRoot.innerHTML = `<link rel="stylesheet" href="${cssURL}">${html}`;
     }
 
     async disconnectedCallback() {
@@ -126,7 +130,8 @@ class MatrixRenderer extends HTMLElement {
         const pageDetails = this.#getPageDetails();
 
         renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, false);
-this.#updateMarkerPosition()
+        this.#updateMarkerPosition()
+
         // if we stop scrolling render the final frame
         const deltaTime = currentTime - this.#lastTime;
         if (deltaTime > 200) {

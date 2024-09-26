@@ -23,3 +23,14 @@
     left: 0;
     translate: -10000px -10000px;
 }
+
+.resize {
+    display: block;
+    height: var(--header-height);
+    width: 0.25rem;
+    border-width: 0 1px;
+    border-style: solid;
+    border-color: var(--grey);
+    cursor: col-resize;
+    box-sizing: border-box;
+}
