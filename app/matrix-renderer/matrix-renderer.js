@@ -49,13 +49,13 @@ export default class MatrixRendererViewModel extends crsbinding.classes.ViewBase
                             "100,100": {"message": "Error 100, 100"}
                         },
 
-                        // overlay: {
-                        //     header: {
-                        //         sort: false,
-                        //         filter: false,
-                        //         resize: true
-                        //     }
-                        // },
+                        overlay: {
+                            header: {
+                                sort: false,
+                                filter: false,
+                                resize: true
+                            }
+                        },
 
                         frozenColumns: {
                             count: 3

@@ -22,6 +22,7 @@
     top: 0;
     left: 0;
     translate: -10000px -10000px;
+    will-change: transform;
 }
 
 .resize {
