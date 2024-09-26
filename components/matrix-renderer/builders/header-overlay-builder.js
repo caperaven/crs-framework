@@ -1,10 +1,18 @@
 export class HeaderOverlayBuilder {
     #data = {
-        resize: true,
+        resize: false,
         filter: false,
         sort: false,
         fieldName: "",
         columnIndex: 0
+    }
+
+    constructor(settings) {
+        if (settings != null) {
+            this.#data.resize = settings.header?.resize ?? false;
+            this.#data.filter = settings.header?.filter ?? false;
+            this.#data.sort = settings.header?.sort ?? false;
+        }
     }
 
     setResize(value) {

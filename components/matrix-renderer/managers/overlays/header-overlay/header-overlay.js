@@ -3,12 +3,18 @@ import {HeaderOverlayBuilder} from "../../../builders/header-overlay-builder.js"
 
 export class HeaderOverlay extends OverlayBase {
     #currentCount = 1;
-    #template = new HeaderOverlayBuilder().build();
+    #template;
     #width = 3;
+    #settings;
 
-    constructor(parentElement) {
+    constructor(parentElement, settings) {
         super(parentElement, "header-overlay", import.meta.url.replace(".js", ".css"));
-        parentElement.appendChild(this.#template);
+        this.#settings = settings;
+
+        if (settings != null) {
+            this.#template = new HeaderOverlayBuilder(this.#settings).build();
+            parentElement.appendChild(this.#template);
+        }
     }
 
     dispose() {
@@ -43,6 +49,8 @@ export class HeaderOverlay extends OverlayBase {
     }
 
     updatePage(def, pageDetails) {
+        if (this.#settings == null) return;
+
         const count = def.frozenColumns.count + pageDetails.visibleColumns.end - pageDetails.visibleColumns.start;
         if (this.#currentCount < count) {
             createHeaderOverlays(count - this.#currentCount, this.element, this.#template);

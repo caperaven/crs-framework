@@ -9,13 +9,18 @@ export const OverlayChanges = Object.freeze({
 export class OverlayManager {
     #headerOverlay;
     #cellsOverlay;
+    #parentElement;
 
-    constructor(parentElement) {
-        this.#headerOverlay = new HeaderOverlay(parentElement);
-        this.#cellsOverlay = new CellsOverlay(parentElement);
+    constructor(parentElement, settings) {
+        this.#parentElement = parentElement;
+        this.#headerOverlay = new HeaderOverlay(parentElement, settings);
+        this.#cellsOverlay = new CellsOverlay(parentElement, settings);
     }
 
     dispose() {
+        this.#parentElement.innerHTML = "";
+        this.#parentElement = null;
+
         this.#headerOverlay = this.#headerOverlay.dispose();
         this.#cellsOverlay = this.#cellsOverlay.dispose();
         return null;

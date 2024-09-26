@@ -431,7 +431,7 @@ class MatrixRenderer extends HTMLElement {
             renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, true);
 
             const overlayElement = this.shadowRoot.querySelector("#overlay");
-            this.#overlayManager = new OverlayManager(overlayElement);
+            this.#overlayManager = new OverlayManager(overlayElement, this.#config.overlay);
 
             this.#overlayManager.update(
                 OverlayChanges.COLUMNS | OverlayChanges.ROWS,
