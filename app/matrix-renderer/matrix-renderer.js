@@ -1,5 +1,8 @@
 import {DataType} from  "./../../components/matrix-renderer/matrix-renderer.js";
 
+const ROW_COUNT = 10000;
+const COL_COUNT = 1000;
+
 export default class MatrixRendererViewModel extends crsbinding.classes.ViewBase {
     #manager = "matrix-data";
     #matrix;
@@ -50,7 +53,7 @@ export default class MatrixRendererViewModel extends crsbinding.classes.ViewBase
                             header: {
                                 sort: false,
                                 filter: false,
-                                resize: false
+                                resize: true
                             }
                         },
 
@@ -110,7 +113,7 @@ function getColumns(prefix = "A") {
         { title: "Values", field: "values", width: 100, editable: true }
     ]
 
-    for (let i = 0; i < 1000; i++) {
+    for (let i = 0; i < COL_COUNT; i++) {
         columns.push({ title: `${prefix}_Column ${i}`, field: `column${i}`, type: DataType.BOOLEAN, editable: true });
     }
 
@@ -120,10 +123,10 @@ function getColumns(prefix = "A") {
 function getRows() {
     const rows = [];
 
-    for (let i = 0; i < 10000; i++) {
+    for (let i = 0; i < ROW_COUNT; i++) {
         const row = { id: i, status: `Status ${i}`, values: `Value ${i}` };
 
-        for (let j = 0; j < 1000; j++) {
+        for (let j = 0; j < COL_COUNT; j++) {
             // add random boolean value
             row[`column${j}`] = Math.random() > 0.5;
         }

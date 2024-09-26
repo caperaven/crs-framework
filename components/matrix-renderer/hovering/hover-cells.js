@@ -10,6 +10,10 @@ export function hoverCells(ctx, parentElement, details) {
     const rowIndex = details.rowSizes.getIndex(y);
     const columnIndex = details.columnSizes.getIndex(x);
 
+    if (rowIndex === -1 || columnIndex === -1) {
+        return;
+    }
+
     if (checkForErrors(details, rowIndex, columnIndex, x, y) === true) {
         return;
     }
