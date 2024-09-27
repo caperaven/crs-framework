@@ -664,6 +664,11 @@ function getGroupsSize(config, columnSizes) {
         const to = group.to ?? columns.length - 1;
 
         const sizeTo = columnSizes.cumulative(to);
+
+        if (sizeTo == null) {
+            break;
+        }
+
         const size = sizeTo - lastSize;
         lastSize = size;
         result.push(size);
