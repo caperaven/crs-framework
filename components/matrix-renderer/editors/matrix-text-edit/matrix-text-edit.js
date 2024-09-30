@@ -31,6 +31,7 @@ class MatrixTextEdit extends HTMLElement {
 
     async load() {
         requestAnimationFrame(() => {
+            this.classList.add("editor");
             this.#input = this.querySelector("input");
             this.#input.addEventListener("blur", this.#onBlurHandler);
             this.#input.addEventListener("keydown", this.#onKeyDownHandler);
