@@ -5,7 +5,7 @@
 
 // "10,3": "error: message"
 
-import { PADDING_X, HEADER_BACKGROUND_COLOR, ERROR_BACKGROUND_COLOR, TEXT_COLOR, TEXT_Y_OFFSET } from "./constants.js";
+import { PADDING_X, HEADER_BACKGROUND_COLOR, TEXT_COLOR, TEXT_Y_OFFSET } from "./constants.js";
 
 export function renderText(ctx, def, column, aabb, value, rowIndex, columnIndex) {
     // 1. save the current state

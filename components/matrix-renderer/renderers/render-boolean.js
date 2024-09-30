@@ -7,11 +7,17 @@
  * Q: How do I get the correct image for the True / False state to render.
  */
 
-import { PADDING_X, PADDING_Y } from "./constants.js";
+import {HEADER_BACKGROUND_COLOR, PADDING_X, PADDING_Y} from "./constants.js";
 
 export function renderBoolean(ctx, def, column, aabb, value) {
     // 1. save the current state
     ctx.save();
+
+    if (column.editable === false) {
+        ctx.fillStyle = HEADER_BACKGROUND_COLOR;
+        ctx.fillRect(aabb.x1, aabb.y1, aabb.x2 - aabb.x1, aabb.y2 - aabb.y1);
+    }
+
 
     // 2. calculate center offset
     const center = (aabb.x2 - aabb.x1) / 2;

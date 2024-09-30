@@ -17,4 +17,6 @@ export const CHANGE_TYPES = Object.freeze({
     perspectiveChanged: "perspective_changed",
     perspectiveRollback: "perspective_rollback",
     filter: "filter",
+    sorted: "sorted",
+    grouping: "grouping"
 });

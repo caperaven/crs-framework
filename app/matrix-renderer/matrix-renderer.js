@@ -1,7 +1,7 @@
 import {DataType} from  "./../../components/matrix-renderer/matrix-renderer.js";
 
-const ROW_COUNT = 10;
-const COL_COUNT = 2;
+const ROW_COUNT = 100;
+const COL_COUNT = 100;
 
 export default class MatrixRendererViewModel extends crsbinding.classes.ViewBase {
     #manager = "matrix-data";
@@ -114,7 +114,7 @@ function getColumns(prefix = "A") {
     ]
 
     for (let i = 0; i < COL_COUNT; i++) {
-        columns.push({ title: `${prefix}_Column ${i}`, field: `column${i}`, type: DataType.BOOLEAN, editable: true });
+        columns.push({ title: `${prefix}_Column ${i}`, field: `column${i}`, type: DataType.BOOLEAN, editable: false });
     }
 
     return columns;
