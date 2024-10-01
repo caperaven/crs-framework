@@ -9,6 +9,7 @@ import {createEditorLT} from "./editors/editor.js";
 import {HoverManager} from "./managers/hover-manager.js";
 import {hover} from "./hovering/hovering.js";
 import {OverlayManager, OverlayChanges} from "./managers/overlay-manager.js";
+import {startDrag} from "./drag-drop/drag-drop.js";
 
 class MatrixRenderer extends HTMLElement {
     #ctx;
@@ -33,6 +34,7 @@ class MatrixRenderer extends HTMLElement {
     #animateHandler = this.#animate.bind(this);
     #focusHandler = this.#focus.bind(this);
     #hoverHandler = this.#hover.bind(this);
+    #startDragHandler = startDrag.bind(this);
     #renderLT = createRenderLT();
     #editorLT = createEditorLT();
     #updateAABBCallbackHandler = this.#updateAABBCallback.bind(this);
@@ -42,6 +44,14 @@ class MatrixRenderer extends HTMLElement {
     #selection = {
         row: 0,
         column: 0
+    }
+
+    get rowSizes() {
+        return this.#rowSizes;
+    }
+
+    get columnSizes() {
+        return this.#columnSizes;
     }
 
     constructor() {
@@ -79,7 +89,9 @@ class MatrixRenderer extends HTMLElement {
         this.removeEventListener("click", this.#onMouseEventHandler);
         this.removeEventListener("dblclick", this.#onMouseEventHandler);
         this.removeEventListener("keydown", this.#onKeyDownHandler);
+        this.removeEventListener("mousedown", this.#startDragHandler);
 
+        this.#startDragHandler = null;
         this.#ctx = null;
         this.#config = null;
         this.#groupSizes = this.#groupSizes?.dispose();
@@ -398,6 +410,7 @@ class MatrixRenderer extends HTMLElement {
             this.addEventListener("click", this.#onMouseEventHandler);
             this.addEventListener("dblclick", this.#onMouseEventHandler);
             this.addEventListener("keydown", this.#onKeyDownHandler);
+            this.addEventListener("mousedown", this.#startDragHandler);
 
             this.#scrollElement = this.shadowRoot.querySelector("#scroller");
 
