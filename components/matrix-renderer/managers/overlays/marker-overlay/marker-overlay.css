@@ -1,0 +1,17 @@
+:host {
+    --border-color: var(--blue);
+    border: 1px solid var(--border-color);
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.modifier {
+    position: absolute;
+    bottom: -0.25rem;
+    right: -0.25rem;
+    width: 0.5rem;
+    height: 0.5rem;
+    background: var(--border-color);
+    cursor: move;
+}
