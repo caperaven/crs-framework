@@ -88,14 +88,13 @@ export class ItemsFactory {
      * @returns {Promise<HTMLTemplateElement>}
      */
     static async #inflate(templateToInflate, data, collection) {
-        const template = document.createElement("template");
-        const ul = document.createElement("ul");
+        const fragment = document.createDocumentFragment();
         for (const item of data[collection]) {
             const inflatedTemplateContent = await crs.call("html", "create", {html: templateToInflate.innerHTML, ctx: item});
-            await ul.appendChild(inflatedTemplateContent);
+            await fragment.appendChild(inflatedTemplateContent);
         }
-        template.content.appendChild(ul);
-        return template;
+
+        return fragment;
     }
 
     /**
@@ -127,8 +126,6 @@ export class ItemsFactory {
     static async createTemplate(element, currentView, collection, data) {
         const templateToInflate = await this.#buildInflationTemplate(element, collection);
         const resultTemplate = await this.#inflate(templateToInflate, data, collection);
-        resultTemplate.dataset.id = collection;
-        if (currentView == collection) resultTemplate.dataset.default = "true";
         return resultTemplate;
     }
 }

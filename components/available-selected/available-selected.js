@@ -1,6 +1,11 @@
 import "./../../components/tab-list/tab-list.js";
 import {ItemsFactory} from "./items-factory.js";
 
+const TabViews= Object.freeze({
+    AVAILABLE: "available",
+    SELECTED: "selected"
+});
+
 /**
  * @class AvailableSelected - This is a component that allows you to select items from a list of available items.
  *
@@ -27,7 +32,6 @@ export class AvailableSelected extends HTMLElement {
     #selectedList;
 
     //This is for testing purposes
-    #dragAdded;
     get clickedHandler() {
         return this.#clickHandler;
     }
@@ -56,11 +60,15 @@ export class AvailableSelected extends HTMLElement {
             this.#availableList = this.shadowRoot.querySelector("[data-id='available']");
             this.#selectedList = this.shadowRoot.querySelector("[data-id='selected']");
 
-            this.#currentView = "selected";
+            this.#currentView = TabViews.SELECTED;
 
             requestAnimationFrame(async () => {
                 await crsbinding.translations.parseElement(this);
                 await crs.call("component", "notify_ready", {element: this});
+
+                if (this.dataset.drag === "true") {
+                    await this.#addDragAndDrop();
+                }
                 resolve();
             });
         });
@@ -74,12 +82,11 @@ export class AvailableSelected extends HTMLElement {
         this.#currentView = null;
         this.#tablist = null;
         this.#changeHandler = null;
-        this.#dragAdded = null;
+        this.#availableList = null;
 
         if (this.dataset.drag === "true") {
             await this.#removeDragAndDrop();
         }
-        this.#availableList = null;
         this.#selectedList = null;
     }
 
@@ -109,22 +116,27 @@ export class AvailableSelected extends HTMLElement {
     }
 
     /**
-     * @method appendListElement - This method will append the list element to the list container.
-     * @param listContainer - The div container to append the list to.
-     * @param template - The template to append to the list container.
+     * @method renderList - This method will render the list of available and selected items based on the data passed in through the parameters.
+     * @param data {Object} - The data object containing the available and selected items.
      * @returns {Promise<void>}
      */
-    async #appendListElement(listContainer, template) {
-        let content =  template.content.cloneNode(true);
+    async renderList(data) {
+        this.#data = data;
+        const selectedFragment = await ItemsFactory.createTemplate(this, this.#currentView, TabViews.SELECTED, this.#data);
+        const availableFragment = await ItemsFactory.createTemplate(this, this.#currentView, TabViews.AVAILABLE, this.#data);
 
-        //if the list container has content, replace the ul children with the new list content.
-        if (listContainer.innerHTML !== "") {
-            content = content.querySelectorAll("li");
-            listContainer.firstElementChild.replaceChildren(...content);
-            return;
-        }
+        await this.#appendListElement(this.#selectedList, selectedFragment);
+        await this.#appendListElement(this.#availableList, availableFragment);
+    }
 
-        listContainer.appendChild(content);
+    /**
+     * @method appendListElement - This method will append the list element to the list container.
+     * @param listElement - The ul list element to append the list to.
+     * @param fragment - The fragment(li) to append to the list container
+     * @returns {Promise<void>}
+     */
+    async #appendListElement(listElement, fragment) {
+        listElement.replaceChildren(fragment);
     }
 
     /**
@@ -133,10 +145,14 @@ export class AvailableSelected extends HTMLElement {
      */
     async #setViewHiddenState(){
         // the primary list is the list that is currently being viewed and the secondary list is the list that is not being viewed.
-        const [primaryList, secondaryList] = this.#currentView === "selected" ? [this.#selectedList, this.#availableList] : [this.#availableList, this.#selectedList];
-
-        secondaryList.setAttribute("hidden", "true");
-        primaryList.removeAttribute("hidden");
+        if (this.#currentView === TabViews.SELECTED) {
+            this.#selectedList.removeAttribute("hidden");
+            this.#availableList.setAttribute("hidden", "true");
+        }
+        else {
+            this.#availableList.removeAttribute("hidden");
+            this.#selectedList.setAttribute("hidden", "true");
+        }
     }
 
     /**
@@ -150,36 +166,11 @@ export class AvailableSelected extends HTMLElement {
         const source = li.getAttribute("class");
         if (source !== this.#currentView) this.#currentView = source;
 
-        const target = source === "available" ? "selected" : "available";
+        const target = source === TabViews.AVAILABLE ? TabViews.SELECTED : TabViews.AVAILABLE;
         const value = this.#data[source].find(item => `${item[this.dataset.idField || "id"]}` === `${li.dataset.id}`);
 
         await crs.call("array", "transfer", {source: this.#data[source], target: this.#data[target], value: value});
-        await this.update(this.#data, false);
-    }
-
-    /**
-     * @method update - This method will update the data for the component.
-     * @param data {Object} - The data to update the component with.
-     * @returns {Promise<void>}
-     */
-    async update(data, resetView = true) {
-        this.#data = data;
-        const selectedTemplate = await ItemsFactory.createTemplate(this, this.#currentView, "selected", this.#data);
-        const availableTemplate = await ItemsFactory.createTemplate(this, this.#currentView, "available", this.#data);
-
-        await this.#appendListElement(this.#selectedList, selectedTemplate);
-        await this.#appendListElement(this.#availableList, availableTemplate)
-
-        if (resetView === true) {
-            this.#currentView = "selected";
-            await this.#tablist.selectTab(this.#currentView);
-        }
-
-        // checks if the drag and drop attribute is set to true and if the drag and drop has been added.
-        if (this.dataset.drag === "true" && this.#dragAdded !== true) {
-            await this.#addDragAndDrop();
-            this.#dragAdded = true;
-        }
+        await this.renderList(this.#data);
     }
 
     /**
@@ -195,9 +186,9 @@ export class AvailableSelected extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #addDragAndDrop() {
-        if (this.#currentView === "selected") {
+        if (this.#currentView === TabViews.SELECTED) {
             crsbinding.idleTaskManager.add(async () => {
-                const target = this.#selectedList.querySelector("ul");
+                const target = this.#selectedList;
 
                 await crs.call("dom_interactive", "enable_dragdrop", {
                     element: target,
@@ -255,7 +246,7 @@ export class AvailableSelected extends HTMLElement {
      */
     async #removeDragAndDrop() {
         await crs.call("dom_interactive", "disable_dragdrop", {
-            element: this.#selectedList.querySelector("ul"),
+            element: this.#selectedList
         });
     }
 }
