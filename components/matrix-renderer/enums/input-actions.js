@@ -21,5 +21,8 @@
         "HOME"              : "home",
         "END"               : "end",
         "EDIT_CELL"         : "editCell",
-        "EDIT_ROW"          : "editRow"
+        "EDIT_ROW"          : "editRow",
+        "CUT"               : "cut",
+        "COPY"              : "copy",
+        "PASTE"             : "paste"
     })

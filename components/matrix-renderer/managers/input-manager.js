@@ -25,6 +25,9 @@ export class InputManager {
         "shift+arrowright"  : InputActions.SELECT_APPEND,
         "shift+arrowdown"   : InputActions.SELECT_APPEND,
         "shift+arrowup"     : InputActions.SELECT_POP,
+        "ctrl+keyc"         : InputActions.COPY,
+        "ctrl+keyx"         : InputActions.CUT,
+        "ctrl+keyv"         : InputActions.PASTE,
     }
 
     #numKeyMap = {

@@ -46,6 +46,7 @@ class MatrixRenderer extends HTMLElement {
         column: 0
     }
     #copyValue;
+    #copyDataType;
 
     get rowSizes() {
         return this.#rowSizes;
@@ -744,11 +745,11 @@ class MatrixRenderer extends HTMLElement {
         }));
     }
 
-    async copyOverSelectedValues() {
+    async copyOverSelectedValues(copyValue) {
         const copyColumn = this.#config.columns[this.#selection.column];
         const copyField = copyColumn.field;
         const copyDataType = copyColumn.type;
-        this.#copyValue = this.#config.rows[this.#selection.row][copyField];
+        this.#copyValue = copyValue ?? this.#config.rows[this.#selection.row][copyField];
 
         if (this.#selection.toRow != null) {
             for (let rowIndex = this.#selection.row; rowIndex <= this.#selection.toRow; rowIndex++) {
@@ -778,6 +779,46 @@ class MatrixRenderer extends HTMLElement {
                 }
             }
         }
+    }
+
+    async cut(event) {
+        await this.copy(event);
+        const field = this.#config.columns[this.#selection.column].field;
+
+        await crs.call("data_manager", "update", {
+            manager: this.#config.manager,
+            index: this.#selection.row,
+            changes: {
+                [field]: null
+            }
+        })
+    }
+
+    async copy(event) {
+        const column = this.#config.columns[this.#selection.column];
+        const field = column.field;
+        this.#copyDataType = column.type;
+        this.#copyValue = this.#config.rows[this.#selection.row][field];
+    }
+
+    async paste(event) {
+        if (this.#selection.toRow != null || this.#selection.toColumn != null) {
+            return await this.copyOverSelectedValues(this.#copyValue);
+        }
+
+        const column = this.#config.columns[this.#selection.column];
+        const field = column.field;
+
+        // if the column is not of the same data type as the copy don't do anything.
+        if (column.type !== this.#copyDataType) return;
+
+        await crs.call("data_manager", "update", {
+            manager: this.#config.manager,
+            index: this.#selection.row,
+            changes: {
+                [field]: this.#copyValue
+            }
+        })
     }
 }
 
