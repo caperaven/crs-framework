@@ -18,6 +18,7 @@
         "SELECT_ROW_END"    : "selectRowEnd",
         "SELECT_APPEND"     : "selectAppend",
         "SELECT_POP"        : "selectPop",
+        "SELECT_RANGE"      : "selectRange",
         "HOME"              : "home",
         "END"               : "end",
         "EDIT_CELL"         : "editCell",

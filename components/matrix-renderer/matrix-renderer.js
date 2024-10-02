@@ -665,6 +665,20 @@ class MatrixRenderer extends HTMLElement {
         await this.#updateMarkerPosition();
     }
 
+    async selectRange(event) {
+        const column = this.getSelectedColumnIndex(event);
+        const row = this.getSelectedRowIndex(event);
+
+        if (column === this.#selection.column) {
+            this.#selection.toRow = row;
+        }
+        else if (row === this.#selection.row) {
+            this.#selection.toColumn = column;
+        }
+
+        this.#overlayManager.update(OverlayChanges.MULTI_SELECTION, this, this.#config, {selection: this.#selection});
+    }
+
     async selectAppend(event) {
         // you can either resize the column or the row, not both at the same time.
         // if we already started selecting a column, we can't select a row.

@@ -3,6 +3,7 @@ import {InputActions} from "../enums/input-actions.js";
 export class InputManager {
     #data = {
         "click"             : InputActions.SELECT,
+        "shift+click"       : InputActions.SELECT_RANGE,
         "dblclick"          : InputActions.EDIT_CELL,
         "enter"             : InputActions.EDIT_CELL,
         "numpadenter"       : InputActions.EDIT_CELL,
