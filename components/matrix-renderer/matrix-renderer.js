@@ -299,6 +299,7 @@ class MatrixRenderer extends HTMLElement {
 
         this.#overlayManager.update(
             this.#updateOptions,
+            this,
             this.#config,
             pageDetails,
             this.#scrollLeft,
@@ -476,6 +477,7 @@ class MatrixRenderer extends HTMLElement {
 
             this.#overlayManager.update(
                 OverlayChanges.COLUMNS | OverlayChanges.ROWS,
+                this,
                 this.#config,
                 pageDetails,
                 this.#scrollLeft,
@@ -558,6 +560,8 @@ class MatrixRenderer extends HTMLElement {
         }
 
         this.#selection.column = Math.max(this.#selection.column - 1, 0);
+        delete this.#selection.toColumn;
+        delete this.#selection.toRow;
 
         await this.#updateMarkerPosition();
 
@@ -572,6 +576,9 @@ class MatrixRenderer extends HTMLElement {
         if (this.#selection.column === this.#columnSizes.length - 1) {
             return;
         }
+
+        delete this.#selection.toColumn;
+        delete this.#selection.toRow;
 
         const frozenCount = this.#config.frozenColumns?.count ?? 0;
         const isInFrozenZone = this.#selection.column < frozenCount;
@@ -609,6 +616,9 @@ class MatrixRenderer extends HTMLElement {
             return;
         }
 
+        delete this.#selection.toColumn;
+        delete this.#selection.toRow;
+
         this.#selection.row = Math.max(this.#selection.row - 1, 0);
 
         await this.#updateMarkerPosition();
@@ -619,6 +629,9 @@ class MatrixRenderer extends HTMLElement {
         if (this.#selection.row === this.#rowSizes.length - 1) {
             return;
         }
+
+        delete this.#selection.toColumn;
+        delete this.#selection.toRow;
 
         this.#selection.row = Math.min(this.#selection.row + 1, this.#rowSizes.length - 1);
 
@@ -668,7 +681,7 @@ class MatrixRenderer extends HTMLElement {
             }
         }
 
-        console.log(JSON.stringify(this.#selection));
+        this.#overlayManager.update(OverlayChanges.MULTI_SELECTION, this, this.#config, {selection: this.#selection});
     }
 
     async selectPop(event) {
@@ -687,7 +700,7 @@ class MatrixRenderer extends HTMLElement {
             }
         }
 
-        console.log(JSON.stringify(this.#selection));
+        this.#overlayManager.update(OverlayChanges.MULTI_SELECTION, this, this.#config, {selection: this.#selection});
     }
 
     async home() {

@@ -73,7 +73,7 @@ export class HeaderOverlay extends OverlayBase {
         }
     }
 
-    updatePage(def, pageDetails, scrollLeft) {
+    updatePage(matrix, def, pageDetails, scrollLeft) {
         if (this.#settings == null) return;
 
         const count = (def.frozenColumns?.count ?? 0) + pageDetails.visibleColumns.end - pageDetails.visibleColumns.start;
