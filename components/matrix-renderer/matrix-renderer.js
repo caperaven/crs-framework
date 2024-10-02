@@ -799,6 +799,10 @@ class MatrixRenderer extends HTMLElement {
         const field = column.field;
         this.#copyDataType = column.type;
         this.#copyValue = this.#config.rows[this.#selection.row][field];
+
+        await crs.call("system", "copy_to_clipboard", {
+            source: this.#copyValue
+        })
     }
 
     async paste(event) {
