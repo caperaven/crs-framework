@@ -54,6 +54,10 @@ class MatrixRenderer extends HTMLElement {
         return this.#columnSizes;
     }
 
+    get selection() {
+        return this.#selection;
+    }
+
     constructor() {
         super();
         this.attachShadow({ mode: "open" });
@@ -494,29 +498,53 @@ class MatrixRenderer extends HTMLElement {
         }
     }
 
-    async select(event) {
+    getSelectedColumnIndex(event) {
         const isInFrozenZone = event.offsetX < (this.#config.regions.frozenColumns?.right ?? 0);
 
-        // 1. get the column and row values
-        const y = this.#scrollTop + event.offsetY - this.#config.regions.cells.top;
         const x = isInFrozenZone ? event.offsetX : event.offsetX + this.#scrollLeft;
-
-        let selectedRow = this.#rowSizes.getIndex(y);
         let selectedColumn = this.#columnSizes.getIndex(x);
-
-        if (selectedRow === -1) {
-            selectedRow = this.#selection.row;
-        }
 
         if (selectedColumn === -1) {
             selectedColumn = this.#selection.column;
         }
 
-        this.#selection.row = selectedRow;
-        this.#selection.column = selectedColumn;
+        return selectedColumn;
+    }
+
+    getSelectedRowIndex(event) {
+        const y = this.#scrollTop + event.offsetY - this.#config.regions.cells.top;
+        let selectedRow = this.#rowSizes.getIndex(y);
+
+        if (selectedRow === -1) {
+            selectedRow = this.#selection.row;
+        }
+
+        return selectedRow;
+    }
+
+    async select(event) {
+        // multi is set by the drag marker
+        // if we are doing a multi selection we don't want to override this.
+        // when we click again though we do so we need to remove the multi flag.
+        if (this.#selection.multi === true) {
+            delete this.#selection.multi;
+            return;
+        }
+
+        if (this._markerDragManager != null && this.#selection.multi == null) {
+            this._markerDragManager.dispose();
+            delete this._markerDragManager;
+        }
+
+        delete this.#selection.toColumn;
+        delete this.#selection.toRow;
+
+        this.#selection.row = this.getSelectedRowIndex(event);
+        this.#selection.column = this.getSelectedColumnIndex(event);
 
         await this.#updateMarkerPosition();
 
+        const isInFrozenZone = event.offsetX < (this.#config.regions.frozenColumns?.right ?? 0);
         if (isInFrozenZone === false) {
             await this.#ensureMarkerVisible();
         }

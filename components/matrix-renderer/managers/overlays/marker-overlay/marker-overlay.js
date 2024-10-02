@@ -10,6 +10,10 @@ class MarkerOverlay extends HTMLElement {
             <link rel="stylesheet" href="${import.meta.url.replace(".js", ".css")}">
             ${html}`;
     }
+
+    updateSelection(matrixRenderer) {
+
+    }
 }
 
 customElements.define('marker-overlay', MarkerOverlay);
