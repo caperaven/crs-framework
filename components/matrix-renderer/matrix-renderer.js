@@ -720,6 +720,10 @@ class MatrixRenderer extends HTMLElement {
     }
 
     async editCell() {
+        if (this.#selection.toColumn != null || this.#selection.toRow != null) {
+            return await this.copyOverSelectedValues()
+        }
+
         const column = this.#config.columns[this.#selection.column];
         column.index = this.#selection.column;
 
