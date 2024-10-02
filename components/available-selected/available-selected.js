@@ -73,14 +73,14 @@ export class AvailableSelected extends HTMLElement {
         this.#data = null
         this.#currentView = null;
         this.#tablist = null;
-        this.#availableList = null;
-        this.#selectedList = null;
         this.#changeHandler = null;
         this.#dragAdded = null;
 
         if (this.dataset.drag === "true") {
             await this.#removeDragAndDrop();
         }
+        this.#availableList = null;
+        this.#selectedList = null;
     }
 
     /**
