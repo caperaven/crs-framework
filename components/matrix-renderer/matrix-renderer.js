@@ -45,6 +45,7 @@ class MatrixRenderer extends HTMLElement {
         row: 0,
         column: 0
     }
+    #copyValue;
 
     get rowSizes() {
         return this.#rowSizes;
@@ -527,6 +528,7 @@ class MatrixRenderer extends HTMLElement {
         // if we are doing a multi selection we don't want to override this.
         // when we click again though we do so we need to remove the multi flag.
         if (this.#selection.multi === true) {
+            await this.copyOverSelectedValues();
             delete this.#selection.multi;
             return;
         }
@@ -688,6 +690,42 @@ class MatrixRenderer extends HTMLElement {
                 manager: this.#config.manager
             }
         }));
+    }
+
+    async copyOverSelectedValues() {
+        const copyColumn = this.#config.columns[this.#selection.column];
+        const copyField = copyColumn.field;
+        const copyDataType = copyColumn.type;
+        this.#copyValue = this.#config.rows[this.#selection.row][copyField];
+
+        if (this.#selection.toRow != null) {
+            for (let rowIndex = this.#selection.row; rowIndex <= this.#selection.toRow; rowIndex++) {
+                crs.call("data_manager", "update", {
+                    manager: this.#config.manager,
+                    index: rowIndex,
+                    changes: {
+                        [copyField]: this.#copyValue
+                    }
+                })
+            }
+        }
+        else {
+            for (let columnIndex = this.#selection.column; columnIndex <= this.#selection.toColumn; columnIndex++) {
+                const targetColumn = this.#config.columns[columnIndex];
+                const field = targetColumn.field;
+                const dataType = targetColumn.type;
+
+                if (dataType === copyDataType) {
+                    crs.call("data_manager", "update", {
+                        manager: this.#config.manager,
+                        index: this.#selection.row,
+                        changes: {
+                            [field]: this.#copyValue
+                        }
+                    })
+                }
+            }
+        }
     }
 }
 
