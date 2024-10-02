@@ -13,6 +13,10 @@ export class TabList extends HTMLElement {
         return import.meta.url.replace(".js", ".html");
     }
 
+    set target(newValue) {
+        this.#target = newValue;
+    }
+
     constructor() {
         super();
         this.attachShadow({mode:"open"});
@@ -26,12 +30,14 @@ export class TabList extends HTMLElement {
     async disconnectedCallback() {
         await this.shadowRoot.removeEventListener("click", this.#clickHandler);
         this.#clickHandler = null;
+        this.#target = null;
     }
 
     load() {
         return new Promise(resolve => {
             requestAnimationFrame( async () => {
                 this.shadowRoot.addEventListener("click", this.#clickHandler);
+                this.#target = this.#target || document.querySelector(this.getAttribute("for"));
                 await crsbinding.translations.parseElement(this);
 
                 await crs.call("component", "notify_ready", { element: this });
@@ -47,6 +53,11 @@ export class TabList extends HTMLElement {
 
     async selectTab(tab, target) {
         target = target || this.querySelector(`[data-view="${tab}"]`);
+
+        if (this.#target != null) {
+            this.#target.view = tab;
+        }
+
         await crs.call("dom_collection", "toggle_selection", { target });
         this.dispatchEvent(new CustomEvent("change", { detail: { tab } }));
     }
