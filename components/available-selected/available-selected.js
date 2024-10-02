@@ -19,12 +19,15 @@ import {ItemsFactory} from "./items-factory.js";
  */
 export class AvailableSelected extends HTMLElement {
     #clickHandler = this.#click.bind(this);
+    #changeHandler = this.#changeTabView.bind(this);
     #tablist;
-    #perspectiveElement;
     #data;
     #currentView;
+    #availableList;
+    #selectedList;
 
     //This is for testing purposes
+    #dragAdded;
     get clickedHandler() {
         return this.#clickHandler;
     }
@@ -48,6 +51,11 @@ export class AvailableSelected extends HTMLElement {
         return new Promise((resolve) => {
             this.shadowRoot.addEventListener("click", this.#clickHandler);
             this.#tablist = this.shadowRoot.querySelector("tab-list");
+
+            this.#tablist.addEventListener("change", this.#changeHandler);
+            this.#availableList = this.shadowRoot.querySelector("[data-id='available']");
+            this.#selectedList = this.shadowRoot.querySelector("[data-id='selected']");
+
             this.#currentView = "selected";
 
             requestAnimationFrame(async () => {
@@ -60,21 +68,75 @@ export class AvailableSelected extends HTMLElement {
 
     async disconnectedCallback() {
         await this.shadowRoot.removeEventListener("click", this.#clickHandler);
+        this.#tablist.removeEventListener("change", this.#changeHandler);
         this.#clickHandler = null;
         this.#data = null
         this.#currentView = null;
         this.#tablist = null;
+        this.#availableList = null;
+        this.#selectedList = null;
+        this.#changeHandler = null;
+        this.#dragAdded = null;
+
         if (this.dataset.drag === "true") {
             await this.#removeDragAndDrop();
         }
-        this.#perspectiveElement = this.#perspectiveElement?.dispose();
     }
 
+    /**
+     * @method #click - This method will handle the click event.
+     * @param event {Object} - The click event.
+     * @returns {Promise<void>}
+     */
     async #click(event) {
         const target = event.target;
         if (target.dataset.action != null) {
             this[target.dataset.action] != null && await this[target.dataset.action](event);
         }
+    }
+
+    /**
+     * @method changeTabView - fires on change event and set the current view to the new tab value and calls the hidden state method.
+     * @param event {Object} - The event object.
+     * @returns {Promise<void>}
+     */
+    async #changeTabView(event) {
+        const view = event.detail.tab;
+        if (this.#currentView !== view) {
+            this.#currentView = view;
+            await this.#setViewHiddenState();
+        }
+    }
+
+    /**
+     * @method appendListElement - This method will append the list element to the list container.
+     * @param listContainer - The div container to append the list to.
+     * @param template - The template to append to the list container.
+     * @returns {Promise<void>}
+     */
+    async #appendListElement(listContainer, template) {
+        let content =  template.content.cloneNode(true);
+
+        //if the list container has content, replace the ul children with the new list content.
+        if (listContainer.innerHTML !== "") {
+            content = content.querySelectorAll("li");
+            listContainer.firstElementChild.replaceChildren(...content);
+            return;
+        }
+
+        listContainer.appendChild(content);
+    }
+
+    /**
+     * @method setViewHiddenState - This method will set the hidden attribute on the selected or available container.
+     * @returns {Promise<void>}
+     */
+    async #setViewHiddenState(){
+        // the primary list is the list that is currently being viewed and the secondary list is the list that is not being viewed.
+        const [primaryList, secondaryList] = this.#currentView === "selected" ? [this.#selectedList, this.#availableList] : [this.#availableList, this.#selectedList];
+
+        secondaryList.setAttribute("hidden", "true");
+        primaryList.removeAttribute("hidden");
     }
 
     /**
@@ -105,32 +167,18 @@ export class AvailableSelected extends HTMLElement {
         const selectedTemplate = await ItemsFactory.createTemplate(this, this.#currentView, "selected", this.#data);
         const availableTemplate = await ItemsFactory.createTemplate(this, this.#currentView, "available", this.#data);
 
-        if (this.#perspectiveElement != null) {
-            if (this.dataset.drag === "true") {
-                await this.#removeDragAndDrop();
-            }
-            this.shadowRoot.removeChild(this.#perspectiveElement);
-            this.#perspectiveElement = await this.#perspectiveElement?.dispose();
-        }
-
-        const perspectiveElement = document.createElement("perspective-element");
-
-        perspectiveElement.appendChild(selectedTemplate);
-        perspectiveElement.appendChild(availableTemplate);
-        perspectiveElement.dataset.store = perspectiveElement._dataId;
-
-
-        this.shadowRoot.appendChild(perspectiveElement);
-        this.#perspectiveElement = perspectiveElement;
-        this.#tablist.target = this.#perspectiveElement;
+        await this.#appendListElement(this.#selectedList, selectedTemplate);
+        await this.#appendListElement(this.#availableList, availableTemplate)
 
         if (resetView === true) {
             this.#currentView = "selected";
             await this.#tablist.selectTab(this.#currentView);
         }
 
-        if (this.dataset.drag === "true") {
+        // checks if the drag and drop attribute is set to true and if the drag and drop has been added.
+        if (this.dataset.drag === "true" && this.#dragAdded !== true) {
             await this.#addDragAndDrop();
+            this.#dragAdded = true;
         }
     }
 
@@ -142,10 +190,14 @@ export class AvailableSelected extends HTMLElement {
         return this.#data.selected;
     }
 
+    /**
+     * @method #addDragAndDrop - This method will add the drag and drop functionality to the selected list.
+     * @returns {Promise<void>}
+     */
     async #addDragAndDrop() {
-        if (this.#perspectiveElement.view === "selected") {
+        if (this.#currentView === "selected") {
             crsbinding.idleTaskManager.add(async () => {
-                const target = this.#perspectiveElement.querySelector("ul");
+                const target = this.#selectedList.querySelector("ul");
 
                 await crs.call("dom_interactive", "enable_dragdrop", {
                     element: target,
@@ -197,9 +249,13 @@ export class AvailableSelected extends HTMLElement {
         }
     }
 
+    /**
+     *  @method removeDragAndDrop - removes the drag and drop functionality from the selected list.
+     * @returns {Promise<void>}
+     */
     async #removeDragAndDrop() {
         await crs.call("dom_interactive", "disable_dragdrop", {
-            element: this.#perspectiveElement.querySelector("ul"),
+            element: this.#selectedList.querySelector("ul"),
         });
     }
 }
