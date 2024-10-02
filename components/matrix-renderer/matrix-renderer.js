@@ -409,6 +409,13 @@ class MatrixRenderer extends HTMLElement {
         this.#cellAABB = aabb;
     }
 
+    #disposeDragMarker() {
+        this._markerDragManager?.dispose();
+        delete this._markerDragManager;
+        delete this.#selection.toColumn;
+        delete this.#selection.toRow;
+    }
+
     async load() {
         requestAnimationFrame(async () => {
             this.setAttribute("tabindex", "0");
@@ -535,13 +542,7 @@ class MatrixRenderer extends HTMLElement {
             return;
         }
 
-        if (this._markerDragManager != null && this.#selection.multi == null) {
-            this._markerDragManager.dispose();
-            delete this._markerDragManager;
-        }
-
-        delete this.#selection.toColumn;
-        delete this.#selection.toRow;
+        this.#disposeDragMarker();
 
         this.#selection.row = this.getSelectedRowIndex(event);
         this.#selection.column = this.getSelectedColumnIndex(event);
@@ -560,8 +561,7 @@ class MatrixRenderer extends HTMLElement {
         }
 
         this.#selection.column = Math.max(this.#selection.column - 1, 0);
-        delete this.#selection.toColumn;
-        delete this.#selection.toRow;
+        this.#disposeDragMarker();
 
         await this.#updateMarkerPosition();
 
@@ -577,8 +577,8 @@ class MatrixRenderer extends HTMLElement {
             return;
         }
 
-        delete this.#selection.toColumn;
-        delete this.#selection.toRow;
+        this.#selection.column = this.#selection.toColumn ?? this.#selection.column;
+        this.#disposeDragMarker();
 
         const frozenCount = this.#config.frozenColumns?.count ?? 0;
         const isInFrozenZone = this.#selection.column < frozenCount;
@@ -616,9 +616,7 @@ class MatrixRenderer extends HTMLElement {
             return;
         }
 
-        delete this.#selection.toColumn;
-        delete this.#selection.toRow;
-
+        this.#disposeDragMarker();
         this.#selection.row = Math.max(this.#selection.row - 1, 0);
 
         await this.#updateMarkerPosition();
@@ -630,9 +628,9 @@ class MatrixRenderer extends HTMLElement {
             return;
         }
 
-        delete this.#selection.toColumn;
-        delete this.#selection.toRow;
+        this.#selection.row = this.#selection.toRow ?? this.#selection.row;
 
+        this.#disposeDragMarker();
         this.#selection.row = Math.min(this.#selection.row + 1, this.#rowSizes.length - 1);
 
         const pageDetails = this.#getPageDetails();
@@ -721,7 +719,7 @@ class MatrixRenderer extends HTMLElement {
 
     async editCell() {
         if (this.#selection.toColumn != null || this.#selection.toRow != null) {
-            return await this.copyOverSelectedValues()
+            return await this.copyOverSelectedValues();
         }
 
         const column = this.#config.columns[this.#selection.column];
