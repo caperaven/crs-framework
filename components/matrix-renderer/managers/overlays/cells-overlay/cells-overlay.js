@@ -14,9 +14,9 @@ export class CellsOverlay extends OverlayBase {
         return null;
     }
 
-    updatePage(def, pageDetails) {}
+    updatePage(matrix, def, pageDetails) {}
 
-    updateSelection(def, pageDetails, scrollLeft, scrollTop, updateAABBCallback) {
+    updateSelection(matrix, def, pageDetails, scrollLeft, scrollTop, updateAABBCallback) {
         const cellAABB = { x1: 0, x2: 0, y1: 0, y2: 0 };
         const selection = pageDetails.selection;
         const visibleRowIndex = selection.row - pageDetails.visibleRows.start;
@@ -37,6 +37,25 @@ export class CellsOverlay extends OverlayBase {
         this.#markerElement = setCellMarker(this.#markerElement, this.element, cellAABB, hasError, isVisible);
 
         updateAABBCallback(cellAABB);
+    }
+
+    updateMultiSelection(matrix, def, pageDetails) {
+        const selection = pageDetails.selection;
+
+        if (selection.toColumn != null) {
+            const width = matrix.columnSizes.sizeBetween(selection.column, selection.toColumn);
+            this.#markerElement.style.width = `${width}px`;
+        }
+        else if (selection.toRow != null) {
+            const height = matrix.rowSizes.sizeBetween(selection.row, selection.toRow);
+            this.#markerElement.style.height = `${height}px`;
+        }
+        else {
+            const width = matrix.columnSizes.at(selection.column);
+            const height = matrix.rowSizes.at(selection.row);
+            this.#markerElement.style.width = `${width}px`;
+            this.#markerElement.style.height = `${height}px`;
+        }
     }
 }
 

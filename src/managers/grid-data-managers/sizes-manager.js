@@ -127,6 +127,14 @@ export class SizesManager {
         this.#recalculateSizes();
     }
 
+    sizeBetween(startIndex, endIndex) {
+        if (endIndex < startIndex) {
+            return this.#sizes[endIndex];
+        }
+
+        return this.#cumulativeSizes[endIndex] - this.#cumulativeSizes[startIndex] + this.#sizes[startIndex];
+    }
+
     cumulative(index) {
         return this.#cumulativeSizes[index];
     }

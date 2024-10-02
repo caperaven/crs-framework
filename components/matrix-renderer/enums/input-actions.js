@@ -16,8 +16,14 @@
         "SELECT_PAGE_RIGHT" : "selectPageRight",
         "SELECT_ROW_HOME"   : "selectRowHome",
         "SELECT_ROW_END"    : "selectRowEnd",
+        "SELECT_APPEND"     : "selectAppend",
+        "SELECT_POP"        : "selectPop",
+        "SELECT_RANGE"      : "selectRange",
         "HOME"              : "home",
         "END"               : "end",
         "EDIT_CELL"         : "editCell",
-        "EDIT_ROW"          : "editRow"
+        "EDIT_ROW"          : "editRow",
+        "CUT"               : "cut",
+        "COPY"              : "copy",
+        "PASTE"             : "paste"
     })

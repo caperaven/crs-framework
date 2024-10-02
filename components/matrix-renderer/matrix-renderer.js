@@ -9,6 +9,7 @@ import {createEditorLT} from "./editors/editor.js";
 import {HoverManager} from "./managers/hover-manager.js";
 import {hover} from "./hovering/hovering.js";
 import {OverlayManager, OverlayChanges} from "./managers/overlay-manager.js";
+import {startDrag} from "./drag-drop/drag-drop.js";
 
 class MatrixRenderer extends HTMLElement {
     #ctx;
@@ -33,6 +34,7 @@ class MatrixRenderer extends HTMLElement {
     #animateHandler = this.#animate.bind(this);
     #focusHandler = this.#focus.bind(this);
     #hoverHandler = this.#hover.bind(this);
+    #startDragHandler = startDrag.bind(this);
     #renderLT = createRenderLT();
     #editorLT = createEditorLT();
     #updateAABBCallbackHandler = this.#updateAABBCallback.bind(this);
@@ -42,6 +44,20 @@ class MatrixRenderer extends HTMLElement {
     #selection = {
         row: 0,
         column: 0
+    }
+    #copyValue;
+    #copyDataType;
+
+    get rowSizes() {
+        return this.#rowSizes;
+    }
+
+    get columnSizes() {
+        return this.#columnSizes;
+    }
+
+    get selection() {
+        return this.#selection;
     }
 
     constructor() {
@@ -79,7 +95,9 @@ class MatrixRenderer extends HTMLElement {
         this.removeEventListener("click", this.#onMouseEventHandler);
         this.removeEventListener("dblclick", this.#onMouseEventHandler);
         this.removeEventListener("keydown", this.#onKeyDownHandler);
+        this.removeEventListener("mousedown", this.#startDragHandler);
 
+        this.#startDragHandler = null;
         this.#ctx = null;
         this.#config = null;
         this.#groupSizes = this.#groupSizes?.dispose();
@@ -282,6 +300,7 @@ class MatrixRenderer extends HTMLElement {
 
         this.#overlayManager.update(
             this.#updateOptions,
+            this,
             this.#config,
             pageDetails,
             this.#scrollLeft,
@@ -391,6 +410,13 @@ class MatrixRenderer extends HTMLElement {
         this.#cellAABB = aabb;
     }
 
+    #disposeDragMarker() {
+        this._markerDragManager?.dispose();
+        delete this._markerDragManager;
+        delete this.#selection.toColumn;
+        delete this.#selection.toRow;
+    }
+
     async load() {
         requestAnimationFrame(async () => {
             this.setAttribute("tabindex", "0");
@@ -398,6 +424,7 @@ class MatrixRenderer extends HTMLElement {
             this.addEventListener("click", this.#onMouseEventHandler);
             this.addEventListener("dblclick", this.#onMouseEventHandler);
             this.addEventListener("keydown", this.#onKeyDownHandler);
+            this.addEventListener("mousedown", this.#startDragHandler);
 
             this.#scrollElement = this.shadowRoot.querySelector("#scroller");
 
@@ -458,6 +485,7 @@ class MatrixRenderer extends HTMLElement {
 
             this.#overlayManager.update(
                 OverlayChanges.COLUMNS | OverlayChanges.ROWS,
+                this,
                 this.#config,
                 pageDetails,
                 this.#scrollLeft,
@@ -481,29 +509,48 @@ class MatrixRenderer extends HTMLElement {
         }
     }
 
-    async select(event) {
+    getSelectedColumnIndex(event) {
         const isInFrozenZone = event.offsetX < (this.#config.regions.frozenColumns?.right ?? 0);
 
-        // 1. get the column and row values
-        const y = this.#scrollTop + event.offsetY - this.#config.regions.cells.top;
         const x = isInFrozenZone ? event.offsetX : event.offsetX + this.#scrollLeft;
-
-        let selectedRow = this.#rowSizes.getIndex(y);
         let selectedColumn = this.#columnSizes.getIndex(x);
-
-        if (selectedRow === -1) {
-            selectedRow = this.#selection.row;
-        }
 
         if (selectedColumn === -1) {
             selectedColumn = this.#selection.column;
         }
 
-        this.#selection.row = selectedRow;
-        this.#selection.column = selectedColumn;
+        return selectedColumn;
+    }
+
+    getSelectedRowIndex(event) {
+        const y = this.#scrollTop + event.offsetY - this.#config.regions.cells.top;
+        let selectedRow = this.#rowSizes.getIndex(y);
+
+        if (selectedRow === -1) {
+            selectedRow = this.#selection.row;
+        }
+
+        return selectedRow;
+    }
+
+    async select(event) {
+        // multi is set by the drag marker
+        // if we are doing a multi selection we don't want to override this.
+        // when we click again though we do so we need to remove the multi flag.
+        if (this.#selection.multi === true) {
+            await this.copyOverSelectedValues();
+            delete this.#selection.multi;
+            return;
+        }
+
+        this.#disposeDragMarker();
+
+        this.#selection.row = this.getSelectedRowIndex(event);
+        this.#selection.column = this.getSelectedColumnIndex(event);
 
         await this.#updateMarkerPosition();
 
+        const isInFrozenZone = event.offsetX < (this.#config.regions.frozenColumns?.right ?? 0);
         if (isInFrozenZone === false) {
             await this.#ensureMarkerVisible();
         }
@@ -515,6 +562,7 @@ class MatrixRenderer extends HTMLElement {
         }
 
         this.#selection.column = Math.max(this.#selection.column - 1, 0);
+        this.#disposeDragMarker();
 
         await this.#updateMarkerPosition();
 
@@ -529,6 +577,9 @@ class MatrixRenderer extends HTMLElement {
         if (this.#selection.column === this.#columnSizes.length - 1) {
             return;
         }
+
+        this.#selection.column = this.#selection.toColumn ?? this.#selection.column;
+        this.#disposeDragMarker();
 
         const frozenCount = this.#config.frozenColumns?.count ?? 0;
         const isInFrozenZone = this.#selection.column < frozenCount;
@@ -566,6 +617,7 @@ class MatrixRenderer extends HTMLElement {
             return;
         }
 
+        this.#disposeDragMarker();
         this.#selection.row = Math.max(this.#selection.row - 1, 0);
 
         await this.#updateMarkerPosition();
@@ -577,6 +629,9 @@ class MatrixRenderer extends HTMLElement {
             return;
         }
 
+        this.#selection.row = this.#selection.toRow ?? this.#selection.row;
+
+        this.#disposeDragMarker();
         this.#selection.row = Math.min(this.#selection.row + 1, this.#rowSizes.length - 1);
 
         const pageDetails = this.#getPageDetails();
@@ -590,11 +645,11 @@ class MatrixRenderer extends HTMLElement {
         await this.#ensureMarkerVisible();
     }
 
-    async selectPageUp(event) {
+    async selectPageUp() {
         this.#scrollElement.scrollTop -= this.#config.regions.cells.height;
     }
 
-    async selectPageDown(event) {
+    async selectPageDown() {
         this.#scrollElement.scrollTop += this.#config.regions.cells.height;
     }
 
@@ -608,6 +663,57 @@ class MatrixRenderer extends HTMLElement {
         this.#selection.column = this.#config.columns.length - 1;
         this.#scrollElement.scrollLeft = this.#scrollElement.scrollWidth - this.#scrollElement.clientWidth;
         await this.#updateMarkerPosition();
+    }
+
+    async selectRange(event) {
+        const column = this.getSelectedColumnIndex(event);
+        const row = this.getSelectedRowIndex(event);
+
+        if (column === this.#selection.column) {
+            this.#selection.toRow = row;
+        }
+        else if (row === this.#selection.row) {
+            this.#selection.toColumn = column;
+        }
+
+        this.#overlayManager.update(OverlayChanges.MULTI_SELECTION, this, this.#config, {selection: this.#selection});
+    }
+
+    async selectAppend(event) {
+        // you can either resize the column or the row, not both at the same time.
+        // if we already started selecting a column, we can't select a row.
+        // you are commited to either horizontal or vertical selection not both.
+        if (event.code === "ArrowRight") {
+            if (this.#selection.toRow == null) {
+                this.#selection.toColumn = (this.#selection.toColumn ?? this.#selection.column) + 1;
+            }
+        }
+        else if (event.code === "ArrowDown") {
+            if (this.#selection.toColumn == null) {
+                this.#selection.toRow = (this.#selection.toRow ?? this.#selection.row) + 1;
+            }
+        }
+
+        this.#overlayManager.update(OverlayChanges.MULTI_SELECTION, this, this.#config, {selection: this.#selection});
+    }
+
+    async selectPop(event) {
+        if (event.code === "ArrowLeft" && this.#selection.toColumn != null) {
+            this.#selection.toColumn = (this.#selection.toColumn ?? this.#selection.column) - 1;
+
+            if (this.#selection.toColumn <= this.#selection.column) {
+                delete this.#selection.toColumn;
+            }
+        }
+        else if (event.code === "ArrowUp" && this.#selection.toRow != null) {
+            this.#selection.toRow = (this.#selection.toRow ?? this.#selection.row) - 1;
+
+            if (this.#selection.toRow <= this.#selection.row) {
+                delete this.#selection.toRow;
+            }
+        }
+
+        this.#overlayManager.update(OverlayChanges.MULTI_SELECTION, this, this.#config, {selection: this.#selection});
     }
 
     async home() {
@@ -627,6 +733,10 @@ class MatrixRenderer extends HTMLElement {
     }
 
     async editCell() {
+        if (this.#selection.toColumn != null || this.#selection.toRow != null) {
+            return await this.copyOverSelectedValues();
+        }
+
         const column = this.#config.columns[this.#selection.column];
         column.index = this.#selection.column;
 
@@ -647,6 +757,86 @@ class MatrixRenderer extends HTMLElement {
                 manager: this.#config.manager
             }
         }));
+    }
+
+    async copyOverSelectedValues(copyValue) {
+        const copyColumn = this.#config.columns[this.#selection.column];
+        const copyField = copyColumn.field;
+        const copyDataType = copyColumn.type;
+        this.#copyValue = copyValue ?? this.#config.rows[this.#selection.row][copyField];
+
+        if (this.#selection.toRow != null) {
+            for (let rowIndex = this.#selection.row; rowIndex <= this.#selection.toRow; rowIndex++) {
+                crs.call("data_manager", "update", {
+                    manager: this.#config.manager,
+                    index: rowIndex,
+                    changes: {
+                        [copyField]: this.#copyValue
+                    }
+                })
+            }
+        }
+        else {
+            for (let columnIndex = this.#selection.column; columnIndex <= this.#selection.toColumn; columnIndex++) {
+                const targetColumn = this.#config.columns[columnIndex];
+                const field = targetColumn.field;
+                const dataType = targetColumn.type;
+
+                if (dataType === copyDataType) {
+                    crs.call("data_manager", "update", {
+                        manager: this.#config.manager,
+                        index: this.#selection.row,
+                        changes: {
+                            [field]: this.#copyValue
+                        }
+                    })
+                }
+            }
+        }
+    }
+
+    async cut(event) {
+        await this.copy(event);
+        const field = this.#config.columns[this.#selection.column].field;
+
+        await crs.call("data_manager", "update", {
+            manager: this.#config.manager,
+            index: this.#selection.row,
+            changes: {
+                [field]: null
+            }
+        })
+    }
+
+    async copy(event) {
+        const column = this.#config.columns[this.#selection.column];
+        const field = column.field;
+        this.#copyDataType = column.type;
+        this.#copyValue = this.#config.rows[this.#selection.row][field];
+
+        await crs.call("system", "copy_to_clipboard", {
+            source: this.#copyValue
+        })
+    }
+
+    async paste(event) {
+        if (this.#selection.toRow != null || this.#selection.toColumn != null) {
+            return await this.copyOverSelectedValues(this.#copyValue);
+        }
+
+        const column = this.#config.columns[this.#selection.column];
+        const field = column.field;
+
+        // if the column is not of the same data type as the copy don't do anything.
+        if (column.type !== this.#copyDataType) return;
+
+        await crs.call("data_manager", "update", {
+            manager: this.#config.manager,
+            index: this.#selection.row,
+            changes: {
+                [field]: this.#copyValue
+            }
+        })
     }
 }
 
