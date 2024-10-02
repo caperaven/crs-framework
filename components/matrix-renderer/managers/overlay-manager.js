@@ -1,9 +1,10 @@
 import {HeaderOverlay, CellsOverlay} from "./overlays/overlays.js";
 
 export const OverlayChanges = Object.freeze({
-    COLUMNS   : 1,
-    ROWS      : 2,
-    SELECTION : 4
+    COLUMNS         : 1,
+    ROWS            : 2,
+    SELECTION       : 4,
+    MULTI_SELECTION : 8
 })
 
 export class OverlayManager {
@@ -38,6 +39,10 @@ export class OverlayManager {
 
         if (overlayChanges & OverlayChanges.SELECTION) {
             this.#cellsOverlay.updateSelection(...args);
+        }
+
+        if (overlayChanges & OverlayChanges.MULTI_SELECTION) {
+            this.#cellsOverlay.updateMultiSelection(...args);
         }
     }
 }

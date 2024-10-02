@@ -38,6 +38,10 @@ export class CellsOverlay extends OverlayBase {
 
         updateAABBCallback(cellAABB);
     }
+
+    updateMultiSelection(def, pageDetails) {
+        const selection = pageDetails.selection;
+    }
 }
 
 function isMarkerVisible(def, pageDetails, aabb) {

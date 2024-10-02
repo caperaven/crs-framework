@@ -16,6 +16,8 @@
         "SELECT_PAGE_RIGHT" : "selectPageRight",
         "SELECT_ROW_HOME"   : "selectRowHome",
         "SELECT_ROW_END"    : "selectRowEnd",
+        "SELECT_APPEND"     : "selectAppend",
+        "SELECT_POP"        : "selectPop",
         "HOME"              : "home",
         "END"               : "end",
         "EDIT_CELL"         : "editCell",

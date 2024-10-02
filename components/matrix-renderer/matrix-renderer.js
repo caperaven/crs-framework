@@ -633,11 +633,11 @@ class MatrixRenderer extends HTMLElement {
         await this.#ensureMarkerVisible();
     }
 
-    async selectPageUp(event) {
+    async selectPageUp() {
         this.#scrollElement.scrollTop -= this.#config.regions.cells.height;
     }
 
-    async selectPageDown(event) {
+    async selectPageDown() {
         this.#scrollElement.scrollTop += this.#config.regions.cells.height;
     }
 
@@ -651,6 +651,43 @@ class MatrixRenderer extends HTMLElement {
         this.#selection.column = this.#config.columns.length - 1;
         this.#scrollElement.scrollLeft = this.#scrollElement.scrollWidth - this.#scrollElement.clientWidth;
         await this.#updateMarkerPosition();
+    }
+
+    async selectAppend(event) {
+        // you can either resize the column or the row, not both at the same time.
+        // if we already started selecting a column, we can't select a row.
+        // you are commited to either horizontal or vertical selection not both.
+        if (event.code === "ArrowRight") {
+            if (this.#selection.toRow == null) {
+                this.#selection.toColumn = (this.#selection.toColumn ?? this.#selection.column) + 1;
+            }
+        }
+        else if (event.code === "ArrowDown") {
+            if (this.#selection.toColumn == null) {
+                this.#selection.toRow = (this.#selection.toRow ?? this.#selection.row) + 1;
+            }
+        }
+
+        console.log(JSON.stringify(this.#selection));
+    }
+
+    async selectPop(event) {
+        if (event.code === "ArrowLeft" && this.#selection.toColumn != null) {
+            this.#selection.toColumn = (this.#selection.toColumn ?? this.#selection.column) - 1;
+
+            if (this.#selection.toColumn <= this.#selection.column) {
+                delete this.#selection.toColumn;
+            }
+        }
+        else if (event.code === "ArrowUp" && this.#selection.toRow != null) {
+            this.#selection.toRow = (this.#selection.toRow ?? this.#selection.row) - 1;
+
+            if (this.#selection.toRow <= this.#selection.row) {
+                delete this.#selection.toRow;
+            }
+        }
+
+        console.log(JSON.stringify(this.#selection));
     }
 
     async home() {
