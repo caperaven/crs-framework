@@ -14,6 +14,7 @@ import {startDrag} from "./drag-drop/drag-drop.js";
 class MatrixRenderer extends HTMLElement {
     #ctx;
     #scrollElement;
+    #scrollMarkerElement;
     #config;
     #groupSizes;
     #columnSizes;
@@ -91,6 +92,7 @@ class MatrixRenderer extends HTMLElement {
 
         this.#scrollElement.removeEventListener("scroll", this.#onScrollHandler);
         this.#scrollElement = null;
+        this.#scrollMarkerElement = null;
 
         this.removeEventListener("click", this.#onMouseEventHandler);
         this.removeEventListener("dblclick", this.#onMouseEventHandler);
@@ -147,9 +149,8 @@ class MatrixRenderer extends HTMLElement {
 
     #animate() {
         const currentTime = performance.now();
-        const pageDetails = this.#getPageDetails();
 
-        renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, false);
+        const pageDetails = this.refresh();
         this.#updateMarkerPosition()
 
         // if we stop scrolling render the final frame
@@ -289,8 +290,7 @@ class MatrixRenderer extends HTMLElement {
     }
 
     #dataManagerChange() {
-        const pageDetails = this.#getPageDetails();
-        renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, true);
+        this.refresh();
     }
 
     #updateMarkerPosition() {
@@ -345,8 +345,7 @@ class MatrixRenderer extends HTMLElement {
 
         // if change were made, update the page accordingly
         if (changed) {
-            const pageDetails = this.#getPageDetails();
-            renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, true);
+            this.refresh();
             await this.#updateMarkerPosition();
         }
     }
@@ -427,6 +426,7 @@ class MatrixRenderer extends HTMLElement {
             this.addEventListener("mousedown", this.#startDragHandler);
 
             this.#scrollElement = this.shadowRoot.querySelector("#scroller");
+            this.#scrollMarkerElement = this.shadowRoot.querySelector("#marker");
 
             await crsbinding.events.emitter.on("matrix-editing-removed", this.#focusHandler);
 
@@ -438,8 +438,21 @@ class MatrixRenderer extends HTMLElement {
         })
     }
 
-    async resize() {
+    refresh() {
+        const pageDetails = this.#getPageDetails();
+        renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, false);
 
+        this.#overlayManager?.update(
+            OverlayChanges.COLUMNS,
+            this,
+            this.#config,
+            pageDetails,
+            this.#scrollLeft,
+            this.#scrollTop);
+
+        moveScrollMarker(this.#scrollMarkerElement, this.#columnSizes, this.#rowSizes, this.#config);
+
+        return pageDetails;
     }
 
     async initialize(config) {
@@ -469,16 +482,14 @@ class MatrixRenderer extends HTMLElement {
             this.#getFrozenDetails();
 
             // 4. move marker to the bottom right corner to enable scrolling
-            const markerElement = this.shadowRoot.querySelector("#marker");
-            moveScrollMarker(markerElement, this.#columnSizes, this.#rowSizes, this.#config);
+            moveScrollMarker(this.#scrollMarkerElement, this.#columnSizes, this.#rowSizes, this.#config);
 
             const canvasBottom = this.#config.regions.cells.bottom;
             const contentBottom = this.#config.regions.cells.top + this.#rowSizes.totalSize;
             this.#config.regions.cells.bottom = Math.min(canvasBottom, contentBottom);
 
             // 5. render the canvas
-            const pageDetails = this.#getPageDetails();
-            renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, true);
+            const pageDetails = this.refresh();
 
             const overlayElement = this.shadowRoot.querySelector("#overlay");
             this.#overlayManager = new OverlayManager(overlayElement, this.#config.overlay);

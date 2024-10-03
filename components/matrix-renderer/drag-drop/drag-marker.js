@@ -137,6 +137,9 @@ class MarkerDragManager {
         else {
             this.#mouseUpColumn(event);
         }
+
+        event.preventDefault();
+        event.stopPropagation();
     }
 
     #mouseUpRow(event) {
