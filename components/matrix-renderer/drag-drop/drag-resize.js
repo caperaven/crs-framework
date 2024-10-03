@@ -59,6 +59,7 @@ class ResizeDragManager {
     }
 
     #mouseUp(event) {
+        this.#matrixRenderer.ignoreSelect = true;
         this.#matrixRenderer.calculateGroupSizes();
         this.#matrixRenderer.refresh(true);
         this.dispose();

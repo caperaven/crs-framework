@@ -561,9 +561,9 @@ class MatrixRenderer extends HTMLElement {
         // multi is set by the drag marker
         // if we are doing a multi selection we don't want to override this.
         // when we click again though we do so we need to remove the multi flag.
-        if (this.#selection.multi === true) {
+        if (this.ignoreSelect === true) {
             await this.copyOverSelectedValues();
-            delete this.#selection.multi;
+            this.ignoreSelect = false;
             return;
         }
 

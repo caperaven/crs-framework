@@ -129,7 +129,7 @@ class MarkerDragManager {
     #mouseUp(event) {
         this.unload();
 
-        this.#matrixRenderer.selection.multi = true;
+        this.#matrixRenderer.ignoreSelect = true;
 
         if (this.#moveDirection === MoveDirectionLock.ROW) {
             this.#mouseUpRow(event);
