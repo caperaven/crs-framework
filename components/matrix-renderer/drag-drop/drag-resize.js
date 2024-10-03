@@ -26,14 +26,14 @@ class ResizeDragManager {
         this.#width = matrixRenderer.columnSizes.at(this.#columnIndex);
         this.#frozenColumnCount = this.#matrixRenderer.config.frozenColumns?.count ?? 0;
 
-        this.#matrixRenderer.addEventListener("mousemove", this.#mouseMoveHandler);
-        this.#matrixRenderer.addEventListener("mouseup", this.#mouseUpHandler);
+        document.addEventListener("mousemove", this.#mouseMoveHandler);
+        document.addEventListener("mouseup", this.#mouseUpHandler);
     }
 
     dispose() {
         cancelAnimationFrame(this.#animationId);
-        this.#matrixRenderer.removeEventListener("mousemove", this.#mouseMoveHandler);
-        this.#matrixRenderer.removeEventListener("mouseup", this.#mouseUpHandler);
+        document.removeEventListener("mousemove", this.#mouseMoveHandler);
+        document.removeEventListener("mouseup", this.#mouseUpHandler);
 
         this.#targetElement = null;
         this.#matrixRenderer = null;
