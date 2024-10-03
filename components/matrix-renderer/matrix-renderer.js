@@ -452,7 +452,7 @@ class MatrixRenderer extends HTMLElement {
         }
     }
 
-    refresh() {
+    refresh(updateMarker = false) {
         const pageDetails = this.#getPageDetails();
         renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, false);
 
@@ -464,7 +464,9 @@ class MatrixRenderer extends HTMLElement {
             this.#scrollLeft,
             this.#scrollTop);
 
-        this.#updateMarkerPosition(pageDetails);
+        if (updateMarker === true) {
+            this.#updateMarkerPosition(pageDetails);
+        }
 
         moveScrollMarker(this.#scrollMarkerElement, this.#columnSizes, this.#rowSizes, this.#config);
 

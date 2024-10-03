@@ -60,7 +60,7 @@ class ResizeDragManager {
 
     #mouseUp(event) {
         this.#matrixRenderer.calculateGroupSizes();
-        this.#matrixRenderer.refresh();
+        this.#matrixRenderer.refresh(true);
         this.dispose();
         event.preventDefault();
         event.stopPropagation();
@@ -82,7 +82,7 @@ class ResizeDragManager {
             this.#matrixRenderer.calculateFrozenDetails();
         }
 
-        this.#matrixRenderer.refresh();
+        this.#matrixRenderer.refresh(true);
 
         this.#animationId = requestAnimationFrame(this.#animateHandler);
     }
