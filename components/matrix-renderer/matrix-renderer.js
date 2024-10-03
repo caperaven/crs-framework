@@ -438,6 +438,14 @@ class MatrixRenderer extends HTMLElement {
         })
     }
 
+    calculateGroupSizes() {
+        const groupWidthValues = getGroupsSize(this.#config, this.#columnSizes);
+
+        if (groupWidthValues != null) {
+            this.#groupSizes = new SizesManager(this.#config.groups.length, 0, groupWidthValues);
+        }
+    }
+
     refresh() {
         const pageDetails = this.#getPageDetails();
         renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, false);
@@ -473,12 +481,7 @@ class MatrixRenderer extends HTMLElement {
             const columnWidthValues = this.#config.columns.map(column => column.width);
             this.#columnSizes = new SizesManager(this.#config.columns.length, 0, columnWidthValues);
 
-            const groupWidthValues = getGroupsSize(this.#config, this.#columnSizes);
-
-            if (groupWidthValues != null) {
-                this.#groupSizes = new SizesManager(this.#config.groups.length, 0, groupWidthValues);
-            }
-
+            this.calculateGroupSizes();
             this.#getFrozenDetails();
 
             // 4. move marker to the bottom right corner to enable scrolling

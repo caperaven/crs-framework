@@ -57,6 +57,8 @@ class ResizeDragManager {
     }
 
     #mouseUp(event) {
+        this.#matrixRenderer.calculateGroupSizes();
+        this.#matrixRenderer.refresh();
         this.dispose();
         event.preventDefault();
         event.stopPropagation();
@@ -70,6 +72,8 @@ class ResizeDragManager {
         const diffX = this.#clientX - this.#oldX;
         const newWidth = Math.max(this.#width + diffX, 50);
         this.#matrixRenderer.columnSizes.set(this.#columnIndex, newWidth);
+
+        this.#matrixRenderer.calculateGroupSizes();
         this.#matrixRenderer.refresh();
 
         this.#animationId = requestAnimationFrame(this.#animateHandler);
