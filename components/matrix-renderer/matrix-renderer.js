@@ -849,19 +849,12 @@ function getGroupsSize(config, columnSizes) {
     const columns = config.columns;
     const result = [];
 
-    let lastSize = 0;
     for (const group of groups) {
-        const to = group.to ?? columns.length - 1;
+        const fromIndex = group.from;
+        const toIndex = group.to ?? columns.length - 1;
 
-        const sizeTo = columnSizes.cumulative(to);
-
-        if (sizeTo == null) {
-            break;
-        }
-
-        const size = sizeTo - lastSize;
-        lastSize = size;
-        result.push(size);
+        const width = columnSizes.sizeBetween(fromIndex, toIndex);
+        result.push(width);
     }
 
     return result;

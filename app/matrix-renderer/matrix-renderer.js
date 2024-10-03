@@ -67,9 +67,10 @@ export default class MatrixRendererViewModel extends crsbinding.classes.ViewBase
                         },
                         groups: [
                             { from: 0, to: 1, title: "" },
-                            { from: 1, to: 3, title: "Group1" },
-                            { from: 3, to: 29, title: "Group3" },
-                            { from: 29, title: "Group4" },
+                            { from: 2, to: 2, title: "Same" },
+                            { from: 3, to: 5, title: "Group1" },
+                            { from: 5, to: 29, title: "Group2" },
+                            { from: 29, title: "Group3" },
                         ],
                         columns,
                         manager: this.#manager,
@@ -109,7 +110,7 @@ export default class MatrixRendererViewModel extends crsbinding.classes.ViewBase
 
 function getColumns(prefix = "A") {
     const columns = [
-        { title: "Status", field: "status", width: 200, editable: false },
+        { title: "Status", field: "status", width: 250, editable: false },
         { title: "Values", field: "values", width: 100, editable: true }
     ]
 
