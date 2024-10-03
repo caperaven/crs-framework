@@ -12,12 +12,15 @@ class ResizeDragManager {
     #width = 0;
     #columnIndex = 0;
     #frozenColumnCount = 0;
+    #matrixAABB;
 
     constructor(matrixRenderer, targetElement, oldX, oldY) {
         this.#targetElement = targetElement;
         this.#matrixRenderer = matrixRenderer;
         this.#oldX = oldX;
         this.#oldY = oldY;
+
+        this.#matrixAABB = this.#matrixRenderer.getBoundingClientRect();
 
         this.#columnIndex = Number(targetElement.parentElement.dataset.index);
         this.#width = matrixRenderer.columnSizes.at(this.#columnIndex);
@@ -73,10 +76,15 @@ class ResizeDragManager {
         }
 
         const diffX = this.#clientX - this.#oldX;
-        const newWidth = Math.max(this.#width + diffX, 50);
+        this.#width = Math.max(this.#width + diffX, 50);
 
-        this.#matrixRenderer.config.columns[this.#columnIndex].width = newWidth;
-        this.#matrixRenderer.columnSizes.set(this.#columnIndex, newWidth);
+        if (this.#clientX > this.#matrixAABB.right - 50) {
+            this.#matrixRenderer.scroll("scrollLeft", 1)
+            this.#width += 1;
+        }
+
+        this.#matrixRenderer.config.columns[this.#columnIndex].width = this.#width;
+        this.#matrixRenderer.columnSizes.set(this.#columnIndex, this.#width);
         this.#matrixRenderer.calculateGroupSizes();
 
         if (this.#columnIndex < this.#frozenColumnCount) {
@@ -84,8 +92,9 @@ class ResizeDragManager {
         }
 
         this.#matrixRenderer.refresh(true);
-
         this.#animationId = requestAnimationFrame(this.#animateHandler);
+
+        this.#oldX = this.#clientX;
     }
 }
 

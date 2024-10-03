@@ -862,6 +862,10 @@ class MatrixRenderer extends HTMLElement {
             }
         })
     }
+
+    async scroll(direction, amount) {
+        this.#scrollElement[direction] += amount;
+    }
 }
 
 function getGroupsSize(config, columnSizes) {
