@@ -11,6 +11,7 @@ class ResizeDragManager {
     #animateHandler = this.#animate.bind(this);
     #width = 0;
     #columnIndex = 0;
+    #frozenColumnCount = 0;
 
     constructor(matrixRenderer, targetElement, oldX, oldY) {
         this.#targetElement = targetElement;
@@ -20,6 +21,7 @@ class ResizeDragManager {
 
         this.#columnIndex = Number(targetElement.parentElement.dataset.index);
         this.#width = matrixRenderer.columnSizes.at(this.#columnIndex);
+        this.#frozenColumnCount = this.#matrixRenderer.config.frozenColumns?.count ?? 0;
 
         this.#matrixRenderer.addEventListener("mousemove", this.#mouseMoveHandler);
         this.#matrixRenderer.addEventListener("mouseup", this.#mouseUpHandler);
@@ -71,9 +73,15 @@ class ResizeDragManager {
 
         const diffX = this.#clientX - this.#oldX;
         const newWidth = Math.max(this.#width + diffX, 50);
-        this.#matrixRenderer.columnSizes.set(this.#columnIndex, newWidth);
 
+        this.#matrixRenderer.config.columns[this.#columnIndex].width = newWidth;
+        this.#matrixRenderer.columnSizes.set(this.#columnIndex, newWidth);
         this.#matrixRenderer.calculateGroupSizes();
+
+        if (this.#columnIndex < this.#frozenColumnCount) {
+            this.#matrixRenderer.calculateFrozenDetails();
+        }
+
         this.#matrixRenderer.refresh();
 
         this.#animationId = requestAnimationFrame(this.#animateHandler);

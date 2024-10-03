@@ -61,6 +61,10 @@ class MatrixRenderer extends HTMLElement {
         return this.#selection;
     }
 
+    get config() {
+        return this.#config;
+    }
+
     constructor() {
         super();
         this.attachShadow({ mode: "open" });
@@ -224,21 +228,23 @@ class MatrixRenderer extends HTMLElement {
         this[action]?.(event);
     }
 
-    #getFrozenDetails() {
+    calculateFrozenDetails() {
         if (this.#config.frozenColumns == null) {
             return;
         }
 
-        const columnsActualSizes = [];
-        const columnsCumulativeSizes = [];
+        this.#config.frozenColumns.columnsActualSizes ||= [];
+        this.#config.frozenColumns.columnsActualSizes.length = 0;
+
+        this.#config.frozenColumns.columnsCumulativeSizes ||= [];
+        this.#config.frozenColumns.columnsCumulativeSizes.length = 0;
 
         for (let i = 0; i < this.#config.frozenColumns.count; i++) {
-            columnsActualSizes.push(this.#columnSizes.at(i));
-            columnsCumulativeSizes.push(this.#columnSizes.cumulative(i));
+            this.#config.frozenColumns.columnsActualSizes.push(this.#columnSizes.at(i));
+            this.#config.frozenColumns.columnsCumulativeSizes.push(this.#columnSizes.cumulative(i));
         }
 
-        this.#config.frozenColumns.columnsActualSizes = columnsActualSizes;
-        this.#config.frozenColumns.columnsCumulativeSizes = columnsCumulativeSizes;
+        this.#config.regions.frozenColumns.right = this.#columnSizes.sizeBetween(0, this.#config.frozenColumns.count - 1);
     }
 
     #getPageDetails() {
@@ -293,12 +299,12 @@ class MatrixRenderer extends HTMLElement {
         this.refresh();
     }
 
-    #updateMarkerPosition() {
+    #updateMarkerPosition(pageDetails) {
         this.#updateAccessibility();
 
-        const pageDetails = this.#getPageDetails();
+        pageDetails ||= this.#getPageDetails();
 
-        this.#overlayManager.update(
+        this.#overlayManager?.update(
             this.#updateOptions,
             this,
             this.#config,
@@ -458,6 +464,8 @@ class MatrixRenderer extends HTMLElement {
             this.#scrollLeft,
             this.#scrollTop);
 
+        this.#updateMarkerPosition(pageDetails);
+
         moveScrollMarker(this.#scrollMarkerElement, this.#columnSizes, this.#rowSizes, this.#config);
 
         return pageDetails;
@@ -482,7 +490,7 @@ class MatrixRenderer extends HTMLElement {
             this.#columnSizes = new SizesManager(this.#config.columns.length, 0, columnWidthValues);
 
             this.calculateGroupSizes();
-            this.#getFrozenDetails();
+            this.calculateFrozenDetails();
 
             // 4. move marker to the bottom right corner to enable scrolling
             moveScrollMarker(this.#scrollMarkerElement, this.#columnSizes, this.#rowSizes, this.#config);
