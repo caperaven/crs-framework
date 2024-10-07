@@ -14,6 +14,7 @@ import {startDrag} from "./drag-drop/drag-drop.js";
 class MatrixRenderer extends HTMLElement {
     #ctx;
     #scrollElement;
+    #scrollMarkerElement;
     #config;
     #groupSizes;
     #columnSizes;
@@ -60,6 +61,10 @@ class MatrixRenderer extends HTMLElement {
         return this.#selection;
     }
 
+    get config() {
+        return this.#config;
+    }
+
     constructor() {
         super();
         this.attachShadow({ mode: "open" });
@@ -91,6 +96,7 @@ class MatrixRenderer extends HTMLElement {
 
         this.#scrollElement.removeEventListener("scroll", this.#onScrollHandler);
         this.#scrollElement = null;
+        this.#scrollMarkerElement = null;
 
         this.removeEventListener("click", this.#onMouseEventHandler);
         this.removeEventListener("dblclick", this.#onMouseEventHandler);
@@ -147,9 +153,8 @@ class MatrixRenderer extends HTMLElement {
 
     #animate() {
         const currentTime = performance.now();
-        const pageDetails = this.#getPageDetails();
 
-        renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, false);
+        const pageDetails = this.refresh();
         this.#updateMarkerPosition()
 
         // if we stop scrolling render the final frame
@@ -223,21 +228,23 @@ class MatrixRenderer extends HTMLElement {
         this[action]?.(event);
     }
 
-    #getFrozenDetails() {
+    calculateFrozenDetails() {
         if (this.#config.frozenColumns == null) {
             return;
         }
 
-        const columnsActualSizes = [];
-        const columnsCumulativeSizes = [];
+        this.#config.frozenColumns.columnsActualSizes ||= [];
+        this.#config.frozenColumns.columnsActualSizes.length = 0;
+
+        this.#config.frozenColumns.columnsCumulativeSizes ||= [];
+        this.#config.frozenColumns.columnsCumulativeSizes.length = 0;
 
         for (let i = 0; i < this.#config.frozenColumns.count; i++) {
-            columnsActualSizes.push(this.#columnSizes.at(i));
-            columnsCumulativeSizes.push(this.#columnSizes.cumulative(i));
+            this.#config.frozenColumns.columnsActualSizes.push(this.#columnSizes.at(i));
+            this.#config.frozenColumns.columnsCumulativeSizes.push(this.#columnSizes.cumulative(i));
         }
 
-        this.#config.frozenColumns.columnsActualSizes = columnsActualSizes;
-        this.#config.frozenColumns.columnsCumulativeSizes = columnsCumulativeSizes;
+        this.#config.regions.frozenColumns.right = this.#columnSizes.sizeBetween(0, this.#config.frozenColumns.count - 1);
     }
 
     #getPageDetails() {
@@ -289,16 +296,15 @@ class MatrixRenderer extends HTMLElement {
     }
 
     #dataManagerChange() {
-        const pageDetails = this.#getPageDetails();
-        renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, true);
+        this.refresh();
     }
 
-    #updateMarkerPosition() {
+    #updateMarkerPosition(pageDetails) {
         this.#updateAccessibility();
 
-        const pageDetails = this.#getPageDetails();
+        pageDetails ||= this.#getPageDetails();
 
-        this.#overlayManager.update(
+        this.#overlayManager?.update(
             this.#updateOptions,
             this,
             this.#config,
@@ -345,8 +351,7 @@ class MatrixRenderer extends HTMLElement {
 
         // if change were made, update the page accordingly
         if (changed) {
-            const pageDetails = this.#getPageDetails();
-            renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, true);
+            this.refresh();
             await this.#updateMarkerPosition();
         }
     }
@@ -427,6 +432,7 @@ class MatrixRenderer extends HTMLElement {
             this.addEventListener("mousedown", this.#startDragHandler);
 
             this.#scrollElement = this.shadowRoot.querySelector("#scroller");
+            this.#scrollMarkerElement = this.shadowRoot.querySelector("#marker");
 
             await crsbinding.events.emitter.on("matrix-editing-removed", this.#focusHandler);
 
@@ -438,8 +444,33 @@ class MatrixRenderer extends HTMLElement {
         })
     }
 
-    async resize() {
+    calculateGroupSizes() {
+        const groupWidthValues = getGroupsSize(this.#config, this.#columnSizes);
 
+        if (groupWidthValues != null) {
+            this.#groupSizes = new SizesManager(this.#config.groups.length, 0, groupWidthValues);
+        }
+    }
+
+    refresh(updateMarker = false) {
+        const pageDetails = this.#getPageDetails();
+        renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, false);
+
+        this.#overlayManager?.update(
+            OverlayChanges.COLUMNS,
+            this,
+            this.#config,
+            pageDetails,
+            this.#scrollLeft,
+            this.#scrollTop);
+
+        if (updateMarker === true) {
+            this.#updateMarkerPosition(pageDetails);
+        }
+
+        moveScrollMarker(this.#scrollMarkerElement, this.#columnSizes, this.#rowSizes, this.#config);
+
+        return pageDetails;
     }
 
     async initialize(config) {
@@ -460,25 +491,18 @@ class MatrixRenderer extends HTMLElement {
             const columnWidthValues = this.#config.columns.map(column => column.width);
             this.#columnSizes = new SizesManager(this.#config.columns.length, 0, columnWidthValues);
 
-            const groupWidthValues = getGroupsSize(this.#config, this.#columnSizes);
-
-            if (groupWidthValues != null) {
-                this.#groupSizes = new SizesManager(this.#config.groups.length, 0, groupWidthValues);
-            }
-
-            this.#getFrozenDetails();
+            this.calculateGroupSizes();
+            this.calculateFrozenDetails();
 
             // 4. move marker to the bottom right corner to enable scrolling
-            const markerElement = this.shadowRoot.querySelector("#marker");
-            moveScrollMarker(markerElement, this.#columnSizes, this.#rowSizes, this.#config);
+            moveScrollMarker(this.#scrollMarkerElement, this.#columnSizes, this.#rowSizes, this.#config);
 
             const canvasBottom = this.#config.regions.cells.bottom;
             const contentBottom = this.#config.regions.cells.top + this.#rowSizes.totalSize;
             this.#config.regions.cells.bottom = Math.min(canvasBottom, contentBottom);
 
             // 5. render the canvas
-            const pageDetails = this.#getPageDetails();
-            renderCanvas(this.#ctx, this.#config, pageDetails, this.#renderLT, this.#scrollLeft, this.#scrollTop, true);
+            const pageDetails = this.refresh();
 
             const overlayElement = this.shadowRoot.querySelector("#overlay");
             this.#overlayManager = new OverlayManager(overlayElement, this.#config.overlay);
@@ -537,9 +561,9 @@ class MatrixRenderer extends HTMLElement {
         // multi is set by the drag marker
         // if we are doing a multi selection we don't want to override this.
         // when we click again though we do so we need to remove the multi flag.
-        if (this.#selection.multi === true) {
+        if (this.ignoreSelect === true) {
             await this.copyOverSelectedValues();
-            delete this.#selection.multi;
+            this.ignoreSelect = false;
             return;
         }
 
@@ -838,6 +862,10 @@ class MatrixRenderer extends HTMLElement {
             }
         })
     }
+
+    async scroll(direction, amount) {
+        this.#scrollElement[direction] += amount;
+    }
 }
 
 function getGroupsSize(config, columnSizes) {
@@ -849,19 +877,12 @@ function getGroupsSize(config, columnSizes) {
     const columns = config.columns;
     const result = [];
 
-    let lastSize = 0;
     for (const group of groups) {
-        const to = group.to ?? columns.length - 1;
+        const fromIndex = group.from;
+        const toIndex = group.to ?? columns.length - 1;
 
-        const sizeTo = columnSizes.cumulative(to);
-
-        if (sizeTo == null) {
-            break;
-        }
-
-        const size = sizeTo - lastSize;
-        lastSize = size;
-        result.push(size);
+        const width = columnSizes.sizeBetween(fromIndex, toIndex);
+        result.push(width);
     }
 
     return result;
