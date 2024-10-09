@@ -10,6 +10,7 @@ There are three features
 1. Data Manager
 2. Perspective Manager
 3. Perspective Builder
+4. Filter Builder
 
 Feature: Data Manager
     Description: The data manager is a singleton that manages a data store.
@@ -156,3 +157,24 @@ Feature: Perspective Builder
             .setAggregation({ ... })
             .build();
 
+Feature: Filter Builder
+    Description: Build a filter object from a expression string
+
+    Example: Complex with or and and (value eq 'a' and value2 eq 10) or (value2 eq 20)
+    {
+        "operator": "or",
+        "expressions": [
+            {
+                "operator": "and",
+                "expressions": [
+                    { "field": "value", "operator": "eq", "value": "a" },
+                    { "field": "value2", "operator": "eq", "value": 10 }
+                ]
+            },
+            {
+                "field": "value2",
+                "operator": "eq",
+                "value": 20
+            }
+        ]
+    }
