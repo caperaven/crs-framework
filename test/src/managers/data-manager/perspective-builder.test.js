@@ -1,5 +1,5 @@
 import {beforeAll, afterAll, afterEach, beforeEach, describe, it} from "https://deno.land/std@0.157.0/testing/bdd.ts";
-import { assertEquals, assertExists, assert } from "https://deno.land/std@0.149.0/testing/asserts.ts";
+import { assertEquals, assertExists, assertNotEquals } from "https://deno.land/std@0.149.0/testing/asserts.ts";
 import { PerspectiveBuilder } from "../../../../src/managers/data-manager/perspective-builder.js";
 
 Deno.test("PerspectiveBuilder - simple create", () => {
@@ -120,4 +120,40 @@ Deno.test("PerspectiveBuilder - clearFuzzyFilter", () => {
 Deno.test("PerspectiveBuilder - clearFuzzyFilter with no initial fuzzyFilter", () => {
     const perspective = new PerspectiveBuilder().clearFuzzyFilter().build();
     assertEquals(perspective.fuzzyFilter, undefined);
+});
+
+Deno.test("PerspectiveBuilder - setFilter", () => {
+    const perspective = new PerspectiveBuilder().setFilter({ field: "value" }).build();
+    assertEquals(perspective.filter, { field: "value" });
+});
+
+Deno.test("PerspectiveBuilder - setFilter with null", () => {
+    const perspective = new PerspectiveBuilder().setFilter(null).build();
+    assertEquals(perspective.filter, undefined);
+});
+
+Deno.test("PerspectiveBuilder - setFilter with undefined", () => {
+    const perspective = new PerspectiveBuilder().setFilter(undefined).build();
+    assertEquals(perspective.filter, undefined);
+});
+
+Deno.test("PerspectiveBuilder - clearFilter", () => {
+    const perspective = new PerspectiveBuilder({ filter: { field: "value" } }).clearFilter().build();
+    assertEquals(perspective.filter, undefined);
+});
+
+Deno.test("PerspectiveBuilder - clearFilter with no initial filter", () => {
+    const perspective = new PerspectiveBuilder().clearFilter().build();
+    assertEquals(perspective.filter, undefined);
+});
+
+// Fail examples
+Deno.test("PerspectiveBuilder - setFilter fail example", () => {
+    const perspective = new PerspectiveBuilder().setFilter({ field: "value" }).build();
+    assertNotEquals(perspective.filter, { field: "wrongValue" });
+});
+
+Deno.test("PerspectiveBuilder - clearFilter fail example", () => {
+    const perspective = new PerspectiveBuilder({ filter: { field: "value" } }).clearFilter().build();
+    assertNotEquals(perspective.filter, { field: "value" });
 });

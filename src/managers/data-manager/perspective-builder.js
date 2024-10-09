@@ -127,4 +127,19 @@ export class PerspectiveBuilder {
         delete this.#definition.fuzzyFilter;
         return this;
     }
+
+    setFilter(filter) {
+        if (filter == null) {
+            delete this.#definition.filter;
+            return this;
+        }
+
+        this.#definition.filter = filter;
+        return this;
+    }
+
+    clearFilter() {
+        delete this.#definition.filter;
+        return this;
+    }
 }
