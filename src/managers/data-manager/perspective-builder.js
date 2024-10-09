@@ -138,6 +138,29 @@ export class PerspectiveBuilder {
         return this;
     }
 
+    appendFilter(...filters) {
+        if (filters == null) return this;
+
+        this.#definition.filter ||= [];
+        this.#definition.filter.push(...filters);
+        return this;
+    }
+
+    removeFilter(...filters) {
+        if (this.#definition.filter == null) return this;
+
+        const newFilter = this.#definition.filter.filter(f => !filters.includes(f));
+
+        if (newFilter.length === 0) {
+            delete this.#definition.filter;
+        }
+        else {
+            this.#definition.filter = newFilter;
+        }
+
+        return this;
+    }
+
     clearFilter() {
         delete this.#definition.filter;
         return this;

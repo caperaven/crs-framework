@@ -157,3 +157,39 @@ Deno.test("PerspectiveBuilder - clearFilter fail example", () => {
     const perspective = new PerspectiveBuilder({ filter: { field: "value" } }).clearFilter().build();
     assertNotEquals(perspective.filter, { field: "value" });
 });
+
+// Tests for appendFilter
+Deno.test("PerspectiveBuilder - appendFilter", () => {
+    const perspective = new PerspectiveBuilder().appendFilter({ field: "value1" }).build();
+});
+
+Deno.test("PerspectiveBuilder - appendFilter with existing filters", () => {
+    const perspective = new PerspectiveBuilder({ filter: [{ field: "value1" }] }).appendFilter({ field: "value2" }).build();
+});
+
+Deno.test("PerspectiveBuilder - appendFilter with no initial filter", () => {
+    const perspective = new PerspectiveBuilder().appendFilter({ field: "value1" }).build();
+});
+
+// Fail examples for appendFilter
+Deno.test("PerspectiveBuilder - appendFilter fail example", () => {
+    const perspective = new PerspectiveBuilder().appendFilter({ field: "value1" }).build();
+});
+
+// Tests for removeFilter
+Deno.test("PerspectiveBuilder - removeFilter", () => {
+    const perspective = new PerspectiveBuilder({ filter: [{ field: "value1" }, { field: "value2" }] }).removeFilter({ field: "value1" }).build();
+});
+
+Deno.test("PerspectiveBuilder - removeFilter with non-existing filter", () => {
+    const perspective = new PerspectiveBuilder({ filter: [{ field: "value1" }] }).removeFilter({ field: "value2" }).build();
+});
+
+Deno.test("PerspectiveBuilder - removeFilter with all filters", () => {
+    const perspective = new PerspectiveBuilder({ filter: [{ field: "value1" }, { field: "value2" }] }).removeFilter({ field: "value1" }, { field: "value2" }).build();
+});
+
+// Fail examples for removeFilter
+Deno.test("PerspectiveBuilder - removeFilter fail example", () => {
+    const perspective = new PerspectiveBuilder({ filter: [{ field: "value1" }, { field: "value2" }] }).removeFilter({ field: "value1" }).build();
+});
