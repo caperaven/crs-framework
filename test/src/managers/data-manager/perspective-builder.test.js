@@ -51,3 +51,73 @@ Deno.test("PerspectiveBuilder - removeSort with all fields", () => {
     const perspective = new PerspectiveBuilder({ sort: ["field1:asc", "field2:desc"] }).removeSort("field1:asc", "field2:desc").build();
     assertEquals(perspective.sort, undefined);
 });
+
+Deno.test("PerspectiveBuilder - setGroup", () => {
+    const perspective = new PerspectiveBuilder().setGroup(["group1", "group2"]).build();
+    assertEquals(perspective.group, ["group1", "group2"]);
+});
+
+Deno.test("PerspectiveBuilder - setGroup with empty array", () => {
+    const perspective = new PerspectiveBuilder().setGroup([]).build();
+    assertEquals(perspective.group, undefined);
+});
+
+Deno.test("PerspectiveBuilder - clearGroup", () => {
+    const perspective = new PerspectiveBuilder({ group: ["group1"] }).clearGroup().build();
+    assertEquals(perspective.group, undefined);
+});
+
+Deno.test("PerspectiveBuilder - appendGroup", () => {
+    const perspective = new PerspectiveBuilder({ group: ["group1"] }).appendGroup("group2").build();
+    assertEquals(perspective.group, ["group1", "group2"]);
+});
+
+Deno.test("PerspectiveBuilder - appendGroup with no initial group", () => {
+    const perspective = new PerspectiveBuilder().appendGroup("group1").build();
+    assertEquals(perspective.group, ["group1"]);
+});
+
+Deno.test("PerspectiveBuilder - removeGroup", () => {
+    const perspective = new PerspectiveBuilder({ group: ["group1", "group2"] }).removeGroup("group1").build();
+    assertEquals(perspective.group, ["group2"]);
+});
+
+Deno.test("PerspectiveBuilder - removeGroup with non-existing group", () => {
+    const perspective = new PerspectiveBuilder({ group: ["group1"] }).removeGroup("group2").build();
+    assertEquals(perspective.group, ["group1"]);
+});
+
+Deno.test("PerspectiveBuilder - removeGroup with all groups", () => {
+    const perspective = new PerspectiveBuilder({ group: ["group1", "group2"] }).removeGroup("group1", "group2").build();
+    assertEquals(perspective.group, undefined);
+});
+
+Deno.test("PerspectiveBuilder - setFuzzyFilter", () => {
+    const perspective = new PerspectiveBuilder().setFuzzyFilter("test").build();
+    assertEquals(perspective.fuzzyFilter, "test");
+});
+
+Deno.test("PerspectiveBuilder - setFuzzyFilter with empty string", () => {
+    const perspective = new PerspectiveBuilder().setFuzzyFilter("").build();
+    assertEquals(perspective.fuzzyFilter, undefined);
+});
+
+Deno.test("PerspectiveBuilder - setFuzzyFilter with null", () => {
+    const perspective = new PerspectiveBuilder().setFuzzyFilter(null).build();
+    assertEquals(perspective.fuzzyFilter, undefined);
+});
+
+Deno.test("PerspectiveBuilder - setFuzzyFilter with undefined", () => {
+    const perspective = new PerspectiveBuilder().setFuzzyFilter(undefined).build();
+    assertEquals(perspective.fuzzyFilter, undefined);
+});
+
+Deno.test("PerspectiveBuilder - clearFuzzyFilter", () => {
+    const perspective = new PerspectiveBuilder({ fuzzyFilter: "test" }).clearFuzzyFilter().build();
+    assertEquals(perspective.fuzzyFilter, undefined);
+});
+
+Deno.test("PerspectiveBuilder - clearFuzzyFilter with no initial fuzzyFilter", () => {
+    const perspective = new PerspectiveBuilder().clearFuzzyFilter().build();
+    assertEquals(perspective.fuzzyFilter, undefined);
+});

@@ -22,6 +22,10 @@ export class PerspectiveBuilder {
         return this;
     }
 
+    /**
+     * Clear the sort definition from the perspective.
+     * @returns {PerspectiveBuilder}
+     */
     clearSort() {
         delete this.#definition.sort;
         return this;
@@ -54,6 +58,73 @@ export class PerspectiveBuilder {
             this.#definition.sort = newSort;
         }
 
+        return this;
+    }
+
+    /**
+     * Set the group definition for the perspective
+     * @param group {Array} - array of field names
+     * @returns {PerspectiveBuilder}
+     */
+    setGroup(group) {
+        if ((group || []).length === 0) return this;
+
+        this.#definition.group = group;
+        return this;
+    }
+
+    /**
+     * Clear the group definition from the perspective.
+     * @returns {PerspectiveBuilder}
+     */
+    clearGroup() {
+        delete this.#definition.group;
+        return this;
+    }
+
+    /**
+     * Append group definition to the perspective
+     * @param group
+     * @returns {PerspectiveBuilder}
+     */
+    appendGroup(...group) {
+        this.#definition.group ||= [];
+        this.#definition.group.push(...group);
+        return this;
+    }
+
+    /**
+     * Remove group definition from the perspective
+     * @param group
+     * @returns {PerspectiveBuilder}
+     */
+    removeGroup(...group) {
+        if (this.#definition.group == null) return this;
+
+        const newGroup = this.#definition.group.filter(g => !group.includes(g));
+
+        if (newGroup.length === 0) {
+            delete this.#definition.group;
+        }
+        else {
+            this.#definition.group = newGroup;
+        }
+
+        return this;
+    }
+
+    setFuzzyFilter(fuzzyFilter) {
+        this.#definition.fuzzyFilter = fuzzyFilter ?? "";
+
+        if (this.#definition.fuzzyFilter.trim().length === 0) {
+            delete this.#definition.fuzzyFilter;
+        }
+
+        return this;
+    }
+
+    clearFuzzyFilter() {
+        delete this.#definition.fuzzyFilter;
         return this;
     }
 }
