@@ -19,7 +19,9 @@ const COLUMNS_DEFINITION = [
 describe("regions factory", () => {
     it ("default", async () => {
         const definition = {
-            frozenColumns: 2,
+            frozenColumns: {
+                count: 2
+            },
             heights: {
                 groupHeader: 50,
                 header: 40,
