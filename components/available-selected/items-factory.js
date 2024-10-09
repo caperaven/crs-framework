@@ -6,8 +6,6 @@
  * - createElement - This method will create an element.
  */
 export class ItemsFactory {
-
-
     /**
      * @method createTemplate - This method will create the template for the available and selected items.
      * @param element
