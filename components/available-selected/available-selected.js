@@ -187,55 +187,52 @@ export class AvailableSelected extends HTMLElement {
      */
     async #addDragAndDrop() {
         if (this.#currentView === TabViews.SELECTED) {
-            crsbinding.idleTaskManager.add(async () => {
-                const target = this.#selectedList;
-
-                await crs.call("dom_interactive", "enable_dragdrop", {
-                    element: target,
-                    options: {
-                        drag: {
-                            query: `[data-action="drag"]`,
-                            cpIndex: 1
-                        },
-                        drop: {
-                            allowDrop: async (target, options) => {
-                                // drop check, only drop on container
-                                if (options.currentAction == "drop") {
-                                    if (target.tagName === "LI") {
-                                        return {
-                                            target,
-                                            position: "before"
-                                        }
-                                    }
-
-                                    if (target.parentElement && target.parentElement.tagName === "LI") {
-                                        return {
-                                            target: target.parentElement,
-                                            position: "before"
-                                        }
-                                    }
-
-                                    if (target.tagName !== "UL") {
-                                        return null;
-                                    }
-
+            const target = this.#selectedList;
+            await crs.call("dom_interactive", "enable_dragdrop", {
+                element: target,
+                options: {
+                    drag: {
+                        query: `[data-action="drag"]`,
+                        cpIndex: 1
+                    },
+                    drop: {
+                        allowDrop: async (target, options) => {
+                            // drop check, only drop on container
+                            if (options.currentAction == "drop") {
+                                if (target.tagName === "LI") {
                                     return {
-                                        target: target,
-                                        position: "append"
+                                        target,
+                                        position: "before"
                                     }
                                 }
 
-                                // move operation allow marker to update on list items also
-                                if (target.tagName === "LI" || target.tagName === "UL") {
-                                    return {target};
+                                if (target.parentElement && target.parentElement.tagName === "LI") {
+                                    return {
+                                        target: target.parentElement,
+                                        position: "before"
+                                    }
                                 }
-                            },
-                            callback: async (startIndex, endIndex, dragElement) => {
-                                this.#data.selected.splice(endIndex, 0, ...this.#data.selected.splice(startIndex, 1));
+
+                                if (target.tagName !== "UL") {
+                                    return null;
+                                }
+
+                                return {
+                                    target: target,
+                                    position: "append"
+                                }
                             }
+
+                            // move operation allow marker to update on list items also
+                            if (target.tagName === "LI" || target.tagName === "UL") {
+                                return {target};
+                            }
+                        },
+                        callback: async (startIndex, endIndex, dragElement) => {
+                            this.#data.selected.splice(endIndex, 0, ...this.#data.selected.splice(startIndex, 1));
                         }
                     }
-                })
+                }
             });
         }
     }
