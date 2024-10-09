@@ -24,7 +24,6 @@ const TabViews= Object.freeze({
  */
 export class AvailableSelected extends HTMLElement {
     #clickHandler = this.#click.bind(this);
-    #changeHandler = this.#changeTabView.bind(this);
     #tablist;
     #data;
     #currentView;
@@ -56,11 +55,11 @@ export class AvailableSelected extends HTMLElement {
             this.shadowRoot.addEventListener("click", this.#clickHandler);
             this.#tablist = this.shadowRoot.querySelector("tab-list");
 
-            this.#tablist.addEventListener("change", this.#changeHandler);
             this.#availableList = this.shadowRoot.querySelector("[data-id='available']");
             this.#selectedList = this.shadowRoot.querySelector("[data-id='selected']");
 
             this.#currentView = TabViews.SELECTED;
+            this.#tablist.target = this.shadowRoot.querySelector("#available-selected");
 
             requestAnimationFrame(async () => {
                 await crsbinding.translations.parseElement(this);
@@ -76,12 +75,10 @@ export class AvailableSelected extends HTMLElement {
 
     async disconnectedCallback() {
         await this.shadowRoot.removeEventListener("click", this.#clickHandler);
-        this.#tablist.removeEventListener("change", this.#changeHandler);
         this.#clickHandler = null;
         this.#data = null
         this.#currentView = null;
         this.#tablist = null;
-        this.#changeHandler = null;
         this.#availableList = null;
 
         if (this.dataset.drag === "true") {
@@ -102,18 +99,6 @@ export class AvailableSelected extends HTMLElement {
         }
     }
 
-    /**
-     * @method changeTabView - fires on change event and set the current view to the new tab value and calls the hidden state method.
-     * @param event {Object} - The event object.
-     * @returns {Promise<void>}
-     */
-    async #changeTabView(event) {
-        const view = event.detail.tab;
-        if (this.#currentView !== view) {
-            this.#currentView = view;
-            await this.#setViewHiddenState();
-        }
-    }
 
     /**
      * @method renderList - This method will render the list of available and selected items based on the data passed in through the parameters.
@@ -122,8 +107,8 @@ export class AvailableSelected extends HTMLElement {
      */
     async renderList(data) {
         this.#data = data;
-        const selectedFragment = await ItemsFactory.createTemplate(this, this.#currentView, TabViews.SELECTED, this.#data);
-        const availableFragment = await ItemsFactory.createTemplate(this, this.#currentView, TabViews.AVAILABLE, this.#data);
+        const selectedFragment = await ItemsFactory.createTemplate(this,  TabViews.SELECTED, this.#data);
+        const availableFragment = await ItemsFactory.createTemplate(this, TabViews.AVAILABLE, this.#data);
 
         await this.#appendListElement(this.#selectedList, selectedFragment);
         await this.#appendListElement(this.#availableList, availableFragment);
@@ -137,22 +122,6 @@ export class AvailableSelected extends HTMLElement {
      */
     async #appendListElement(listElement, fragment) {
         listElement.replaceChildren(fragment);
-    }
-
-    /**
-     * @method setViewHiddenState - This method will set the hidden attribute on the selected or available container.
-     * @returns {Promise<void>}
-     */
-    async #setViewHiddenState(){
-        // the primary list is the list that is currently being viewed and the secondary list is the list that is not being viewed.
-        if (this.#currentView === TabViews.SELECTED) {
-            this.#selectedList.removeAttribute("hidden");
-            this.#availableList.setAttribute("hidden", "true");
-        }
-        else {
-            this.#availableList.removeAttribute("hidden");
-            this.#selectedList.setAttribute("hidden", "true");
-        }
     }
 
     /**

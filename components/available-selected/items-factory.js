@@ -9,12 +9,11 @@ export class ItemsFactory {
     /**
      * @method createTemplate - This method will create the template for the available and selected items.
      * @param element
-     * @param currentView
      * @param collection
      * @param data
      * @returns {Promise<HTMLTemplateElement>}
      */
-    static async createTemplate(element, currentView, collection, data) {
+    static async createTemplate(element, collection, data) {
         const templateToInflate = await buildInflationTemplate(element, collection);
         const resultTemplate = await createListFragment(templateToInflate, data, collection);
         return resultTemplate;

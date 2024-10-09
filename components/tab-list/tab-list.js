@@ -6,20 +6,20 @@ export class TabList extends HTMLElement {
     // - Set keyboard interaction NOTE: will be handled by process API
     // - Overflow capabilities
     // - Status icon on tabs
-
     #clickHandler = this.#clicked.bind(this);
     #target;
+
     get html() {
         return import.meta.url.replace(".js", ".html");
     }
 
-    set target(newValue) {
-        this.#target = newValue;
+    set target(value) {
+        this.#target = value;
     }
 
     constructor() {
         super();
-        this.attachShadow({mode:"open"});
+        this.attachShadow({mode: "open"});
     }
 
     async connectedCallback() {
@@ -35,31 +35,55 @@ export class TabList extends HTMLElement {
 
     load() {
         return new Promise(resolve => {
-            requestAnimationFrame( async () => {
+            requestAnimationFrame(async () => {
                 this.shadowRoot.addEventListener("click", this.#clickHandler);
-                this.#target = this.#target || document.querySelector(this.getAttribute("for"));
                 await crsbinding.translations.parseElement(this);
+                // When the component is loaded, we don't have a target, so we need to find it.
 
-                await crs.call("component", "notify_ready", { element: this });
+                await this.#setInitialTab();
+
+                await crs.call("component", "notify_ready", {element: this});
                 resolve();
             })
         })
     }
 
-    async #clicked(event) {
-        const target = event.composedPath()[0];
-        await this.selectTab(target.dataset.view, target);
+    async #setInitialTab() {
+        const tab = this.dataset.default;
+        const target = this.querySelector(`[data-view="${tab}"]`) || this.querySelector(`[data-view]`);
+        await this.#setSelected(tab, target);
     }
 
-    async selectTab(tab, target) {
-        target = target || this.querySelector(`[data-view="${tab}"]`);
+    async #clicked(event) {
+        const target = event.composedPath()[0];
+        const tab = target.dataset.view;
+        await crs.call("dom_collection", "toggle_selection", {target});
+        await this.#setHiddenState(tab);
+        this.dispatchEvent(new CustomEvent("change", {detail: {tab}}));
+    }
 
-        if (this.#target != null) {
-            this.#target.view = tab;
+    async #setSelected(tab, target) {
+        await crs.call("dom_collection", "toggle_selection", {target});
+        await this.#setHiddenState(tab);
+    }
+
+    /**
+     * @method #setHiddenState - This method will set the hidden state depending on the tab that is clicked.
+     * If the tab is clicked, the tab will be visible, other tabs will be hidden.
+     * @param tab {String} - The tab which should be visible.
+     * @returns {Promise<void>}
+     */
+    async #setHiddenState(tab) {
+        const target = this.#target || document.querySelector(this.getAttribute("for"));
+        const tabs = target.querySelectorAll(":scope > *"); // Get all direct children of the target element.
+        tab = tab || tabs[0].dataset.id;
+        for (const tabContainer of tabs) {
+            if (tabContainer.dataset.id === tab) {
+                tabContainer.hidden = false;
+            } else {
+                tabContainer.hidden = true;
+            }
         }
-
-        await crs.call("dom_collection", "toggle_selection", { target });
-        this.dispatchEvent(new CustomEvent("change", { detail: { tab } }));
     }
 }
 

@@ -60,14 +60,13 @@
     }
 
 </style>
-<tab-list aria-role="tablist" for="#available-selected">
+
+<tab-list aria-role="tablist" for="#available-selected" data-default="selected">
     <tab data-view="selected" aria-selected="true">Selected</tab>
     <tab data-view="available">Available</tab>
 </tab-list>
 
-<div data-id="selected-container">
+<div id="available-selected">
     <ul data-id="selected"></ul>
-</div>
-<div data-id="available-container">
-    <ul data-id="available" hidden="true"></ul>
+    <ul data-id="available" ></ul>
 </div>
