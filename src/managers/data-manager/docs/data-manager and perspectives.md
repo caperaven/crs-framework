@@ -53,7 +53,7 @@ Feature: Perspective Manager
          Then: I should get the perspective object
 
     Example:
-        await crs.call("perspective_manager", "get", { perspective: "my_perspective" });
+        const perspectiveIntent = await crs.call("perspective_manager", "get", { perspective: "my_perspective" });
 
     Scenario: Dispose of Perspective
         Given: a perspective id
@@ -84,7 +84,7 @@ Feature: Perspective Builder
     Example:
         const perspective = new PerspectiveBuilder(perspectiveIntent).build();
 
-    Scenario: Add / Update filter
+    Scenario: Add / Update Filter
         Given: a filter intent definition
          When: I call `setFilter`
          Then: The filter should be added to the perspective object
@@ -92,7 +92,7 @@ Feature: Perspective Builder
     Example:
         const perspective = new PerspectiveBuilder(perspectiveIntent).setFilter({ ... }).build();
 
-    Scenario: Remove filter
+    Scenario: Remove Filter
         Given: a existing perspective
          When: I call `removeFilter`
          Then: The filter should be removed from the perspective object
@@ -100,15 +100,49 @@ Feature: Perspective Builder
     Example:
         const perspective = new PerspectiveBuilder(perspectiveIntent).removeFilter().build();
 
+    Scenaio: Append Filter
+        Given: a existing perspective
+          And: a existing filter
+         When: I call `appendFilter`
+         Then: The filter should be appended to the existing filter
+
+    Scenario: Append Filter to a non existing filter
+        Given: a existing perspective
+          And: no filter has been defined
+         When: I call `appendFilter`
+         Then: The filter should be added to the perspective object
+
+    Example:
+        const perspective = new PerspectiveBuilder(perspectiveIntent).appendFilter({ ... }).build();
+
+    Scenario: Clear Filter
+        Given: a existing perspective
+         When: I call `clearFilter`
+         Then: The filter should be removed from the perspective object 
+
+    Example:
+        const perspective = new PerspectiveBuilder(perspectiveIntent).clearFilter().build();
+
     The same applies for :
     - setFuzzyFilter - use fuzzy filter
     - removeFuzzyFilter - remove fuzzy filter
+    - appendFuzzyFilter - append fuzzy filter
+    - clearFuzzyFilter - clear fuzzy filter
+
     - setSort - set the sort order
     - removeSort - remove the sort order
+    - appendSort - append the sort order
+    - clearSort - clear the sort order
+
     - setGroup - set the grouping
     - removeGroup - remove the grouping
+    - appendGroup - append the grouping
+    - clearGroup - clear the grouping
+
     - setAggregation - set the aggregation
     - removeAggregation - remove the aggregation
+    - appendAggregation - append the aggregation
+    - clearAggregation - clear the aggregation
 
     Scenario: Combine actions using chaining in a single call
          When: I use the perspective builder
