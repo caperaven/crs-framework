@@ -30,3 +30,33 @@ Deno.test("FilterBuilder - simple create - number", () => {
     assertEquals(filter.operator, "eq");
     assertEquals(filter.value, 10);
 })
+
+Deno.test("FilterBuilder - and expression", () => {
+    const filter = new FilterBuilder("code eq 'test' and isActive eq true").build();
+    assertExists(filter);
+    assertEquals(filter.operator, "and");
+    assertEquals(filter.expressions.length, 2);
+
+    assertEquals(filter.expressions[0].field, "code");
+    assertEquals(filter.expressions[0].operator, "eq");
+    assertEquals(filter.expressions[0].value, "test");
+
+    assertEquals(filter.expressions[1].field, "isActive");
+    assertEquals(filter.expressions[1].operator, "eq");
+    assertEquals(filter.expressions[1].value, true);
+})
+
+Deno.test("FilterBuilder - or expression", () => {
+    const filter = new FilterBuilder("code eq 'test' or isActive eq true").build();
+    assertExists(filter);
+    assertEquals(filter.operator, "or");
+    assertEquals(filter.expressions.length, 2);
+
+    assertEquals(filter.expressions[0].field, "code");
+    assertEquals(filter.expressions[0].operator, "eq");
+    assertEquals(filter.expressions[0].value, "test");
+
+    assertEquals(filter.expressions[1].field, "isActive");
+    assertEquals(filter.expressions[1].operator, "eq");
+    assertEquals(filter.expressions[1].value, true);
+})

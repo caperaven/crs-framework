@@ -11,10 +11,29 @@ export class FilterBuilder {
 }
 
 function buildIntent(expression) {
+    const containsAnd = expression.includes(" and ");
+    const containsOr = expression.includes(" or ");
+
     // 1. does the expression have any "and" or "or" operators
-    if (!expression.includes(" and ") && !expression.includes(" or ")) {
+    if (!containsAnd && !containsOr) {
         return expressionToObject(expression);
     }
+
+    const isGrouped = expression.includes("(") && expression.includes(")");
+    if (!isGrouped) {
+        const operator = containsAnd ? "and" : "or";
+        return parseOperatorSyntax(expression, operator);
+    }
+}
+
+function parseOperatorSyntax(expression, operator) {
+    const parts = expression.split(operator);
+
+    const expressions = parts.map(part => {
+        return buildIntent(part.trim());
+    });
+
+    return { operator, expressions }
 }
 
 /**
