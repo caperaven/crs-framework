@@ -161,15 +161,16 @@ export class AvailableSelected extends HTMLElement {
      * @returns {Promise<void>}
      */
     async toggle(event) {
-        const li = event.target.parentElement;
+        const listItem = event.target.parentElement;
 
-        const source = li.getAttribute("class");
-        if (source !== this.#currentView) this.#currentView = source;
+        const currentTabView = listItem.getAttribute("class");
+        if (currentTabView !== this.#currentView) this.#currentView = currentTabView;
 
-        const target = source === TabViews.AVAILABLE ? TabViews.SELECTED : TabViews.AVAILABLE;
-        const value = this.#data[source].find(item => `${item[this.dataset.idField || "id"]}` === `${li.dataset.id}`);
+        const secondaryTabView = currentTabView === TabViews.AVAILABLE ? TabViews.SELECTED : TabViews.AVAILABLE;
 
-        await crs.call("array", "transfer", {source: this.#data[source], target: this.#data[target], value: value});
+        const listObject = this.#data[currentTabView].find(item => `${item[this.dataset.idField || "id"]}` === listItem.dataset.id);
+
+        await crs.call("array", "transfer", {source: this.#data[currentTabView], target: this.#data[secondaryTabView], value: listObject});
         await this.renderList(this.#data);
     }
 
