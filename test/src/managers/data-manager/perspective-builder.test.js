@@ -201,23 +201,22 @@ Deno.test("PerspectiveBuilder - removeFilter", () => {
 });
 
 Deno.test("PerspectiveBuilder - removeFilter with non-existing filter", () => {
-    const perspective = new PerspectiveBuilder({ filter: [{ field: "value1", operator: "eq", value: "hello" }] })
+    const perspective = new PerspectiveBuilder({ filter: { field: "value1", operator: "eq", value: "hello" } })
         .removeFilter({ field: "value2", operator: "eq", value: "hello" }).build();
+
+    assertEquals(perspective.filter, { field: "value1", operator: "eq", value: "hello" });
 });
 
 Deno.test("PerspectiveBuilder - removeFilter with all filters", () => {
-    const perspective = new PerspectiveBuilder({ filter: [
-            { field: "value1", operator: "eq", value: "hello" }, { field: "value2", operator: "eq", value: "hello" }
-        ] })
+    const perspective = new PerspectiveBuilder({ filter: {
+        operator: "and",
+        expressions: [
+            { field: "value1", operator: "eq", value: "hello" },
+            { field: "value2", operator: "eq", value: "hello" }
+        ]}})
         .removeFilter(
             { field: "value1", operator: "eq", value: "hello" }, { field: "value2", operator: "eq", value: "hello" }
         ).build();
-});
 
-// Fail examples for removeFilter
-Deno.test("PerspectiveBuilder - removeFilter fail example", () => {
-    const perspective = new PerspectiveBuilder({ filter: [
-            { field: "value1", operator: "eq", value: "hello" },
-            { field: "value2", operator: "eq", value: "hello" }
-        ]}).removeFilter({ field: "value1" }).build();
+    assertEquals(perspective.filter, undefined);
 });
