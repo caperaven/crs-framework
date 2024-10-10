@@ -33,6 +33,17 @@ Deno.test("FilterBuilder - simple create - number", () => {
 
 Deno.test("FilterBuilder - and expression", () => {
     const filter = new FilterBuilder("code eq 'test' and isActive eq true").build();
+
+    /**
+     * result = {
+     *     operator: "and",
+     *     expressions: [
+     *          { field: "code", operator: "eq", value: "test" },
+     *          { field: "isActive", operator: "eq", value: true }
+     *     ]
+     * }
+     */
+
     assertExists(filter);
     assertEquals(filter.operator, "and");
     assertEquals(filter.expressions.length, 2);
@@ -59,4 +70,31 @@ Deno.test("FilterBuilder - or expression", () => {
     assertEquals(filter.expressions[1].field, "isActive");
     assertEquals(filter.expressions[1].operator, "eq");
     assertEquals(filter.expressions[1].value, true);
+})
+
+Deno.test("FilterBuilder - complex", () => {
+    const filter = new FilterBuilder("(code eq 'test' and isActive eq true) or (code eq 'test2')").build();
+
+    /**
+     * result = {
+     *      operator: "or",
+     *      expressions: [
+     *          {
+     *              operator: "and",
+     *              expressions: [
+     *                  { field: "code", operator: "eq", value: "test" },
+     *                  { field: "isActive", operator: "eq", value: true }
+     *              ]
+     *          },
+     *          {
+     *              field: "code",
+     *              operator: "eq",
+     *              value: "test2"
+     *          }
+     *      ]
+     * }
+     */
+
+    const filterStr = JSON.stringify(filter, null, 0);
+    assertEquals(filterStr, `{"operator":"or","expressions":[{"operator":"and","expressions":[{"field":"code","operator":"eq","value":"test"},{"field":"isActive","operator":"eq","value":true}]},{"field":"code","operator":"eq","value":"test2"}]}`)
 })
