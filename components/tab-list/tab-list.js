@@ -74,8 +74,9 @@ export class TabList extends HTMLElement {
      * @returns {Promise<void>}
      */
     async #setHiddenState(tab) {
+        // we use the this.#target in the case of the element being within a shadowDom of another component
         const target = this.#target || document.querySelector(this.getAttribute("for"));
-        const tabs = target.querySelectorAll(":scope > *"); // Get all direct children of the target element.
+        const tabs = target.children;
         tab = tab || tabs[0].dataset.id;
         for (const tabContainer of tabs) {
             if (tabContainer.dataset.id === tab) {
