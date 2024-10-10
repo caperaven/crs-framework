@@ -171,11 +171,9 @@ export class PerspectiveBuilder {
     removeFilter(...filters) {
         if (this.#definition.filter == null) return this;
 
-        for (let i = 0; i < filters.length; i++) {
-            filters[i] = filterObjToExpr(filters[i]);
-        }
+        const filterStrings = filters.map(f => filterObjToExpr(f));
 
-        const newFilter = this.#definition.filter.filter(f => !filters.includes(f));
+        const newFilter = this.#definition.filter.filter(f => !filterStrings.includes(f));
 
         if (newFilter.length === 0) {
             delete this.#definition.filter;
