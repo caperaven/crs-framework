@@ -1,11 +1,29 @@
+import {FilterBuilder} from "./filter-builder.js";
+
 export class PerspectiveBuilder {
     #definition;
 
     constructor(definition) {
         this.#definition = structuredClone(definition || {});
+
+        if (this.#definition.filter != null) {
+            const filter = this.#definition.filter;
+            this.#definition.filter = [];
+            filterObjToExprCollection(filter, this.#definition.filter);
+        }
     }
 
     build() {
+        if (this.#definition.filter != null) {
+            if (this.#definition.filter.length === 1) {
+                this.#definition.filter = new FilterBuilder(this.#definition.filter[0]).build();
+            }
+            else {
+                const filterExpression = this.#definition.filter.join(" and ");
+                this.#definition.filter = new FilterBuilder(filterExpression).build();
+            }
+        }
+
         return Object.freeze(this.#definition);
     }
 
@@ -134,7 +152,7 @@ export class PerspectiveBuilder {
             return this;
         }
 
-        this.#definition.filter = filter;
+        this.#definition.filter = [filterObjToExpr(filter)];
         return this;
     }
 
@@ -142,12 +160,20 @@ export class PerspectiveBuilder {
         if (filters == null) return this;
 
         this.#definition.filter ||= [];
-        this.#definition.filter.push(...filters);
+
+        for (let filter of filters) {
+            this.#definition.filter.push(filterObjToExpr(filter));
+        }
+
         return this;
     }
 
     removeFilter(...filters) {
         if (this.#definition.filter == null) return this;
+
+        for (let i = 0; i < filters.length; i++) {
+            filters[i] = filterObjToExpr(filters[i]);
+        }
 
         const newFilter = this.#definition.filter.filter(f => !filters.includes(f));
 
@@ -164,5 +190,25 @@ export class PerspectiveBuilder {
     clearFilter() {
         delete this.#definition.filter;
         return this;
+    }
+}
+
+function filterObjToExpr(filter) {
+    if (typeof filter === "string") return filter;
+
+    return `${filter.field} ${filter.operator} '${filter.value}'`;
+}
+
+function filterObjToExprCollection(filter, collection) {
+    if (typeof filter === "string") {
+        return collection.push(filter);
+    }
+
+    if (filter.expressions == null) {
+        return collection.push(filterObjToExpr(filter));
+    }
+
+    for (let expression of filter.expressions) {
+        filterObjToExprCollection(expression, collection);
     }
 }
