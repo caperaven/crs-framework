@@ -1,6 +1,11 @@
 import "./../../components/tab-list/tab-list.js";
 import {ItemsFactory} from "./items-factory.js";
 
+const TabViews= Object.freeze({
+    AVAILABLE: "available",
+    SELECTED: "selected"
+});
+
 /**
  * @class AvailableSelected - This is a component that allows you to select items from a list of available items.
  *
@@ -20,9 +25,10 @@ import {ItemsFactory} from "./items-factory.js";
 export class AvailableSelected extends HTMLElement {
     #clickHandler = this.#click.bind(this);
     #tablist;
-    #perspectiveElement;
     #data;
     #currentView;
+    #availableList;
+    #selectedList;
 
     //This is for testing purposes
     get clickedHandler() {
@@ -48,11 +54,20 @@ export class AvailableSelected extends HTMLElement {
         return new Promise((resolve) => {
             this.shadowRoot.addEventListener("click", this.#clickHandler);
             this.#tablist = this.shadowRoot.querySelector("tab-list");
-            this.#currentView = "selected";
+
+            this.#availableList = this.shadowRoot.querySelector("[data-id='available']");
+            this.#selectedList = this.shadowRoot.querySelector("[data-id='selected']");
+
+            this.#currentView = TabViews.SELECTED;
+            this.#tablist.target = this.shadowRoot.querySelector("#available-selected");
 
             requestAnimationFrame(async () => {
                 await crsbinding.translations.parseElement(this);
                 await crs.call("component", "notify_ready", {element: this});
+
+                if (this.dataset.drag === "true") {
+                    await this.#addDragAndDrop();
+                }
                 resolve();
             });
         });
@@ -64,17 +79,49 @@ export class AvailableSelected extends HTMLElement {
         this.#data = null
         this.#currentView = null;
         this.#tablist = null;
+        this.#availableList = null;
+
         if (this.dataset.drag === "true") {
             await this.#removeDragAndDrop();
         }
-        this.#perspectiveElement = this.#perspectiveElement?.dispose();
+        this.#selectedList = null;
     }
 
+    /**
+     * @method #click - This method will handle the click event.
+     * @param event {Object} - The click event.
+     * @returns {Promise<void>}
+     */
     async #click(event) {
         const target = event.target;
         if (target.dataset.action != null) {
             this[target.dataset.action] != null && await this[target.dataset.action](event);
         }
+    }
+
+
+    /**
+     * @method renderList - This method will render the list of available and selected items based on the data passed in through the parameters.
+     * @param data {Object} - The data object containing the available and selected items.
+     * @returns {Promise<void>}
+     */
+    async renderList(data) {
+        this.#data = data;
+        const selectedFragment = await ItemsFactory.createTemplate(this,  TabViews.SELECTED, this.#data);
+        const availableFragment = await ItemsFactory.createTemplate(this, TabViews.AVAILABLE, this.#data);
+
+        await this.#appendListElement(this.#selectedList, selectedFragment);
+        await this.#appendListElement(this.#availableList, availableFragment);
+    }
+
+    /**
+     * @method appendListElement - This method will append the list element to the list container.
+     * @param listElement - The ul list element to append the list to.
+     * @param fragment - The fragment(li) to append to the list container
+     * @returns {Promise<void>}
+     */
+    async #appendListElement(listElement, fragment) {
+        listElement.replaceChildren(fragment);
     }
 
     /**
@@ -83,55 +130,17 @@ export class AvailableSelected extends HTMLElement {
      * @returns {Promise<void>}
      */
     async toggle(event) {
-        const li = event.target.parentElement;
+        const listItem = event.target.parentElement;
 
-        const source = li.getAttribute("class");
-        if (source !== this.#currentView) this.#currentView = source;
+        const currentTabView = listItem.getAttribute("class");
+        if (currentTabView !== this.#currentView) this.#currentView = currentTabView;
 
-        const target = source === "available" ? "selected" : "available";
-        const value = this.#data[source].find(item => `${item[this.dataset.idField || "id"]}` === `${li.dataset.id}`);
+        const secondaryTabView = currentTabView === TabViews.AVAILABLE ? TabViews.SELECTED : TabViews.AVAILABLE;
 
-        await crs.call("array", "transfer", {source: this.#data[source], target: this.#data[target], value: value});
-        await this.update(this.#data, false);
-    }
+        const listObject = this.#data[currentTabView].find(item => `${item[this.dataset.idField || "id"]}` === listItem.dataset.id);
 
-    /**
-     * @method update - This method will update the data for the component.
-     * @param data {Object} - The data to update the component with.
-     * @returns {Promise<void>}
-     */
-    async update(data, resetView = true) {
-        this.#data = data;
-        const selectedTemplate = await ItemsFactory.createTemplate(this, this.#currentView, "selected", this.#data);
-        const availableTemplate = await ItemsFactory.createTemplate(this, this.#currentView, "available", this.#data);
-
-        if (this.#perspectiveElement != null) {
-            if (this.dataset.drag === "true") {
-                await this.#removeDragAndDrop();
-            }
-            this.shadowRoot.removeChild(this.#perspectiveElement);
-            this.#perspectiveElement = await this.#perspectiveElement?.dispose();
-        }
-
-        const perspectiveElement = document.createElement("perspective-element");
-
-        perspectiveElement.appendChild(selectedTemplate);
-        perspectiveElement.appendChild(availableTemplate);
-        perspectiveElement.dataset.store = perspectiveElement._dataId;
-
-
-        this.shadowRoot.appendChild(perspectiveElement);
-        this.#perspectiveElement = perspectiveElement;
-        this.#tablist.target = this.#perspectiveElement;
-
-        if (resetView === true) {
-            this.#currentView = "selected";
-            await this.#tablist.selectTab(this.#currentView);
-        }
-
-        if (this.dataset.drag === "true") {
-            await this.#addDragAndDrop();
-        }
+        await crs.call("array", "transfer", {source: this.#data[currentTabView], target: this.#data[secondaryTabView], value: listObject});
+        await this.renderList(this.#data);
     }
 
     /**
@@ -142,64 +151,69 @@ export class AvailableSelected extends HTMLElement {
         return this.#data.selected;
     }
 
+    /**
+     * @method #addDragAndDrop - This method will add the drag and drop functionality to the selected list.
+     * @returns {Promise<void>}
+     */
     async #addDragAndDrop() {
-        if (this.#perspectiveElement.view === "selected") {
-            crsbinding.idleTaskManager.add(async () => {
-                const target = this.#perspectiveElement.querySelector("ul");
-
-                await crs.call("dom_interactive", "enable_dragdrop", {
-                    element: target,
-                    options: {
-                        drag: {
-                            query: `[data-action="drag"]`,
-                            cpIndex: 1
-                        },
-                        drop: {
-                            allowDrop: async (target, options) => {
-                                // drop check, only drop on container
-                                if (options.currentAction == "drop") {
-                                    if (target.tagName === "LI") {
-                                        return {
-                                            target,
-                                            position: "before"
-                                        }
-                                    }
-
-                                    if (target.parentElement && target.parentElement.tagName === "LI") {
-                                        return {
-                                            target: target.parentElement,
-                                            position: "before"
-                                        }
-                                    }
-
-                                    if (target.tagName !== "UL") {
-                                        return null;
-                                    }
-
+        if (this.#currentView === TabViews.SELECTED) {
+            const target = this.#selectedList;
+            await crs.call("dom_interactive", "enable_dragdrop", {
+                element: target,
+                options: {
+                    drag: {
+                        query: `[data-action="drag"]`,
+                        cpIndex: 1
+                    },
+                    drop: {
+                        allowDrop: async (target, options) => {
+                            // drop check, only drop on container
+                            if (options.currentAction == "drop") {
+                                if (target.tagName === "LI") {
                                     return {
-                                        target: target,
-                                        position: "append"
+                                        target,
+                                        position: "before"
                                     }
                                 }
 
-                                // move operation allow marker to update on list items also
-                                if (target.tagName === "LI" || target.tagName === "UL") {
-                                    return {target};
+                                if (target.parentElement && target.parentElement.tagName === "LI") {
+                                    return {
+                                        target: target.parentElement,
+                                        position: "before"
+                                    }
                                 }
-                            },
-                            callback: async (startIndex, endIndex, dragElement) => {
-                                this.#data.selected.splice(endIndex, 0, ...this.#data.selected.splice(startIndex, 1));
+
+                                if (target.tagName !== "UL") {
+                                    return null;
+                                }
+
+                                return {
+                                    target: target,
+                                    position: "append"
+                                }
                             }
+
+                            // move operation allow marker to update on list items also
+                            if (target.tagName === "LI" || target.tagName === "UL") {
+                                return {target};
+                            }
+                        },
+                        callback: async (startIndex, endIndex, dragElement) => {
+                            this.#data.selected.splice(endIndex, 0, ...this.#data.selected.splice(startIndex, 1));
                         }
                     }
-                })
+                }
             });
         }
     }
 
+    /**
+     *  @method removeDragAndDrop - removes the drag and drop functionality from the selected list.
+     * @returns {Promise<void>}
+     */
     async #removeDragAndDrop() {
         await crs.call("dom_interactive", "disable_dragdrop", {
-            element: this.#perspectiveElement.querySelector("ul"),
+            element: this.#selectedList
         });
     }
 }
