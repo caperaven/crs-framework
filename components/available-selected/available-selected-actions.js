@@ -45,13 +45,14 @@ export class AvailableSelectedActions {
             selected: []
         }
 
-        for (const item of items) {
-            item[idField] = item[idField] || items.indexOf(item);
+        for (let i = 0; i < items.length; i++) {
+            const item = items[i];
+            item[idField] = item[idField] || i;
             item.selected === true ? data.selected.push(item) : data.available.push(item);
         }
 
         const onReady = async () => {
-            await element.update(data);
+            await element.renderList(data);
         }
         await crs.call("component", "on_ready", {element: element, callback: onReady, caller: this});
     }
