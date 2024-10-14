@@ -48,6 +48,7 @@ class MatrixRenderer extends HTMLElement {
     }
     #copyValue;
     #copyDataType;
+    #resizeHandler = this.#resizeMatrix.bind(this);
 
     get rowSizes() {
         return this.#rowSizes;
@@ -76,12 +77,11 @@ class MatrixRenderer extends HTMLElement {
     }
 
     async #loadHTML() {
-        const currentURL = import.meta.url;
-        const htmlURL = new URL("./matrix-renderer.html", currentURL);
-        const cssURL = new URL("./matrix-renderer.css", currentURL);
-
-        const html = await fetch(htmlURL).then(result => result.text());
-        this.shadowRoot.innerHTML = `<link rel="stylesheet" href="${cssURL}">${html}`;
+        await crs.call("component", "load_html", {
+            element: this.shadowRoot,
+            url: import.meta.url,
+            has_css: true
+        });
     }
 
     async disconnectedCallback() {
@@ -119,6 +119,8 @@ class MatrixRenderer extends HTMLElement {
 
         this.#hoverManager.removeEventListener("hover", this.#hoverHandler);
         this.#hoverManager = this.#hoverManager.dispose();
+        this.#resizeHandler = null;
+        await crs.call("dom_observer", "unobserve_resize", {element: this});
     }
 
     #updateAccessibility() {
@@ -226,6 +228,12 @@ class MatrixRenderer extends HTMLElement {
     #onClickCells(event) {
         const action = this.#inputManager.getInputAction(event);
         this[action]?.(event);
+    }
+
+    async #resizeMatrix() {
+        console.log("resize");
+        const config = this.#config;
+        await this.initialize(config);
     }
 
     calculateFrozenDetails() {
@@ -439,6 +447,11 @@ class MatrixRenderer extends HTMLElement {
             // set up hovering
             this.#hoverManager.initialize(this);
             this.#hoverManager.addEventListener("hover", this.#hoverHandler);
+
+            await crs.call("dom_observer", "observe_resize", {
+                element: this,
+                callback: this.#resizeHandler
+            });
 
             await crs.call("component", "notify_ready", { element: this });
         })
@@ -790,7 +803,8 @@ class MatrixRenderer extends HTMLElement {
         this.#copyValue = copyValue ?? this.#config.rows[this.#selection.row][copyField];
 
         if (this.#selection.toRow != null) {
-            for (let rowIndex = this.#selection.row; rowIndex <= this.#selection.toRow; rowIndex++) {
+            // TODO JHR/GM - Needs to become batch update
+            for (let rowIndex = this.#selection.row + 1; rowIndex <= this.#selection.toRow; rowIndex++) {
                 crs.call("data_manager", "update", {
                     manager: this.#config.manager,
                     index: rowIndex,
@@ -801,7 +815,7 @@ class MatrixRenderer extends HTMLElement {
             }
         }
         else {
-            for (let columnIndex = this.#selection.column; columnIndex <= this.#selection.toColumn; columnIndex++) {
+            for (let columnIndex = this.#selection.column + 1; columnIndex <= this.#selection.toColumn; columnIndex++) {
                 const targetColumn = this.#config.columns[columnIndex];
                 const field = targetColumn.field;
                 const dataType = targetColumn.type;
