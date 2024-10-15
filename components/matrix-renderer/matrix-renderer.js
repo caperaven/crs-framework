@@ -76,12 +76,11 @@ class MatrixRenderer extends HTMLElement {
     }
 
     async #loadHTML() {
-        const currentURL = import.meta.url;
-        const htmlURL = new URL("./matrix-renderer.html", currentURL);
-        const cssURL = new URL("./matrix-renderer.css", currentURL);
-
-        const html = await fetch(htmlURL).then(result => result.text());
-        this.shadowRoot.innerHTML = `<link rel="stylesheet" href="${cssURL}">${html}`;
+        await crs.call("component", "load_html", {
+            element: this.shadowRoot,
+            url: import.meta.url,
+            has_css: true
+        });
     }
 
     async disconnectedCallback() {
@@ -809,7 +808,8 @@ class MatrixRenderer extends HTMLElement {
         this.#copyValue = copyValue ?? this.#config.rows[this.#selection.row][copyField];
 
         if (this.#selection.toRow != null) {
-            for (let rowIndex = this.#selection.row; rowIndex <= this.#selection.toRow; rowIndex++) {
+            // TODO JHR/GM - Needs to become batch update
+            for (let rowIndex = this.#selection.row + 1; rowIndex <= this.#selection.toRow; rowIndex++) {
                 crs.call("data_manager", "update", {
                     manager: this.#config.manager,
                     index: rowIndex,
@@ -820,7 +820,7 @@ class MatrixRenderer extends HTMLElement {
             }
         }
         else {
-            for (let columnIndex = this.#selection.column; columnIndex <= this.#selection.toColumn; columnIndex++) {
+            for (let columnIndex = this.#selection.column + 1; columnIndex <= this.#selection.toColumn; columnIndex++) {
                 const targetColumn = this.#config.columns[columnIndex];
                 const field = targetColumn.field;
                 const dataType = targetColumn.type;
