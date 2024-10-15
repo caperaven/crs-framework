@@ -12,7 +12,7 @@ export class DataPipeline {
         return this.#slots;
     }
 
-    constructor(intentCallback, streaming = false, autoDispose = false) {
+    constructor(intentCallback, streaming = false, autoDispose = true) {
         this.#streaming = streaming;
         this.#autoDispose = autoDispose;
 
@@ -40,6 +40,10 @@ export class DataPipeline {
     #performIntent() {
         for (const intent of this.#intents) {
             intent(this.#slots);
+        }
+
+        if (this.#autoDispose === true) {
+            this.dispose();
         }
     }
 
@@ -105,6 +109,8 @@ export class DataPipeline {
     }
 
     addPromiseSlot(slotName, promise) {
+        this.#slots[slotName] = null;
+
         promise.then(value => {
             this.#slots[slotName] = value;
             this.#evaluateSlots();
