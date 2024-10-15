@@ -37,7 +37,7 @@ export class BusyUIActions {
      * }
      */
     static async show(step, context, process, item) {
-        const element = await crs.dom.get_element(step.args.element, context, process, item);
+        let element = await crs.dom.get_element(step.args.element, context, process, item);
         const message = await crs.process.getValue(step.args.message || "", context, process, item);
         const progress = await crs.process.getValue(step.args.progress || "", context, process, item);
 
@@ -49,6 +49,7 @@ export class BusyUIActions {
         ensureElementRelative(element);
 
         // 1. if the element already has a busy indicator, don't add another one.
+        element = element.shadowRoot || element;
         const hasElement = element.querySelector("busy-ui") != null;
         if (hasElement) return;
 
@@ -62,10 +63,11 @@ export class BusyUIActions {
     }
 
     static async update(step, context, process, item) {
-        const element = await crs.dom.get_element(step.args.element, context, process, item);
+        let element = await crs.dom.get_element(step.args.element, context, process, item);
         const message = await crs.process.getValue(step.args.message || "", context, process, item);
         const progress = await crs.process.getValue(step.args.progress || "", context, process, item);
 
+        element = element.shadowRoot || element;
         const busyElement = element.querySelector("busy-ui");
         if (busyElement != null) {
             busyElement.dataset.message = message;
@@ -87,9 +89,10 @@ export class BusyUIActions {
      * });
      */
     static async hide(step, context, process, item) {
-        const element = await crs.dom.get_element(step.args.element, context, process, item);
-        const busyElement = element.querySelector("busy-ui");
+        let element = await crs.dom.get_element(step.args.element, context, process, item);
 
+        element = element.shadowRoot || element;
+        const busyElement = element.querySelector("busy-ui");
         if (busyElement) {
             busyElement.remove();
         }
