@@ -16,8 +16,13 @@ Deno.test("DataPipeline - simple activate", () => {
 
 Deno.test("DataPipeline - simple null sequence checks for callbacks", () => {
     let called = false;
+    let result = null;
+
     const pipeline = new DataPipeline();
-    pipeline.addIntent(() => called = true);
+    pipeline.addIntent((slots) => {
+        called = true;
+        result = slots;
+    });
     pipeline.addPropertySlot("firstName");
     pipeline.addPropertySlot("lastName");
     pipeline.activate();
@@ -25,8 +30,10 @@ Deno.test("DataPipeline - simple null sequence checks for callbacks", () => {
     assertEquals(called, false);
     pipeline.setPropertyValue("firstName", "test");
     assertEquals(called, false);
-    pipeline.setPropertyValue("lastName", "test");
+    pipeline.setPropertyValue("lastName", "test2");
     assertEquals(called, true);
+    assertEquals(result.firstName, "test");
+    assertEquals(result.lastName, "test2")
 })
 
 Deno.test("DataPipeline - promise slot", async () => {
