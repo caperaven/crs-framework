@@ -34,9 +34,7 @@ Deno.test("DataPipeline - promise slot", async () => {
     let resolvePromise = null
 
     const pipeline = new DataPipeline();
-    pipeline.addIntent(() => {
-        called = true
-    });
+    pipeline.addIntent(() => called = true);
     pipeline.addPromiseSlot("name", new Promise(resolve => {resolvePromise = resolve}));
     pipeline.activate();
     assertEquals(called, false);
@@ -44,3 +42,22 @@ Deno.test("DataPipeline - promise slot", async () => {
     await resolvePromise("test");
     assertEquals(called, true);
 });
+
+Deno.test("DataPipeline - event listener slot", () => {
+    class TestEvent extends EventTarget {
+        execute() {
+            this.dispatchEvent(new CustomEvent("test", {detail: "test"}));
+        }
+    }
+
+    let called = false;
+    const instance = new TestEvent();
+    const pipeline = new DataPipeline();
+    pipeline.addIntent(() => called = true);
+    pipeline.addEventListenerSlot("name", instance, "test");
+    pipeline.activate();
+    assertEquals(called, false);
+
+    instance.execute();
+    assertEquals(called, true);
+})

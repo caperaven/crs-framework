@@ -6,7 +6,8 @@ export class DataPipeline {
     #autoDispose = false;
     #isActive = false;
     #mutationObserver;
-    #handleEventsHandler = this.#handleEvents.bind(this);
+
+    evaluateSlots = this.#evaluateSlots.bind(this);
 
     get slots() {
         return this.#slots;
@@ -22,6 +23,8 @@ export class DataPipeline {
     }
 
     dispose() {
+        this.evaluateSlots = null
+
         this.#slots = null;
         this.#streaming = null;
         this.#autoDispose = null;
@@ -35,6 +38,7 @@ export class DataPipeline {
         for (const slotName of slotNames) {
             this.removeEventListener(slotName);
         }
+        this.#events = null;
     }
 
     #performIntent() {
@@ -74,6 +78,7 @@ export class DataPipeline {
         const slotName = this.slotName;
 
         pipeline.slots[slotName] = event.detail;
+        pipeline.evaluateSlots();
     }
 
     activate() {
@@ -133,6 +138,7 @@ export class DataPipeline {
     }
 
     addEventListenerSlot(slotName, eventSource, eventName) {
+        this.#slots[slotName] = null;
         const callback = this.#handleEvents.bind({ pipeline: this, slotName })
 
         this.#events[slotName] = {
@@ -141,12 +147,12 @@ export class DataPipeline {
             callback
         }
 
-        eventSource.addEventListener(eventName, this.#handleEventsHandler);
+        eventSource.addEventListener(eventName, callback);
     }
 
     removeEventListener(slotName) {
         const eventDetails = this.#events[slotName];
-        eventDetails.eventSource.addEventListenerSlot(eventDetails.eventName, eventDetails.callback);
+        eventDetails.eventSource.removeEventListener(eventDetails.eventName, eventDetails.callback);
 
         eventDetails.eventSource = null;
         eventDetails.eventName = null;
