@@ -227,12 +227,6 @@ class MatrixRenderer extends HTMLElement {
         this[action]?.(event);
     }
 
-    async #resizeMatrix() {
-        console.log("resize");
-        const config = this.#config;
-        await this.initialize(config);
-    }
-
     calculateFrozenDetails() {
         if (this.#config.frozenColumns == null) {
             return;
