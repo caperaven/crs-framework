@@ -37,6 +37,7 @@ export class BusyUi extends HTMLElement {
     async connectedCallback() {
         this.shadowRoot.innerHTML = await fetch(import.meta.url.replace(".js", ".html")).then(response => response.text());
         await this.load();
+        await crs.call("component", "notify_ready", { element: this });
     }
 
     /**
