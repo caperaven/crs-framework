@@ -473,6 +473,25 @@ class MatrixRenderer extends HTMLElement {
         return pageDetails;
     }
 
+    async resized() {
+        const aabb = this.getBoundingClientRect();
+        const width = aabb.width;
+        const height = aabb.height;
+
+        // 1. resize the containers that use the css variables
+        this.style.setProperty("--width", `${width}px`);
+        this.style.setProperty("--height", `${height}px`);
+
+        // 2. adjust the canvas dpi settings based on the new size.
+        const dpr = window.devicePixelRatio;
+        this.#ctx.canvas.width = width * dpr;
+        this.#ctx.canvas.height = height * dpr;
+        this.#ctx.scale(dpr, dpr);
+
+        // 3. redraw current page.
+        this.refresh(true);
+    }
+
     async initialize(config) {
         this.#scrollElement.removeEventListener("scroll", this.#onScrollHandler);
 
