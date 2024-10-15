@@ -6,12 +6,17 @@ const COL_COUNT = 1000;
 export default class MatrixRendererViewModel extends crsbinding.classes.ViewBase {
     #manager = "matrix-data";
     #matrix;
+    #resizeHandler = this.#resize.bind(this);
 
     async connectedCallback() {
         await super.connectedCallback();
+        addEventListener("resize", this.#resizeHandler);
     }
 
     async disconnectedCallback() {
+        removeEventListener("resize", this.#resizeHandler);
+        this.#resizeHandler = null;
+
         await crs.call("data_manager", "unregister", {
             manager: this.#manager
         })
@@ -105,6 +110,10 @@ export default class MatrixRendererViewModel extends crsbinding.classes.ViewBase
 
     #editRow(event) {
         console.log(event.detail);
+    }
+
+    #resize(event) {
+        this.#matrix.resized();
     }
 }
 
