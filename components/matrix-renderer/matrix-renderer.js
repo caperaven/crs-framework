@@ -48,7 +48,6 @@ class MatrixRenderer extends HTMLElement {
     }
     #copyValue;
     #copyDataType;
-    #resizeHandler = this.#resizeMatrix.bind(this);
 
     get rowSizes() {
         return this.#rowSizes;
@@ -119,8 +118,6 @@ class MatrixRenderer extends HTMLElement {
 
         this.#hoverManager.removeEventListener("hover", this.#hoverHandler);
         this.#hoverManager = this.#hoverManager.dispose();
-        this.#resizeHandler = null;
-        await crs.call("dom_observer", "unobserve_resize", {element: this});
     }
 
     #updateAccessibility() {
@@ -447,11 +444,6 @@ class MatrixRenderer extends HTMLElement {
             // set up hovering
             this.#hoverManager.initialize(this);
             this.#hoverManager.addEventListener("hover", this.#hoverHandler);
-
-            await crs.call("dom_observer", "observe_resize", {
-                element: this,
-                callback: this.#resizeHandler
-            });
 
             await crs.call("component", "notify_ready", { element: this });
         })
