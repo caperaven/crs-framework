@@ -17,6 +17,10 @@ export class DataPipeline {
         this.#streaming = streaming;
         this.#autoDispose = autoDispose;
 
+        if (streaming === true) {
+            this.#autoDispose = false;
+        }
+
         if (intentCallback != null) {
             this.#intents.push(intentCallback);
         }

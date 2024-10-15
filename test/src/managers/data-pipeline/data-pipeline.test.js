@@ -14,6 +14,23 @@ Deno.test("DataPipeline - simple activate", () => {
     assertEquals(pipeline.slots, null);
 })
 
+Deno.test("DataPipeline - streaming", () => {
+    let result =  null;
+    const pipeline = new DataPipeline((slots) => result = slots, true);
+    pipeline.addPropertySlot("firstName");
+    pipeline.addPropertySlot("lastName")
+    pipeline.activate();
+
+    assertEquals(result, {firstName: null, lastName: null});
+    pipeline.setPropertyValue("firstName", "test");
+    assertEquals(result, {firstName: "test", lastName: null});
+
+    pipeline.setPropertyValue("lastName", "test2");
+    assertEquals(result, {firstName: "test", lastName: "test2"});
+
+    pipeline.dispose();
+})
+
 Deno.test("DataPipeline - simple null sequence checks for callbacks", () => {
     let called = false;
     let result = null;
