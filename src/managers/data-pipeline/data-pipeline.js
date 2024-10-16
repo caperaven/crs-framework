@@ -127,6 +127,8 @@ export class DataPipeline {
     }
 
     addAttributeSlot(slotName, element, attributeName) {
+        this.#slots[attributeName] = null;
+
         if (this.#mutationObserver == null) {
             this.#mutationObserver = new MutationObserver((mutations) => {
                 mutations.forEach((mutation) => {
@@ -139,6 +141,8 @@ export class DataPipeline {
                 });
             });
         }
+
+        this.#mutationObserver.observe(element, { attributes: true });
     }
 
     addEventListenerSlot(slotName, eventSource, eventName) {

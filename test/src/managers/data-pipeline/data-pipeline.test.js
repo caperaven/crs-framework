@@ -85,3 +85,53 @@ Deno.test("DataPipeline - event listener slot", () => {
     instance.execute();
     assertEquals(called, true);
 })
+
+class MockElement {
+    constructor() {
+        this.attributes = {};
+        this.listeners = {};
+    }
+
+    setAttribute(name, value) {
+        this.attributes[name] = value;
+        if (this.listeners[name]) {
+            this.listeners[name].forEach(callback => callback({ type: 'attributes', attributeName: name }));
+        }
+    }
+
+    getAttribute(name) {
+        return this.attributes[name];
+    }
+
+    addEventListener(event, callback) {
+        if (!this.listeners[event]) {
+            this.listeners[event] = [];
+        }
+        this.listeners[event].push(callback);
+    }
+
+    removeEventListener(event, callback) {
+        if (this.listeners[event]) {
+            this.listeners[event] = this.listeners[event].filter(cb => cb !== callback);
+        }
+    }
+}
+
+class MockMutationObserver {
+    constructor(callback) {
+        this.callback = callback;
+        this.elements = [];
+    }
+
+    observe(element, options) {
+        this.elements.push(element);
+    }
+
+    disconnect() {
+        this.elements = [];
+    }
+
+    trigger(mutations) {
+        this.callback(mutations);
+    }
+}

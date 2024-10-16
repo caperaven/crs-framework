@@ -11,6 +11,11 @@
             "hasStyle": true
         },
         {
+            "title": "Data Pipeline",
+            "hash": "#data-pipeline",
+            "view": "data-pipeline"
+        },
+        {
             "title": "Matrix Renderer",
             "hash": "#matrix-renderer",
             "view": "matrix-renderer"
