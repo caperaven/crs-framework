@@ -36,6 +36,7 @@ class MatrixRenderer extends HTMLElement {
     #focusHandler = this.#focus.bind(this);
     #hoverHandler = this.#hover.bind(this);
     #startDragHandler = startDrag.bind(this);
+    #resizeHandler = this.resized.bind(this);
     #renderLT = createRenderLT();
     #editorLT = createEditorLT();
     #updateAABBCallbackHandler = this.#updateAABBCallback.bind(this);
@@ -101,6 +102,7 @@ class MatrixRenderer extends HTMLElement {
         this.removeEventListener("dblclick", this.#onMouseEventHandler);
         this.removeEventListener("keydown", this.#onKeyDownHandler);
         this.removeEventListener("mousedown", this.#startDragHandler);
+        globalThis.removeEventListener("resize", this.#resizeHandler);
 
         this.#startDragHandler = null;
         this.#ctx = null;
@@ -111,6 +113,7 @@ class MatrixRenderer extends HTMLElement {
         this.#onScrollHandler = null;
         this.#animateHandler = null;
         this.#updateAABBCallbackHandler = null;
+        this.#resizeHandler = null;
         this.#renderLT = null;
         this.#inputManager = this.#inputManager.dispose();
         this.#overlayManager = this.#overlayManager.dispose();
@@ -247,8 +250,8 @@ class MatrixRenderer extends HTMLElement {
     }
 
     #getPageDetails() {
-        const visibleGroups = this.#groupSizes?.getVisibleRange(this.#scrollLeft, this.#ctx.canvas.width - 16);
-        const visibleColumns = this.#columnSizes.getVisibleRange(this.#scrollLeft, this.#ctx.canvas.width - 16);
+        const visibleGroups = this.#groupSizes?.getVisibleRange(this.#scrollLeft, this.#config.canvas.width - 16);
+        const visibleColumns = this.#columnSizes.getVisibleRange(this.#scrollLeft, this.#config.canvas.width - 16);
         const visibleRows = this.#rowSizes.getVisibleRange(this.#scrollTop, this.#config.regions.cells.height -16);
 
         const columnsActualSizes = [];
@@ -429,6 +432,7 @@ class MatrixRenderer extends HTMLElement {
             this.addEventListener("dblclick", this.#onMouseEventHandler);
             this.addEventListener("keydown", this.#onKeyDownHandler);
             this.addEventListener("mousedown", this.#startDragHandler);
+            globalThis.addEventListener("resize", this.#resizeHandler);
 
             this.#scrollElement = this.shadowRoot.querySelector("#scroller");
             this.#scrollMarkerElement = this.shadowRoot.querySelector("#marker");
@@ -477,6 +481,8 @@ class MatrixRenderer extends HTMLElement {
         const width = aabb.width;
         const height = aabb.height;
 
+        this.#config.canvas.width = width;
+        this.#config.canvas.height = height;
         // 1. resize the containers that use the css variables
         this.style.setProperty("--width", `${width}px`);
         this.style.setProperty("--height", `${height}px`);
@@ -486,6 +492,10 @@ class MatrixRenderer extends HTMLElement {
         this.#ctx.canvas.width = width * dpr;
         this.#ctx.canvas.height = height * dpr;
         this.#ctx.scale(dpr, dpr);
+
+        this.#config.regions = Regions.from(this.#config);
+        const newHeight = this.#rowSizes.totalSize + this.#config.regions.cells.top;
+        this.#config.regions.cells.bottom = Math.min(this.#config.regions.cells.bottom, newHeight);
 
         // 3. redraw current page.
         this.refresh(true);
@@ -803,6 +813,7 @@ class MatrixRenderer extends HTMLElement {
 
     async copyOverSelectedValues(copyValue) {
         const copyColumn = this.#config.columns[this.#selection.column];
+        if (copyColumn.editable !== true) return;
         const copyField = copyColumn.field;
         const copyDataType = copyColumn.type;
         this.#copyValue = copyValue ?? this.#config.rows[this.#selection.row][copyField];
