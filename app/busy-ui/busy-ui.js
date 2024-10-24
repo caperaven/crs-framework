@@ -9,7 +9,8 @@ export default class BusyUIViewModel extends crsbinding.classes.ViewBase {
     async loadBusy() {
         if (this.#hasBusy === "updated") {
             await crs.call("busy_ui", "hide", {
-                "element": this.container
+                "element": this.container,
+                "fade_out": true
             })
 
             this.#hasBusy = false;

@@ -37,14 +37,17 @@ export class BusyUIActions {
      * }
      */
     static async show(step, context, process, item) {
-        let element = await crs.dom.get_element(step.args.element, context, process, item);
-        const message = await crs.process.getValue(step.args.message || "", context, process, item);
-        const progress = await crs.process.getValue(step.args.progress || "", context, process, item);
-        const showOverlay = await crs.process.getValue(step.args.show_overlay || false, context, process, item);
+        await crs.validate(step, context, process, item, {
+            element:  { required: true, type: "HTMLElement" },
+            message:  { required: false, type: "string", default: "" },
+            progress: { required: false, type: "string", default: "" },
+            show_overlay: { required: false, type: "boolean", default: false }
+        }, "BusyUI.show");
 
-        if (element == null) {
-            return console.error(`busy-ui, unable to find element ${step.args.element}`);
-        }
+        let element = step.args.element;
+        const message = step.args.message;
+        const progress = step.args.progress
+        const showOverlay = step.args.show_overlay;
 
         // make sure the element you are adding this too is relative or absolute.
         ensureElementRelative(element);
@@ -94,11 +97,16 @@ export class BusyUIActions {
      * });
      */
     static async hide(step, context, process, item) {
-        const fadeOut = await crs.process.getValue(step.args.fade_out || false, context, process, item);
-        const busyElement = element.querySelector("busy-ui");
-        let element = await crs.dom.get_element(step.args.element, context, process, item);
+        await crs.validate(step, context, process, item, {
+            fade_out: { required: false, type: "boolean", default: false },
+            element:  { required: true, type: "HTMLElement" }
+        }, "BusyUI.hide");
 
+        const fadeOut = step.args.fade_out;
+        let element = step.args.element;
         element = element.shadowRoot || element;
+        const busyElement = element.querySelector("busy-ui");
+
         if (busyElement) {
             if (fadeOut === true) {
                 await waitForFadeOut(busyElement);
