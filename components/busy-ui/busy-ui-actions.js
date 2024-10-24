@@ -40,6 +40,7 @@ export class BusyUIActions {
         const element = await crs.dom.get_element(step.args.element, context, process, item);
         const message = await crs.process.getValue(step.args.message || "", context, process, item);
         const progress = await crs.process.getValue(step.args.progress || "", context, process, item);
+        const showOverlay = await crs.process.getValue(step.args.show_overlay || false, context, process, item);
 
         if (element == null) {
             return console.error(`busy-ui, unable to find element ${step.args.element}`);
@@ -56,6 +57,10 @@ export class BusyUIActions {
         const busyElement = document.createElement("busy-ui");
         busyElement.dataset.message = message;
         busyElement.dataset.progress = progress;
+
+        if (showOverlay === true) {
+            busyElement.classList.add("overlay");
+        }
 
         // 3. add the busy indicator to the element.
         element.appendChild(busyElement);
@@ -87,10 +92,14 @@ export class BusyUIActions {
      * });
      */
     static async hide(step, context, process, item) {
+        const fadeOut = await crs.process.getValue(step.args.fade_out || false, context, process, item);
         const element = await crs.dom.get_element(step.args.element, context, process, item);
         const busyElement = element.querySelector("busy-ui");
 
         if (busyElement) {
+            if (fadeOut === true) {
+                await waitForFadeOut(busyElement);
+            }
             busyElement.remove();
         }
     }
@@ -103,6 +112,15 @@ function ensureElementRelative(element) {
     if (position !== "relative" && position !== "absolute") {
         element.style.position = "relative";
     }
+}
+
+function waitForFadeOut(element) {
+    return new Promise(resolve => {
+        element.style.opacity = 0;
+        setTimeout(() => {
+            resolve();
+        }, 500);
+    })
 }
 
 crs.intent.busy_ui = BusyUIActions;
