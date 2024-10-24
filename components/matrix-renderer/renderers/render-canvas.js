@@ -5,7 +5,7 @@ const AABB = { x1: 0, x2: 0, y1: 0, y2: 0 }
 
 export function renderCanvas(ctx, def, pageDetails, renderLT, scrollX, scrollY, isFinalRender) {
     // prepare for rendering
-    clearCanvas(ctx);
+    clearCanvas(ctx, def.canvas.width, def.canvas.height);
     initialize(ctx);
 
     // render the matrix
@@ -24,9 +24,9 @@ function initialize(ctx) {
     ctx.shadowColor = "transparent";
 }
 
-function clearCanvas(ctx) {
+function clearCanvas(ctx, width, height) {
     ctx.fillStyle = CLEAR_COLOR;
-    ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+    ctx.fillRect(0, 0, width, height);
 }
 
 function drawCells(ctx, def, pageDetails, renderLT, scrollX, scrollY, isFinalRender) {
@@ -82,7 +82,7 @@ function drawGroups(ctx, def, pageDetails, renderLT, scrollX) {
 function drawHeaderBackground(ctx, def) {
     ctx.save();
     ctx.fillStyle = HEADER_BACKGROUND_COLOR;
-    ctx.fillRect(0, 0, ctx.canvas.width, def.regions.header.top + def.heights.header);
+    ctx.fillRect(0, 0, def.canvas.width, def.regions.header.top + def.heights.header);
     ctx.restore();
 }
 

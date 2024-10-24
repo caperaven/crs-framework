@@ -160,11 +160,6 @@
             "hasStyle": true
         },
         {
-            "title": "data-table",
-            "hash": "#data-table",
-            "view": "data-table"
-        },
-        {
             "title": "page-toolbar",
             "hash": "#page-toolbar",
             "view": "page-toolbar"

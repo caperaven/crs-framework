@@ -24,8 +24,6 @@ import {CHANGE_TYPES} from "../../src/managers/data-manager/data-manager-types.j
  * Translations Required:
  * - pageToolbar.rowsPerPage
  *
- * @example <caption>html example</caption>
- * <page-toolbar data-manager="my_manager" for="data-table" data-page-size="10"></page-toolbar>
  */
 export class PageToolbar extends HTMLElement {
     #recordCount = 0;

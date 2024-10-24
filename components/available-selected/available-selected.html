@@ -58,8 +58,15 @@
     :host .available button[data-action="toggle"] {
         color: var(--green);
     }
+
 </style>
-<tab-list aria-role="tablist" for="#available-selected">
+
+<tab-list aria-role="tablist" for="#available-selected" data-default="selected">
     <tab data-view="selected" aria-selected="true">Selected</tab>
     <tab data-view="available">Available</tab>
 </tab-list>
+
+<div id="available-selected">
+    <ul data-id="selected"></ul>
+    <ul data-id="available" ></ul>
+</div>

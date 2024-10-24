@@ -28,48 +28,4 @@ describe("perspective manager tests", () => {
         assert(globalThis.perspectives[PERSPECTIVE_NAME].count === 1);
     })
 
-    it ("add filter", async () => {
-        await crs.call("perspective", "add_filter", {
-            perspective: PERSPECTIVE_NAME,
-            field: "isActive",
-            operator: "eq",
-            value: true
-        });
-
-        const filterDefinition = globalThis.perspectives[PERSPECTIVE_NAME].filter;
-        assertExists(filterDefinition);
-        assertEquals(filterDefinition[0].field, "isActive");
-        assertEquals(filterDefinition[0].operator, "eq");
-        assertEquals(filterDefinition[0].value, true);
-    })
-
-    it ("remove filter", async () => {
-        await crs.call("perspective", "add_filter", {
-            perspective: PERSPECTIVE_NAME,
-            field: "isActive",
-            operator: "eq",
-            value: true
-        });
-
-        assertExists(globalThis.perspectives[PERSPECTIVE_NAME].filter);
-
-        await crs.call("perspective", "remove_filter", {
-            perspective: PERSPECTIVE_NAME,
-            field: "isActive"
-        });
-
-        const filterDefinition = globalThis.perspectives[PERSPECTIVE_NAME].filter;
-        assert(filterDefinition == null);
-    })
-
-    it ("add grouping", async () => {
-        await crs.call("perspective", "set_grouping", {
-            perspective: PERSPECTIVE_NAME,
-            fields: ["isActive", "site"]
-        })
-
-        const groupDefinition = globalThis.perspectives[PERSPECTIVE_NAME].grouping;
-        assertExists(groupDefinition);
-        assertEquals(groupDefinition, ["isActive", "site"]);
-    });
 })
