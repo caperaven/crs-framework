@@ -21,6 +21,7 @@ Feature: Canvas
     - Block Toolbar - the toolbar that appears when a block is selected.
     - Block Settings Sidebar - the sidebar that appears when a block is selected.
     - Block Library - the library that contains all the blocks available.
+    - Layout Editor - css grid editor that allows the user to create complex layouts.
 
 Feature: Block Navigation
     Description: The block navigation is the navigation that appears when a block is selected.
@@ -118,3 +119,54 @@ Feature: Blocks
     - Input Block       - a block that displays lists this supports all input types such as text, number, email ...
     - Select Block      - a block that displays dropdowns.
     - Textarea Block    - a block that displays textareas.
+
+Feature: Blocks Library
+    Description: The block library is the library that contains all the blocks available.
+    The block library contains all the blocks that can be added to the canvas.
+
+    The block library can be divided into categories such as:
+    - Container Blocks - components that deals with how blocks are arranged.
+    - Widget Blocks - components that deals with how blocks are displayed.
+    - Form Blocks - components that deals with form elements.
+    - Complex Blocks - these blocks are composed of other blocks and can include custom logic.
+
+    Scenario: Block Library
+        Given: the block library is loaded
+         When: the block library is opened
+         Then: show the block library
+          And: show the blocks in the library
+
+    Scenario: Search Block
+        Given: the block library is loaded
+          And: the search input is focused
+         When: the user types in the search input
+         Then: filter the blocks in the library
+
+    Scenario: Sort Blocks
+        Given: the block library is loaded
+          And: the sort input is focused
+         When: the user selects a sort option
+         Then: sort the blocks in the library
+
+    Scenario: Favorite Blocks
+        Given: the block library is open
+         Then: By default show all the favorite blocks first.
+
+    Class: LibraryItem
+        Description: A library item is a block that can be added to the canvas.
+
+        Fields:
+            Name: string - the name of the block.
+            Icon: string - the icon of the block.
+            Category: string - the category of the block.
+            Keywords: string - the keywords of the block used for searching.
+            Settings: string - component name that is used in the settings panel.
+            Block: string - the block component tag name used to instanciate the block instance.
+
+Feature: Block Parts
+    Description: To make blocks work, you need to have different parts working together.
+
+    Scenario: Block Registration
+        Description: For a block to be registered, you need to have it as part of the library.
+
+       

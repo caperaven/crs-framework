@@ -16,6 +16,11 @@
             "view": "matrix-renderer"
         },
         {
+            "title": "Designer",
+            "hash": "#designer",
+            "view": "designer"
+        },
+        {
             "title": "Icons",
             "hash": "#icons",
             "view": "icons"

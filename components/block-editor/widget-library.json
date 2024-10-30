@@ -1,0 +1,51 @@
+{
+    "name": "asset-library",
+    "widgets": [
+        {
+            "label": "Two Column Layout",
+            "script": "grid-layout",
+            "args": {
+                "columnCount": 2
+            },
+            "matches": ".grid-layout",
+            "icon": "two-column.svg",
+            "category": "layout",
+            "keywords": ["layout", "two", "columns"]
+        },
+        {
+            "label": "Three Column Layout",
+            "script": "grid-layout",
+            "args": {
+                "columnCount": 3
+            },
+            "matches": ".grid-layout",
+            "icon": "three-column.svg",
+            "category": "layout",
+            "keywords": ["layout", "three", "columns"]
+        },
+        {
+            "label": "Two Matrix Layout",
+            "script": "grid-layout",
+            "args": {
+                "columnCount": 2,
+                "rowCount": 2
+            },
+            "matches": ".grid-layout",
+            "icon": "two-matrix.svg",
+            "category": "layout",
+            "keywords": ["layout", "two", "matrix"]
+        },
+        {
+            "label": "Three Matrix Layout",
+            "script": "grid-layout",
+            "args": {
+                "columnCount": 3,
+                "rowCount": 3
+            },
+            "matches": ".grid-layout",
+            "icon": "three-matrix.svg",
+            "category": "layout",
+            "keywords": ["layout", "three", "matrix"]
+        }
+    ]
+}
