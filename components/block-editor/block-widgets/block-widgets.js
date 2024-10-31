@@ -1,10 +1,16 @@
 export default class BlockWidgets extends crsbinding.classes.BindableElement {
+    #list;
+
     get shadowDom() {
         return true;
     }
 
     get html() {
         return import.meta.url.replace(".js", ".html")
+    }
+
+    async disconnectedCallback() {
+        this.#list = null;
     }
 
     async load() {
@@ -28,6 +34,20 @@ export default class BlockWidgets extends crsbinding.classes.BindableElement {
             }
 
             container.appendChild(instance);
+        }
+
+        this.#list = this.shadowRoot.querySelectorAll("li");
+    }
+
+    async search(event) {
+        const target = event.composedPath()[0];
+        const test = target.value.toLowerCase();
+        const words = test.split(" ");
+
+        for (const item of this.#list) {
+            for (const word of words) {
+                item.style.display = item.dataset.keywords.includes(test) ? "" : "none";
+            }
         }
     }
 }

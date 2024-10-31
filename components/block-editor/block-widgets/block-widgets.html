@@ -7,7 +7,7 @@
 
 <label>
     <div>Search</div>
-    <input type="search" value.bind="search" placeholder="Search widgets">
+    <input type="search" keydown.call="search" placeholder="Search widgets">
 </label>
 
 <div id="widgets-container" role="group">
