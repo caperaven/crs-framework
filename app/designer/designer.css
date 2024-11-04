@@ -1,3 +1,13 @@
-h2 {
+crs-router {
+    display: grid;
+    grid-template-rows: auto auto 1fr;
+}
+
+
+crs-router h2 {
     color: blue;
+}
+
+crs-router .canvas {
+    border: 1px solid silver;
 }

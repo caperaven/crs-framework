@@ -1,0 +1,17 @@
+:host {
+    user-select: none;
+}
+
+[hidden="true"] {
+    display: none;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+li {
+    cursor: pointer;
+}

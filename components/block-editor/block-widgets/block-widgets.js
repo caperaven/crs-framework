@@ -1,5 +1,6 @@
 export default class BlockWidgets extends crsbinding.classes.BindableElement {
     #list;
+    #groups;
 
     get shadowDom() {
         return true;
@@ -11,6 +12,14 @@ export default class BlockWidgets extends crsbinding.classes.BindableElement {
 
     async disconnectedCallback() {
         this.#list = null;
+    }
+
+    onHTML() {
+        const linkElement = document.createElement("link");
+        linkElement.rel = "stylesheet";
+        linkElement.href = new URL("./block-widgets.css", import.meta.url);
+
+        this.shadowRoot.insertBefore(linkElement, this.shadowRoot.firstChild);
     }
 
     async load() {
@@ -30,6 +39,7 @@ export default class BlockWidgets extends crsbinding.classes.BindableElement {
                 liElement.textContent = item.label;
                 liElement.dataset.icon = item.icon;
                 liElement.dataset.keywords = item.keywords.join(" ");
+                liElement.dataset.widget = "true";
                 ulElement.appendChild(liElement);
             }
 
@@ -37,6 +47,7 @@ export default class BlockWidgets extends crsbinding.classes.BindableElement {
         }
 
         this.#list = this.shadowRoot.querySelectorAll("li");
+        this.#groups = this.shadowRoot.querySelectorAll('[role="group"]:not(#widgets-container)');
     }
 
     async search(event) {
@@ -46,8 +57,14 @@ export default class BlockWidgets extends crsbinding.classes.BindableElement {
 
         for (const item of this.#list) {
             for (const word of words) {
-                item.style.display = item.dataset.keywords.includes(test) ? "" : "none";
+                item.hidden = !item.dataset.keywords.includes(test);
             }
+        }
+
+        // show / hide the group if it does not have any visible children
+        for (const group of this.#groups) {
+            const visibleItems = group.querySelectorAll("li:not([hidden])");
+            group.hidden = visibleItems.length === 0;
         }
     }
 }
