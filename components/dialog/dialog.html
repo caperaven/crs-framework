@@ -39,6 +39,10 @@
         cursor: unset;
     }
 
+    :host([data-allow-move="true"]) header:hover {
+        cursor: move;
+    }
+
     .popup {
         /*
        Offscreen rendering
@@ -88,6 +92,7 @@
         flex: 1;
         margin: 0;
         font-size: 1.2rem;
+        pointer-events: none;
     }
 
     ::slotted([slot="body"]) {
