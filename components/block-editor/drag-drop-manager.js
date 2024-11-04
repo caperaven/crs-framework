@@ -75,7 +75,7 @@ export class DragDropManager {
         // if we already have a dragElement we just want to update the position
         if (this.#dragElement != null) return;
 
-        const isDragging = Math.round(this.#startX - this.#x) > 10 || Math.round(this.#startY - this.#y) > 10;
+        const isDragging = Math.round(this.#startX - this.#x) > 3 || Math.round(this.#startY - this.#y) > 3;
 
         if (isDragging) {
             if (this.#state === MoveState.AddWidget) {
@@ -89,10 +89,20 @@ export class DragDropManager {
         document.removeEventListener("mousemove", this.#mouseMoveHandler);
         document.removeEventListener("mouseup", this.#mouseUpHandler);
 
+        const validDropTarget = getValidDropTarget(this.#x, this.#y);
+
+        if (validDropTarget != null) {
+            this.#dropElement(validDropTarget);
+        }
+
         this.#dragElement?.remove();
         this.#dragElement = null;
         this.#state = MoveState.None;
         this.#sourceElement = null;
+    }
+
+    #dropElement(target) {
+        console.log(target);
     }
 }
 
@@ -136,8 +146,27 @@ function cloneElementForDragging(element, x, y) {
     dragElement.style.width = element.offsetWidth + "px";
     dragElement.style.height = element.offsetHeight + "px";
     dragElement.style.translate = `${x}px ${y}px`;
+    dragElement.style.pointerEvents = "none";
 
     document.body.appendChild(dragElement);
 
     return dragElement;
+}
+
+const IGNORE_DROP_ELEMENTS = ["block-widgets", "dialog-component"];
+
+function getValidDropTarget(x, y) {
+    const topElement = document.elementsFromPoint(x, y);
+
+    for (const element of topElement) {
+        if (IGNORE_DROP_ELEMENTS.includes(element.tagName.toLowerCase())) return;
+
+        if (isDropTarget(element)) {
+            return element;
+        }
+    }
+}
+
+function isDropTarget(element) {
+    return element.dataset.droptarget === "true";
 }

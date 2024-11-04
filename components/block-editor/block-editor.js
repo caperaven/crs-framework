@@ -48,11 +48,14 @@ export class BlockEditor extends EventTarget {
     }
 
     async showWidgetLibrary() {
+        const libraryElement = document.createElement("block-widgets");
+
         await crs.call("dialog", "show", {
             title: "Widget Library",
-            main: document.createElement("block-widgets"),
+            main: libraryElement,
             allowResize: true,
-            allowMove: true
+            allowMove: true,
+            modal: false
         })
     }
 
