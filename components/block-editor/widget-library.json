@@ -1,48 +1,73 @@
 {
     "name": "asset-library",
+    "scripts": {
+        "grid-layout": "./scripts/grid-layout.js"
+    },
     "widgets": [
         {
+            "id": "two-column-layout",
             "label": "Two Column Layout",
             "script": "grid-layout",
             "args": {
                 "columnCount": 2
             },
-            "matches": ".grid-layout",
             "icon": "two-column.svg",
             "category": "layout",
             "keywords": ["layout", "two", "columns"]
         },
         {
+            "id": "two-row-layout",
+            "label": "Two Row Layout",
+            "script": "grid-layout",
+            "args": {
+                "rowCount": 2
+            },
+            "icon": "two-row.svg",
+            "category": "layout",
+            "keywords": ["layout", "two", "rows"]
+        },
+        {
+            "id": "three-column-layout",
             "label": "Three Column Layout",
             "script": "grid-layout",
             "args": {
                 "columnCount": 3
             },
-            "matches": ".grid-layout",
             "icon": "three-column.svg",
             "category": "layout",
             "keywords": ["layout", "three", "columns"]
         },
         {
+            "id": "three-row-layout",
+            "label": "Three Row Layout",
+            "script": "grid-layout",
+            "args": {
+                "rowCount": 3
+            },
+            "icon": "three-row.svg",
+            "category": "layout",
+            "keywords": ["layout", "three", "rows"]
+        },
+        {
+            "id": "two-matrix-layout",
             "label": "Two Matrix Layout",
             "script": "grid-layout",
             "args": {
                 "columnCount": 2,
                 "rowCount": 2
             },
-            "matches": ".grid-layout",
             "icon": "two-matrix.svg",
             "category": "layout",
             "keywords": ["layout", "two", "matrix"]
         },
         {
+            "id": "three-matrix-layout",
             "label": "Three Matrix Layout",
             "script": "grid-layout",
             "args": {
                 "columnCount": 3,
                 "rowCount": 3
             },
-            "matches": ".grid-layout",
             "icon": "three-matrix.svg",
             "category": "layout",
             "keywords": ["layout", "three", "matrix"]

@@ -36,6 +36,7 @@ export default class BlockWidgets extends crsbinding.classes.BindableElement {
 
             for (const item of value) {
                 const liElement = document.createElement("li");
+                liElement.id = item.id;
                 liElement.textContent = item.label;
                 liElement.dataset.icon = item.icon;
                 liElement.dataset.keywords = item.keywords.join(" ");
