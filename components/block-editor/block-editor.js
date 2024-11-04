@@ -43,8 +43,17 @@ export class BlockEditor extends EventTarget {
         await crsbinding.events.emitter.on("getWidgetLibrary", this.#widgetLibraryHandler);
     }
 
-    async #widgetLibrary() {
-        return this.#widgetLibraryData;
+    async #widgetLibrary(args) {
+        if (args == null) return this.#widgetLibraryData;
+
+        if (args.id) {
+            const widget = this.#widgetLibraryData.widgets.find(item => item.id === args.id);
+            const scriptId = widget.script;
+            const scriptPath = this.#widgetLibraryData.scripts[scriptId];
+            const scriptURL = new URL(`./${scriptPath}`, import.meta.url);
+            const script = await import(scriptURL);
+            return { widget, script };
+        }
     }
 
     async showWidgetLibrary() {

@@ -54,6 +54,8 @@ export class CssGridModule {
         element.style.display = "grid";
         element.style.gridTemplateColumns = css.columns;
         element.style.gridTemplateRows = css.rows;
+        element.style.width = "100%";
+        element.style.height = "100%";
 
         await syncGridChildren(element, data);
     }
@@ -335,6 +337,9 @@ async function syncGridChildren(element, data) {
  */
 async function fillGrid(element, data) {
     const div = document.createElement("div");
+    div.dataset.droptarget = "true";
+    div.style.width = "100%";
+    div.style.height = "100%";
 
     for (let i = 0; i < data.rows.length; i++) {
         for (let j = 0; j < data.columns.length; j++) {

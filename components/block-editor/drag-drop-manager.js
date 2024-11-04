@@ -1,3 +1,5 @@
+import {Positions} from "./scripts/utils/positions.js"
+
 const MoveState =  Object.freeze({
     None: 0,
     AddWidget: 1,
@@ -16,6 +18,7 @@ export class DragDropManager {
     #startY = 0;
     #x = 0;
     #y = 0;
+    #dropWidgetId = null;
 
     constructor() {
         document.addEventListener("mousedown", this.#mouseDownHandler);
@@ -33,6 +36,7 @@ export class DragDropManager {
         this.#startY = null;
         this.#x = null;
         this.#y = null;
+        this.#dropWidgetId = null;
         return null;
     }
 
@@ -49,6 +53,7 @@ export class DragDropManager {
 
         if (isWidget(target)) {
             this.#state = MoveState.AddWidget;
+            this.#dropWidgetId = target.id;
         }
         else if (isMoveableElement(target)) {
             this.#state = MoveState.MoveElement;
@@ -85,14 +90,14 @@ export class DragDropManager {
         }
     }
 
-    #mouseUp(event) {
+    async #mouseUp(event) {
         document.removeEventListener("mousemove", this.#mouseMoveHandler);
         document.removeEventListener("mouseup", this.#mouseUpHandler);
 
         const validDropTarget = getValidDropTarget(this.#x, this.#y);
 
         if (validDropTarget != null) {
-            this.#dropElement(validDropTarget);
+            await this.#dropElement(validDropTarget);
         }
 
         this.#dragElement?.remove();
@@ -101,8 +106,13 @@ export class DragDropManager {
         this.#sourceElement = null;
     }
 
-    #dropElement(target) {
-        console.log(target);
+    async #dropElement(target) {
+        const {widget, script} = await crsbinding.events.emitter.emit("getWidgetLibrary", { id: this.#dropWidgetId });
+
+        const args = widget.args;
+        const action = script["createInstance"];
+
+        await action(target, args, Positions.APPEND);
     }
 }
 
