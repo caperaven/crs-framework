@@ -131,6 +131,7 @@ export class DialogActions {
         // optional
         // if we are on mobile, ignore these options.
         // todo: check for mobile
+        const modal = await crs.process.getValue(step.args.modal ?? true, context, process, item);
         const target = await crs.process.getValue(step.args.target, context, process, item);
         const position = await crs.process.getValue(step.args.position ?? "left", context, process, item);
         const anchor = await crs.process.getValue(step.args.anchor ?? "top", context, process, item);
@@ -155,6 +156,12 @@ export class DialogActions {
 
         const dialog = await ensureDialog(close, parent);
         dialog.show(headerElement, mainElement, footerElement, options);
+
+        if (modal === false) {
+            dialog.style.width = "max-content";
+            dialog.style.height = "max-content";
+        }
+
         return dialog;
     }
 

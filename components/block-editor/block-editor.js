@@ -1,5 +1,6 @@
 import "./block-widgets/block-widgets.js";
 import "./block-properties/block-properties.js";
+import {DragDropManager} from "./drag-drop-manager.js";
 
 /**
  * @class BlockEditor
@@ -12,6 +13,7 @@ export class BlockEditor extends EventTarget {
     #ready = false;
     #widgetLibraryData;
     #widgetLibraryHandler = this.#widgetLibrary.bind(this);
+    #dragDropManager = new DragDropManager();
 
     get ready() {
         return this.#ready;
@@ -26,6 +28,7 @@ export class BlockEditor extends EventTarget {
         crsbinding.events.emitter.remove("getWidgetLibrary", this.#widgetLibraryHandler);
         this.#widgetLibraryData = null;
         this.#widgetLibraryHandler = null;
+        this.#dragDropManager = this.#dragDropManager.dispose();
     }
 
     async init() {
@@ -40,16 +43,28 @@ export class BlockEditor extends EventTarget {
         await crsbinding.events.emitter.on("getWidgetLibrary", this.#widgetLibraryHandler);
     }
 
-    async #widgetLibrary() {
-        return this.#widgetLibraryData;
+    async #widgetLibrary(args) {
+        if (args == null) return this.#widgetLibraryData;
+
+        if (args.id) {
+            const widget = this.#widgetLibraryData.widgets.find(item => item.id === args.id);
+            const scriptId = widget.script;
+            const scriptPath = this.#widgetLibraryData.scripts[scriptId];
+            const scriptURL = new URL(`./${scriptPath}`, import.meta.url);
+            const script = await import(scriptURL);
+            return { widget, script };
+        }
     }
 
     async showWidgetLibrary() {
+        const libraryElement = document.createElement("block-widgets");
+
         await crs.call("dialog", "show", {
             title: "Widget Library",
-            main: document.createElement("block-widgets"),
+            main: libraryElement,
             allowResize: true,
-            allowMove: true
+            allowMove: true,
+            modal: false
         })
     }
 
