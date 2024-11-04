@@ -112,7 +112,7 @@ export class DragDropManager {
         const args = widget.args;
         const action = script["createInstance"];
 
-        await action(target, args, Positions.APPEND);
+        await action(target, args, Positions.APPEND, this.#dropWidgetId);
     }
 }
 
