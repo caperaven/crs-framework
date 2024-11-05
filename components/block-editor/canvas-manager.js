@@ -2,19 +2,47 @@ export class CanvasManager {
     #canvas;
     #focusHandler = this.#focus.bind(this);
     #keyDownHandler = this.#keyDown.bind(this);
+    #clickHandler = this.#click.bind(this);
 
     constructor(canvas) {
         this.#canvas = canvas;
         this.#canvas.addEventListener("focusin", this.#focusHandler);
         this.#canvas.addEventListener("keydown", this.#keyDownHandler);
+        this.#canvas.addEventListener("click", this.#clickHandler);
     }
 
     dispose() {
         this.#canvas.removeEventListener("focusin", this.#focusHandler);
         this.#canvas.removeEventListener("keydown", this.#keyDownHandler);
+        this.#canvas.removeEventListener("click", this.#clickHandler);
         this.#focusHandler = null;
         this.#canvas = null;
         return null;
+    }
+
+    #getWidgetElement(element) {
+        if (element.dataset.widgetId != null) {
+            return element;
+        }
+
+        if (element.parentElement != null) {
+            return this.#getWidgetElement(element.parentElement);
+        }
+
+        return null;
+    }
+
+    async #click(event) {
+        const target = event.composedPath()[0];
+
+        if (target.dataset.widgetAction != null) {
+            const action = target.dataset.widgetAction;
+            const widgetElement = this.#getWidgetElement(target);
+            const widgetId = widgetElement.dataset.widgetId;
+            const {widget, script} = await crsbinding.events.emitter.emit("getWidgetLibrary", { id: widgetId });
+
+            script[action](widgetElement, target, widget, event);
+        }
     }
 
     async #focus(event) {

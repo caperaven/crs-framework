@@ -1,0 +1,32 @@
+group-box {
+    display: block;
+}
+
+group-box[aria-expanded="false"] .group-box-body {
+    display: none;
+}
+
+group-box[aria-expanded="false"] svg {
+    transition: transform 0.3s;
+    transform: rotate(90deg);
+}
+
+group-box .group-box-header {
+    padding: 0.5rem;
+    background: var(--grey-s2);
+    display: flex;
+    align-items: center;
+}
+
+group-box .group-box-body {
+    padding: 0.5rem;
+    border: silver dashed 1px;
+}
+
+group-box svg {
+    cursor: pointer;
+}
+
+group-box svg * {
+    pointer-events: none;
+}

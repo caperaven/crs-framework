@@ -2,7 +2,8 @@
     "name": "asset-library",
     "scripts": {
         "grid-layout": "./scripts/grid-layout.js",
-        "heading": "./scripts/heading.js"
+        "heading": "./scripts/heading.js",
+        "group-box": "./scripts/group-box.js"
     },
     "widgets": [
         {
@@ -74,6 +75,14 @@
             "keywords": ["layout", "three", "matrix"]
         },
         {
+            "id": "groupbox",
+            "label": "Group Box",
+            "script": "group-box",
+            "icon": "groupbox.svg",
+            "category": "form",
+            "keywords": ["form", "groupbox", "container"]
+        },
+        {
             "id": "h1",
             "label": "Heading 1",
             "script": "heading",
@@ -81,7 +90,7 @@
                 "level": 1
             },
             "icon": "h1.svg",
-            "category": "Text",
+            "category": "text",
             "keywords": ["text", "heading"]
         },
         {
@@ -92,7 +101,7 @@
                 "level": 2
             },
             "icon": "h2.svg",
-            "category": "Text",
+            "category": "text",
             "keywords": ["text", "heading"]
         },
         {
@@ -103,7 +112,7 @@
                 "level": 3
             },
             "icon": "h3.svg",
-            "category": "Text",
+            "category": "text",
             "keywords": ["text", "heading"]
         },
         {
@@ -114,7 +123,7 @@
                 "level": 4
             },
             "icon": "h1.svg",
-            "category": "Text",
+            "category": "text",
             "keywords": ["text", "heading"]
         },
         {
@@ -125,7 +134,7 @@
                 "level": 5
             },
             "icon": "h5.svg",
-            "category": "Text",
+            "category": "text",
             "keywords": ["text", "heading"]
         },
         {
@@ -136,7 +145,7 @@
                 "level": 6
             },
             "icon": "h6.svg",
-            "category": "Text",
+            "category": "text",
             "keywords": ["text", "heading"]
         }
     ]
