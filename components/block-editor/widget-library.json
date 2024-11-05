@@ -80,7 +80,8 @@
             "script": "group-box",
             "icon": "groupbox.svg",
             "category": "form",
-            "keywords": ["form", "groupbox", "container"]
+            "keywords": ["form", "groupbox", "container"],
+            "dropExcludes": ["group-box", ".toolbar"]
         },
         {
             "id": "h1",

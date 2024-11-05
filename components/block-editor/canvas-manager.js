@@ -41,7 +41,7 @@ export class CanvasManager {
             const widgetId = widgetElement.dataset.widgetId;
             const {widget, script} = await crsbinding.events.emitter.emit("getWidgetLibrary", { id: widgetId });
 
-            script[action](widgetElement, target, widget, event);
+            await script[action](widgetElement, target, widget, event);
         }
     }
 

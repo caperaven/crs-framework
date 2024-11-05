@@ -2,9 +2,9 @@ import { add } from "./utils/positions.js";
 
 const template = `
 <group-box tabindex="0">
-    <div class="group-box-header" contenteditable="true">
+    <div class="group-box-header">
         <svg data-widget-action="toggle" xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"><path d="M504-480 320-664l56-56 240 240-240 240-56-56 184-184Z"/></svg>
-        <span>Group Box</span>
+        <span contenteditable="true">Group Box</span>
     </div>    
     <div class="group-box-body" data-droptarget="true"></div>
 </group-box>
@@ -20,6 +20,8 @@ export async function createInstance(targetElement, args, position, widgetId) {
 
     // Append the instance to the target element
     add(instance, targetElement, position);
+
+    // do additional stuff
 }
 
 export async function toggle(widgetElement, targetElement, widget, event) {
