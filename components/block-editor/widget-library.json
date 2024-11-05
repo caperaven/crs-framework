@@ -1,7 +1,8 @@
 {
     "name": "asset-library",
     "scripts": {
-        "grid-layout": "./scripts/grid-layout.js"
+        "grid-layout": "./scripts/grid-layout.js",
+        "heading": "./scripts/heading.js"
     },
     "widgets": [
         {
@@ -71,6 +72,72 @@
             "icon": "three-matrix.svg",
             "category": "layout",
             "keywords": ["layout", "three", "matrix"]
+        },
+        {
+            "id": "h1",
+            "label": "Heading 1",
+            "script": "heading",
+            "args": {
+                "level": 1
+            },
+            "icon": "h1.svg",
+            "category": "Text",
+            "keywords": ["text", "heading"]
+        },
+        {
+            "id": "h2",
+            "label": "Heading 2",
+            "script": "heading",
+            "args": {
+                "level": 2
+            },
+            "icon": "h2.svg",
+            "category": "Text",
+            "keywords": ["text", "heading"]
+        },
+        {
+            "id": "h3",
+            "label": "Heading 3",
+            "script": "heading",
+            "args": {
+                "level": 3
+            },
+            "icon": "h3.svg",
+            "category": "Text",
+            "keywords": ["text", "heading"]
+        },
+        {
+            "id": "h4",
+            "label": "Heading 4",
+            "script": "heading",
+            "args": {
+                "level": 4
+            },
+            "icon": "h1.svg",
+            "category": "Text",
+            "keywords": ["text", "heading"]
+        },
+        {
+            "id": "h5",
+            "label": "Heading 5",
+            "script": "heading",
+            "args": {
+                "level": 5
+            },
+            "icon": "h5.svg",
+            "category": "Text",
+            "keywords": ["text", "heading"]
+        },
+        {
+            "id": "h6",
+            "label": "Heading 6",
+            "script": "heading",
+            "args": {
+                "level": 6
+            },
+            "icon": "h6.svg",
+            "category": "Text",
+            "keywords": ["text", "heading"]
         }
     ]
 }

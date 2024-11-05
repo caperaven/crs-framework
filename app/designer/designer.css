@@ -16,3 +16,14 @@ crs-router .canvas {
 crs-router [data-code] {
     border: 1px solid silver;
 }
+
+crs-router block-properties {
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 200px;
+    border: 1px solid silver;
+    background: white;
+}
