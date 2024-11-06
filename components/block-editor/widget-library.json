@@ -5,6 +5,9 @@
         "content-editable": "./scripts/content-editable.js",
         "group-box": "./scripts/group-box.js"
     },
+    "properties": {
+        "content-editable": "./properties/content-editable/content-editable.js"
+    },
     "widgets": [
         {
             "id": "two-column-layout",
@@ -91,6 +94,7 @@
                 "tagName": "H1",
                 "text": "Heading 1"
             },
+            "properties": "content-editable",
             "icon": "h1.svg",
             "category": "text",
             "keywords": ["text", "heading"]
@@ -103,6 +107,7 @@
                 "tagName": "H2",
                 "text": "Heading 2"
             },
+            "properties": "content-editable",
             "icon": "h2.svg",
             "category": "text",
             "keywords": ["text", "heading"]
@@ -115,6 +120,7 @@
                 "tagName": "H3",
                 "text": "Heading 3"
             },
+            "properties": "content-editable",
             "icon": "h3.svg",
             "category": "text",
             "keywords": ["text", "heading"]
@@ -127,6 +133,7 @@
                 "tagName": "H4",
                 "text": "Heading 4"
             },
+            "properties": "content-editable",
             "icon": "h1.svg",
             "category": "text",
             "keywords": ["text", "heading"]
@@ -139,6 +146,7 @@
                 "tagName": "H5",
                 "text": "Heading 5"
             },
+            "properties": "content-editable",
             "icon": "h5.svg",
             "category": "text",
             "keywords": ["text", "heading"]
@@ -151,6 +159,7 @@
                 "tagName": "H6",
                 "text": "Heading 6"
             },
+            "properties": "content-editable",
             "icon": "h6.svg",
             "category": "text",
             "keywords": ["text", "heading"]
@@ -163,6 +172,7 @@
                 "tagName": "P",
                 "text": "Paragraph"
             },
+            "properties": "content-editable",
             "icon": "paragraph.svg",
             "category": "text",
             "keywords": ["text", "paragraph"]

@@ -13,6 +13,7 @@ export class BlockEditor extends EventTarget {
     #ready = false;
     #widgetLibraryData;
     #widgetLibraryHandler = this.#widgetLibrary.bind(this);
+    #widgetPropertiesHandler = this.#widgetProperties.bind(this);
     #dragDropManager = new DragDropManager();
 
     get ready() {
@@ -26,8 +27,11 @@ export class BlockEditor extends EventTarget {
 
     dispose() {
         crsbinding.events.emitter.remove("getWidgetLibrary", this.#widgetLibraryHandler);
+        crsbinding.events.emitter.remove("getWidgetProperties", this.#widgetPropertiesHandler);
+
         this.#widgetLibraryData = null;
         this.#widgetLibraryHandler = null;
+        this.#widgetPropertiesHandler = null;
         this.#dragDropManager = this.#dragDropManager.dispose();
     }
 
@@ -41,6 +45,7 @@ export class BlockEditor extends EventTarget {
 
     async #initEvents() {
         await crsbinding.events.emitter.on("getWidgetLibrary", this.#widgetLibraryHandler);
+        await crsbinding.events.emitter.on("getWidgetProperties", this.#widgetPropertiesHandler);
     }
 
     async #widgetLibrary(args) {
@@ -54,6 +59,18 @@ export class BlockEditor extends EventTarget {
             const script = await import(scriptURL);
             return { widget, script };
         }
+    }
+
+    async #widgetProperties(args) {
+        const widget = this.#widgetLibraryData.widgets.find(item => item.id === args.id);
+
+        if (widget.properties == null) return null;
+
+        const scriptPath = this.#widgetLibraryData.properties[widget.properties];
+        const scriptURL = new URL(`./${scriptPath}`, import.meta.url);
+        const script = await import(scriptURL);
+        const tagName = script.default.tagName;
+        return { widget, tagName };
     }
 
     async showWidgetLibrary() {
