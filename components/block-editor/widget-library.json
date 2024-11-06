@@ -7,7 +7,8 @@
     },
     "properties": {
         "content-editable": "./properties/content-editable/content-editable.js",
-        "grid-layout": "./properties/grid-layout/grid-layout.js"
+        "grid-layout": "./properties/grid-layout/grid-layout.js",
+        "group-box": "./properties/group-box/group-box.js"
     },
     "widgets": [
         {
