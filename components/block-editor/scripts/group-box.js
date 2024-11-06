@@ -8,7 +8,7 @@ const template = `
     </div>    
     <div class="group-box-body" data-droptarget="true"></div>
 </group-box>
-`
+`;
 
 export async function createInstance(targetElement, args, position, widgetId) {
     const templateElement = document.createElement("template");
@@ -20,8 +20,6 @@ export async function createInstance(targetElement, args, position, widgetId) {
 
     // Append the instance to the target element
     add(instance, targetElement, position);
-
-    // do additional stuff
 }
 
 export async function toggle(widgetElement, targetElement, widget, event) {
