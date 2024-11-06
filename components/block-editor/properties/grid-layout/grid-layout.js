@@ -1,5 +1,5 @@
-export default class ContentEditable extends crsbinding.classes.BindableElement {
-    static tagName = "content-editable-editor";
+export default class GridLayout extends crsbinding.classes.BindableElement {
+    static tagName = "grid-layout-editor";
 
     #widgetData;
     #widgetElement;
@@ -15,7 +15,7 @@ export default class ContentEditable extends crsbinding.classes.BindableElement 
     onHTML() {
         const linkElement = document.createElement("link");
         linkElement.rel = "stylesheet";
-        linkElement.href = new URL("./content-editable.css", import.meta.url);
+        linkElement.href = new URL("./grid-layout-editor.css", import.meta.url);
 
         this.shadowRoot.insertBefore(linkElement, this.shadowRoot.firstChild);
     }
@@ -26,4 +26,4 @@ export default class ContentEditable extends crsbinding.classes.BindableElement 
     }
 }
 
-customElements.define(ContentEditable.tagName, ContentEditable);
+customElements.define(GridLayout.tagName, GridLayout);

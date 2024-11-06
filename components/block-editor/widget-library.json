@@ -6,7 +6,8 @@
         "group-box": "./scripts/group-box.js"
     },
     "properties": {
-        "content-editable": "./properties/content-editable/content-editable.js"
+        "content-editable": "./properties/content-editable/content-editable.js",
+        "grid-layout": "./properties/grid-layout/grid-layout.js"
     },
     "widgets": [
         {
@@ -16,6 +17,7 @@
             "args": {
                 "columnCount": 2
             },
+            "properties": "grid-layout",
             "icon": "two-column.svg",
             "category": "layout",
             "keywords": ["layout", "two", "columns"]
@@ -27,6 +29,7 @@
             "args": {
                 "rowCount": 2
             },
+            "properties": "grid-layout",
             "icon": "two-row.svg",
             "category": "layout",
             "keywords": ["layout", "two", "rows"]
@@ -38,6 +41,7 @@
             "args": {
                 "columnCount": 3
             },
+            "properties": "grid-layout",
             "icon": "three-column.svg",
             "category": "layout",
             "keywords": ["layout", "three", "columns"]
@@ -49,6 +53,7 @@
             "args": {
                 "rowCount": 3
             },
+            "properties": "grid-layout",
             "icon": "three-row.svg",
             "category": "layout",
             "keywords": ["layout", "three", "rows"]
@@ -61,6 +66,7 @@
                 "columnCount": 2,
                 "rowCount": 2
             },
+            "properties": "grid-layout",
             "icon": "two-matrix.svg",
             "category": "layout",
             "keywords": ["layout", "two", "matrix"]
@@ -73,6 +79,7 @@
                 "columnCount": 3,
                 "rowCount": 3
             },
+            "properties": "grid-layout",
             "icon": "three-matrix.svg",
             "category": "layout",
             "keywords": ["layout", "three", "matrix"]
@@ -82,6 +89,7 @@
             "label": "Group Box",
             "script": "group-box",
             "icon": "groupbox.svg",
+            "properties": "group-box",
             "category": "form",
             "keywords": ["form", "groupbox", "container"],
             "dropExcludes": ["group-box", ".toolbar"]
