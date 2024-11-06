@@ -15,7 +15,7 @@ export default class GroupBox extends crsbinding.classes.BindableElement {
     onHTML() {
         const linkElement = document.createElement("link");
         linkElement.rel = "stylesheet";
-        linkElement.href = new URL("./group-box-editor.css", import.meta.url);
+        linkElement.href = new URL("./group-box.css", import.meta.url);
 
         this.shadowRoot.insertBefore(linkElement, this.shadowRoot.firstChild);
     }
