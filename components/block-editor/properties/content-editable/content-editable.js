@@ -23,6 +23,12 @@ export default class ContentEditable extends crsbinding.classes.BindableElement 
     setWidget(widgetElement, widgetData) {
         this.#widgetElement = widgetElement;
         this.#widgetData = widgetData;
+
+        this.setProperty("content", this.#widgetElement.textContent);
+    }
+
+    contentChanged(newValue) {
+        this.#widgetElement.textContent = newValue;
     }
 }
 
