@@ -12,7 +12,6 @@ crs-router h2 {
 
 crs-router .canvas {
     border: 1px solid silver;
-    display: grid;
 }
 
 crs-router [data-code] {

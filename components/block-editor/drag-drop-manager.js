@@ -145,6 +145,11 @@ export class DragDropManager {
             // drop this in a container
             if (this.#currentHoverElement.dataset.droptarget === "true") {
                 const currentRect = this.#currentHoverElement.getBoundingClientRect();
+                const lastChildRect = this.#currentHoverElement.lastElementChild?.getBoundingClientRect();
+
+                if (lastChildRect != null && lastChildRect.bottom > this.#y) {
+                    return this.#marker.classList.add("hidden");
+                }
 
                 const x = currentRect.left;
                 let y = currentRect.top + 16;
