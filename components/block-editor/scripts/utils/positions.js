@@ -5,7 +5,7 @@ export const Positions = Object.freeze({
 
 export function add(element, targetElement, position) {
     if (position === Positions.BEFORE) {
-        targetElement.parentElement.insertBefore(targetElement, element);
+        targetElement.parentElement.insertBefore(element, targetElement);
     }
     else {
         targetElement.appendChild(element);

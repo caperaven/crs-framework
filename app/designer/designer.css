@@ -1,10 +1,10 @@
 @import "./../../components/block-editor/styles/group-box.css";
+@import "./../../components/block-editor/styles/designer-marker.css";
 
 crs-router {
     display: grid;
     grid-template-rows: auto auto 1fr;
 }
-
 
 crs-router h2 {
     color: blue;

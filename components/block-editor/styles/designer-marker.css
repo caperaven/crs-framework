@@ -5,3 +5,7 @@
     height: 2px;
     background: var(--dark-blue);
 }
+
+.designer-marker.hidden {
+    display: none;
+}

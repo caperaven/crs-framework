@@ -9,6 +9,8 @@ export class CanvasManager {
         this.#canvas.addEventListener("focusin", this.#focusHandler);
         this.#canvas.addEventListener("keydown", this.#keyDownHandler);
         this.#canvas.addEventListener("click", this.#clickHandler);
+
+        globalThis.designerCanvasRect = this.#canvas.getBoundingClientRect();
     }
 
     dispose() {

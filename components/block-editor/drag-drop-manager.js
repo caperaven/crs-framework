@@ -6,6 +6,8 @@ const MoveState =  Object.freeze({
     MoveElement: 2
 });
 
+const IGNORE_DROP_ELEMENTS = ["block-widgets", "dialog-component"];
+
 export class DragDropManager {
     #mouseDownHandler = this.#mouseDown.bind(this);
     #mouseMoveHandler = this.#mouseMove.bind(this);
@@ -20,6 +22,8 @@ export class DragDropManager {
     #y = 0;
     #dropWidgetId = null;
     #marker;
+    #currentHoverElement;
+    #currentPosition = Positions.APPEND;
 
     constructor() {
         document.addEventListener("mousedown", this.#mouseDownHandler);
@@ -46,6 +50,9 @@ export class DragDropManager {
         if (this.#dragElement == null) return;
 
         this.#dragElement.style.translate = `${this.#x}px ${this.#y}px`;
+
+        this.#updateMarker()
+
         requestAnimationFrame(this.#animateMoveHandler);
     }
 
@@ -76,7 +83,7 @@ export class DragDropManager {
         this.#marker = addMarker();
     }
 
-    #mouseMove(event) {
+    async #mouseMove(event) {
         this.#x = Math.round(event.clientX);
         this.#y = Math.round(event.clientY);
 
@@ -97,10 +104,10 @@ export class DragDropManager {
         document.removeEventListener("mousemove", this.#mouseMoveHandler);
         document.removeEventListener("mouseup", this.#mouseUpHandler);
 
-        const validDropTarget = getValidDropTarget(this.#x, this.#y);
+        //const validDropTarget = getValidDropTarget(this.#x, this.#y);
 
-        if (validDropTarget != null) {
-            await this.#dropElement(validDropTarget);
+        if (this.#currentHoverElement != null) {
+            await this.#dropElement(this.#currentHoverElement);
         }
 
         this.#dragElement?.remove();
@@ -110,6 +117,7 @@ export class DragDropManager {
 
         this.#marker.remove();
         this.#marker = null;
+        this.#currentHoverElement = null;
     }
 
     async #dropElement(target) {
@@ -118,7 +126,55 @@ export class DragDropManager {
         const args = widget.args;
         const action = script["createInstance"];
 
-        await action(target, args, Positions.APPEND, this.#dropWidgetId);
+        await action(target, args, this.#currentPosition, this.#dropWidgetId);
+    }
+
+    #updateMarker() {
+        const elements = document.elementsFromPoint(this.#x, this.#y);
+        const tagName = elements[0].tagName.toLowerCase();
+        const parentTagName = elements[1].tagName.toLowerCase();
+
+        if (tagName in IGNORE_DROP_ELEMENTS || parentTagName in IGNORE_DROP_ELEMENTS) {
+            this.#currentHoverElement = null;
+            return;
+        }
+
+        if (elements[0] !== this.#currentHoverElement) {
+            this.#currentHoverElement = elements[0];
+
+            // drop this in a container
+            if (this.#currentHoverElement.dataset.droptarget === "true") {
+                const currentRect = this.#currentHoverElement.getBoundingClientRect();
+
+                const x = currentRect.left;
+                let y = currentRect.top + 16;
+
+                if (this.#currentHoverElement.children.length > 0) {
+                    const lastChildRect = this.#currentHoverElement.lastElementChild.getBoundingClientRect();
+                    y += lastChildRect.bottom - currentRect.top;
+                }
+
+                this.#marker.classList.remove("hidden");
+                this.#marker.style.width = `${this.#currentHoverElement.offsetWidth}px`;
+                this.#marker.style.translate = `${x}px ${y}px`;
+                this.#currentPosition = Positions.APPEND;
+                return;
+            }
+
+            if (this.#currentHoverElement.parentElement.dataset.droptarget === "true") {
+                const parentRect = this.#currentHoverElement.parentElement.getBoundingClientRect();
+                const currentRect = this.#currentHoverElement.getBoundingClientRect()
+
+                const x = parentRect.left;
+                let y = currentRect.top;
+
+                this.#marker.classList.remove("hidden");
+                this.#marker.style.width = `${parentRect.width}px`;
+                this.#marker.style.translate = `${x}px ${y}px`;
+                this.#currentPosition = Positions.BEFORE;
+                return;
+            }
+        }
     }
 }
 
@@ -169,7 +225,6 @@ function cloneElementForDragging(element, x, y) {
     return dragElement;
 }
 
-const IGNORE_DROP_ELEMENTS = ["block-widgets", "dialog-component"];
 
 function getValidDropTarget(x, y) {
     const topElement = document.elementsFromPoint(x, y);
@@ -189,6 +244,7 @@ function isDropTarget(element) {
 
 function addMarker() {
     const marker = document.createElement("div");
-    marker.classList.add("designer-marker");
+    marker.classList.add("designer-marker", "hidden");
+    document.body.appendChild(marker);
     return marker;
 }
