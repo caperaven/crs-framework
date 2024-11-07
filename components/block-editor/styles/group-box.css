@@ -1,32 +1,32 @@
-group-box {
+group-box-widget {
     display: block;
 }
 
-group-box[aria-expanded="false"] .group-box-body {
+group-box-widget[aria-expanded="false"] .group-box-body {
     display: none;
 }
 
-group-box[aria-expanded="false"] svg {
+group-box-widget[aria-expanded="false"] svg {
     transition: transform 0.3s;
     transform: rotate(90deg);
 }
 
-group-box .group-box-header {
+group-box-widget .group-box-header {
     padding: 0.5rem;
     background: var(--grey-s2);
     display: flex;
     align-items: center;
 }
 
-group-box .group-box-body {
+group-box-widget .group-box-body {
     padding: 0.5rem;
     border: silver dashed 1px;
 }
 
-group-box svg {
+group-box-widget svg {
     cursor: pointer;
 }
 
-group-box svg * {
+group-box-widget svg * {
     pointer-events: none;
 }

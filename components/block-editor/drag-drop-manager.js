@@ -19,6 +19,7 @@ export class DragDropManager {
     #x = 0;
     #y = 0;
     #dropWidgetId = null;
+    #marker;
 
     constructor() {
         document.addEventListener("mousedown", this.#mouseDownHandler);
@@ -71,6 +72,8 @@ export class DragDropManager {
 
         document.addEventListener("mousemove", this.#mouseMoveHandler);
         document.addEventListener("mouseup", this.#mouseUpHandler);
+
+        this.#marker = addMarker();
     }
 
     #mouseMove(event) {
@@ -104,6 +107,9 @@ export class DragDropManager {
         this.#dragElement = null;
         this.#state = MoveState.None;
         this.#sourceElement = null;
+
+        this.#marker.remove();
+        this.#marker = null;
     }
 
     async #dropElement(target) {
@@ -179,4 +185,10 @@ function getValidDropTarget(x, y) {
 
 function isDropTarget(element) {
     return element.dataset.droptarget === "true";
+}
+
+function addMarker() {
+    const marker = document.createElement("div");
+    marker.classList.add("designer-marker");
+    return marker;
 }
