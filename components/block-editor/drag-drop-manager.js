@@ -152,7 +152,7 @@ export class DragDropManager {
                 }
 
                 const x = currentRect.left;
-                let y = currentRect.top + 16;
+                let y = currentRect.top;
 
                 if (this.#currentHoverElement.children.length > 0) {
                     const lastChildRect = this.#currentHoverElement.lastElementChild.getBoundingClientRect();
