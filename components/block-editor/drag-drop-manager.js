@@ -1,13 +1,27 @@
 import {Positions} from "./scripts/utils/positions.js"
 
+/**
+ * @const MoveState
+ * @description The state of the move operation
+ * @type {Readonly<{AddWidget: number, MoveElement: number, None: number}>}
+ */
 const MoveState =  Object.freeze({
     None: 0,
     AddWidget: 1,
     MoveElement: 2
 });
 
+/**
+ * @const IGNORE_DROP_ELEMENTS
+ * @description Elements that we don't want to drop elements on.
+ * @type {string[]}
+ */
 const IGNORE_DROP_ELEMENTS = ["block-widgets", "dialog-component"];
 
+/**
+ * @class DragDropManager
+ * @description Manages the drag and drop operations.
+ */
 export class DragDropManager {
     #mouseDownHandler = this.#mouseDown.bind(this);
     #mouseMoveHandler = this.#mouseMove.bind(this);
@@ -45,6 +59,11 @@ export class DragDropManager {
         return null;
     }
 
+    /**
+     * @method animateMove
+     * @description Animates the move operation.
+     * This is activated when movement starts and stops when the movement stops.
+     */
     #animateMove() {
         // animation is no longer required so stop the animation timer.
         if (this.#dragElement == null) return;
@@ -56,13 +75,21 @@ export class DragDropManager {
         requestAnimationFrame(this.#animateMoveHandler);
     }
 
+    /**
+     * @method mouseDown
+     * @description Handles the mouse down event.
+     * This starts the move operation if the conditions are met.
+     * @param event
+     */
     #mouseDown(event) {
         const target = event.composedPath()[0];
 
+        // 1. are we moving a widget from the library
         if (isWidget(target)) {
             this.#state = MoveState.AddWidget;
             this.#dropWidgetId = target.id;
         }
+        // 2. or are we moving an element in the case.
         else if (isMoveableElement(target)) {
             this.#state = MoveState.MoveElement;
         }
@@ -83,6 +110,14 @@ export class DragDropManager {
         this.#marker = addMarker();
     }
 
+    /**
+     * @method mouseMove
+     * @description Handles the mouse move event.
+     * This moves the element preview and also updates the drop marker using the animate method.
+     * We here just want to update the values required for the animation.
+     * @param event
+     * @returns {Promise<void>}
+     */
     async #mouseMove(event) {
         this.#x = Math.round(event.clientX);
         this.#y = Math.round(event.clientY);
@@ -100,11 +135,16 @@ export class DragDropManager {
         }
     }
 
+    /**
+     * @method mouseUp
+     * @description Handles the mouse up event.
+     * This ends the drag operation and performs the drop operation of the correct target is selected.
+     * @param event
+     * @returns {Promise<void>}
+     */
     async #mouseUp(event) {
         document.removeEventListener("mousemove", this.#mouseMoveHandler);
         document.removeEventListener("mouseup", this.#mouseUpHandler);
-
-        //const validDropTarget = getValidDropTarget(this.#x, this.#y);
 
         if (this.#currentHoverElement != null) {
             await this.#dropElement(this.#currentHoverElement);
@@ -120,6 +160,12 @@ export class DragDropManager {
         this.#currentHoverElement = null;
     }
 
+    /**
+     * @method dropElement
+     * @description Drops the element on the canvas at the correct position.
+     * @param target
+     * @returns {Promise<void>}
+     */
     async #dropElement(target) {
         const {widget, script} = await crsbinding.events.emitter.emit("getWidgetLibrary", { id: this.#dropWidgetId });
 
@@ -129,6 +175,13 @@ export class DragDropManager {
         await action(target, args, this.#currentPosition, this.#dropWidgetId);
     }
 
+    /**
+     * @method updateMarker
+     * @description Updates the drop marker based on the current hover element.
+     * If we are to append to the container, show the marker at the bottom of the children.
+     * If the container is empty, show it at the top of the empty container but, it there are
+     * children and, you hover over a element that is a child of a container, then show it before the element.
+     */
     #updateMarker() {
         const elements = document.elementsFromPoint(this.#x, this.#y);
         const tagName = elements[0].tagName.toLowerCase();
@@ -147,6 +200,7 @@ export class DragDropManager {
                 const currentRect = this.#currentHoverElement.getBoundingClientRect();
                 const lastChildRect = this.#currentHoverElement.lastElementChild?.getBoundingClientRect();
 
+                // if we are hitting the container between elements we don't want to show it as appended so hide it
                 if (lastChildRect != null && lastChildRect.bottom > this.#y) {
                     return this.#marker.classList.add("hidden");
                 }
@@ -166,6 +220,7 @@ export class DragDropManager {
                 return;
             }
 
+            // if we hover over a element inside a container we want to add it before that element.
             if (this.#currentHoverElement.parentElement.dataset.droptarget === "true") {
                 const parentRect = this.#currentHoverElement.parentElement.getBoundingClientRect();
                 const currentRect = this.#currentHoverElement.getBoundingClientRect()
@@ -183,10 +238,22 @@ export class DragDropManager {
     }
 }
 
+/**
+ * @function isWidget
+ * @description Checks if the element is a widget.
+ * @param element
+ * @returns {boolean}
+ */
 function isWidget(element) {
     return element.dataset.widget === "true";
 }
 
+/**
+ * @function isMoveableElement
+ * @description Checks if the element is moveable.
+ * @param element
+ * @returns {boolean}
+ */
 function isMoveableElement(element) {
     return element.dataset.moveable === "true";
 }
@@ -230,23 +297,11 @@ function cloneElementForDragging(element, x, y) {
     return dragElement;
 }
 
-
-function getValidDropTarget(x, y) {
-    const topElement = document.elementsFromPoint(x, y);
-
-    for (const element of topElement) {
-        if (IGNORE_DROP_ELEMENTS.includes(element.tagName.toLowerCase())) return;
-
-        if (isDropTarget(element)) {
-            return element;
-        }
-    }
-}
-
-function isDropTarget(element) {
-    return element.dataset.droptarget === "true";
-}
-
+/**
+ * @function addMarker
+ * @description Adds a marker to the body to indicate the drop zone
+ * @returns {HTMLDivElement}
+ */
 function addMarker() {
     const marker = document.createElement("div");
     marker.classList.add("designer-marker", "hidden");
