@@ -3,7 +3,7 @@
  * https://droces.github.io/Deno-Cheat-Sheet/
  */
 
-import { copy, emptyDir, ensureDir } from "https://deno.land/std@0.149.0/fs/mod.ts";
+import {copy, emptyDir, ensureDir} from "https://deno.land/std@0.149.0/fs/mod.ts";
 import * as esbuild from 'https://deno.land/x/esbuild@v0.14.50/mod.js'
 import init, {minify} from "https://wilsonl.in/minify-html/deno/0.9.2/index.js";
 
@@ -81,17 +81,11 @@ export async function packageFolder(source, target, minified) {
 
         if (dirEntry.name.indexOf(".js") != -1) {
             await packageFile(sourceFile, targetFile, "js", "esm", minified);
-        }
-
-        else if (dirEntry.name.indexOf(".html") != -1) {
+        } else if (dirEntry.name.indexOf(".html") != -1) {
             await packageHTML(sourceFile, targetFile, minified);
-        }
-
-        else if (dirEntry.name.indexOf(".css") != -1) {
+        } else if (dirEntry.name.indexOf(".css") != -1) {
             await bundleCss(sourceFile, targetFile, minified);
-        }
-
-        else {
+        } else {
             await Deno.copyFile(`${source}/${dirEntry.name}`, `${target}/${dirEntry.name}`);
         }
     }
@@ -107,14 +101,22 @@ export async function packageFolder(source, target, minified) {
  * @returns {Promise<void>}
  */
 export async function packageFile(sourceFile, targetFile, loader, format, minified) {
+    console.log(sourceFile);
     const src = await Deno.readTextFile(sourceFile);
-    if(sourceFile.indexOf("context-menu-full.js") > -1) {
+    if (sourceFile.indexOf("context-menu-full.js") > -1) {
         minified = false;
     }
-    const result = await esbuild.transform(src, { loader: loader, minify: minified, format: format });
-    await Deno.writeTextFile(targetFile, result.code);
 
-    console.log(sourceFile);
+    let code;
+
+    if (sourceFile.indexOf(".json") !== -1) {
+        code = src;
+    } else {
+        const result = await esbuild.transform(src, {loader: loader, minify: minified, format: format});
+        code = result.code;
+    }
+
+    await Deno.writeTextFile(targetFile, code);
 }
 
 /**
@@ -130,11 +132,16 @@ export async function packageHTML(sourceFile, targetFile, minified) {
     src = src.replaceAll("styles/", "./packages/crs-framework/styles/");
 
     if (minified == true) {
-        src = decoder.decode(minify(encoder.encode(src), { minify_css: true, minify_js: true, do_not_minify_doctype: true, keep_closing_tags: true }));
+        src = decoder.decode(minify(encoder.encode(src), {
+            minify_css: true,
+            minify_js: true,
+            do_not_minify_doctype: true,
+            keep_closing_tags: true
+        }));
     }
 
     // NOTE GM: This is a temporary fix because the data-folder is different when using it as a package. This needs to be relooked with crs-binding3
-    if(sourceFile === "./components/calendar/calendar.html") {
+    if (sourceFile === "./components/calendar/calendar.html") {
         src = src.replaceAll('./components/calendar/', './packages/crs-framework/components/calendar/');
     }
 
