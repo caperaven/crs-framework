@@ -1,4 +1,3 @@
-import {BlockEditor} from "./../../../components/block-editor/block-editor.js"
 
 import { beforeAll, beforeEach, afterEach, describe, it} from "https://deno.land/std@0.157.0/testing/bdd.ts";
 import { assertEquals, assert, assertExists } from "https://deno.land/std@0.149.0/testing/asserts.ts";
@@ -8,8 +7,9 @@ await init();
 let instance;
 
 beforeAll(() => {
-    return new Promise(resolve => {
-        instance = new BlockEditor();
+    return new Promise(async resolve => {
+        const module = await import("./../../../components/block-editor/block-editor.js");
+        instance = new module.BlockEditor();
         instance.addEventListener("ready", resolve);
     })
 })
