@@ -144,6 +144,9 @@ export class DialogActions {
         const allowMove = await crs.process.getValue(step.args.allow_move, context, process, item) ?? true;
         const minWidth = await crs.process.getValue(step.args.min_width, context, process, item);
         const minHeight = await crs.process.getValue(step.args.min_height, context, process, item);
+        const maxWidth = await crs.process.getValue(step.args.max_width, context, process, item);
+        const maxHeight = await crs.process.getValue(step.args.max_height, context, process, item);
+        const allowPopout = await crs.process.getValue(step.args.allow_popout, context, process, item) ?? false;
         const showHeader = await crs.process.getValue(step.args.show_header, context, process, item) ?? true;
         const autoClose = await crs.process.getValue(step.args.auto_close, context, process, item) ?? false;
         const callback = await crs.process.getValue(step.args.callback, context, process, item) ?? null;
@@ -151,7 +154,7 @@ export class DialogActions {
 
         const options = {
             target, position, anchor, size, margin, title, severity, allowResize,
-            allowMove, minWidth, minHeight, showHeader, autoClose, callback, parent
+            allowMove, minWidth, minHeight, maxWidth, maxHeight, allowPopout, showHeader, autoClose, callback, parent
         };
 
         const dialog = await ensureDialog(close, parent);

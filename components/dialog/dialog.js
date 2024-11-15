@@ -31,6 +31,7 @@ export class Dialog extends HTMLElement {
     #actions = {
         "close": this.#closeClicked.bind(this),
         "resize": this.#resizeClicked.bind(this),
+        "popout": this.#popoutClicked.bind(this)
     };
 
     /**
@@ -136,6 +137,16 @@ export class Dialog extends HTMLElement {
         });
     }
 
+    async #popoutClicked(event) {
+        const popoutButton = event.composedPath()[0];
+
+        this.classList.toggle("popout");
+        //Todo: change the icon name when bringing in the correct icons
+        const popoutIcon = this.classList.contains("popout") ? "vertical-align-bottom" : "vertical-align-top";
+
+        popoutButton.textContent = popoutIcon;
+    }
+
     async #closeClicked() {
         await this.#popStack();
     }
@@ -175,6 +186,8 @@ export class Dialog extends HTMLElement {
      * @param options.autoClose {boolean} - allow the dialog to be closed by clicking outside the dialog on a back layer
      * @param options.minWidth {string} - the minimum width of the dialog, used to control resize min width
      * @param options.minHeight {string} - the minimum height of the dialog, used to control resize min height
+     * @param options.maxWidth {string} - the maximum width of the dialog, used to control resize max width
+     * @param options.maxHeight {string} - the maximum height of the dialog, used to control resize max height
      * @returns {Promise<void>}
      */
     async #setOptions(options) {
@@ -188,6 +201,7 @@ export class Dialog extends HTMLElement {
 
         this.dataset.allowMove = options?.allowMove === true ? "true" : "false";
         this.dataset.allowResize = options?.allowResize === true ? "true" : "false";
+        this.dataset.allowPopout = options?.allowPopout === true ? "true" : "false";
 
         if (options?.autoClose === true) {
             const backLayer = await crs.call("dom", "create_element", {
@@ -207,6 +221,14 @@ export class Dialog extends HTMLElement {
 
         if (options?.minHeight != null) {
             this.style.setProperty("--min-height", options.minHeight);
+        }
+
+        if (options?.maxWidth != null) {
+            this.style.setProperty("--max-width", options.maxWidth);
+        }
+
+        if (options?.maxHeight != null) {
+            this.style.setProperty("--max-height", options.maxHeight);
         }
     }
 

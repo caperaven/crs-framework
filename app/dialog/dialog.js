@@ -32,8 +32,8 @@ export default class Dialog extends crsbinding.classes.ViewBase {
             target: event.target,
             position: position,
             anchor: anchor[position],
-            margin: 10,
-            parent: "main"
+            allow_popout: true,
+            margin: 10
         });
     }
 
