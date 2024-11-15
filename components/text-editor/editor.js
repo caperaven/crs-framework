@@ -5970,15 +5970,15 @@ exception can't be propagated to calling code in a reasonable way
 
 Either calls a handler registered with
 [`EditorView.exceptionSink`](https://codemirror.net/6/docs/ref/#view.EditorView^exceptionSink),
-`window.onerror`, if defined, or `console.error` (in which case
+`globalThis.onerror`, if defined, or `console.error` (in which case
 it'll pass `context`, when given, as first argument).
 */
 function logException(state, exception, context) {
     let handler = state.facet(exceptionSink);
     if (handler.length)
         handler[0](exception);
-    else if (window.onerror)
-        window.onerror(String(exception), context, undefined, undefined, exception);
+    else if (globalThis.onerror)
+        globalThis.onerror(String(exception), context, undefined, undefined, exception);
     else if (context)
         console.error(context + ":", exception);
     else
@@ -7597,7 +7597,7 @@ class InputState {
                 if (this.chromeScrollHack < 0)
                     view.contentDOM.style.pointerEvents = "none";
                 else
-                    window.clearTimeout(this.chromeScrollHack);
+                    globalThis.clearTimeout(this.chromeScrollHack);
                 this.chromeScrollHack = setTimeout(() => {
                     this.chromeScrollHack = -1;
                     view.contentDOM.style.pointerEvents = "";
@@ -8240,13 +8240,13 @@ handlers.beforeinput = (view, event) => {
     if (browser.chrome && browser.android && (pending = PendingKeys.find(key => key.inputType == event.inputType))) {
         view.observer.delayAndroidKey(pending.key, pending.keyCode);
         if (pending.key == "Backspace" || pending.key == "Delete") {
-            let startViewHeight = ((_a = window.visualViewport) === null || _a === void 0 ? void 0 : _a.height) || 0;
+            let startViewHeight = ((_a = globalThis.visualViewport) === null || _a === void 0 ? void 0 : _a.height) || 0;
             setTimeout(() => {
                 var _a;
                 // Backspacing near uneditable nodes on Chrome Android sometimes
                 // closes the virtual keyboard. This tries to crudely detect
                 // that and refocus to get it back.
-                if ((((_a = window.visualViewport) === null || _a === void 0 ? void 0 : _a.height) || 0) > startViewHeight + 10 && view.hasFocus) {
+                if ((((_a = globalThis.visualViewport) === null || _a === void 0 ? void 0 : _a.height) || 0) > startViewHeight + 10 && view.hasFocus) {
                     view.contentDOM.blur();
                     view.focus();
                 }
@@ -8916,7 +8916,7 @@ function visiblePixelRange(dom, paddingTop) {
     for (let parent = dom.parentNode; parent && parent != doc.body;) {
         if (parent.nodeType == 1) {
             let elt = parent;
-            let style = window.getComputedStyle(elt);
+            let style = globalThis.getComputedStyle(elt);
             if ((elt.scrollHeight > elt.clientHeight || elt.scrollWidth > elt.clientWidth) &&
                 style.overflow != "visible") {
                 let parentRect = elt.getBoundingClientRect();
@@ -8990,7 +8990,7 @@ class ViewState {
     constructor(state) {
         this.state = state;
         // These are contentDOM-local coordinates
-        this.pixelViewport = { left: 0, right: window.innerWidth, top: 0, bottom: 0 };
+        this.pixelViewport = { left: 0, right: globalThis.innerWidth, top: 0, bottom: 0 };
         this.inView = true;
         this.paddingTop = 0;
         this.paddingBottom = 0;
@@ -9078,7 +9078,7 @@ class ViewState {
             this.mustEnforceCursorAssoc = true;
     }
     measure(view) {
-        let dom = view.contentDOM, style = window.getComputedStyle(dom);
+        let dom = view.contentDOM, style = globalThis.getComputedStyle(dom);
         let oracle = this.heightOracle;
         let whiteSpace = style.whiteSpace;
         this.defaultTextDirection = style.direction == "rtl" ? Direction.RTL : Direction.LTR;
@@ -11615,7 +11615,7 @@ function rectanglesForRange(view, className, range) {
     let from = Math.max(range.from, view.viewport.from), to = Math.min(range.to, view.viewport.to);
     let ltr = view.textDirection == Direction.LTR;
     let content = view.contentDOM, contentRect = content.getBoundingClientRect(), base = getBase(view);
-    let lineStyle = window.getComputedStyle(content.firstChild);
+    let lineStyle = globalThis.getComputedStyle(content.firstChild);
     let leftSide = contentRect.left + parseInt(lineStyle.paddingLeft) + Math.min(0, parseInt(lineStyle.textIndent));
     let rightSide = contentRect.right - parseInt(lineStyle.paddingRight);
     let startBlock = blockAt(view, from), endBlock = blockAt(view, to);

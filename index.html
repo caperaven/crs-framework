@@ -86,7 +86,7 @@
         import "./src/binding-extensions/markdown-template.js";
         import "./src/binding-extensions/schema-template.js";
 
-        window.addEventListener("load", async (event) => {
+        globalThis.addEventListener("load", async (event) => {
             import ("./packages/crs-process-api/action-systems/data-processing-actions.js");
             import ("./components/busy-ui/busy-ui-actions.js");
             import ("./components/options-toolbar/options-toolbar.js");
