@@ -8,9 +8,7 @@ export async function createInstance(targetElement, args, position, widgetId) {
     element.setAttribute("tabindex", "0");
 
     await CssGridModule.apply({ data, element });
-
     const path = add(element, targetElement, position);
-
     await addToSchema(data, path);
 }
 

@@ -4,6 +4,19 @@ import { ValidationResult } from "./../../../src/schema/validation-result.js";
 
 import { InputProvider } from "../../../src/schema/providers/input.js";
 
+globalThis.crsbinding = {
+    events: {
+        emitter: {
+            on: () => {
+                return new Promise(resolve => resolve())
+            },
+            remove: () => {
+                return new Promise(resolve => resolve())
+            },
+        }
+    }
+}
+
 Deno.test("SchemaManager.parse should generate HTML code from schema", async () => {
     const schemaManager = new SchemaManager();
     schemaManager.registerProvider(InputProvider);
@@ -24,7 +37,8 @@ Deno.test("SchemaManager.parse should generate HTML code from schema", async () 
         }
     };
 
-    const result = await schemaManager.parse(schemaJson);
+    schemaManager.registerSchema("test", schemaJson);
+    const result = await schemaManager.parse("test");
     assert(ValidationResult.isSuccess(result));
         assertEquals(result.message, "<div><h1>Hello World</h1></div>");
 
@@ -52,7 +66,9 @@ Deno.test("SchemaManager.parse input scenario", async () => {
         }
     };
 
-    const result = await schemaManager.parse(schemaJson);
+    schemaManager.registerSchema("test", schemaJson);
+
+    const result = await schemaManager.parse("test");
     assert(ValidationResult.isSuccess(result));
 
     assert(result.message.indexOf("<input type=\"text\" value.bind=\"model.firstName\" />")) > -1;
@@ -89,11 +105,13 @@ Deno.test("SchemaManager.setAttribute should set an attribute in the schema", ()
         }
     };
 
+    schemaManager.registerSchema("test", schemaJson);
+
     const path = "/0";
     const attributeName = "data-test";
     const attributeValue = "test-value";
 
-    const result = schemaManager.setAttribute(schemaJson, path, attributeName, attributeValue);
+    const result = schemaManager.setAttribute("test", path, attributeName, attributeValue);
     assertEquals(result, ValidationResult.success("success"));
 
     assertEquals(schemaJson.body.elements[0].attributes["data-test"], "test-value");
@@ -116,10 +134,13 @@ Deno.test("SchemaManager.deleteAttribute should delete an attribute in the schem
             ]
         }
     };
+
+    schemaManager.registerSchema("test", schemaJson);
+
     const path = "/0";
     const attributeName = "data-test";
 
-    const result = schemaManager.deleteAttribute(schemaJson, path, attributeName);
+    const result = schemaManager.deleteAttribute("test", path, attributeName);
     assertEquals(result, ValidationResult.success("success"));
     assertEquals(schemaJson.body.elements[0].attributes["data-test"], undefined);
 
@@ -138,10 +159,13 @@ Deno.test("SchemaManager.addStyle should add a style class to the schema item", 
             ]
         }
     };
+
+    schemaManager.registerSchema("test", schemaJson);
+
     const path = "/0";
     const className = "test-class";
 
-    const result = schemaManager.addStyle(schemaJson, path, className);
+    const result = schemaManager.addStyle("test", path, className);
     assertEquals(result, ValidationResult.success("success"));
     assert(schemaJson.body.elements[0].styles.includes("test-class"));
 
@@ -161,10 +185,13 @@ Deno.test("SchemaManager.deleteStyle should delete a style class from the schema
             ]
         }
     };
+
+    schemaManager.registerSchema("test", schemaJson);
+
     const path = "/0";
     const className = "test-class";
 
-    const result = schemaManager.deleteStyle(schemaJson, path, className);
+    const result = schemaManager.deleteStyle("test", path, className);
     assertEquals(result, ValidationResult.success("success"));
     assert(schemaJson.body.elements[0].styles.length === 0);
 
@@ -183,11 +210,14 @@ Deno.test("SchemaManager.setStyleProperty should set a style property in the sch
             ]
         }
     };
+
+    schemaManager.registerSchema("test", schemaJson);
+
     const path = "/0";
     const propertyName = "color";
     const propertyValue = "red";
 
-    const result = schemaManager.setStyleProperty(schemaJson, path, propertyName, propertyValue);
+    const result = schemaManager.setStyleProperty("test", path, propertyName, propertyValue);
     assertEquals(result, ValidationResult.success("success"));
     assertEquals(schemaJson.body.elements[0].styleProperties.color, "red");
 
@@ -209,10 +239,13 @@ Deno.test("SchemaManager.deleteStyleProperty should delete a style property from
             ]
         }
     };
+
+    schemaManager.registerSchema("test", schemaJson);
+
     const path = "/0";
     const propertyName = "color";
 
-    const result = schemaManager.deleteStyleProperty(schemaJson, path, propertyName);
+    const result = schemaManager.deleteStyleProperty("test", path, propertyName);
     assertEquals(result, ValidationResult.success("success"));
     assertEquals(schemaJson.body.elements[0].styleProperties.color, undefined);
 
@@ -228,6 +261,9 @@ Deno.test("SchemaManager.create should create a new element in the schema", asyn
             elements: []
         }
     };
+
+    schemaManager.registerSchema("test", schemaJson);
+
     const path = "/";
     const schemaItem = {
         element: "input",
@@ -235,7 +271,7 @@ Deno.test("SchemaManager.create should create a new element in the schema", asyn
         title: "First Name"
     };
 
-    const result = await schemaManager.create(schemaJson, path, schemaItem);
+    const result = await schemaManager.create("test", path, schemaItem);
     assertEquals(result, ValidationResult.success("success", path));
     assertEquals(schemaJson.body.elements[0], schemaItem);
 
@@ -251,13 +287,16 @@ Deno.test("SchemaManager.create should return an error if the schema item is inv
             elements: []
         }
     };
+
+    schemaManager.registerSchema("test", schemaJson);
+
     const path = "/";
     const schemaItem = {
         element: "input",
         // Missing required fields
     };
 
-    const result = await schemaManager.create(schemaJson, path, schemaItem);
+    const result = await schemaManager.create("test", path, schemaItem);
     assertEquals(ValidationResult.isError(result), true);
 
     schemaManager.dispose();
@@ -278,13 +317,16 @@ Deno.test("SchemaManager.update should update an existing element in the schema"
             ]
         }
     };
+
+    schemaManager.registerSchema("test", schemaJson);
+
     const path = "/0";
     const updatedSchemaItem = {
         element: "input",
         title: "Updated First Name"
     };
 
-    const result = await schemaManager.update(schemaJson, path, updatedSchemaItem);
+    const result = await schemaManager.update("test", path, updatedSchemaItem);
     assertEquals(result, ValidationResult.success("success", path));
     assertEquals(schemaJson.body.elements[0].title, "Updated First Name");
 
@@ -300,13 +342,16 @@ Deno.test("SchemaManager.update should return an error if the element does not e
             elements: []
         }
     };
+
+    schemaManager.registerSchema("test", schemaJson);
+
     const path = "/0";
     const updatedSchemaItem = {
         element: "input",
         title: "Updated First Name"
     };
 
-    const result = await schemaManager.update(schemaJson, path, updatedSchemaItem);
+    const result = await schemaManager.update("test", path, updatedSchemaItem);
     assertEquals(ValidationResult.isError(result), true);
 
     schemaManager.dispose();
@@ -327,9 +372,12 @@ Deno.test("SchemaManager.delete should delete an existing element in the schema"
             ]
         }
     };
+
+    schemaManager.registerSchema("test", schemaJson);
+
     const path = "/0";
 
-    const result = await schemaManager.delete(schemaJson, path);
+    const result = await schemaManager.delete("test", path);
     assert(ValidationResult.success("success"));
     assertEquals(schemaJson.body.elements.length, 0);
 
@@ -345,9 +393,12 @@ Deno.test("SchemaManager.delete should return an error if the element does not e
             elements: []
         }
     };
+
+    schemaManager.registerSchema("test", schemaJson);
+
     const path = "/0";
 
-    const result = await schemaManager.delete(schemaJson, path);
+    const result = await schemaManager.delete("test", path);
     assert(ValidationResult.isError(result));
 
     schemaManager.dispose();

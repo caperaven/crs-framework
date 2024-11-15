@@ -1,6 +1,6 @@
 import "./block-widgets/block-widgets.js";
 import "./block-properties/block-properties.js";
-import {DragDropManager} from "./drag-drop-manager.js";
+import { DragDropManager } from "./drag-drop-manager.js";
 
 /**
  * @class BlockEditor

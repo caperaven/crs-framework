@@ -9,13 +9,21 @@ export default class DataManagerIdb extends crsbinding.classes.ViewBase {
     #blockEditor;
     #canvasManager;
     #schemaManager;
+    #schema = {
+        "id": "my-schema",
+
+        "body": {
+            "elements": []
+        }
+    };
 
     async connectedCallback() {
         await super.connectedCallback();
         this.#schemaManager = new SchemaManager("designer");
         this.#schemaManager.registerProvider(LayoutProvider);
+        this.#schemaManager.registerSchema(this.#schema);
 
-        this.#blockEditor = new BlockEditor();
+        this.#blockEditor = new BlockEditor("my-schema");
         this.#canvasManager = new CanvasManager(this.element.querySelector(".canvas"));
     }
 

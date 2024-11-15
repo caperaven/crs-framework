@@ -13,6 +13,7 @@ export class SchemaManager {
     #providers = {};
     #id;
     #schemaActionsHandler = this.#schemaActions.bind(this);
+    #schemas = {};
 
     constructor(id) {
         this.#id = id;
@@ -141,6 +142,14 @@ export class SchemaManager {
         return template.replace("__content__", childContent).trim();
     }
 
+    registerSchema(schemaId, schema) {
+        this.#schemas[schemaId] = schema;
+    }
+
+    unregisterSchema(schemaId) {
+        delete this.#schemas[schemaId];
+    }
+
     /**
      * @method registerProvider
      * @description This method is responsible for registering a provider with the HTMLGenerator.
@@ -154,10 +163,12 @@ export class SchemaManager {
     /**
      * @method parse
      * @description This method is responsible for parsing the schema and generating HTML code.
-     * @param schemaJson {Object} The schema JSON object.
+     * @param schemaId {Object} The schema JSON object.
      * @returns {ValidationResult} The HTML code generated from the schema.
      */
-    async parse(schemaJson) {
+    async parse(schemaId) {
+        const schemaJson = this.#schemas[schemaId];
+
         const body = schemaJson.body;
         const html = [];
 
@@ -207,31 +218,32 @@ export class SchemaManager {
      * @description This method is responsible for validating the schema.
      * By default, it will validate the entire schema.
      * If you define the path it will validate only that part of the schema.
-     * @param schemaJson {Object} The schema JSON object.
+     * @param schemaId {Object} The schema id.
      * @param path {String} The path of the schema part to validate.
      * @returns {ValidationResult} True if the schema is valid, false otherwise.
      */
-    validate(schemaJson, path = null) {
+    validate(schemaId, path = null) {
         return ValidationResult.success("success");
     }
 
     /**
      * @method create
      * @description This method is responsible for creating a new element in the schema for a given path.
-     * @param schemaJson {Object} The schema JSON object.
+     * @param schemaId {Object} The schema id.
      * @param path {String} The path of the schema part
      * @param schemaItem {Object} The schemaItem to add to the schema.
      * @returns {ValidationResult} True if the schema is valid, false otherwise.
      */
-    create(schemaJson, path, schemaItem) {
+    create(schemaId, path, schemaItem) {
         const provider = this.#providers[schemaItem.element];
+        const schemaJson = this.#schemas[schemaId];
         return provider.create(schemaJson, path, schemaItem);
     }
 
     /**
      * @method update
      * @description This method is responsible for updating an existing element in the schema for a given path.
-     * @param schemaJson {Object} The schema JSON object.
+     * @param schemaId {Object} The schema id.
      * @param path {String} The path of the schema part
      * @param assignment {Object} The element to update.
      * @returns {ValidationResult} True if the schema is valid, false otherwise.
@@ -254,19 +266,21 @@ export class SchemaManager {
      * const schemaManager = new SchemaManager();
      * const result = schemaManager.update(schema, "/edtFirstName", { "title": "First Name Updated" });
      */
-    update(schemaJson, path, assignment) {
+    update(schemaId, path, assignment) {
         const provider = this.#providers[assignment.element];
+        const schemaJson = this.#schemas[schemaId];
         return provider.update(schemaJson, path, assignment);
     }
 
     /**
      * @method delete
      * @description This method is responsible for deleting an existing element in the schema for a given path.
-     * @param schemaJson {Object} The schema JSON object.
+     * @param schemaId {Object} The schema id.
      * @param path {String} The path of the schema part
      * @returns {ValidationResult} True if the schema is valid, false otherwise.
      */
-    delete(schemaJson, path) {
+    delete(schemaId, path) {
+        const schemaJson = this.#schemas[schemaId];
         const schemaItem = schemaItemAt(schemaJson, path);
 
         if (schemaItem == null) {
@@ -281,13 +295,14 @@ export class SchemaManager {
      * @method setAttribute
      * @description This method is responsible for setting an attribute in the schema.
      * If the attribute exists it will be updated but if it does not exist it will be created.
-     * @param schemaJson {Object} The schema JSON object.
+     * @param schemaId {Object} The schema id.
      * @param path {String} The path of the schema part
      * @param attributeName {String} The name of the attribute
      * @param attributeValue {String} The value of the attribute
      * @returns {{type: string, message}}
      */
-    setAttribute(schemaJson, path, attributeName, attributeValue) {
+    setAttribute(schemaId, path, attributeName, attributeValue) {
+        const schemaJson = this.#schemas[schemaId];
         const schemaItem = schemaItemAt(schemaJson, path);
 
         if (schemaItem == null) {
@@ -300,7 +315,8 @@ export class SchemaManager {
         return ValidationResult.success("success");
     }
 
-    deleteAttribute(schemaJson, path, attributeName) {
+    deleteAttribute(schemaId, path, attributeName) {
+        const schemaJson = this.#schemas[schemaId];
         const schemaItem = schemaItemAt(schemaJson, path);
 
         if (schemaItem == null) {
@@ -314,7 +330,8 @@ export class SchemaManager {
         return ValidationResult.success("success");
     }
 
-    addStyle(schemaJson, path, className) {
+    addStyle(schemaId, path, className) {
+        const schemaJson = this.#schemas[schemaId];
         const schemaItem = schemaItemAt(schemaJson, path);
 
         if (schemaItem == null) {
@@ -327,7 +344,8 @@ export class SchemaManager {
         return ValidationResult.success("success");
     }
 
-    deleteStyle(schemaJson, path, className) {
+    deleteStyle(schemaId, path, className) {
+        const schemaJson = this.#schemas[schemaId];
         const schemaItem = schemaItemAt(schemaJson, path);
 
         if (schemaItem == null) {
@@ -345,7 +363,8 @@ export class SchemaManager {
         return ValidationResult.success("success");
     }
 
-    setStyleProperty(schemaJson, path, propertyName, propertyValue) {
+    setStyleProperty(schemaId, path, propertyName, propertyValue) {
+        const schemaJson = this.#schemas[schemaId];
         const schemaItem = schemaItemAt(schemaJson, path);
 
         if (schemaItem == null) {
@@ -358,7 +377,8 @@ export class SchemaManager {
         return ValidationResult.success("success");
     }
 
-    deleteStyleProperty(schemaJson, path, propertyName) {
+    deleteStyleProperty(schemaId, path, propertyName) {
+        const schemaJson = this.#schemas[schemaId];
         const schemaItem = schemaItemAt(schemaJson, path);
 
         if (schemaItem == null) {

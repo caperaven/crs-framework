@@ -1,7 +1,7 @@
 import { ValidationResult } from "./../validation-result.js";
 
 const TEMPLATE = `
-    <__tag__ __attributes__ __styles__ __classes__ __styles__>__content__</__tag__>
+    <__tag__ __attributes__ __classes__ __styles__>__content__</__tag__>
 `
 
 export class RawProvider {
