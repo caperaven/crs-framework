@@ -31,7 +31,7 @@ describe ("busy-ui tests", async () => {
     it("instance show state" , async () => {
         let myElement = new ElementMock("div", "myElement");
 
-         await crs.call("busy_ui", "show", {
+         await globalThis.crs.call("busy_ui", "show", {
             "element": myElement,
             "message": message,
             "progress": progress
@@ -47,14 +47,14 @@ describe ("busy-ui tests", async () => {
     it("instance update state" , async () => {
         let myElement = new ElementMock("div", "myElement");
 
-        await crs.call("busy_ui", "show", {
+        await globalThis.crs.call("busy_ui", "show", {
             "element": myElement,
             "message": message,
             "progress": progress
         });
 
 
-        await crs.call("busy_ui", "update", {
+        await globalThis.crs.call("busy_ui", "update", {
             "element": myElement,
             "message": "Loading... updated",
             "progress": "loaded 50 out of 100"
@@ -68,7 +68,7 @@ describe ("busy-ui tests", async () => {
     it("instance hide state" , async () => {
         let myElement = new ElementMock("div", "myElement");
 
-        await crs.call("busy_ui", "show", {
+        await globalThis.crs.call("busy_ui", "show", {
             "element": myElement,
             "message": message,
             "progress": progress
@@ -79,7 +79,7 @@ describe ("busy-ui tests", async () => {
         assert(myElement.querySelector("busy-ui").dataset.message === message);
         assert(myElement.querySelector("busy-ui").dataset.progress === progress);
 
-        await crs.call("busy_ui", "hide", {
+        await globalThis.crs.call("busy_ui", "hide", {
             "element": myElement
         })
 
@@ -90,7 +90,7 @@ describe ("busy-ui tests", async () => {
         let myElement = new ElementMock("div", "myElement");
         assert(myElement.querySelector("busy-ui") === null);
 
-        await crs.call("busy_ui", "show", {
+        await globalThis.crs.call("busy_ui", "show", {
             "element": myElement,
             "message": message,
             "progress": progress
@@ -102,7 +102,7 @@ describe ("busy-ui tests", async () => {
         assert(loader.dataset.progress === progress);
         assert(myElement.style.position === "relative");
 
-        await crs.call("busy_ui", "update", {
+        await globalThis.crs.call("busy_ui", "update", {
             "element": myElement,
             "message": "TESTING",
             "progress": "More testing"
@@ -113,7 +113,7 @@ describe ("busy-ui tests", async () => {
         assert(myElement.style.position === "relative");
 
 
-        await crs.call("busy_ui", "hide", {
+        await globalThis.crs.call("busy_ui", "hide", {
             "element": myElement,
         });
 
@@ -126,7 +126,7 @@ describe ("busy-ui tests", async () => {
         myElement.id = "my-element";
         instance.id = "my-instance";
 
-        await crs.call("busy_ui", "show", {
+        await globalThis.crs.call("busy_ui", "show", {
             "element": myElement,
             "message": message,
             "progress": progress
@@ -143,7 +143,7 @@ describe ("busy-ui tests", async () => {
         assert(instance.shadowRoot.querySelector("#lblProgress").innerText === progress);
 
 
-        await crs.call("busy_ui", "update", {
+        await globalThis.crs.call("busy_ui", "update", {
             "element": myElement,
             "message": "updating",
             "progress": "loaded 50 out of 100"
@@ -159,7 +159,7 @@ describe ("busy-ui tests", async () => {
         assert(instance.shadowRoot.querySelector("#lblProgress").innerText === "loaded 50 out of 100");
 
 
-        await crs.call("busy_ui", "hide", {
+        await globalThis.crs.call("busy_ui", "hide", {
             "element": myElement,
         });
 
