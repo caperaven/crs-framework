@@ -488,7 +488,7 @@ class MatrixRenderer extends HTMLElement {
         this.style.setProperty("--height", `${height}px`);
 
         // 2. adjust the canvas dpi settings based on the new size.
-        const dpr = window.devicePixelRatio;
+        const dpr = globalThis.devicePixelRatio;
         this.#ctx.canvas.width = width * dpr;
         this.#ctx.canvas.height = height * dpr;
         this.#ctx.scale(dpr, dpr);
