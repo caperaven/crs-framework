@@ -11,11 +11,11 @@ beforeAll(async () => {
 
 describe ("toast-notification-actions", async () => {
     beforeEach(async () => {
-        await globalThis.crs.call("toast_notification", "enable", { position: "bottom-center" });
+        await crs.call("toast_notification", "enable", { position: "bottom-center" });
     })
 
     afterEach(async () => {
-        await globalThis.crs.call("toast_notification", "disable", { });
+        await crs.call("toast_notification", "disable", { });
     });
 
     it ("enable", async () => {
@@ -23,7 +23,7 @@ describe ("toast-notification-actions", async () => {
     })
 
     it ("disable", async () => {
-        await globalThis.crs.call("toast_notification", "disable", { });
+        await crs.call("toast_notification", "disable", { });
         assert(document.body.querySelector("toast-notification") == null);
     })
 
@@ -36,7 +36,7 @@ describe ("toast-notification-actions", async () => {
 
         // this duration is set to zero so that deno does not wait for the timeout
         // if deno waits for the timeout, the test will fail
-        await globalThis.crs.call("toast_notification", "show", { message: "test", duration: 0 });
+        await crs.call("toast_notification", "show", { message: "test", duration: 0 });
         assert(instance.shadowRoot.querySelector("toast-notification-item") != null);
     });
 });
