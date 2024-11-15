@@ -67,6 +67,8 @@ export class CssGridModule {
      * @param args
      * @param {number} args.columnCount - The number of columns to create
      * @param {number} args.rowCount - The number of rows to create
+     * @param {string[]} args.widths - The widths of the columns
+     * @param {string[]} args.heights - The heights of the rows
      * @returns {Promise<{columns: any[], rows: any[]}>}
      */
     static async create(args) {
@@ -74,6 +76,18 @@ export class CssGridModule {
 
         const columns = new Array(args.columnCount).fill("1fr");
         const rows = new Array(args.rowCount).fill("1fr");
+
+        if (args.widths != null) {
+            for (let i = 0; i < args.widths.length; i++) {
+                columns[i] = args.widths[i];
+            }
+        }
+
+        if (args.heights != null) {
+            for (let i = 0; i < args.heights.length; i++) {
+                rows[i] = args.heights[i];
+            }
+        }
 
         return {
             columns,

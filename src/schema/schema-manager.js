@@ -11,12 +11,19 @@ import { schemaItemAt } from "./path-finder.js";
  */
 export class SchemaManager {
     #providers = {};
+    #id;
+    #schemaActionsHandler = this.#schemaActions.bind(this);
 
-    constructor() {
+    constructor(id) {
+        this.#id = id;
         this.registerProvider(RawProvider);
+
+        crsbinding.events.emitter.on("schema-actions", this.#schemaActionsHandler).catch(error => console.error(error));
     }
 
     dispose() {
+        crsbinding.events.emitter.remove("schema-actions", this.#schemaActionsHandler).catch(error => console.error(error));
+
         for (const providerKey of Object.keys(this.#providers)) {
             const provider = this.#providers[providerKey];
             provider.parser = null;
@@ -24,6 +31,12 @@ export class SchemaManager {
         }
 
         this.#providers = null;
+    }
+
+    #schemaActions(event) {
+        if (this[event.action] != null) {
+            return this[event.action](...event.args ?? []);
+        }
     }
 
     /**

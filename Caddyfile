@@ -1,18 +1,30 @@
 {
     admin off
+    auto_https disable_redirects
 }
 
 localhost {
+    # Security headers
     header {
         Cache-Control "no-cache, no-store, must-revalidate"
+        Content-Security-Policy "default-src 'none'; script-src 'self' 'unsafe-eval' 'wasm-unsafe-eval'; script-src-elem 'self' 'unsafe-inline'; script-src-attr 'none'; style-src 'self'; style-src-elem 'self' 'unsafe-inline'; style-src-attr 'self' 'unsafe-inline'; img-src 'self' blob: data:  *.tile.openstreetmap.org; font-src 'self'; connect-src *; frame-src 'self'; frame-ancestors 'self'; worker-src 'self'; manifest-src 'self'; object-src 'none'; form-action 'self'; upgrade-insecure-requests"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        Referrer-Policy "strict-origin-when-cross-origin"
+        Permissions-Policy "geolocation=(), microphone=(), camera=()"
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
     }
+
+    # Compression for better performance
     encode zstd gzip
 
+    # Serve files from /framework/ path
     handle /framework/* {
         uri strip_prefix /framework
         file_server browse
     }
 
+    # Default response for unauthorized access
     handle {
         respond "Access Denied" 403
     }
