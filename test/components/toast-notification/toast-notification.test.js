@@ -28,15 +28,15 @@ describe ("toast-notification-actions", async () => {
     })
 
     // This test is giving us deno warnings about the timeout
-    //
-    // it ("show", async () => {
-    //     const instance = document.body.querySelector("toast-notification");
-    //     await instance.connectedCallback();
-    //     createMockChildren(instance);
-    //
-    //     // this duration is set to zero so that deno does not wait for the timeout
-    //     // if deno waits for the timeout, the test will fail
-    //     await crs.call("toast_notification", "show", { message: "test", duration: 0 });
-    //     assert(instance.shadowRoot.querySelector("toast-notification-item") != null);
-    // });
+
+    it ("show", async () => {
+        const instance = document.body.querySelector("toast-notification");
+        await instance.connectedCallback();
+        createMockChildren(instance);
+
+        // this duration is set to zero so that deno does not wait for the timeout
+        // if deno waits for the timeout, the test will fail
+        await crs.call("toast_notification", "show", { message: "test", duration: 0 });
+        assert(instance.shadowRoot.querySelector("toast-notification-item") != null);
+    });
 });

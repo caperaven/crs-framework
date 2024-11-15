@@ -117,7 +117,7 @@ export class BusyUIActions {
 }
 
 function ensureElementRelative(element) {
-    const styles = getComputedStyle(element);
+    const styles = globalThis.getComputedStyle(element);
     const position = styles.getPropertyValue("position");
 
     if (position !== "relative" && position !== "absolute") {

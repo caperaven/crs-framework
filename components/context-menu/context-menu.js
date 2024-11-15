@@ -262,10 +262,10 @@ async function assertViewportBoundary(ul) {
     const { left, width, height,top, bottom } = ul.getBoundingClientRect();
 
     //Checks if the available space is less than the width of the submenu/ul
-    ul.dataset.onEdge = window.innerWidth - left < width;
+    ul.dataset.onEdge = globalThis.innerWidth - left < width;
 
     //Checks if the available space is less than the height of the submenu/ul and repositions the submenu/ul
-    const hasExceededViewportBottomEdge = window.innerHeight - top > height;
+    const hasExceededViewportBottomEdge = globalThis.innerHeight - top > height;
     if (hasExceededViewportBottomEdge === false){
         const parentUl = ul.parentElement.parentElement;
         const parentUlBottom = parentUl.getBoundingClientRect().bottom;

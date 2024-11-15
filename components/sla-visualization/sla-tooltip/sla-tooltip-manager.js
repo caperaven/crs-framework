@@ -217,7 +217,7 @@ export class SlaTooltipManager {
 
         await this.#setTooltipVisibleState(false);
 
-        const tooltipPosition = (window.innerWidth - right) < 240 ? "left" : "right";
+        const tooltipPosition = (globalThis.innerWidth - right) < 240 ? "left" : "right";
 
         await crs.call("fixed_layout", "set", {
             element: this.#tooltip,

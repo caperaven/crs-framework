@@ -8,7 +8,7 @@ function createCanvas(parent, width, height) {
     const canvas = parent.querySelector("canvas");
     parent.appendChild(canvas);
 
-    const dpr = window.devicePixelRatio;
+    const dpr = globalThis.devicePixelRatio;
     canvas.width = width * dpr;
     canvas.height = height * dpr;
 

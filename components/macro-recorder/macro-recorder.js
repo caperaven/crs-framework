@@ -169,7 +169,7 @@ export class MacroRecorder extends HTMLElement {
         editor.setAttribute("data-language", "json");
         editor.value = JSON.stringify(result, null, 4);
 
-        const tab = window.open("about:blank");
+        const tab = globalThis.open("about:blank");
         tab.document.body.appendChild(editor);
     }
 
@@ -329,7 +329,7 @@ export class MacroRecorder extends HTMLElement {
         const instance = structuredClone(process);
         instance.id = name;
 
-        instance.main.steps.start.args.url = window.location.href;
+        instance.main.steps.start.args.url = globalThis.location.href;
 
         for (let i = 0; i < this.#steps.length; i++) {
             let name = `step_${i}`;

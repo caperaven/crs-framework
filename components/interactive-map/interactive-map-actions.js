@@ -11,7 +11,7 @@ export class InteractiveMapActions {
             if (globalThis.L == null) {
                 requestAnimationFrame(async () => {
                     const leafletScript = document.createElement('script');
-                    const baseUrl = window.location.origin + window.location.pathname.split('/').slice(0, -1).join('/');
+                    const baseUrl = globalThis.location.origin + globalThis.location.pathname.split('/').slice(0, -1).join('/');
                     leafletScript.src = `${baseUrl}/packages/leaflet/leaflet.js`;
                     leafletScript.onload = async () => {
                         resolve();
