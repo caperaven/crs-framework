@@ -9,10 +9,10 @@ export async function createInstance(targetElement, args, position, widgetId, sc
 
     await CssGridModule.apply({ data, element });
     const path = add(element, targetElement, position);
-    await addToSchema(data, path, schemaId, widgetId);
+    await addToSchema(data, path, schemaId, widgetId, element.children);
 }
 
-async function addToSchema(data, path, schemaId, widgetId) {
+async function addToSchema(data, path, schemaId, widgetId, children) {
     const pathParts = path.split("/");
     const id = pathParts.pop();
     const parentPath = pathParts.join("/");
@@ -20,6 +20,23 @@ async function addToSchema(data, path, schemaId, widgetId) {
     data.element = "layout";
     data.id = id.slice(1);
     data.widgetId = widgetId;
+    data.elements = [];
+
+    for (let i = 0; i < children.length; i ++) {
+        const child = children[i];
+
+        data.elements.push({
+            "element": "div",
+            "id": child.id,
+            "attributes": {
+                "data-droptarget": true
+            },
+            "styleProperties": {
+                "width": "100%",
+                "height": "100%"
+            }
+        })
+    }
 
     await crsbinding.events.emitter.emit("schema-actions", {
         action: "create",

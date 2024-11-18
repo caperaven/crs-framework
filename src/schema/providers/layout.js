@@ -10,8 +10,8 @@ export class LayoutProvider extends BaseProvider {
     static key = Object.freeze("layout");
 
     static async parse(schema, path, context = ParseContext.DESIGNER) {
-        const {id, widths, heights, elements, widgetId} = schema;
-        const styles = `style="display: grid; grid-template-columns: ${widths.join(" ")}; grid-template-rows: ${heights.join(" ")}; width="100%"; height="100%";"`;
+        const {id, columns, rows, elements, widgetId} = schema;
+        const styles = `style="display: grid; grid-template-columns: ${columns.join(" ")}; grid-template-rows: ${rows.join(" ")}; width: 100%; height: 100%;"`;
 
         let result = structuredClone(TEMPLATE);
         result = result.replace(/__widgetId__/g, widgetId);
@@ -54,25 +54,18 @@ export class LayoutProvider extends BaseProvider {
 }
 
 function createLayoutDataStructure(data) {
-    const schemaItem = {
-        "element"       : "layout",
-        "id"            : data.id,
-        "columnCount"   : data.columns.length,
-        "rowCount"      : data.rows.length,
-        "widths"        : data.columns,
-        "heights"       : data.rows,
-        "elements"      : []
+    for (let i = 0; i < data.elements; i++) {
+        const element = data.elements[i];
+
+        element.styles = {
+            width: "100%",
+            height: "100%"
+        }
+
+        element.attributes = {
+            "data-droptarget": true
+        }
     }
 
-    const columnCount = data.columns.length;
-    const rowCount = data.rows.length;
-
-    for (let i = 0; i < columnCount * rowCount; i++) {
-        schemaItem.elements.push({
-            "element": "div",
-            "id": crypto.randomUUID()
-        });
-    }
-
-    return schemaItem;
+    return data;
 }

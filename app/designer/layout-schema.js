@@ -3,22 +3,27 @@ export const schema = {
     "body": {
         "elements": [
             {
-                "element": "layout",
-                "widgetId": "two-column-layout",
-                "id": "1349cdef-866f-44de-afa3-27fb5328938a",
-                "columnCount": 2,
-                "rowCount": 1,
-                "widths": [
+                "columns": [
                     "1fr",
                     "1fr"
                 ],
-                "heights": [
+                "rows": [
                     "1fr"
                 ],
+                "element": "layout",
+                "id": "84d71050-c243-46b8-a519-4bb43eb778c8",
+                "widgetId": "two-column-layout",
                 "elements": [
                     {
                         "element": "div",
-                        "id": "c946562c-f76b-4f8f-9a1e-5895f899db7e",
+                        "id": "989b1767-8b44-4bba-9df5-0658ab83a471",
+                        "attributes": {
+                            "data-droptarget": true
+                        },
+                        "styleProperties": {
+                            "width": "100%",
+                            "height": "100%"
+                        },
                         "elements": [
                             {
                                 "element": "h2",
@@ -28,7 +33,14 @@ export const schema = {
                     },
                     {
                         "element": "div",
-                        "id": "864e196b-1559-4b46-af3b-a7e8b456136a",
+                        "id": "989b1767-8b44-4bba-9df5-0658ab83a471",
+                        "attributes": {
+                            "data-droptarget": true
+                        },
+                        "styleProperties": {
+                            "width": "100%",
+                            "height": "100%"
+                        },
                         "elements": [
                             {
                                 "element": "h2",

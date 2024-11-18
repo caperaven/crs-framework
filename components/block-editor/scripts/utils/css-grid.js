@@ -351,6 +351,7 @@ async function syncGridChildren(element, data) {
  */
 async function fillGrid(element, data) {
     const div = document.createElement("div");
+    div.id = crypto.randomUUID();
     div.dataset.droptarget = "true";
     div.style.width = "100%";
     div.style.height = "100%";
