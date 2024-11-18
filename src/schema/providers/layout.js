@@ -3,7 +3,7 @@ import { BaseProvider } from "./base-provider.js";
 import { ParseContext } from "./../enums/parse-context.js";
 
 const TEMPLATE = `
-<div data-widget-id="__widgetId__" id="__id__" __style__>__content__</div>
+<div __widgetId__ id="__id__" __style__>__content__</div>
 `
 
 export class LayoutProvider extends BaseProvider {
@@ -13,8 +13,10 @@ export class LayoutProvider extends BaseProvider {
         const {id, columns, rows, elements, widgetId} = schema;
         const styles = `style="display: grid; grid-template-columns: ${columns.join(" ")}; grid-template-rows: ${rows.join(" ")}; width: 100%; height: 100%;"`;
 
+        const widgetIdContent = context === ParseContext.DESIGNER ? `data-widget-id="${widgetId}"` : "";
+
         let result = structuredClone(TEMPLATE);
-        result = result.replace(/__widgetId__/g, widgetId);
+        result = result.replace(/__widgetId__/g, widgetIdContent);
         result = result.replace(/__id__/g, id);
         result = result.replace(/__style__/, styles);
 
@@ -31,6 +33,10 @@ export class LayoutProvider extends BaseProvider {
         }
 
         result = result.replace(/__content__/, html.join(""));
+
+        if (context === ParseContext.FINAL) {
+            result = result.replaceAll(/data-droptarget="true"/g, "");
+        }
 
         return ValidationResult.success(result.trim(), path);
     }

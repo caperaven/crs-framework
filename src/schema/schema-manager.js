@@ -17,12 +17,10 @@ const CONTENT_MARKER    = "__content__";
  */
 export class SchemaManager {
     #providers = {};
-    #id;
     #schemaActionsHandler = this.#schemaActions.bind(this);
     #schemas = {};
 
-    constructor(id) {
-        this.#id = id;
+    constructor() {
         this.registerProvider(RawProvider);
 
         crsbinding.events.emitter.on("schema-actions", this.#schemaActionsHandler).catch(error => console.error(error));

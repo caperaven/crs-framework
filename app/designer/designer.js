@@ -20,7 +20,7 @@ export default class DataManagerIdb extends crsbinding.classes.ViewBase {
 
     async connectedCallback() {
         await super.connectedCallback();
-        this.#schemaManager = new SchemaManager("designer");
+        this.#schemaManager = new SchemaManager();
         this.#schemaManager.registerProvider(LayoutProvider);
         this.#schemaManager.registerSchema("my-schema", this.#schema);
 

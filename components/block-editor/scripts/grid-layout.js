@@ -30,10 +30,6 @@ async function addToSchema(data, path, schemaId, widgetId, children) {
             "id": child.id,
             "attributes": {
                 "data-droptarget": true
-            },
-            "styleProperties": {
-                "width": "100%",
-                "height": "100%"
             }
         })
     }
