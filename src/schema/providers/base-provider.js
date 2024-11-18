@@ -26,7 +26,7 @@ export class BaseProvider {
             result = result.replaceAll(stringTag, value);
         }
 
-        return ValidationResult.success(result, path);
+        return ValidationResult.success(result.trim(), path);
     }
 
     /**

@@ -21,7 +21,7 @@ export class InputProvider extends BaseProvider {
      */
     static async parse(schemaItem, path) {
         schemaItem.type ||= "text";
-        return super.parse(TEMPLATE, schemaItem, path);
+        return super.parse(TEMPLATE.trim(), schemaItem, path);
     }
 
     /**

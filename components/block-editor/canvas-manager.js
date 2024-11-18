@@ -99,4 +99,8 @@ export class CanvasManager {
             currentElement = currentElement.parentElement;
         }
     }
+
+    async setHTML(html) {
+        this.#canvas.innerHTML = html;
+    }
 }

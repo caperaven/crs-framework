@@ -1,6 +1,12 @@
 import { ValidationResult } from './validation-result.js';
 import { RawProvider } from "./providers/raw.js";
 import { schemaItemAt } from "./path-finder.js";
+import { ParseContext } from "./enums/parse-context.js";
+
+const ATTRIBUTES_MARKER = "__attributes__";
+const CLASSES_MARKER    = "__classes__";
+const STYLES_MARKER     = "__styles__";
+const CONTENT_MARKER    = "__content__";
 
 /**
  * @class SchemaManager
@@ -49,8 +55,8 @@ export class SchemaManager {
      * @returns {Promise<*>}
      */
     async #parseAttributes(template, schemaItem) {
-        if (schemaItem.attributes == null) {
-            return template.replace("__attributes__", "");
+        if (schemaItem.attributes == null || template.indexOf(ATTRIBUTES_MARKER) === -1) {
+            return template.replace(ATTRIBUTES_MARKER, "");
         }
 
         const attributes = [];
@@ -60,7 +66,7 @@ export class SchemaManager {
             attributes.push(attrString);
         }
 
-        return template.replace("__attributes__", attributes.join(" "));
+        return template.replace(ATTRIBUTES_MARKER, attributes.join(" "));
     }
 
     /**
@@ -72,15 +78,15 @@ export class SchemaManager {
      */
     async #parseStyles(template, schemaItem) {
         if (schemaItem.styles == null) {
-            template = template.replace("__classes__", "");
+            template = template.replace(CLASSES_MARKER, "");
         }
         else {
             const classes = `class="${schemaItem.styles.join(" ")}"`;
-            template =  template.replace("__classes__", classes);
+            template =  template.replace(CLASSES_MARKER, classes);
         }
 
         if (schemaItem.styleProperties == null) {
-            template = template.replace("__styles__", "");
+            template = template.replace(STYLES_MARKER, "");
         }
         else {
             const styles = [];
@@ -91,7 +97,7 @@ export class SchemaManager {
                 styles.push(styleString);
             }
 
-            template = template.replace("__styles__", `style="${styles.join(" ")}"`);
+            template = template.replace(STYLES_MARKER, `style="${styles.join(" ")}"`);
         }
 
         return template;
@@ -107,8 +113,10 @@ export class SchemaManager {
      * @returns {Promise<*|{type: string}>}
      */
     async #parseContent(template, schemaItem) {
+        if (template.indexOf(CONTENT_MARKER) === -1) template;
+
         if (schemaItem.content != null) {
-            return template.replace("__content__", schemaItem.content);
+            return template.replace(CONTENT_MARKER, schemaItem.content);
         }
 
         return await this.#parseChildren(template, schemaItem);
@@ -123,7 +131,7 @@ export class SchemaManager {
      */
     async #parseChildren(template, schemaItem) {
         if (schemaItem.elements == null) {
-            return template.replace("__content__", "");
+            return template.replace(CONTENT_MARKER, "");
         }
 
         const children = [];
@@ -139,7 +147,7 @@ export class SchemaManager {
         }
 
         const childContent = children.join(" ").trim();
-        return template.replace("__content__", childContent).trim();
+        return template.replace(CONTENT_MARKER, childContent).trim();
     }
 
     registerSchema(schemaId, schema) {
@@ -166,7 +174,7 @@ export class SchemaManager {
      * @param schemaId {Object} The schema JSON object.
      * @returns {ValidationResult} The HTML code generated from the schema.
      */
-    async parse(schemaId) {
+    async parse(schemaId, context = ParseContext.DESIGNER) {
         const schemaJson = this.#schemas[schemaId];
 
         const body = schemaJson.body;
@@ -174,7 +182,7 @@ export class SchemaManager {
 
         let index = 0;
         for (const element of body.elements) {
-            const itemResult = await this.parseItem(element, `/[${index}]`);
+            const itemResult = await this.parseItem(element, `/[${index}]`, context);
 
             if (ValidationResult.isError(itemResult)) {
                 return itemResult;
@@ -194,11 +202,11 @@ export class SchemaManager {
      * @param path
      * @returns {Promise<{type: string}|*>}
      */
-    async parseItem(schemaItem, path) {
+    async parseItem(schemaItem, path, context = ParseContext.DESIGNER) {
         const providerKey = schemaItem.element;
         const provider = this.#providers[providerKey] ?? this.#providers["raw"];
 
-        const result = await provider.parse(schemaItem, path);
+        const result = await provider.parse(schemaItem, path, context);
 
         if (ValidationResult.isError(result)) {
             return result;
@@ -210,7 +218,17 @@ export class SchemaManager {
         template = await this.#parseStyles(template, schemaItem);
         template = await this.#parseContent(template, schemaItem);
 
+        // remove any double spaces from the template string before passing it on
+        template = template.replace(/\s+/g, " ");
+
+        // replace all " >" with ">"
+        template = template.replace(/\s+>/g, '>');
+
         return ValidationResult.success(template.trim(), path);
+    }
+
+    get(schemaId) {
+        return this.#schemas[schemaId];
     }
 
     /**

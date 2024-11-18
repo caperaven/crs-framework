@@ -16,7 +16,7 @@ export class RawProvider {
      */
     static async parse(schemaItem, path) {
         const result = TEMPLATE.replaceAll("__tag__", schemaItem.element);
-        return ValidationResult.success(result, path);
+        return ValidationResult.success(result.trim(), path);
     }
 
     /**
