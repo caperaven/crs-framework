@@ -38,8 +38,10 @@ export class DragDropManager {
     #marker;
     #currentHoverElement;
     #currentPosition = Positions.APPEND;
+    #schemaId;
 
-    constructor() {
+    constructor(schemaId) {
+        this.#schemaId = schemaId;
         document.addEventListener("mousedown", this.#mouseDownHandler);
     }
 
@@ -172,7 +174,7 @@ export class DragDropManager {
         const args = widget.args;
         const action = script["createInstance"];
 
-        await action(target, args, this.#currentPosition, this.#dropWidgetId);
+        await action(target, args, this.#currentPosition, this.#dropWidgetId, this.#schemaId);
     }
 
     /**

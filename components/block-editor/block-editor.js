@@ -1,6 +1,6 @@
 import "./block-widgets/block-widgets.js";
 import "./block-properties/block-properties.js";
-import {DragDropManager} from "./drag-drop-manager.js";
+import { DragDropManager } from "./drag-drop-manager.js";
 
 /**
  * @class BlockEditor
@@ -14,14 +14,17 @@ export class BlockEditor extends EventTarget {
     #widgetLibraryData;
     #widgetLibraryHandler = this.#widgetLibrary.bind(this);
     #widgetPropertiesHandler = this.#widgetProperties.bind(this);
-    #dragDropManager = new DragDropManager();
+    #dragDropManager;
+    #schemaId;
 
     get ready() {
         return this.#ready;
     }
 
-    constructor() {
+    constructor(schemaId) {
         super();
+        this.#schemaId = schemaId;
+        this.#dragDropManager = new DragDropManager(schemaId);
         this.init().catch(error => { throw new Error(error); });
     }
 

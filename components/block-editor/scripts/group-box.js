@@ -10,7 +10,7 @@ const template = `
 </group-box-widget>
 `;
 
-export async function createInstance(targetElement, args, position, widgetId) {
+export async function createInstance(targetElement, args, position, widgetId, schemaId) {
     const templateElement = document.createElement("template");
     templateElement.innerHTML = template;
     const instance = templateElement.content.cloneNode(true);
