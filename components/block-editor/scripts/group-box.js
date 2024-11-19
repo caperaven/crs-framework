@@ -26,11 +26,10 @@ export async function createInstance(targetElement, args, position, widgetId, sc
     let result = await crsbinding.events.emitter.emit("schema-actions", {
         action: "create",
         args: [schemaId, parentPath, {
-            "element": "group-box",
+            "element": "group-box", // need this for the provider identification
             "id": id,
             "widgetId": widgetId,
             "title": "Group Box",
-            "elements": []
         }]
     })
 

@@ -21,9 +21,7 @@ export class GroupBoxProvider extends BaseProvider {
     static key = Object.freeze("group-box");
 
     static async parse(schemaItem, path, context = ParseContext.DESIGNER) {
-        const validationResult = validate(schemaItem, {
-            title: { type: "string", critical: true },
-        }, path);
+        const validationResult = await this.validate(schemaItem, path);
 
         if (ValidationResult.isError(validationResult)) {
             return validationResult;
@@ -42,7 +40,6 @@ export class GroupBoxProvider extends BaseProvider {
     }
 
     static async create(schema, path, schemaItem) {
-        schemaItem.element = this.key;
         schemaItem.elements ||= [];
 
         const validationResult = await this.validate(schemaItem, path);
