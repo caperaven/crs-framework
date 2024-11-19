@@ -1,4 +1,5 @@
 import { add } from "./utils/positions.js";
+import {ValidationResult} from "../../../src/schema/validation-result.js";
 
 const template = `
 <group-box-widget tabindex="0">
@@ -14,12 +15,28 @@ export async function createInstance(targetElement, args, position, widgetId, sc
     const templateElement = document.createElement("template");
     templateElement.innerHTML = template;
     const instance = templateElement.content.cloneNode(true);
-
-    // Set the widgetId if needed
-    instance.querySelector('group-box-widget').dataset.widgetId = widgetId;
+    instance.firstElementChild.dataset.widgetId = widgetId;
 
     // Append the instance to the target element
-    add(instance, targetElement, position);
+    const path = add(instance.firstElementChild, targetElement, position);
+    const pathParts = path.split("/");
+    const id = pathParts.pop().slice(1);
+    const parentPath = pathParts.join("/");
+
+    let result = await crsbinding.events.emitter.emit("schema-actions", {
+        action: "create",
+        args: [schemaId, parentPath, {
+            "element": "group-box",
+            "id": id,
+            "widgetId": widgetId,
+            "title": "Group Box",
+            "elements": []
+        }]
+    })
+
+    if (ValidationResult.isError(result)) {
+        alert(result.message);
+    }
 }
 
 export async function toggle(widgetElement, targetElement, widget, event) {

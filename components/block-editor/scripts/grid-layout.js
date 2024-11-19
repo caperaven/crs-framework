@@ -38,11 +38,4 @@ async function addToSchema(data, path, schemaId, widgetId, children) {
         action: "create",
         args: [schemaId, parentPath, data]
     })
-
-    const schema = await crsbinding.events.emitter.emit("schema-actions", {
-        action: "get",
-        args: [schemaId]
-    })
-
-    console.log(schema)
 }

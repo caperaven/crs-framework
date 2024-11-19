@@ -1,6 +1,7 @@
 import { ValidationResult } from "./../validation-result.js";
 import { BaseProvider } from "./base-provider.js";
 import { validate } from "../validation.js";
+import {ParseContext} from "../enums/parse-context.js";
 
 const TEMPLATE = `
 <label data-field="__field__">
@@ -19,7 +20,7 @@ export class InputProvider extends BaseProvider {
      * @param path {String} The path of the schema part
      * @returns {String} The HTML code generated from the schema.
      */
-    static async parse(schemaItem, path) {
+    static async parse(schemaItem, path, context = ParseContext.DESIGNER) {
         schemaItem.type ||= "text";
         return super.parse(TEMPLATE.trim(), schemaItem, path);
     }
