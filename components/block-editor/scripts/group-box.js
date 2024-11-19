@@ -1,5 +1,6 @@
 import { add } from "./utils/positions.js";
 import {ValidationResult} from "../../../src/schema/validation-result.js";
+import {getPathParts} from "./utils/get-path.js";
 
 const template = `
 <group-box-widget tabindex="0">
@@ -19,9 +20,7 @@ export async function createInstance(targetElement, args, position, widgetId, sc
 
     // Append the instance to the target element
     const path = add(instance.firstElementChild, targetElement, position);
-    const pathParts = path.split("/");
-    const id = pathParts.pop().slice(1);
-    const parentPath = pathParts.join("/");
+    const {id, parentPath} = getPathParts(path);
 
     let result = await crsbinding.events.emitter.emit("schema-actions", {
         action: "create",
