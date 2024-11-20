@@ -125,6 +125,10 @@
         overflow: auto;
     }
 
+    :host([data-format="true"]) ::slotted([slot="body"]) {
+        white-space: pre-wrap;
+    }
+    
     button.icon {
         font-size: 1.2rem;
     }
@@ -159,6 +163,10 @@
         border-top-right-radius: 0;
     }
 
+    :host([data-allow-move="true"]:not(.popout)) header:hover {
+        cursor: move;
+    }
+
     @media screen and (max-width: 480px) {
         .popup{
             min-width: 99%;
@@ -169,13 +177,13 @@
 <div class="popup">
     <header id="header-content">
         <h2 id="headerText">&{dialog.title}</h2>
-        <button class="icon transparent" id="btnPopout" data-action="popout" aria-label="&{dialog.popout}">
+        <button class="icon transparent" id="btnPopout" data-action="popout" aria-label="&{dialog.popout}" data-ignore="true">
             vertical-align-top
         </button>
-        <button class="icon transparent" id="btnResize" data-action="resize" aria-label="&{dialog.resize}">
+        <button class="icon transparent" id="btnResize" data-action="resize" aria-label="&{dialog.resize}" data-ignore="true">
             open-fullscreen
         </button>
-        <button class="icon transparent" id="btnClose" data-action="close" aria-label="&{dialog.close}">close</button>
+        <button class="icon transparent" id="btnClose" data-action="close" aria-label="&{dialog.close}" data-ignore="true">close</button>
     </header>
 
     <slot name="body" id="body"></slot>

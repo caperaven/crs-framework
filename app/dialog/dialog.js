@@ -115,8 +115,9 @@ export default class Dialog extends crsbinding.classes.ViewBase {
 
         await crs.call("dialog", "show", {
             title: "My Title",
-            main: "Test",
+            main: "Preparation and Safety Measures\n1.\tGather Tools and Equipment:\n     •\tTools: Adjustable wrench, screw",
             header: headerTemplate.content.cloneNode(true),
+            allow_formatting: true,
             parent: "main",
             allow_move: false
         });

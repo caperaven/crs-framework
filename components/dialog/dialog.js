@@ -201,7 +201,8 @@ export class Dialog extends HTMLElement {
 
         this.dataset.allowMove = options?.allowMove === true ? "true" : "false";
         this.dataset.allowResize = options?.allowResize === true ? "true" : "false";
-        this.dataset.allowPopout = options?.allowPopout === true ? "true" : "false";
+        this.dataset.allowPopout = options?.allowPopout === true ? "true" : "false";// Todo: cml simplify please - this is not needed
+        this.dataset.format = options?.allowFormatting;
 
         if (options?.autoClose === true) {
             const backLayer = await crs.call("dom", "create_element", {
@@ -299,6 +300,7 @@ export class Dialog extends HTMLElement {
         footerElement.innerHTML = "";
 
         if (footer != null) {
+            this.dataset.hasFooter = "true";
             footerElement.appendChild(footer);
         }
     }
