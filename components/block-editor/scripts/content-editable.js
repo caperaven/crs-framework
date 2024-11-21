@@ -8,3 +8,7 @@ export async function createInstance(targetElement, args, position, widgetId, sc
 
     add(element, targetElement, position);
 }
+
+export async function updateContent(targetElement, value) {
+
+}

@@ -1,6 +1,6 @@
-<mxfile host="drawio-plugin" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36" modified="2024-11-20T11:56:35.451Z" etag="5p_zPGMw0HO5XkawMCy8" version="22.1.22" type="embed" pages="2">
-  <diagram name="Page-1" id="u7fCBuFuwawOaGfROQs2">
-    <mxGraphModel dx="2159" dy="715" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+<mxfile host="drawio-plugin" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36" modified="2024-11-21T10:18:57.577Z" etag="iI6vggkedL3JCUZZJL7q" version="22.1.22" type="embed" pages="2">
+  <diagram name="Overview" id="u7fCBuFuwawOaGfROQs2">
+    <mxGraphModel dx="1705" dy="715" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -10,9 +10,11 @@
         <mxCell id="Xy9IVaUKgZ3eL9J5kQbr-7" value="Widgets Library" style="rounded=1;whiteSpace=wrap;html=1;fontSize=14;" parent="1" vertex="1">
           <mxGeometry x="-220" y="300" width="120" height="250" as="geometry" />
         </mxCell>
-        <mxCell id="Xy9IVaUKgZ3eL9J5kQbr-8" value="Properties Panel" style="rounded=1;whiteSpace=wrap;html=1;fontSize=14;" parent="1" vertex="1">
-          <mxGeometry x="410" y="290" width="120" height="250" as="geometry" />
-        </mxCell>
+        <UserObject label="Properties Panel" link="data:page/id,0ihLsPIYWbKLXdbEwOvx" id="Xy9IVaUKgZ3eL9J5kQbr-8">
+          <mxCell style="rounded=1;whiteSpace=wrap;html=1;fontSize=14;" parent="1" vertex="1">
+            <mxGeometry x="410" y="290" width="120" height="250" as="geometry" />
+          </mxCell>
+        </UserObject>
         <mxCell id="Xy9IVaUKgZ3eL9J5kQbr-11" value="Drag and Drop Manager" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=14;" parent="1" vertex="1">
           <mxGeometry x="-90" y="370" width="170" height="30" as="geometry" />
         </mxCell>
@@ -43,7 +45,7 @@
         <mxCell id="Xy9IVaUKgZ3eL9J5kQbr-22" value="(B)" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=18;" parent="1" vertex="1">
           <mxGeometry x="-370" y="827" width="50" height="40" as="geometry" />
         </mxCell>
-        <mxCell id="Xy9IVaUKgZ3eL9J5kQbr-23" value="Widget Script" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;fontSize=14;" parent="1" vertex="1">
+        <mxCell id="Xy9IVaUKgZ3eL9J5kQbr-23" value="Widget Script" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;fontSize=14;fillColor=#f8cecc;strokeColor=#b85450;" parent="1" vertex="1">
           <mxGeometry x="-65" y="580" width="120" height="80" as="geometry" />
         </mxCell>
         <mxCell id="Xy9IVaUKgZ3eL9J5kQbr-24" value="" style="endArrow=classic;html=1;rounded=0;" parent="1" edge="1">
@@ -76,9 +78,11 @@
             <mxPoint x="150" y="680" as="targetPoint" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="Xy9IVaUKgZ3eL9J5kQbr-34" value="widget library" style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;fontSize=14;" parent="1" vertex="1">
-          <mxGeometry x="-440" y="375" width="120" height="80" as="geometry" />
-        </mxCell>
+        <UserObject label="widget library" link="data:page/id,ryu5bb1vuOoyrX2os-yA" id="Xy9IVaUKgZ3eL9J5kQbr-34">
+          <mxCell style="shape=document;whiteSpace=wrap;html=1;boundedLbl=1;fontSize=14;" parent="1" vertex="1">
+            <mxGeometry x="-440" y="375" width="120" height="80" as="geometry" />
+          </mxCell>
+        </UserObject>
         <mxCell id="Xy9IVaUKgZ3eL9J5kQbr-36" value="" style="endArrow=classic;html=1;rounded=0;" parent="1" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
             <mxPoint x="-300" y="410" as="sourcePoint" />
@@ -125,7 +129,7 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="Xy9IVaUKgZ3eL9J5kQbr-48" value="Each widget script on block editor should have schema provider" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=14;" parent="1" vertex="1">
-          <mxGeometry x="80" y="580" width="420" height="30" as="geometry" />
+          <mxGeometry x="280" y="620" width="420" height="30" as="geometry" />
         </mxCell>
         <mxCell id="Xy9IVaUKgZ3eL9J5kQbr-49" value="Pub Sub" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=14;" parent="1" vertex="1">
           <mxGeometry x="84" y="610" width="80" height="30" as="geometry" />
@@ -136,14 +140,77 @@
         <mxCell id="Xy9IVaUKgZ3eL9J5kQbr-51" value="On focusing a widget update the properties panel using pubsub" style="text;html=1;align=left;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=16;" parent="1" vertex="1">
           <mxGeometry x="-360" y="980" width="470" height="30" as="geometry" />
         </mxCell>
+        <mxCell id="2" value="" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.888;exitDx=0;exitDy=0;exitPerimeter=0;" parent="1" source="Xy9IVaUKgZ3eL9J5kQbr-8" edge="1">
+          <mxGeometry width="50" height="50" relative="1" as="geometry">
+            <mxPoint x="140" y="520" as="sourcePoint" />
+            <mxPoint x="70" y="590" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="360" y="580" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
-  <diagram id="ryu5bb1vuOoyrX2os-yA" name="Page-2">
-    <mxGraphModel dx="1332" dy="715" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+  <diagram id="0ihLsPIYWbKLXdbEwOvx" name="Properties Panel Updates">
+    <mxGraphModel dx="878" dy="715" grid="1" gridSize="13" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
+        <mxCell id="-vpCrYDofsnJhGPYV3py-3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="-vpCrYDofsnJhGPYV3py-1" target="-vpCrYDofsnJhGPYV3py-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="-vpCrYDofsnJhGPYV3py-1" value="Properties Panel" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="70" y="70" width="120" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="-vpCrYDofsnJhGPYV3py-5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="-vpCrYDofsnJhGPYV3py-2" target="-vpCrYDofsnJhGPYV3py-4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="-vpCrYDofsnJhGPYV3py-7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="-vpCrYDofsnJhGPYV3py-2" target="-vpCrYDofsnJhGPYV3py-6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="-vpCrYDofsnJhGPYV3py-2" value="Widget Script" style="whiteSpace=wrap;html=1;rounded=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="70" y="290" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="-vpCrYDofsnJhGPYV3py-4" value="Update Canvas" style="whiteSpace=wrap;html=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="70" y="400" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="-vpCrYDofsnJhGPYV3py-9" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="-vpCrYDofsnJhGPYV3py-6" target="-vpCrYDofsnJhGPYV3py-8">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="-vpCrYDofsnJhGPYV3py-6" value="Update Schema Manager" style="whiteSpace=wrap;html=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="230" y="290" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="-vpCrYDofsnJhGPYV3py-11" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="-vpCrYDofsnJhGPYV3py-8" target="-vpCrYDofsnJhGPYV3py-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="-vpCrYDofsnJhGPYV3py-8" value="Schema Provider" style="whiteSpace=wrap;html=1;rounded=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+          <mxGeometry x="390" y="290" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="-vpCrYDofsnJhGPYV3py-10" value="Manager" style="whiteSpace=wrap;html=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="550" y="290" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="-vpCrYDofsnJhGPYV3py-12" value="API" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;" vertex="1" parent="1">
+          <mxGeometry x="260" y="240" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="-vpCrYDofsnJhGPYV3py-14" value="UI Provider" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;" vertex="1" parent="1">
+          <mxGeometry x="387" y="240" width="126" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="-vpCrYDofsnJhGPYV3py-15" value="Manager" style="whiteSpace=wrap;html=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="563" y="303" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="-vpCrYDofsnJhGPYV3py-16" value="Manager" style="whiteSpace=wrap;html=1;rounded=1;" vertex="1" parent="1">
+          <mxGeometry x="576" y="316" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="-vpCrYDofsnJhGPYV3py-17" value="Schema Managers" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;" vertex="1" parent="1">
+          <mxGeometry x="544" y="240" width="126" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="-vpCrYDofsnJhGPYV3py-18" value="On Update Property" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;" vertex="1" parent="1">
+          <mxGeometry x="221" y="104" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="-vpCrYDofsnJhGPYV3py-19" value="&lt;h1&gt;Description&lt;/h1&gt;&lt;p style=&quot;font-size: 18px;&quot;&gt;When a value is changed on the properties panel.&lt;br&gt;1. Properties component informs the widget script of the change&lt;br&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;2. The widget script updates the canvas (DOM) with required changes&lt;br&gt;3. The widget script delegates the schema changes to the schema manager&lt;br&gt;4. The schema manager identifies the correct provider to make the changes and delegates the changes to the provider.&lt;br&gt;5. The schema provider makes the required schema changes on the given path&lt;br&gt;6. The schema provider&amp;nbsp; asks the relevant managers to make the required updates&lt;/span&gt;&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="13" y="520" width="1001" height="325" as="geometry" />
+        </mxCell>
       </root>
     </mxGraphModel>
   </diagram>
