@@ -44,7 +44,7 @@ export class VariablesManager {
      * @param schemaId {string} - schema id to update
      * @param path {string} - schema path syntax assuming variables is the root object
      * @param value {any} - value to set
-     * @returns {Promise<{type: string}>}
+     * @returns {Promise<ValidationResult>}
      *
      * @example
      * VariablesManager.create(schema, "person/firstName", "John");
@@ -60,29 +60,29 @@ export class VariablesManager {
         return ValidationResult.success("success", path);
     }
 
-    async update(schema, path, value) {
+    async update(schemaId, path, value) {
         return ValidationResult.success("success", path);
     }
 
     /**
      * @method get
      * @description get a variable from the "variables" root object
-     * @param schema {Object} - schema to update
+     * @param schemaId {string} - schema id to update
      * @param path {string} - schema path syntax assuming variables is the root object
-     * @returns {Promise<void>}
+     * @returns {Promise<ValidationResult>}
      */
-    async get(schema, path) {
+    async get(schemaId, path) {
         return ValidationResult.success("success", path);
     }
 
     /**
      * @method delete
      * @description delete a variable from the "variables" root object
-     * @param schema {Object} - schema to update
+     * @param schemaId {string} - schema id to update
      * @param path {string} - schema path syntax assuming variables is the root object
-     * @returns {Promise<void>}
+     * @returns {Promise<ValidationResult>}
      */
-    async delete(schema, path) {
+    async delete(schemaId, path) {
         // 1. how many items are using this variable?
         // 2. if more than one item is using the variable, then we can't delete it
 
@@ -92,11 +92,16 @@ export class VariablesManager {
     /**
      * @method clean
      * @description remove all variables from the "variables" dictionary if it is not used in the schema.
-     * @param schema
-     * @returns {Promise<void>}
+     * @param schemaId {string} - schema id to update
+     * @returns {Promise<ValidationResult>}
      */
-    async clean(schema) {
+    async clean(schemaId) {
+        return ValidationResult.success("success", schemaId);
+    }
 
+
+    async validate(schemaId) {
+        return ValidationResult.success("success", schemaId);
     }
 }
 
