@@ -46,6 +46,7 @@ describe("VariablesManager", () => {
 
         const result = variablesManager.get("schema1", "@person.firstName");
         assertEquals(result.message, undefined);
+        assertEquals(schema.variables, {});
     });
 
     it("VariablesManager.clean", async () => {

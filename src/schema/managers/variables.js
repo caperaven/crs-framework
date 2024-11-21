@@ -166,13 +166,19 @@ function setValueOnPath(obj, path, value) {
 
 function deleteValueOnPath(obj, path) {
     const property = path.pop();
+    let targetObj = obj;
 
     for (let i = 0; i < path.length; i++) {
         const key = path[i];
-        obj = obj[key];
+        targetObj = targetObj[key];
     }
 
-    delete obj[property];
+    delete targetObj[property];
+
+    // if the object is empty, remove the key
+    if (Object.keys(targetObj).length === 0 && path.length > 0) {
+        deleteValueOnPath(obj, path);
+    }
 }
 
 
