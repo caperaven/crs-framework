@@ -67,7 +67,7 @@ export class VariablesManager {
     }
 
     async update(schemaId, path, value) {
-        return ValidationResult.success("success", path);
+        return this.create(schemaId, path, value);
     }
 
     /**
@@ -78,7 +78,14 @@ export class VariablesManager {
      * @returns {Promise<ValidationResult>}
      */
     async get(schemaId, path) {
-        return ValidationResult.success("success", path);
+        const pathArray = pathToArray(path);
+        const schema = await getSchema(schemaId);
+
+        schema.variables ||= {};
+
+        const value = getValueOnPath(schema.variables, pathArray);
+
+        return ValidationResult.success(value, path);
     }
 
     /**
@@ -89,8 +96,12 @@ export class VariablesManager {
      * @returns {Promise<ValidationResult>}
      */
     async delete(schemaId, path) {
-        // 1. how many items are using this variable?
-        // 2. if more than one item is using the variable, then we can't delete it
+        const pathArray = pathToArray(path);
+        const schema = await getSchema(schemaId);
+
+        schema.variables ||= {};
+
+        deleteValueOnPath(schema.variables, pathArray);
 
         return ValidationResult.success("success", path);
     }
@@ -128,6 +139,17 @@ async function getSchema(schemaId) {
 }
 
 function getValueOnPath(obj, path) {
+    for (let i = 0; i < path.length; i++) {
+        const key = path[i];
+
+        if (obj.hasOwnProperty(key) === false) {
+            return null;
+        }
+
+        obj = obj[key];
+    }
+
+    return obj;
 }
 
 function setValueOnPath(obj, path, value) {
@@ -143,6 +165,14 @@ function setValueOnPath(obj, path, value) {
 }
 
 function deleteValueOnPath(obj, path) {
+    const property = path.pop();
+
+    for (let i = 0; i < path.length; i++) {
+        const key = path[i];
+        obj = obj[key];
+    }
+
+    delete obj[property];
 }
 
 

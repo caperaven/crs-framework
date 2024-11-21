@@ -2,47 +2,60 @@ import { VariablesManager } from "./../../../../src/schema/managers/variables.js
 import { assertEquals } from "https://deno.land/std/testing/asserts.ts";
 import {SchemaManager} from "../../../../src/schema/schema-manager.js";
 import {init} from "./../../../mockups/init.js";
+import { beforeAll, afterAll, afterEach, describe, it} from "https://deno.land/std@0.157.0/testing/bdd.ts";
 
 await init();
 
-Deno.test("VariablesManager.create", async () => {
-    const manager = new VariablesManager();
-    const schemaManager = new SchemaManager();
-    const schema = {};
+let schemaManager;
+let schema = {};
+let variablesManager;
 
+beforeAll(() => {
+    variablesManager = new VariablesManager();
+    schemaManager = new SchemaManager();
     schemaManager.registerSchema("schema1", schema);
+})
 
-    const result = await manager.create("schema1", "@person.firstName", "John");
-    assertEquals(result.message, "success");
-    assertEquals(schema.variables.person.firstName, "John");
+afterAll(() => {
+    schemaManager.unregisterSchema("schema1");
+    schemaManager = schemaManager.dispose();
 });
 
-Deno.test("VariablesManager.update", async () => {
-    const manager = new VariablesManager();
-    const result = await manager.update("schema1", "@person.firstName", "Doe");
-    assertEquals(result.message, "success");
+describe("VariablesManager", () => {
+    it("VariablesManager.create", async () => {
+        const result = await variablesManager.create("schema1", "@person.firstName", "John");
+        assertEquals(result.message, "success");
+        assertEquals(schema.variables.person.firstName, "John");
+    });
+
+    it("VariablesManager.update", async () => {
+        const result = await variablesManager.update("schema1", "@person.firstName", "Jane");
+        assertEquals(result.message, "success");
+        assertEquals(schema.variables.person.firstName, "Jane");
+    });
+
+    it("VariablesManager.get", async () => {
+        await variablesManager.create("schema1", "@person.firstName", "Chris");
+        const result = await variablesManager.get("schema1", "@person.firstName");
+        assertEquals(result.message, "Chris");
+    });
+
+    it("VariablesManager.delete", async () => {
+        await variablesManager.create("schema1", "@person.firstName", "Chris");
+        await variablesManager.delete("schema1", "@person.firstName");
+
+        const result = variablesManager.get("schema1", "@person.firstName");
+        assertEquals(result.message, undefined);
+    });
+
+    it("VariablesManager.clean", async () => {
+        const result = await variablesManager.clean("schema1");
+        assertEquals(result.message, "success");
+    });
+
+    it("VariablesManager.validate", async () => {
+        const result = await variablesManager.validate("schema1");
+        assertEquals(result.message, "success");
+    });
 });
 
-Deno.test("VariablesManager.get", async () => {
-    const manager = new VariablesManager();
-    const result = await manager.get("schema1", "@person.firstName");
-    assertEquals(result.message, "success");
-});
-
-Deno.test("VariablesManager.delete", async () => {
-    const manager = new VariablesManager();
-    const result = await manager.delete("schema1", "@person.firstName");
-    assertEquals(result.message, "success");
-});
-
-Deno.test("VariablesManager.clean", async () => {
-    const manager = new VariablesManager();
-    const result = await manager.clean("schema1");
-    assertEquals(result.message, "success");
-});
-
-Deno.test("VariablesManager.validate", async () => {
-    const manager = new VariablesManager();
-    const result = await manager.validate("schema1");
-    assertEquals(result.message, "success");
-});
