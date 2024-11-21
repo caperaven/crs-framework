@@ -1,23 +1,20 @@
 import { VariablesManager } from "./../../../../src/schema/managers/variables.js";
 import { assertEquals } from "https://deno.land/std/testing/asserts.ts";
+import {SchemaManager} from "../../../../src/schema/schema-manager.js";
+import {init} from "./../../../mockups/init.js";
 
-globalThis.crsbinding = {
-    events: {
-        emitter: {
-            on: () => {
-                return new Promise(resolve => resolve())
-            },
-            remove: () => {
-                return new Promise(resolve => resolve())
-            },
-        }
-    }
-}
+await init();
 
 Deno.test("VariablesManager.create", async () => {
     const manager = new VariablesManager();
+    const schemaManager = new SchemaManager();
+    const schema = {};
+
+    schemaManager.registerSchema("schema1", schema);
+
     const result = await manager.create("schema1", "@person.firstName", "John");
     assertEquals(result.message, "success");
+    assertEquals(schema.variables.person.firstName, "John");
 });
 
 Deno.test("VariablesManager.update", async () => {

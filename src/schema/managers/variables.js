@@ -31,11 +31,9 @@ export class VariablesManager {
     }
 
     async #onEvent(event) {
-        const translation = await crsbinding.events.emitter.emit("variables", {
-            "schemaId": "my_schema",
-            "action": "get",
-            "args": [schemaId, "@person.firstName"]
-        })
+        if (this[event.action] != null) {
+            return this[event.action](...event.args ?? []);
+        }
     }
 
     /**
@@ -47,7 +45,7 @@ export class VariablesManager {
      * @returns {Promise<ValidationResult>}
      *
      * @example
-     * VariablesManager.create(schema, "person/firstName", "John");
+     * VariablesManager.create(schema, "@person/firstName", "John");
      * Will result in
      *
      * {
@@ -56,7 +54,15 @@ export class VariablesManager {
      *     }
      * }
      */
-    async create(schemaId, path, value) {
+    async create(schemaId, path, value)
+    {
+        const pathArray = pathToArray(path);
+        const schema = await getSchema(schemaId);
+
+        schema.variables ||= {};
+
+        setValueOnPath(schema.variables, pathArray, value);
+
         return ValidationResult.success("success", path);
     }
 
@@ -104,4 +110,39 @@ export class VariablesManager {
         return ValidationResult.success("success", schemaId);
     }
 }
+
+function pathToArray(path) {
+    if (path.startsWith("@")) {
+        path = path.slice(1);
+    }
+
+    if (path.indexOf("/") !== -1) {
+        return path.split("/");
+    }
+
+    return path.split(".");
+}
+
+async function getSchema(schemaId) {
+    return await crsbinding.events.emitter.emit("schema-actions", { action: "get", args: [schemaId] });
+}
+
+function getValueOnPath(obj, path) {
+}
+
+function setValueOnPath(obj, path, value) {
+    const propertyName = path.pop();
+
+    for (let i = 0; i < path.length; i++) {
+        const key = path[i];
+        obj[key] ||= {};
+        obj = obj[key];
+    }
+
+    obj[propertyName] = value;
+}
+
+function deleteValueOnPath(obj, path) {
+}
+
 
