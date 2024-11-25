@@ -125,8 +125,9 @@ export class VariablesManager {
         const schemaText = JSON.stringify(schema);
         const hasUnused = hasUnusedVariable(schema.variables, schemaText, "@");
 
-        if (hasUnused === true) {
-            return ValidationResult.warning("Unused variables found", schemaId);
+        if (hasUnused !== false) {
+            const message = `Unused variable found: "${hasUnused}"`;
+            return ValidationResult.warning(message, schemaId);
         }
 
         return ValidationResult.success("success", schemaId);
@@ -218,7 +219,7 @@ function hasUnusedVariable(obj, schemaText, prefix) {
         const path = `${prefix}${key}`;
 
         if (schemaText.indexOf(path) === -1) {
-            return true;
+            return path;
         }
         else {
             if (typeof obj[key] === "object") {

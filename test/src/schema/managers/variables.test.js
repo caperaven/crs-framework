@@ -76,6 +76,7 @@ describe("VariablesManager", () => {
         await variablesManager.create("schema1", "@value", 10);
         const result = await variablesManager.validate("schema1");
         assert(ValidationResult.isWarning(result));
+        assertEquals(result.message, `Unused variable found: "@value"`);
     });
 });
 
