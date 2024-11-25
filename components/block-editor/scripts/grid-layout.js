@@ -10,6 +10,11 @@ export async function createInstance(targetElement, args, position, widgetId, sc
 
     await CssGridModule.apply({ data, element });
     const path = add(element, targetElement, position);
+
+    for (const child of element.children) {
+        child.dataset.path = `${path}/#${child.id}`;
+    }
+
     await addToSchema(data, path, schemaId, widgetId, element.children);
 }
 
