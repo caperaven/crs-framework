@@ -7,7 +7,16 @@ import { beforeAll, afterAll, afterEach, describe, it} from "https://deno.land/s
 await init();
 
 let schemaManager;
-let schema = {};
+let schema = {
+    body: {
+        elements: [
+            {
+                "element": "input",
+                "title": "@person.firstName"
+            }
+        ]
+    }
+};
 let variablesManager;
 
 beforeAll(() => {
@@ -50,8 +59,16 @@ describe("VariablesManager", () => {
     });
 
     it("VariablesManager.clean", async () => {
-        const result = await variablesManager.clean("schema1");
-        assertEquals(result.message, "success");
+        await variablesManager.create("schema1", "@value", 10);
+        await variablesManager.create("schema1", "@person.firstName", "Pete");
+        await variablesManager.create("schema1", "@person.firstName1", "John");
+        await variablesManager.create("schema1", "@person.firstName2", "Jane");
+        await variablesManager.create("schema1", "@person.firstNam3", "Chris");
+
+        await variablesManager.clean("schema1");
+        assertEquals(schema.variables, {
+            person: { firstName: "Pete" }
+        });
     });
 
     it("VariablesManager.validate", async () => {

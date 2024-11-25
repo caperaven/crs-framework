@@ -113,9 +113,12 @@ export class VariablesManager {
      * @returns {Promise<ValidationResult>}
      */
     async clean(schemaId) {
+        const schema = await getSchema(schemaId);
+        const schemaText = JSON.stringify(schema);
+
+        clear(schema.variables, schemaText, "@");
         return ValidationResult.success("success", schemaId);
     }
-
 
     async validate(schemaId) {
         return ValidationResult.success("success", schemaId);
@@ -178,6 +181,24 @@ function deleteValueOnPath(obj, path) {
     // if the object is empty, remove the key
     if (Object.keys(targetObj).length === 0 && path.length > 0) {
         deleteValueOnPath(obj, path);
+    }
+}
+
+function clear(obj, schemaText, prefix) {
+    const keys = Object.keys(obj);
+
+    for (let i = 0; i < keys.length; i++) {
+        const key = keys[i];
+        const path = `${prefix}${key}`;
+
+        if (schemaText.indexOf(path) === -1) {
+            delete obj[key];
+        }
+        else {
+            if (typeof obj[key] === "object") {
+                clear(obj[key], schemaText, `${path}.`);
+            }
+        }
     }
 }
 
