@@ -120,6 +120,12 @@ export class VariablesManager {
         return ValidationResult.success("success", schemaId);
     }
 
+    /**
+     * @method validate
+     * @description validate the schema for unused variables
+     * @param schemaId {string} - schema id to validate
+     * @returns {Promise<{type: string}|Readonly<{path: string, type: string, message}>>}
+     */
     async validate(schemaId) {
         const schema = await getSchema(schemaId);
         const schemaText = JSON.stringify(schema);
