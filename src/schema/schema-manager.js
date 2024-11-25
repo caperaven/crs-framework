@@ -251,7 +251,7 @@ export class SchemaManager {
      * @returns {ValidationResult} True if the schema is valid, false otherwise.
      */
     create(schemaId, path, schemaItem) {
-        const provider = this.#providers[schemaItem.element];
+        const provider = this.#providers[schemaItem.element] ?? this.#providers["raw"];
         const schemaJson = this.#schemas[schemaId];
         return provider.create(schemaJson, path, schemaItem);
     }
