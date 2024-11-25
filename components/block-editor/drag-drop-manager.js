@@ -22,7 +22,7 @@ const IGNORE_DROP_ELEMENTS = ["block-widgets", "dialog-component"];
  * @class DragDropManager
  * @description Manages the drag and drop operations.
  */
-export class DragDropManager {
+export class DragDropManager extends EventTarget {
     #mouseDownHandler = this.#mouseDown.bind(this);
     #mouseMoveHandler = this.#mouseMove.bind(this);
     #mouseUpHandler = this.#mouseUp.bind(this);
@@ -41,6 +41,7 @@ export class DragDropManager {
     #schemaId;
 
     constructor(schemaId) {
+        super();
         this.#schemaId = schemaId;
         document.addEventListener("mousedown", this.#mouseDownHandler);
     }
@@ -175,6 +176,8 @@ export class DragDropManager {
         const action = script["createInstance"];
 
         await action(target, args, this.#currentPosition, this.#dropWidgetId, this.#schemaId);
+
+        this.dispatchEvent(new CustomEvent("update"));
     }
 
     /**

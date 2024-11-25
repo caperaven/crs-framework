@@ -36,3 +36,7 @@ crs-router toolbar {
     flex-direction: row;
     margin: 0.5rem;
 }
+
+crs-router pre {
+    overflow: auto;
+}
