@@ -1,8 +1,9 @@
 import { VariablesManager } from "./../../../../src/schema/managers/variables.js";
-import { assertEquals } from "https://deno.land/std/testing/asserts.ts";
+import { assertEquals, assert } from "https://deno.land/std/testing/asserts.ts";
 import {SchemaManager} from "../../../../src/schema/schema-manager.js";
 import {init} from "./../../../mockups/init.js";
 import { beforeAll, afterAll, afterEach, describe, it} from "https://deno.land/std@0.157.0/testing/bdd.ts";
+import {ValidationResult} from "../../../../src/schema/validation-result.js";
 
 await init();
 
@@ -71,9 +72,10 @@ describe("VariablesManager", () => {
         });
     });
 
-    it("VariablesManager.validate", async () => {
+    it("VariablesManager.validate - has unused variables", async () => {
+        await variablesManager.create("schema1", "@value", 10);
         const result = await variablesManager.validate("schema1");
-        assertEquals(result.message, "success");
+        assert(ValidationResult.isWarning(result));
     });
 });
 

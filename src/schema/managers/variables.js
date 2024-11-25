@@ -121,6 +121,14 @@ export class VariablesManager {
     }
 
     async validate(schemaId) {
+        const schema = await getSchema(schemaId);
+        const schemaText = JSON.stringify(schema);
+        const hasUnused = hasUnusedVariable(schema.variables, schemaText, "@");
+
+        if (hasUnused === true) {
+            return ValidationResult.warning("Unused variables found", schemaId);
+        }
+
         return ValidationResult.success("success", schemaId);
     }
 }
@@ -200,6 +208,26 @@ function clear(obj, schemaText, prefix) {
             }
         }
     }
+}
+
+function hasUnusedVariable(obj, schemaText, prefix) {
+    const keys = Object.keys(obj);
+
+    for (let i = 0; i < keys.length; i++) {
+        const key = keys[i];
+        const path = `${prefix}${key}`;
+
+        if (schemaText.indexOf(path) === -1) {
+            return true;
+        }
+        else {
+            if (typeof obj[key] === "object") {
+                clear(obj[key], schemaText, `${path}.`);
+            }
+        }
+    }
+
+    return false;
 }
 
 
