@@ -12,8 +12,12 @@ export function getParentPath(parentElement) {
 
 export function getPathParts(path) {
     const pathParts = path.split("/");
-    const id = pathParts.pop();
+    let id = pathParts.pop();
     const parentPath = pathParts.join("/");
+
+    if (id.startsWith("#")) {
+        id = id.substring(1);
+    }
 
     return { id, parentPath }
 }

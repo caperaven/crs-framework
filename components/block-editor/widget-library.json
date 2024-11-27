@@ -21,7 +21,7 @@
             "properties": "grid-layout",
             "icon": "two-column.svg",
             "category": "layout",
-            "keywords": ["layout", "two", "columns"]
+            "keywords": ["layout", "two", "columns", "container"]
         },
         {
             "id": "two-row-layout",
