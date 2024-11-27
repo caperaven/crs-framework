@@ -361,6 +361,7 @@ async function fillGrid(element, data) {
             const cell = div.cloneNode();
             cell.dataset.code = `${String.fromCharCode(65 + j)}${i}`;
             cell.style.gridArea = cell.dataset.code;
+            cell.dataset.path
             element.appendChild(cell);
         }
     }

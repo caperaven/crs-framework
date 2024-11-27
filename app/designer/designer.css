@@ -3,11 +3,16 @@
 
 crs-router {
     display: grid;
-    grid-template-rows: auto auto 1fr;
+    grid-template-columns: 1fr 300px 300px;
 }
 
 crs-router h2 {
     color: blue;
+}
+
+crs-router .column1 {
+    display: grid;
+    grid-template-rows: auto auto 1fr;
 }
 
 crs-router .canvas {
@@ -20,11 +25,18 @@ crs-router [data-code] {
 
 crs-router block-properties {
     display: block;
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: 200px;
     border: 1px solid silver;
     background: white;
+    width: 100%;
+    height: 100%;
+}
+
+crs-router toolbar {
+    display: flex;
+    flex-direction: row;
+    margin: 0.5rem;
+}
+
+crs-router pre {
+    overflow: auto;
 }

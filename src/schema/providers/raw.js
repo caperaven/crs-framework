@@ -1,10 +1,11 @@
 import { ValidationResult } from "./../validation-result.js";
+import {BaseProvider} from "./base-provider.js";
 
 const TEMPLATE = `
     <__tag__ __attributes__ __classes__ __styles__>__content__</__tag__>
 `
 
-export class RawProvider {
+export class RawProvider extends BaseProvider {
     static key = Object.freeze("raw");
 
     /**
@@ -33,49 +34,37 @@ export class RawProvider {
     /**
      * @method create
      * @description This method is responsible for creating a new element in the schema for a given path.
-     * @param schemaItem {Object} The schema
+     * @param schema {Object} The schema
      * @param path {String} The path of the schema part
-     * @param element {Object} The element to create
+     * @param data {Object} The element to create
      * @returns {ValidationResult} True if the schema is valid, false otherwise.
      */
-    static async create(schemaItem, path, element) {
-        // 1. create the element in the schema
-        // 2. validate the schema item
-
-        return ValidationResult.success("success", path);
+    static async create(schema, path, data) {
+        return super.create(schema, path, data);
     }
 
     /**
      * @method update
      * @description This method is responsible for updating an existing element in the schema for a given path.
-     * @param schemaItem {Object} The schema
+     * @param schema {Object} The schema
      * @param path {String} The path of the schema part
-     * @param element {Object} The element to update
+     * @param data {Object} The element to update
      * @returns {ValidationResult} True if the schema is valid, false otherwise.
      */
-    static async update(schemaItem, path, element) {
-        // 1. update the element in the schema
-        // 2. validate the schema item
-        // 3. validate affected managers also e.g. if you add a grid column, make sure the datasource has the same column
-
-        return ValidationResult.success("success", path);
+    static async update(schema, path, data) {
+        return super.update(schema, path, data);
     }
 
     /**
      * @method delete
      * @description This method is responsible for deleting an existing element in the schema for a given path.
      * It also checks for dependencies and removes them if necessary
-     * @param schemaItem {Object} The schema
+     * @param schema {Object} The schema
      * @param path {String} The path of the schema part
      * @returns {ValidationResult} True if the schema is valid, false otherwise.
      */
-    static async delete(schemaItem, path) {
-        // 1. can I clean this up?
-        // 2. if not, return an error
-        // 3. if yes, remove the element from the schema and do clean up
-        // 4. validate affected manager changes
-
-        return ValidationResult.success("success", path);
+    static async delete(schema, path) {
+        return super.delete(schema, path);
     }
 
 }

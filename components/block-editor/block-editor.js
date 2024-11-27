@@ -16,6 +16,7 @@ export class BlockEditor extends EventTarget {
     #widgetPropertiesHandler = this.#widgetProperties.bind(this);
     #dragDropManager;
     #schemaId;
+    #updateHandler = this.#update.bind(this);
 
     get ready() {
         return this.#ready;
@@ -25,12 +26,17 @@ export class BlockEditor extends EventTarget {
         super();
         this.#schemaId = schemaId;
         this.#dragDropManager = new DragDropManager(schemaId);
+        this.#dragDropManager.addEventListener("update", this.#updateHandler);
+
         this.init().catch(error => { throw new Error(error); });
     }
 
     dispose() {
         crsbinding.events.emitter.remove("getWidgetLibrary", this.#widgetLibraryHandler);
         crsbinding.events.emitter.remove("getWidgetProperties", this.#widgetPropertiesHandler);
+
+        this.#dragDropManager.removeEventListener("update", this.#updateHandler);
+        this.#updateHandler = null;
 
         this.#widgetLibraryData = null;
         this.#widgetLibraryHandler = null;
@@ -44,6 +50,10 @@ export class BlockEditor extends EventTarget {
 
         this.#ready = true;
         this.dispatchEvent(new CustomEvent("ready"));
+    }
+
+    #update() {
+        this.dispatchEvent(new CustomEvent("update"));
     }
 
     async #initEvents() {

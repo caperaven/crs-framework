@@ -1,5 +1,6 @@
 import { add } from "./utils/positions.js";
 import { CssGridModule } from "./utils/css-grid.js";
+import { getPathParts } from "./utils/get-path.js";
 
 export async function createInstance(targetElement, args, position, widgetId, schemaId) {
     const data = await CssGridModule.create(args);
@@ -9,17 +10,22 @@ export async function createInstance(targetElement, args, position, widgetId, sc
 
     await CssGridModule.apply({ data, element });
     const path = add(element, targetElement, position);
+
+    for (const child of element.children) {
+        child.dataset.path = `${path}/#${child.id}`;
+    }
+
     await addToSchema(data, path, schemaId, widgetId, element.children);
 }
 
 async function addToSchema(data, path, schemaId, widgetId, children) {
-    const pathParts = path.split("/");
-    const id = pathParts.pop();
-    const parentPath = pathParts.join("/");
+    const {id, parentPath} = getPathParts(path);
 
     data.element = "layout";
     data.id = id.slice(1);
     data.widgetId = widgetId;
+
+    // JHR: Refactor this so that it is rather on the schema manager provider's create action
     data.elements = [];
 
     for (let i = 0; i < children.length; i ++) {
@@ -38,11 +44,4 @@ async function addToSchema(data, path, schemaId, widgetId, children) {
         action: "create",
         args: [schemaId, parentPath, data]
     })
-
-    const schema = await crsbinding.events.emitter.emit("schema-actions", {
-        action: "get",
-        args: [schemaId]
-    })
-
-    console.log(schema)
 }
