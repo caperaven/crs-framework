@@ -75,10 +75,13 @@ export class BaseProvider {
         // Only if the changes validate successfully, apply them to the original object
         const copy = structuredClone(obj);
         Object.assign(copy, schemaItem);
-        const validationResult = await validateCallback(copy, path);
 
-        if (ValidationResult.isError(validationResult)) {
-            return validationResult;
+        if (validateCallback != null) {
+            const validationResult = await validateCallback(copy, path);
+
+            if (ValidationResult.isError(validationResult)) {
+                return validationResult;
+            }
         }
 
         Object.assign(obj, schemaItem);
