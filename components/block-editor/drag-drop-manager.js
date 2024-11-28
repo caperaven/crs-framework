@@ -170,6 +170,10 @@ export class DragDropManager extends EventTarget {
      * @returns {Promise<void>}
      */
     async #dropElement(target) {
+        if (target.tagName.toLowerCase() === "block-widgets") {
+            return;
+        }
+
         const {widget, script} = await crsbinding.events.emitter.emit("getWidgetLibrary", { id: this.#dropWidgetId });
 
         const args = widget.args;

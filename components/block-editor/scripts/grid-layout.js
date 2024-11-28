@@ -12,6 +12,7 @@ export async function createInstance(targetElement, args, position, widgetId, sc
     const path = add(element, targetElement, position);
 
     for (const child of element.children) {
+        child.id = crypto.randomUUID();
         child.dataset.path = `${path}/#${child.id}`;
     }
 

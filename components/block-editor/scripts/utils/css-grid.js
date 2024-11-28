@@ -339,8 +339,6 @@ async function syncGridChildren(element, data) {
     if (element.children.length === 0) {
         return await fillGrid(element, data);
     }
-
-    const lastCode = element.lastElementChild.dataset.code;
 }
 
 /**
@@ -351,7 +349,6 @@ async function syncGridChildren(element, data) {
  */
 async function fillGrid(element, data) {
     const div = document.createElement("div");
-    div.id = crypto.randomUUID();
     div.dataset.droptarget = "true";
     div.style.width = "100%";
     div.style.height = "100%";
@@ -361,7 +358,6 @@ async function fillGrid(element, data) {
             const cell = div.cloneNode();
             cell.dataset.code = `${String.fromCharCode(65 + j)}${i}`;
             cell.style.gridArea = cell.dataset.code;
-            cell.dataset.path
             element.appendChild(cell);
         }
     }
