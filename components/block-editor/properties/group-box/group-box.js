@@ -25,6 +25,27 @@ export default class GroupBox extends crsbinding.classes.BindableElement {
         this.#schemaId = schemaId;
         this.#widgetElement = widgetElement;
         this.#widgetData = widgetData;
+
+        const updateElement = this.#widgetElement.querySelector("[data-property='title']");
+        this.setProperty("title", updateElement.textContent);
+    }
+
+    async titleChanged(newValue) {
+        const updateElement = this.#widgetElement.querySelector("[data-property='title']");
+        updateElement.textContent = newValue;
+
+        const path = this.#widgetElement.dataset.path;
+
+        await crsbinding.events.emitter.emit("schema-actions", {
+            action: "update",
+            args: [this.#schemaId, path, {
+                element: this.#widgetElement.tagName.toLowerCase(),
+                title: newValue
+            }]
+        })
+
+        const hostElement = this.getRootNode().host;
+        hostElement.dispatchEvent(new CustomEvent("update"));
     }
 }
 
