@@ -13,6 +13,10 @@ export default class GroupBox extends crsbinding.classes.BindableElement {
         return import.meta.url.replace(".js", ".html")
     }
 
+    preLoad() {
+        this.setProperty("title", "Group Box");
+    }
+
     onHTML() {
         const linkElement = document.createElement("link");
         linkElement.rel = "stylesheet";

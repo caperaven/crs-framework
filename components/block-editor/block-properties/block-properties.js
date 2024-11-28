@@ -28,8 +28,10 @@ export default class BlockProperties extends crsbinding.classes.BindableElement 
         const propertiesElement = document.createElement(tagName);
         propertiesElement.setWidget(element, widget, schemaId);
 
-        this.shadowRoot.innerHTML = "";
-        this.shadowRoot.appendChild(propertiesElement);
+        requestAnimationFrame(() => {
+            this.shadowRoot.innerHTML = "";
+            this.shadowRoot.appendChild(propertiesElement);
+        })
     }
 }
 
