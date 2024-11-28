@@ -1,6 +1,7 @@
 export default class GridLayout extends crsbinding.classes.BindableElement {
     static tagName = "grid-layout-editor";
 
+    #schemaId;
     #widgetData;
     #widgetElement;
 
@@ -20,7 +21,8 @@ export default class GridLayout extends crsbinding.classes.BindableElement {
         this.shadowRoot.insertBefore(linkElement, this.shadowRoot.firstChild);
     }
 
-    setWidget(widgetElement, widgetData) {
+    setWidget(widgetElement, widgetData, schemaId) {
+        this.#schemaId = schemaId;
         this.#widgetElement = widgetElement;
         this.#widgetData = widgetData;
     }

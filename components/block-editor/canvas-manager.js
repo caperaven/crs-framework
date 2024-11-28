@@ -3,9 +3,11 @@ export class CanvasManager {
     #focusHandler = this.#focus.bind(this);
     #keyDownHandler = this.#keyDown.bind(this);
     #clickHandler = this.#click.bind(this);
+    #schemaId;
 
-    constructor(canvas) {
+    constructor(canvas, schemaId) {
         this.#canvas = canvas;
+        this.#schemaId = schemaId;
         this.#canvas.addEventListener("focusin", this.#focusHandler);
         this.#canvas.addEventListener("keydown", this.#keyDownHandler);
         this.#canvas.addEventListener("click", this.#clickHandler);
@@ -53,6 +55,7 @@ export class CanvasManager {
         for (const element of elements) {
             if (element.dataset.widgetId != null) {
                 await crsbinding.events.emitter.emit("widget-selected", {
+                    schemaId: this.#schemaId,
                     widgetId: element.dataset.widgetId,
                     element: element
                 })

@@ -1,6 +1,7 @@
 export default class ContentEditable extends crsbinding.classes.BindableElement {
     static tagName = "content-editable-editor";
 
+    #schemaId;
     #widgetData;
     #widgetElement;
 
@@ -20,15 +21,28 @@ export default class ContentEditable extends crsbinding.classes.BindableElement 
         this.shadowRoot.insertBefore(linkElement, this.shadowRoot.firstChild);
     }
 
-    setWidget(widgetElement, widgetData) {
+    setWidget(widgetElement, widgetData, schemaId) {
+        this.#schemaId = schemaId;
         this.#widgetElement = widgetElement;
         this.#widgetData = widgetData;
 
         this.setProperty("content", this.#widgetElement.textContent);
     }
 
-    contentChanged(newValue) {
+    async contentChanged(newValue) {
         this.#widgetElement.textContent = newValue;
+        const path = this.#widgetElement.dataset.path;
+
+        await crsbinding.events.emitter.emit("schema-actions", {
+            action: "update",
+            args: [this.#schemaId, path, {
+                element: this.#widgetElement.tagName.toLowerCase(),
+                content: newValue
+            }]
+        })
+
+        const hostElement = this.getRootNode().host;
+        hostElement.dispatchEvent(new CustomEvent("update"));
     }
 }
 
