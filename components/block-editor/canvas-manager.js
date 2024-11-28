@@ -51,17 +51,34 @@ export class CanvasManager {
             return;
         }
 
-        const path = target.dataset.path;
-        const tagName = target.tagName.toLowerCase();
         const value = target.textContent;
 
-        await crsbinding.events.emitter.emit("schema-actions", {
-            action: "update",
-            args: [this.#schemaId, path, {
-                element: tagName,
-                content: value
-            }]
-        })
+        if (target.dataset.property == null) {
+            const path = target.dataset.path;
+            const tagName = target.tagName.toLowerCase();
+
+            await crsbinding.events.emitter.emit("schema-actions", {
+                action: "update",
+                args: [this.#schemaId, path, {
+                    element: tagName,
+                    content: value
+                }]
+            })
+        }
+        else {
+            const widgetElement = this.#getWidgetElement(target);
+            const property = target.dataset.property;
+            const path = widgetElement.dataset.path;
+            const tagName = widgetElement.tagName.toLowerCase();
+
+            const argsOptions = { element: tagName };
+            argsOptions[property] = value;
+
+            await crsbinding.events.emitter.emit("schema-actions", {
+                action: "update",
+                args: [this.#schemaId, path, argsOptions]
+            })
+        }
     }
 
     async #click(event) {
