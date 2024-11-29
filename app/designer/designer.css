@@ -1,5 +1,6 @@
 @import "./../../components/block-editor/styles/group-box.css";
 @import "./../../components/block-editor/styles/designer-marker.css";
+@import "./../../components/block-editor/styles/tabsheet-widget.css";
 
 crs-router {
     display: grid;
