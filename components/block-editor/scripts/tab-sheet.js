@@ -10,8 +10,8 @@ const template = `
     </div>
     
     <div class="tabsheet-body">
-        <div data-id="1" data-droptarget="true" class="hidden"></div>
-        <div data-id="2" data-droptarget="true"></div>
+        <div data-id="1" data-droptarget="true"></div>
+        <div data-id="2" data-droptarget="true" class="hidden"></div>
     </div>
 </tabsheet-widget>
 `;
@@ -27,9 +27,20 @@ export async function createInstance(targetElement, args, position, widgetId, sc
 }
 
 export async function addTag(widgetElement, targetElement, widget, event) {
-
+    console.log("addTag");
 }
 
 export async function swapTab(widgetElement, targetElement, widget, event) {
+    const id = targetElement.dataset.id;
 
+    const currentElement = widgetElement.querySelector(`.tabsheet-body :not(.hidden)`);
+    currentElement.classList.add("hidden");
+
+    const selectedElement = widgetElement.querySelector(`.tabsheet-header [aria-selected='true']`);
+    selectedElement.removeAttribute("aria-selected");
+
+    const newElement = widgetElement.querySelector(`.tabsheet-body [data-id='${id}']`);
+    newElement.classList.remove("hidden");
+
+    targetElement.setAttribute("aria-selected", "true");
 }

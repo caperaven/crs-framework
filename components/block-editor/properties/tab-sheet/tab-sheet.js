@@ -14,7 +14,6 @@ export default class TabSheet extends crsbinding.classes.BindableElement {
     }
 
     preLoad() {
-        this.setProperty("title", "Group Box");
     }
 
     onHTML() {
