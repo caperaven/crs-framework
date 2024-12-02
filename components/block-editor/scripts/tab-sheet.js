@@ -1,5 +1,6 @@
 import { add } from "./utils/positions.js";
 import {ValidationResult} from "../../../src/schema/validation-result.js";
+import {getPathParts} from "./utils/get-path.js";
 
 const template = `
 <tabsheet-widget tabindex="0">
@@ -10,8 +11,8 @@ const template = `
     </div>
     
     <div class="tabsheet-body">
-        <div data-id="1" data-droptarget="true"></div>
-        <div data-id="2" data-droptarget="true" class="hidden"></div>
+        <div id="${crypto.randomUUID()}" data-id="1" data-droptarget="true"></div>
+        <div id="${crypto.randomUUID()}" data-id="2" data-droptarget="true" class="hidden"></div>
     </div>
 </tabsheet-widget>
 `;
@@ -24,6 +25,21 @@ export async function createInstance(targetElement, args, position, widgetId, sc
 
     // Append the instance to the target element
     const path = add(instance.firstElementChild, targetElement, position);
+    const {id, parentPath} = getPathParts(path);
+
+    let result = await crsbinding.events.emitter.emit("schema-actions", {
+        action: "create",
+        args: [schemaId, parentPath, {
+            "element": "tab-sheet", // need this for the provider identification
+            "id": id,
+            "widgetId": widgetId,
+            "title": "Group Box",
+        }]
+    })
+
+    if (ValidationResult.isError(result)) {
+        alert(result.message);
+    }
 }
 
 export async function addTag(widgetElement, targetElement, widget, event) {
