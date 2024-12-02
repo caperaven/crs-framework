@@ -76,9 +76,6 @@
         position: absolute;
         display: grid;
         grid-template-rows: auto 1fr auto;
-        background: var(--window);
-        border: var(--border);
-        box-shadow: var(--box-shadow);
         border-radius: var(--radius);
         resize: none;
         overflow: hidden;
@@ -86,6 +83,7 @@
         min-height: var(--min-height, 9rem);
         max-width: var(--max-width, unset);
         max-height: var(--max-height, unset);
+        padding-top: 0.3125rem;
     }
 
     .back {
@@ -123,12 +121,20 @@
     ::slotted([slot="body"]) {
         padding: var(--padding);
         overflow: auto;
+        background: var(--window);
+        border: var(--border);
+        box-shadow: var(--box-shadow);
+        border-radius: var(--radius);
+        border-top: none;
+        border-top-right-radius: 0;
+        border-top-left-radius: 0;
+        margin: 0 0.0625rem 0.0625rem 0.0625rem;
     }
 
     :host([data-format="true"]) ::slotted([slot="body"]) {
         white-space: pre-wrap;
     }
-    
+
     button.icon {
         font-size: 1.2rem;
     }
@@ -146,14 +152,26 @@
         margin-left: 0.5rem;
     }
 
-    #header-content:before {
-        content: " ";
-        top: -5px;
+    :host(.fullscreen) .popup{
+        padding-top: 0;
+    }
+
+    :host(:not(.popout):not(.fullscreen)) #header-content[data-anchor="left"]:before {
         left: 0.625rem;
+    }
+
+    :host(:not(.popout):not(.fullscreen)) #header-content[data-anchor="right"]:before {
+        right: 0.625rem;
+    }
+
+    :host(:not(.popout):not(.fullscreen)) #header-content:before {
+        content: " ";
+        top: 0.0625rem;
         rotate: 135deg;
         width: 0.5rem;
         height: 0.5rem;
-        background: var(--window);
+        /*background: var(--window);*/
+        background: red;
         position: absolute;
         border-bottom: var(--border);
         border-left: var(--border);
@@ -163,8 +181,33 @@
         border-top-right-radius: 0;
     }
 
+    header {
+        background: var(--window);
+        border: var(--border);
+        box-shadow: var(--box-shadow);
+        border-radius: var(--radius);
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+        margin: 0 0.0625rem;
+    }
+
     :host([data-allow-move="true"]:not(.popout)) header:hover {
         cursor: move;
+    }
+
+    :host([data-has-footer="true"]) ::slotted([slot="body"]) {
+        border-radius: 0;
+        margin-bottom: 0;
+    }
+
+    :host([data-has-footer="true"]) footer {
+        border: var(--border);
+        border-top: none;
+        margin: 0 0.0625rem 0.0625rem 0.0625rem;
+        background: var(--window);
+        border-bottom-left-radius: var(--radius);
+        border-bottom-right-radius: var(--radius);
+        box-shadow: var(--box-shadow);
     }
 
     @media screen and (max-width: 480px) {
@@ -173,7 +216,6 @@
         }
     }
 </style>
-
 <div class="popup">
     <header id="header-content">
         <h2 id="headerText">&{dialog.title}</h2>

@@ -247,6 +247,8 @@ export class Dialog extends HTMLElement {
             return;
         }
 
+        headerElement.dataset.anchor = options?.anchor ?? "left";
+
         if (options?.severity != null) {
             headerElement.dataset.severity = options.severity;
         }
@@ -280,7 +282,6 @@ export class Dialog extends HTMLElement {
             bodyElement.setAttribute("slot", "body");
             this.appendChild(bodyElement);
         }
-
 
         if (typeof body == "string") {
             bodyElement.textContent = body;
