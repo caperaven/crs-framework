@@ -283,8 +283,10 @@ export class SchemaManager {
      * const result = schemaManager.update(schema, "/edtFirstName", { "title": "First Name Updated" });
      */
     update(schemaId, path, assignment) {
-        const provider = this.#providers[assignment.element];
+        const provider = this.#providers[assignment.element] ?? this.#providers["raw"];
         const schemaJson = this.#schemas[schemaId];
+
+        delete assignment.element;
         return provider.update(schemaJson, path, assignment);
     }
 
@@ -303,7 +305,7 @@ export class SchemaManager {
             return ValidationResult.error(`The path ${path} does not exist in the schema.`);
         }
 
-        const provider = this.#providers[schemaItem.element];
+        const provider = this.#providers[schemaItem.element] ?? this.#providers["raw"];
         return provider.delete(schemaJson, path);
     }
 

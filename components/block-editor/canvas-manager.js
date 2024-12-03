@@ -3,12 +3,16 @@ export class CanvasManager {
     #focusHandler = this.#focus.bind(this);
     #keyDownHandler = this.#keyDown.bind(this);
     #clickHandler = this.#click.bind(this);
+    #inputHandler = this.#input.bind(this);
+    #schemaId;
 
-    constructor(canvas) {
+    constructor(canvas, schemaId) {
         this.#canvas = canvas;
+        this.#schemaId = schemaId;
         this.#canvas.addEventListener("focusin", this.#focusHandler);
         this.#canvas.addEventListener("keydown", this.#keyDownHandler);
         this.#canvas.addEventListener("click", this.#clickHandler);
+        this.#canvas.addEventListener("focusout", this.#inputHandler);
 
         globalThis.designerCanvasRect = this.#canvas.getBoundingClientRect();
     }
@@ -17,8 +21,14 @@ export class CanvasManager {
         this.#canvas.removeEventListener("focusin", this.#focusHandler);
         this.#canvas.removeEventListener("keydown", this.#keyDownHandler);
         this.#canvas.removeEventListener("click", this.#clickHandler);
+        this.#canvas.removeEventListener("focusout", this.#inputHandler);
         this.#focusHandler = null;
+        this.#clickHandler = null;
+        this.#keyDownHandler = null;
+        this.#inputHandler = null;
         this.#canvas = null;
+        this.#schemaId = null;
+
         return null;
     }
 
@@ -32,6 +42,43 @@ export class CanvasManager {
         }
 
         return null;
+    }
+
+    async #input(event) {
+        const target = event.composedPath()[0];
+
+        if (target.contentEditable !== "true") {
+            return;
+        }
+
+        const value = target.textContent;
+
+        if (target.dataset.property == null) {
+            const path = target.dataset.path;
+            const tagName = target.tagName.toLowerCase();
+
+            await crsbinding.events.emitter.emit("schema-actions", {
+                action: "update",
+                args: [this.#schemaId, path, {
+                    element: tagName,
+                    content: value
+                }]
+            })
+        }
+        else {
+            const widgetElement = this.#getWidgetElement(target);
+            const property = target.dataset.property;
+            const path = widgetElement.dataset.path;
+            const tagName = widgetElement.tagName.toLowerCase();
+
+            const argsOptions = { element: tagName };
+            argsOptions[property] = value;
+
+            await crsbinding.events.emitter.emit("schema-actions", {
+                action: "update",
+                args: [this.#schemaId, path, argsOptions]
+            })
+        }
     }
 
     async #click(event) {
@@ -53,6 +100,7 @@ export class CanvasManager {
         for (const element of elements) {
             if (element.dataset.widgetId != null) {
                 await crsbinding.events.emitter.emit("widget-selected", {
+                    schemaId: this.#schemaId,
                     widgetId: element.dataset.widgetId,
                     element: element
                 })

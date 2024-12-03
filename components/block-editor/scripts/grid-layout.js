@@ -12,6 +12,7 @@ export async function createInstance(targetElement, args, position, widgetId, sc
     const path = add(element, targetElement, position);
 
     for (const child of element.children) {
+        child.id = crypto.randomUUID();
         child.dataset.path = `${path}/#${child.id}`;
     }
 
@@ -22,7 +23,7 @@ async function addToSchema(data, path, schemaId, widgetId, children) {
     const {id, parentPath} = getPathParts(path);
 
     data.element = "layout";
-    data.id = id.slice(1);
+    data.id = id;
     data.widgetId = widgetId;
 
     // JHR: Refactor this so that it is rather on the schema manager provider's create action

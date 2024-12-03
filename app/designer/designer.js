@@ -18,7 +18,7 @@ export default class DataManagerIdb extends crsbinding.classes.ViewBase {
             "elements": []
         }
     };
-    #onUpdateHandler = this.#onUpdate.bind(this);
+    #onUpdateHandler = this.onUpdate.bind(this);
 
     async connectedCallback() {
         await super.connectedCallback();
@@ -29,7 +29,7 @@ export default class DataManagerIdb extends crsbinding.classes.ViewBase {
 
         this.#blockEditor = new BlockEditor("my-schema");
         this.#blockEditor.addEventListener("update", this.#onUpdateHandler);
-        this.#canvasManager = new CanvasManager(this.element.querySelector(".canvas"));
+        this.#canvasManager = new CanvasManager(this.element.querySelector(".canvas"), "my-schema");
     }
 
     async disconnectedCallback() {
@@ -41,7 +41,7 @@ export default class DataManagerIdb extends crsbinding.classes.ViewBase {
         this.#canvasManager = this.#canvasManager.dispose();
     }
 
-    #onUpdate() {
+    onUpdate() {
         const schema = this.#schemaManager.get("my-schema");
         this.element.querySelector(".column3").textContent = JSON.stringify(schema, null, 4);
     }

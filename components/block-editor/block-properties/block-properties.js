@@ -23,13 +23,15 @@ export default class BlockProperties extends crsbinding.classes.BindableElement 
     }
 
     async #widgetSelected(event) {
-        const { widgetId, element } = event;
+        const { schemaId, widgetId, element } = event;
         const { widget, tagName } = await crsbinding.events.emitter.emit("getWidgetProperties", { id: widgetId });
         const propertiesElement = document.createElement(tagName);
-        propertiesElement.setWidget(element, widget);
+        propertiesElement.setWidget(element, widget, schemaId);
 
-        this.shadowRoot.innerHTML = "";
-        this.shadowRoot.appendChild(propertiesElement);
+        requestAnimationFrame(() => {
+            this.shadowRoot.innerHTML = "";
+            this.shadowRoot.appendChild(propertiesElement);
+        })
     }
 }
 

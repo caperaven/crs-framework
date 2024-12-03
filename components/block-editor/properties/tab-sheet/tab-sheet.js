@@ -1,5 +1,5 @@
-export default class ContentEditable extends crsbinding.classes.BindableElement {
-    static tagName = "content-editable-editor";
+export default class TabSheet extends crsbinding.classes.BindableElement {
+    static tagName = "group-box-editor";
 
     #schemaId;
     #widgetData;
@@ -13,10 +13,13 @@ export default class ContentEditable extends crsbinding.classes.BindableElement 
         return import.meta.url.replace(".js", ".html")
     }
 
+    preLoad() {
+    }
+
     onHTML() {
         const linkElement = document.createElement("link");
         linkElement.rel = "stylesheet";
-        linkElement.href = new URL("./content-editable.css", import.meta.url);
+        linkElement.href = new URL("./tab-sheet.css", import.meta.url);
 
         this.shadowRoot.insertBefore(linkElement, this.shadowRoot.firstChild);
     }
@@ -26,18 +29,21 @@ export default class ContentEditable extends crsbinding.classes.BindableElement 
         this.#widgetElement = widgetElement;
         this.#widgetData = widgetData;
 
-        this.setProperty("content", this.#widgetElement.textContent);
+        const updateElement = this.#widgetElement.querySelector("[data-property='title']");
+        this.setProperty("title", updateElement.textContent);
     }
 
-    async contentChanged(newValue) {
-        this.#widgetElement.textContent = newValue;
+    async titleChanged(newValue) {
+        const updateElement = this.#widgetElement.querySelector("[data-property='title']");
+        updateElement.textContent = newValue;
+
         const path = this.#widgetElement.dataset.path;
 
         await crsbinding.events.emitter.emit("schema-actions", {
             action: "update",
             args: [this.#schemaId, path, {
                 element: this.#widgetElement.tagName.toLowerCase(),
-                content: newValue
+                title: newValue
             }]
         })
 
@@ -46,4 +52,4 @@ export default class ContentEditable extends crsbinding.classes.BindableElement 
     }
 }
 
-customElements.define(ContentEditable.tagName, ContentEditable);
+customElements.define(TabSheet.tagName, TabSheet);
