@@ -122,28 +122,32 @@ export class Dialog extends HTMLElement {
      * @method #resizeClicked - show resize dialog by toggling fullscreen and back
      * @returns {Promise<void>}
      */
-    async #resizeClicked() {
+    async #resizeClicked(event) {
+        const parentElement = event.composedPath()[0].parentElement;
         // toggle the fullscreen class
         this.classList.toggle("fullscreen");
 
         const icon = this.classList.contains("fullscreen") ? "close-fullscreen" : "open-fullscreen";
         this.shadowRoot.querySelector("#btnResize").textContent = icon;
 
-        const method = this.classList.contains("fullscreen") ? "disable_move" : "enable_move";
-        const popup = this.shadowRoot.querySelector(".popup");
-        await crs.call("dom_interactive", method, {
-            element: popup,
-            move_query: "header"
-        });
+        // const method = this.classList.contains("fullscreen") ? "disable_move" : "enable_move";
+        // const popup = this.shadowRoot.querySelector(".popup");
+        // await crs.call("dom_interactive", method, {
+        //     element: popup,
+        //     move_query: "header"
+        // });
+
+        await this.#disableMouseMove(parentElement);
     }
 
     async #popoutClicked(event) {
         const popoutButton = event.composedPath()[0];
+        const parentElement = popoutButton.parentElement;
 
         this.classList.toggle("popout");
         //Todo: change the icon name when bringing in the correct icons
         const popoutIcon = this.classList.contains("popout") ? "vertical-align-bottom" : "vertical-align-top";
-
+        await this.#disableMouseMove(parentElement);
         popoutButton.textContent = popoutIcon;
     }
 
@@ -346,6 +350,13 @@ export class Dialog extends HTMLElement {
         return true;
     }
 
+    async #disableMouseMove(headerElement) {
+        if (this.classList.contains("popout") || this.classList.contains("fullscreen")) {
+            headerElement.dataset.ignore = "true";
+        }else {
+            delete headerElement.dataset.ignore;
+        }
+    }
     /**
      * @method #show - show the dialog content as defined by header, main and footer and options.
      * @param header - the header content

@@ -62,7 +62,7 @@
         cursor: unset;
     }
 
-    :host([data-allow-move="true"]) header:hover {
+    :host([data-allow-move="true"]:not(.fullscreen)) header:not(header[data-ignore="true"]):hover {
         cursor: move;
     }
 
@@ -208,6 +208,9 @@
         border-bottom-left-radius: var(--radius);
         border-bottom-right-radius: var(--radius);
         box-shadow: var(--box-shadow);
+    }
+    header[data-ignore="true"]:hover  {
+        cursor: default;
     }
 
     @media screen and (max-width: 480px) {
