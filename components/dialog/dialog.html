@@ -50,7 +50,7 @@
         background: #00000030;
     }
 
-    :host([data-allow-resize="false"]) #btnResize {
+    :host([data-allow-full-screen="false"]) #btnResize {
         display: none;
     }
 
@@ -62,7 +62,7 @@
         cursor: unset;
     }
 
-    :host([data-allow-move="true"]:not(.fullscreen)) header:not(header[data-ignore="true"]):hover {
+    :host([data-allow-move="true"]) header:not(header[data-ignore="true"]):hover {
         cursor: move;
     }
 
@@ -191,7 +191,7 @@
         margin: 0 0.0625rem;
     }
 
-    :host([data-allow-move="true"]:not(.popout)) header:hover {
+    :host([data-allow-move="true"]:not(.popout):not(.fullscreen)) header:hover {
         cursor: move;
     }
 
@@ -223,7 +223,7 @@
     <header id="header-content">
         <h2 id="headerText">&{dialog.title}</h2>
         <button class="icon transparent" id="btnPopout" data-action="popout" aria-label="&{dialog.popout}" data-ignore="true">
-            vertical-align-top
+            pop-out
         </button>
         <button class="icon transparent" id="btnResize" data-action="resize" aria-label="&{dialog.resize}" data-ignore="true">
             open-fullscreen

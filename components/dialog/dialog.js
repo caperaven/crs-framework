@@ -146,7 +146,7 @@ export class Dialog extends HTMLElement {
 
         this.classList.toggle("popout");
         //Todo: change the icon name when bringing in the correct icons
-        const popoutIcon = this.classList.contains("popout") ? "vertical-align-bottom" : "vertical-align-top";
+        const popoutIcon = this.classList.contains("popout") ? "pop-out-close" : "pop-out";
         await this.#disableMouseMove(parentElement);
         popoutButton.textContent = popoutIcon;
     }
@@ -192,6 +192,9 @@ export class Dialog extends HTMLElement {
      * @param options.minHeight {string} - the minimum height of the dialog, used to control resize min height
      * @param options.maxWidth {string} - the maximum width of the dialog, used to control resize max width
      * @param options.maxHeight {string} - the maximum height of the dialog, used to control resize max height
+     * @param options.allowFullScreen {boolean} - allow the dialog to be shown in full screen
+     * @param options.allowPopout {boolean} - allow the dialog to be shown in a medium screen size
+     * @param options.allowFormatting {string} - allow the dialog to format the content
      * @returns {Promise<void>}
      */
     async #setOptions(options) {
@@ -205,6 +208,7 @@ export class Dialog extends HTMLElement {
 
         this.dataset.allowMove = options?.allowMove === true ? "true" : "false";
         this.dataset.allowResize = options?.allowResize === true ? "true" : "false";
+        this.dataset.allowFullScreen = options?.allowFullScreen === true ? "true" : "false";
         this.dataset.allowPopout = options?.allowPopout === true ? "true" : "false";// Todo: cml simplify please - this is not needed
         this.dataset.format = options?.allowFormatting;
 

@@ -96,6 +96,11 @@ export class DialogActions {
      *     allow_move: true - the dialog can be moved by the user.
      *     min_width: 100 - the minimum width of the dialog, the dialog cannot be resized smaller than this.
      *     min_height: 100 - the minimum height of the dialog, the dialog cannot be resized smaller than this.
+     *     max_height: 100 - the maximum height of the dialog, the dialog cannot be resized larger than this.
+     *     max_width: 100 - the maximum width of the dialog, the dialog cannot be resized larger than this.
+     *     allow_formatting - allow the dialog content to maintain its formatting.
+     *     allow_popout - dialog can be popped out into a medium window.
+     *     allow_full_screen - if true, the dialog can be shown in full screen.
      *     show_header: true - if true, the dialog header is shown. If false allow_move has no effect.
      * })
      *
@@ -148,6 +153,7 @@ export class DialogActions {
         const maxHeight = await crs.process.getValue(step.args.max_height, context, process, item);
         const allowPopout = await crs.process.getValue(step.args.allow_popout, context, process, item) ?? false;
         const allowFormatting = await crs.process.getValue(step.args.allow_formatting, context, process, item) ?? false;
+        const allowFullScreen = await crs.process.getValue(step.args.allow_full_screen, context, process, item) ?? false;
         const showHeader = await crs.process.getValue(step.args.show_header, context, process, item) ?? true;
         const autoClose = await crs.process.getValue(step.args.auto_close, context, process, item) ?? false;
         const callback = await crs.process.getValue(step.args.callback, context, process, item) ?? null;
@@ -155,7 +161,7 @@ export class DialogActions {
 
         const options = {
             target, position, anchor, size, margin, title, severity, allowResize,
-            allowMove, minWidth, minHeight, maxWidth, maxHeight, allowPopout, allowFormatting, showHeader, autoClose, callback, parent
+            allowMove, minWidth, minHeight, maxWidth, maxHeight, allowPopout, allowFormatting, allowFullScreen, showHeader, autoClose, callback, parent
         };
 
         const dialog = await ensureDialog(close, parent);
