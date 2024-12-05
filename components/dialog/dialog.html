@@ -29,32 +29,9 @@
         height: unset !important;
         width: unset !important;
         position: absolute !important;
-        max-width:  unset !important;
-        max-height:  unset !important;
-    }
-
-    :host(.popout) .popup {
-        top: 50% !important;
-        left: 50% !important;
-        bottom: 0;
-        right: 0;
-        z-index: 100;
-        resize: none;
-        translate: -50% -50% !important;
-        height:  51.125rem !important;
-        width:  38rem !important;
-        max-width: unset !important;
-        max-height: unset !important;
-    }
-    :host(.popout) {
-        background: #00000030;
     }
 
     :host([data-allow-full-screen="false"]) #btnResize {
-        display: none;
-    }
-
-    :host([data-allow-popout="false"]) #btnPopout {
         display: none;
     }
 
@@ -76,6 +53,9 @@
         position: absolute;
         display: grid;
         grid-template-rows: auto 1fr auto;
+        background: var(--window);
+        border: var(--border);
+        box-shadow: var(--box-shadow);
         border-radius: var(--radius);
         resize: none;
         overflow: hidden;
@@ -83,7 +63,24 @@
         min-height: var(--min-height, 9rem);
         max-width: var(--max-width, unset);
         max-height: var(--max-height, unset);
-        padding-top: 0.3125rem;
+    }
+
+    :host(.popout) .popup {
+        top: 50% !important;
+        left: 50% !important;
+        bottom: 0;
+        right: 0;
+        z-index: 100;
+        resize: none;
+        translate: -50% -50% !important;
+        height:  51.125rem !important;
+        width:  38rem !important;
+        max-width: unset !important;
+        max-height: unset !important;
+    }
+
+    :host(.popout) {
+        background: #00000030;
     }
 
     .back {
@@ -121,18 +118,6 @@
     ::slotted([slot="body"]) {
         padding: var(--padding);
         overflow: auto;
-        background: var(--window);
-        border: var(--border);
-        box-shadow: var(--box-shadow);
-        border-radius: var(--radius);
-        border-top: none;
-        border-top-right-radius: 0;
-        border-top-left-radius: 0;
-        margin: 0 0.0625rem 0.0625rem 0.0625rem;
-    }
-
-    :host([data-format="true"]) ::slotted([slot="body"]) {
-        white-space: pre-wrap;
     }
 
     button.icon {
@@ -152,21 +137,8 @@
         margin-left: 0.5rem;
     }
 
-    :host(.fullscreen) .popup{
-        padding-top: 0;
-    }
 
-    :host(:not(.popout):not(.fullscreen)) #header-content[data-anchor="left"]:before {
-        left: 0.625rem;
-    }
-
-    :host(:not(.popout):not(.fullscreen)) #header-content[data-anchor="right"]:before {
-        right: 0.625rem;
-    }
-
-    :host(:not(.popout):not(.fullscreen)) #header-content:before {
-        content: " ";
-        top: 0.0625rem;
+    :host(:not(.popout):not(.fullscreen)) #tooltip-icon {
         rotate: 135deg;
         width: 0.5rem;
         height: 0.5rem;
@@ -181,34 +153,11 @@
         border-top-right-radius: 0;
     }
 
-    header {
-        background: var(--window);
-        border: var(--border);
-        box-shadow: var(--box-shadow);
-        border-radius: var(--radius);
-        border-bottom-right-radius: 0;
-        border-bottom-left-radius: 0;
-        margin: 0 0.0625rem;
-    }
 
     :host([data-allow-move="true"]:not(.popout):not(.fullscreen)) header:hover {
         cursor: move;
     }
 
-    :host([data-has-footer="true"]) ::slotted([slot="body"]) {
-        border-radius: 0;
-        margin-bottom: 0;
-    }
-
-    :host([data-has-footer="true"]) footer {
-        border: var(--border);
-        border-top: none;
-        margin: 0 0.0625rem 0.0625rem 0.0625rem;
-        background: var(--window);
-        border-bottom-left-radius: var(--radius);
-        border-bottom-right-radius: var(--radius);
-        box-shadow: var(--box-shadow);
-    }
     header[data-ignore="true"]:hover  {
         cursor: default;
     }
@@ -219,6 +168,7 @@
         }
     }
 </style>
+<div id="tooltip-icon"></div>
 <div class="popup">
     <header id="header-content">
         <h2 id="headerText">&{dialog.title}</h2>

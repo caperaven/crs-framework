@@ -5,20 +5,27 @@
         padding: var(--padding);
         border-bottom: var(--border);
     }
+    #positionOptions-one,#positionOptions-two {
+        height: 10rem;
+
+    }
+    #positionOptions-one select,
+    #positionOptions-two select {
+        height: 2.5rem;
+    }
+
+    #positionOptions-one #positionOptions2 ,
+    #positionOptions-one #anchorOptions {
+        margin-right: 0.5rem;
+    }
+
+    .test {
+        margin-left: 5rem;
+    }
 </style>
 <h2>${title}</h2>
 
-<div role="toolbar">
-    <button click.call="show">Show Dialog</button>
 
-    <select id="positionOptions">
-        <option>bottom</option>
-        <option>left</option>
-        <option>right</option>
-    </select>
-
-    <button click.call="showRelative">Show Dialog Relative</button>
-</div>
 
 <h2>Message ${title}</h2>
 <div role="toolbar" click.call="handleMessage">
@@ -33,11 +40,48 @@
     <button data-action="info">Info</button>
 </div>
 
+<div role="toolbar" id="positionOptions-one">
+    <button click.call="show">Show Dialog</button>
+    <select id="positionOptions2">
+        <option>none</option>
+        <option>top</option>
+        <option>bottom</option>
+    </select>
+    <select id="anchorOptions2">
+        <option>none</option>
+        <option>right</option>
+        <option>left</option>
+        <option>middle</option>
+    </select>
+
+    <button click.call="showRelative" class="test">Show Dialog Relative</button>
+</div>
+
+<div role="toolbar" id="positionOptions-two">
+    <button click.call="show">Show Dialog</button>
+    <select id="anchorOptions">
+        <option>none</option>
+        <option>bottom</option>
+        <option>middle</option>
+        <option>top</option>
+    </select>
+    <select id="positionOptions">
+        <option>none</option>
+        <option>left</option>
+        <option>right</option>
+    </select>
+
+    <button click.call="showRelative" class="test">Show Dialog Relative</button>
+</div>
+<br>
 <h2>Custom Header</h2>
 <button click.call="customHeader">Custom Header</button>
 
 <h2>No Header</h2>
 <button click.call="noHeader($event)">Empty Header</button>
+
+
+
 
 <template id="dialog-content">
     <label>

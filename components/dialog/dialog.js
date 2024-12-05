@@ -25,6 +25,9 @@
  * This allows you to close the dialog with a close button but also do something like "apply"
  * See the filter-extension in the data table for an example.
  */
+import {TooltipPositionCalculations} from "./dialog-utils.js";
+
+
 export class Dialog extends HTMLElement {
     #stack = [];
     #clickHandler = this.#click.bind(this);
@@ -33,6 +36,7 @@ export class Dialog extends HTMLElement {
         "resize": this.#resizeClicked.bind(this),
         "popout": this.#popoutClicked.bind(this)
     };
+    #tooltipIcon;
 
     /**
      * @constructor
@@ -59,6 +63,7 @@ export class Dialog extends HTMLElement {
     load() {
         return new Promise(resolve => {
             this.shadowRoot.addEventListener("click", this.#clickHandler);
+            this.#tooltipIcon = this.shadowRoot.querySelector("#tooltip-icon");
             resolve();
         });
     }
@@ -77,7 +82,7 @@ export class Dialog extends HTMLElement {
         this.#clickHandler = null;
         await crsbinding.translations.delete("dialog");
         this.#stack = null;
-
+        this.#tooltipIcon = null;
         for (const key of Object.keys(this.#actions)) {
             this.#actions[key] = null;
         }
@@ -111,8 +116,7 @@ export class Dialog extends HTMLElement {
 
         try {
             await struct.options.callback?.(struct);
-        }
-        finally {
+        } finally {
             delete struct.action;
             delete struct.event;
         }
@@ -255,8 +259,6 @@ export class Dialog extends HTMLElement {
             return;
         }
 
-        headerElement.dataset.anchor = options?.anchor ?? "left";
-
         if (options?.severity != null) {
             headerElement.dataset.severity = options.severity;
         }
@@ -285,7 +287,7 @@ export class Dialog extends HTMLElement {
 
         let bodyElement = this.querySelector("[slot=body]");
 
-        if(bodyElement == null) {
+        if (bodyElement == null) {
             bodyElement = document.createElement("div");
             bodyElement.setAttribute("slot", "body");
             this.appendChild(bodyElement);
@@ -323,10 +325,15 @@ export class Dialog extends HTMLElement {
         const popup = this.shadowRoot.querySelector(".popup");
 
         if (options?.target == null) {
-            return await crs.call("fixed_position", "set", {element: popup, container: options?.parent, position: "center-screen", margin: 10});
+            return await crs.call("fixed_position", "set", {
+                element: popup,
+                container: options?.parent,
+                position: "center-screen",
+                margin: 10
+            });
         }
 
-        await crs.call("fixed_layout", "set", {
+        const positionInfo = await crs.call("fixed_layout", "set", {
             target: options.target,
             element: popup,
             container: options.parent,
@@ -334,6 +341,16 @@ export class Dialog extends HTMLElement {
             anchor: options.anchor.toLowerCase(),
             margin: options.margin
         });
+
+        await this.#setTooltipIconPosition(options, positionInfo);
+    }
+
+    async #setTooltipIconPosition(options, positionInfo) {
+        const {position, anchor} = options;
+        const {x, y}  = await TooltipPositionCalculations[position]?.anchor[anchor](positionInfo);
+
+        this.#tooltipIcon.style.translate = `${x}px ${y}px`;
+        console.log(positionInfo)
     }
 
     /**
@@ -357,10 +374,11 @@ export class Dialog extends HTMLElement {
     async #disableMouseMove(headerElement) {
         if (this.classList.contains("popout") || this.classList.contains("fullscreen")) {
             headerElement.dataset.ignore = "true";
-        }else {
+        } else {
             delete headerElement.dataset.ignore;
         }
     }
+
     /**
      * @method #show - show the dialog content as defined by header, main and footer and options.
      * @param header - the header content
