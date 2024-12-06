@@ -25,7 +25,7 @@
  * This allows you to close the dialog with a close button but also do something like "apply"
  * See the filter-extension in the data table for an example.
  */
-import {TooltipPositionCalculations} from "./dialog-utils.js";
+import {calculatePosition} from "./dialog-utils.js";
 
 
 export class Dialog extends HTMLElement {
@@ -347,7 +347,14 @@ export class Dialog extends HTMLElement {
 
     async #setTooltipIconPosition(options, positionInfo) {
         const {position, anchor} = options;
-        const {x, y}  = await TooltipPositionCalculations[position]?.anchor[anchor](positionInfo);
+
+        let positionType = "standardPositioning";
+        if (position === "left") {
+            positionType = "nonestandardPositioning"
+        }
+
+        const {x, y}  = await calculatePosition(positionInfo, anchor,position,positionType);
+
 
         this.#tooltipIcon.style.translate = `${x}px ${y}px`;
         console.log(positionInfo)
