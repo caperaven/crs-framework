@@ -3,12 +3,14 @@
     "scripts": {
         "grid-layout": "./scripts/grid-layout.js",
         "content-editable": "./scripts/content-editable.js",
-        "group-box": "./scripts/group-box.js"
+        "group-box": "./scripts/group-box.js",
+        "tab-sheet": "./scripts/tab-sheet.js"
     },
     "properties": {
         "content-editable": "./properties/content-editable/content-editable.js",
         "grid-layout": "./properties/grid-layout/grid-layout.js",
-        "group-box": "./properties/group-box/group-box.js"
+        "group-box": "./properties/group-box/group-box.js",
+        "tab-sheet": "./properties/tab-sheet/tab-sheet.js"
     },
     "widgets": [
         {
@@ -94,6 +96,15 @@
             "category": "form",
             "keywords": ["form", "groupbox", "container"],
             "dropExcludes": ["group-box", ".toolbar"]
+        },
+        {
+            "id": "tabsheet",
+            "label": "Tab Sheet",
+            "script": "tab-sheet",
+            "icon": "tabsheet.svg",
+            "properties": "tab-sheet",
+            "category": "form",
+            "keywords": ["form", "tab", "container"]
         },
         {
             "id": "h1",
