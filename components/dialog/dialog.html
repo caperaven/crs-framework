@@ -29,9 +29,11 @@
         height: unset !important;
         width: unset !important;
         position: absolute !important;
+        max-width: unset !important;
+        max-height: unset !important;
     }
 
-    :host([data-allow-full-screen="false"]) #btnResize {
+    :host([data-allow-maximize="false"]) #btnResize {
         display: none;
     }
 
@@ -56,7 +58,7 @@
         background: var(--window);
         border: var(--border);
         box-shadow: var(--box-shadow);
-        border-radius: var(--radius);
+        border-radius: var(--double-radius);
         resize: none;
         overflow: hidden;
         min-width: var(--min-width, 18.75rem);
@@ -137,22 +139,24 @@
         margin-left: 0.5rem;
     }
 
-
     :host(:not(.popout):not(.fullscreen)) #tooltip-icon {
-        rotate: 135deg;
+        rotate: 224deg;
         width: 0.5rem;
         height: 0.5rem;
-        /*background: var(--window);*/
-        background: red;
+        background: var(--window);
         position: absolute;
         border-bottom: var(--border);
-        border-left: var(--border);
+        border-right: var(--border);
         border-bottom-left-radius: 0.125rem;
         border-bottom-right-radius: 0;
         border-top-left-radius: 0;
         border-top-right-radius: 0;
     }
 
+    #tooltip-icon[data-top="true"][data-standard="true"] {
+        border-top: var(--border);
+        border-right: var(--border);
+    }
 
     :host([data-allow-move="true"]:not(.popout):not(.fullscreen)) header:hover {
         cursor: move;
@@ -162,9 +166,27 @@
         cursor: default;
     }
 
+    #tooltip-icon {
+        z-index: 1;
+        background: red !important;
+    }
+
+    :host([data-format="true"]) ::slotted([slot="body"]) {
+        white-space: pre-wrap;
+    }
+
     @media screen and (max-width: 480px) {
         .popup{
             min-width: 99%;
+        }
+       .popup {
+            min-width: 99%;
+            bottom: 0;
+            right: 0;
+            z-index: 100;
+            resize: none;
+            translate: unset !important;
+            position: absolute !important;
         }
     }
 </style>

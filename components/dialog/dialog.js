@@ -134,13 +134,6 @@ export class Dialog extends HTMLElement {
         const icon = this.classList.contains("fullscreen") ? "close-fullscreen" : "open-fullscreen";
         this.shadowRoot.querySelector("#btnResize").textContent = icon;
 
-        // const method = this.classList.contains("fullscreen") ? "disable_move" : "enable_move";
-        // const popup = this.shadowRoot.querySelector(".popup");
-        // await crs.call("dom_interactive", method, {
-        //     element: popup,
-        //     move_query: "header"
-        // });
-
         await this.#disableMouseMove(parentElement);
     }
 
@@ -151,8 +144,10 @@ export class Dialog extends HTMLElement {
         this.classList.toggle("popout");
         //Todo: change the icon name when bringing in the correct icons
         const popoutIcon = this.classList.contains("popout") ? "pop-out-close" : "pop-out";
+        const tooltip = this.classList.contains("popout") ? "Expand": "Collapse";// Todo convert to translations.
         await this.#disableMouseMove(parentElement);
         popoutButton.textContent = popoutIcon;
+        popoutButton.setAttribute("tooltip", tooltip);
     }
 
     async #closeClicked() {
@@ -196,7 +191,7 @@ export class Dialog extends HTMLElement {
      * @param options.minHeight {string} - the minimum height of the dialog, used to control resize min height
      * @param options.maxWidth {string} - the maximum width of the dialog, used to control resize max width
      * @param options.maxHeight {string} - the maximum height of the dialog, used to control resize max height
-     * @param options.allowFullScreen {boolean} - allow the dialog to be shown in full screen
+     * @param options.allowMaximize {boolean} - allow the dialog to be shown in full screen
      * @param options.allowPopout {boolean} - allow the dialog to be shown in a medium screen size
      * @param options.allowFormatting {string} - allow the dialog to format the content
      * @returns {Promise<void>}
@@ -212,7 +207,7 @@ export class Dialog extends HTMLElement {
 
         this.dataset.allowMove = options?.allowMove === true ? "true" : "false";
         this.dataset.allowResize = options?.allowResize === true ? "true" : "false";
-        this.dataset.allowFullScreen = options?.allowFullScreen === true ? "true" : "false";
+        this.dataset.allowMaximize = options?.allowMaximize === true ? "true" : "false";
         this.dataset.allowPopout = options?.allowPopout === true ? "true" : "false";// Todo: cml simplify please - this is not needed
         this.dataset.format = options?.allowFormatting;
 
@@ -348,16 +343,15 @@ export class Dialog extends HTMLElement {
     async #setTooltipIconPosition(options, positionInfo) {
         const {position, anchor} = options;
 
-        let positionType = "standardPositioning";
-        if (position === "left") {
-            positionType = "nonestandardPositioning"
+        let positionType = true;
+        if (position !== "top" && position !== "bottom") {
+            positionType = false
         }
 
-        const {x, y}  = await calculatePosition(positionInfo, anchor,position,positionType);
+        this.#tooltipIcon.dataset.postion = position;
+        const {xCoordinate, yCoordinate}  = await calculatePosition(positionInfo, anchor,position,positionType);
 
-
-        this.#tooltipIcon.style.translate = `${x}px ${y}px`;
-        console.log(positionInfo)
+        this.#tooltipIcon.style.translate = `${xCoordinate}px ${yCoordinate}px`;
     }
 
     /**

@@ -26,12 +26,13 @@ export default class Dialog extends crsbinding.classes.ViewBase {
 
         await crs.call("dialog", "show", {
             title: "My Title",
+            parent: "main",
             main: instance,
             target: event.target,
             position: position === "none" ? position2: position,
             anchor: anchor === "none" ? anchor2: anchor,
             allow_resize: true,
-            allow_full_screen: true,
+            allow_maximize: true,
             allow_popout: true,
             margin: 10
         });
