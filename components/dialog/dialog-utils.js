@@ -46,7 +46,7 @@ const noneStandardPositioning = Object.freeze({
     bottom: {offset: -15},
     top: {offset: -15},
     yOffset: {
-        bottom: -17,
+        bottom: -20,
         top: 10
     },
     xOffset: 21
