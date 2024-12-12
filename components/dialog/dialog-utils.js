@@ -3,7 +3,7 @@
  * @readonly
  * @enum {string}
  */
-const Positions = Object.freeze({
+export const Positions = Object.freeze({
     RIGHT: "right",
     LEFT: "left",
     TOP: "top",
@@ -17,7 +17,7 @@ const Positions = Object.freeze({
  * @readonly
  * @enum {string}
  */
-const Operations = Object.freeze({
+export const Operations = Object.freeze({
     DIVISION: "division",
     ADDITION: "addition"
 });
@@ -27,7 +27,7 @@ const Operations = Object.freeze({
  * @readonly
  * @enum {Object}
  */
-const standardPositioning = Object.freeze({
+export const standardPositioning = Object.freeze({
     left: {offset: 10},
     right: {offset: -22},
     yOffsets: {
@@ -41,7 +41,7 @@ const standardPositioning = Object.freeze({
  * @readonly
  * @enum {Object}
  */
-const noneStandardPositioning = Object.freeze({
+export const noneStandardPositioning = Object.freeze({
     none: {offset: 0},
     bottom: {offset: -15},
     top: {offset: -15},
@@ -57,7 +57,7 @@ const noneStandardPositioning = Object.freeze({
  * @readonly
  * @enum {Function}
  */
-const operatorActions = {
+export const operatorActions = {
     'division': async (xCoordinate,width) =>  (xCoordinate + width / 2),
     'addition': async (xCoordinate,width,type) => {
         return xCoordinate + width + (standardPositioning[type]?.offset ?? noneStandardPositioning[type].offset);

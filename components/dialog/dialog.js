@@ -31,12 +31,14 @@ import {calculatePosition} from "./dialog-utils.js";
 export class Dialog extends HTMLElement {
     #stack = [];
     #clickHandler = this.#click.bind(this);
+    #mouseMoveHandler = this.#mouseMove.bind(this);
     #actions = {
         "close": this.#closeClicked.bind(this),
         "resize": this.#resizeClicked.bind(this),
         "popout": this.#popoutClicked.bind(this)
     };
     #tooltipIcon;
+    #popup;
 
     /**
      * @constructor
@@ -63,6 +65,9 @@ export class Dialog extends HTMLElement {
     load() {
         return new Promise(resolve => {
             this.shadowRoot.addEventListener("click", this.#clickHandler);
+
+            this.#popup = this.shadowRoot.querySelector(".popup")
+            this.#popup.addEventListener("mousedown", this.#mouseMoveHandler);
             this.#tooltipIcon = this.shadowRoot.querySelector("#tooltip-icon");
             resolve();
         });
@@ -120,6 +125,12 @@ export class Dialog extends HTMLElement {
             delete struct.action;
             delete struct.event;
         }
+    }
+
+    async #mouseMove(event) {
+        const position  = this.#popup.style.translate;
+        console.log("position value: ", position);
+
     }
 
     /**
