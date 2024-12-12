@@ -341,16 +341,21 @@ export class Dialog extends HTMLElement {
     }
 
     async #setTooltipIconPosition(options, positionInfo) {
-        const {position, anchor} = options;
+        const {position, anchor, margin, parent} = options;
+
+        if (parent.tagName.toUpperCase() !== "BODY" && parent != null) {
+            this.#tooltipIcon.setAttribute("hidden", true);
+        }
 
         let positionType = true;
         if (position !== "top" && position !== "bottom") {
-            positionType = false
+            positionType = false;
         }
 
         this.#tooltipIcon.dataset.postion = position;
-        const {xCoordinate, yCoordinate}  = await calculatePosition(positionInfo, anchor,position,positionType);
+        const {xCoordinate, yCoordinate}  = await calculatePosition(positionInfo, anchor,position,margin,positionType);
 
+        this.#tooltipIcon.dataset.position = position;
         this.#tooltipIcon.style.translate = `${xCoordinate}px ${yCoordinate}px`;
     }
 

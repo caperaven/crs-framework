@@ -29,10 +29,10 @@ const Operations = Object.freeze({
  */
 const standardPositioning = Object.freeze({
     left: {offset: 10},
-    right: {offset: -34},
+    right: {offset: -22},
     yOffsets: {
         top: -15,
-        bottom: 5
+        bottom: -4
     }
 });
 
@@ -46,7 +46,7 @@ const noneStandardPositioning = Object.freeze({
     bottom: {offset: -15},
     top: {offset: -15},
     yOffset: {
-        bottom: -10,
+        bottom: -17,
         top: 10
     },
     xOffset: 21
@@ -64,18 +64,18 @@ const operatorActions = {
     }
 };
 
-
 /**
  * @function calculatePosition - Calculate the position based on the given parameters.
  * @param {Object} positionInfo - The position information.
  * @param {string} anchor - The anchor position.
  * @param {string} position - The position type.
+ * @param {number} [margin=0] - The margin for the target.
  * @param {string} [positionType="calculateStandardPositioning"] - The type of positioning calculation.
  * @returns {Promise<Object>} The calculated coordinates.
  */
-export async function calculatePosition(positionInfo, anchor, position, positionType = true) {
+export async function calculatePosition(positionInfo, anchor, position, margin= 0, positionType = true) {
     if (positionType === true) {
-        return await calculateStandardPositioning(positionInfo, anchor, position);
+        return await calculateStandardPositioning(positionInfo, anchor, position, margin);
     }
 
     return await calculateNoneStandardPositioning(positionInfo, anchor, position);
@@ -86,14 +86,16 @@ export async function calculatePosition(positionInfo, anchor, position, position
  * @param {Object} positionInfo - The position information.
  * @param {string} anchor - The anchor position.
  * @param {string} position - The position type.
+ * @param {number} margin - The margin for the target.
  * @returns {Promise<Object>} The calculated coordinates.
  */
-async function calculateStandardPositioning(positionInfo, anchor, position) {
+async function calculateStandardPositioning(positionInfo, anchor, position, margin) {
     const operator = anchor === Positions.MIDDLE ? Operations.DIVISION : Operations.ADDITION;
     const width = anchor === Positions.RIGHT || anchor === Positions.MIDDLE ? positionInfo.width: 0;
+    const marginOffset = position === "bottom" ? margin : 0;
 
     const xCoordinate = Math.round(await operatorActions[operator](positionInfo.x , width, anchor));
-    const yCoordinate = Math.round(positionInfo[position]);
+    const yCoordinate = Math.round(positionInfo[position] + standardPositioning.yOffsets[position]) + marginOffset;
     return {xCoordinate, yCoordinate}
 }
 

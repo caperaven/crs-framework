@@ -139,8 +139,23 @@
         margin-left: 0.5rem;
     }
 
-    :host(:not(.popout):not(.fullscreen)) #tooltip-icon {
+    :host(:not(.popout):not(.fullscreen)) #tooltip-icon[data-position="bottom"] {
         rotate: 224deg;
+    }
+
+    :host(:not(.popout):not(.fullscreen)) #tooltip-icon[data-position="top"] {
+        rotate: 45deg;
+    }
+
+    :host(:not(.popout):not(.fullscreen)) #tooltip-icon[data-position="left"] {
+        rotate: 313deg;
+    }
+
+    :host(:not(.popout):not(.fullscreen)) #tooltip-icon[data-position="right"] {
+        rotate: 140deg;
+    }
+
+    :host(:not(.popout):not(.fullscreen)) #tooltip-icon {
         width: 0.5rem;
         height: 0.5rem;
         background: var(--window);
@@ -168,17 +183,26 @@
 
     #tooltip-icon {
         z-index: 1;
-        background: red !important;
     }
 
     :host([data-format="true"]) ::slotted([slot="body"]) {
         white-space: pre-wrap;
     }
 
+    ::slotted([slot="body"]) {
+        scrollbar-width: thin;
+        scrollbar-color: var(--grey-s2) var(--window);
+    }
+
     @media screen and (max-width: 480px) {
+        #tooltip-icon {
+            display: none;
+        }
+
         .popup{
             min-width: 99%;
         }
+
        .popup {
             min-width: 99%;
             bottom: 0;
@@ -187,6 +211,8 @@
             resize: none;
             translate: unset !important;
             position: absolute !important;
+            max-width: unset !important;
+            max-height: unset !important;
         }
     }
 </style>
