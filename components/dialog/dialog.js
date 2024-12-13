@@ -31,7 +31,8 @@ import {calculatePosition} from "./dialog-utils.js";
 export class Dialog extends HTMLElement {
     #stack = [];
     #clickHandler = this.#click.bind(this);
-    #mouseMoveHandler = this.#mouseMove.bind(this);
+    #mouseUpHandler = this.#mouseUp.bind(this);
+    #mouseDownHandler = this.#mouseDown.bind(this);
     #actions = {
         "close": this.#closeClicked.bind(this),
         "resize": this.#resizeClicked.bind(this),
@@ -39,6 +40,8 @@ export class Dialog extends HTMLElement {
     };
     #tooltipIcon;
     #popup;
+    #cahcedTranslatePosition;
+    #cachedWidth;
 
     /**
      * @constructor
@@ -67,8 +70,12 @@ export class Dialog extends HTMLElement {
             this.shadowRoot.addEventListener("click", this.#clickHandler);
 
             this.#popup = this.shadowRoot.querySelector(".popup")
-            this.#popup.addEventListener("mousedown", this.#mouseMoveHandler);
+
+            this.#popup.addEventListener("mouseup", this.#mouseUpHandler);
+
             this.#tooltipIcon = this.shadowRoot.querySelector("#tooltip-icon");
+
+            this.#popup.addEventListener("mousedown", this.#mouseDownHandler);
             resolve();
         });
     }
@@ -78,16 +85,24 @@ export class Dialog extends HTMLElement {
      * @returns {Promise<void>}
      */
     async disconnectedCallback() {
-        const popup = this.shadowRoot.querySelector(".popup");
+        // const popup = this.shadowRoot.querySelector(".popup");
         await crs.call("dom_interactive", "disable_move", {
             element: popup
         });
 
         this.shadowRoot.removeEventListener("click", this.#clickHandler);
+        this.#popup.removeEventListener("mouseup", this.#mouseUpHandler);
+        this.#popup.removeEventListener("mousedown", this.#mouseDownHandler);
+
         this.#clickHandler = null;
         await crsbinding.translations.delete("dialog");
         this.#stack = null;
         this.#tooltipIcon = null;
+        this.#cahcedTranslatePosition = null;
+        this.#popup = null;
+        this.#mouseUpHandler =null;
+        this.#mouseDownHandler = null;
+        this.#cachedWidth = null;
         for (const key of Object.keys(this.#actions)) {
             this.#actions[key] = null;
         }
@@ -127,10 +142,32 @@ export class Dialog extends HTMLElement {
         }
     }
 
-    async #mouseMove(event) {
-        const position  = this.#popup.style.translate;
-        console.log("position value: ", position);
+    async #mouseDown(event) {
+        const isHidden = this.#tooltipIcon.getAttribute("hidden");
 
+        if (isHidden === "true") return;
+
+        this.#tooltipIcon.dataset.visible = "false";
+        this.#cahcedTranslatePosition = this.#popup.style.translate;
+        this.#cachedWidth = this.#popup.style.width;
+    }
+
+    async #mouseUp(event) {
+        const isHidden = this.#tooltipIcon.getAttribute("hidden");
+
+        if (isHidden === "true") return
+
+        const position  = this.#popup.style.translate;
+        const width = this.#popup.style.width;
+
+        if(position !== this.#cahcedTranslatePosition || width !== this.#cachedWidth) {
+            this.#tooltipIcon.setAttribute("hidden", "true");
+            this.#cahcedTranslatePosition = position;
+            return;
+        }
+
+        this.#tooltipIcon.dataset.visible = "true";
+        this.#cahcedTranslatePosition = position;
     }
 
     /**
@@ -209,7 +246,7 @@ export class Dialog extends HTMLElement {
      */
     async #setOptions(options) {
         if (options?.allowMove === true && options?.showHeader === true) {
-            const popup = this.shadowRoot.querySelector(".popup");
+            const popup = this.#popup;
             await crs.call("dom_interactive", "enable_move", {
                 element: popup,
                 move_query: "header"
@@ -328,7 +365,7 @@ export class Dialog extends HTMLElement {
      * @returns {Promise<*>}
      */
     async #setPosition(options) {
-        const popup = this.shadowRoot.querySelector(".popup");
+        // const popup = this.shadowRoot.querySelector(".popup");
 
         if (options?.target == null) {
             return await crs.call("fixed_position", "set", {
@@ -341,7 +378,7 @@ export class Dialog extends HTMLElement {
 
         const positionInfo = await crs.call("fixed_layout", "set", {
             target: options.target,
-            element: popup,
+            element: this.#popup,
             container: options.parent,
             at: options.position.toLowerCase(),
             anchor: options.anchor.toLowerCase(),

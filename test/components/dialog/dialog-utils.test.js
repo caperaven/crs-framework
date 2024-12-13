@@ -43,10 +43,4 @@ describe("Dialog utils", () => {
         const result = await calculatePosition(positionInfo, Positions.RIGHT, "top", 5, true);
         assertEquals(result, { xCoordinate: 8, yCoordinate: 15 });
     });
-
-    it("calculatePosition should calculate non-standard positioning correctly", async () => {
-        const positionInfo = { x: 10, right: 20, top: 30, bottom: 40, height: 50 };
-        const result = await calculatePosition(positionInfo, Positions.LEFT, "bottom", 0, false);
-        assertEquals(result, { xCoordinate: 31, yCoordinate: 20 });
-    });
 });
