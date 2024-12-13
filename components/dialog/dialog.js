@@ -143,8 +143,9 @@ export class Dialog extends HTMLElement {
 
     async #mouseDown(event) {
         const isHidden = this.#tooltipIcon.getAttribute("hidden");
+        const {position, allowMove} = this.#stack[0].options;
 
-        if (isHidden === "true") return;
+        if (isHidden === "true" || position === "bottom" && allowMove === false) return;
 
         this.#tooltipIcon.dataset.visible = "false";
         this.#cachedTranslatePosition = this.#popup.style.translate;
@@ -153,13 +154,14 @@ export class Dialog extends HTMLElement {
 
     async #mouseUp(event) {
         const isHidden = this.#tooltipIcon.getAttribute("hidden");
+        const {position, allowMove} = this.#stack[0].options;
 
-        if (isHidden === "true") return;
+        if (isHidden === "true" || position === "bottom" && allowMove === false) return;
 
-        const position  = this.#popup.style.translate;
+        const translatePosition  = this.#popup.style.translate;
         const width = this.#popup.style.width;
 
-        if(position !== this.#cachedTranslatePosition || width !== this.#cachedWidth) {
+        if(translatePosition !== this.#cachedTranslatePosition || width !== this.#cachedWidth) {
             this.#tooltipIcon.setAttribute("hidden", "true");
             return;
         }
@@ -399,6 +401,16 @@ export class Dialog extends HTMLElement {
 
         this.#tooltipIcon.dataset.position = position;
         this.#tooltipIcon.style.translate = `${xCoordinate}px ${yCoordinate}px`;
+        await this.#setTooltipVisibility(yCoordinate, position);
+    }
+
+    async #setTooltipVisibility(yCoordinate, position) {
+        const coordinate = this.#popup.style.translate.split(" ")[1].replace("px", "");
+        const coordinateY = Number(coordinate);
+
+        if (yCoordinate > coordinateY && position === "bottom") {
+            this.#tooltipIcon.dataset.visible = "false";
+        }
     }
 
     /**
