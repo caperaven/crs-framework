@@ -40,7 +40,7 @@ export class Dialog extends HTMLElement {
     };
     #tooltipIcon;
     #popup;
-    #cahcedTranslatePosition;
+    #cachedTranslatePosition;
     #cachedWidth;
 
     /**
@@ -85,9 +85,8 @@ export class Dialog extends HTMLElement {
      * @returns {Promise<void>}
      */
     async disconnectedCallback() {
-        // const popup = this.shadowRoot.querySelector(".popup");
         await crs.call("dom_interactive", "disable_move", {
-            element: popup
+            element: this.#popup
         });
 
         this.shadowRoot.removeEventListener("click", this.#clickHandler);
@@ -98,7 +97,7 @@ export class Dialog extends HTMLElement {
         await crsbinding.translations.delete("dialog");
         this.#stack = null;
         this.#tooltipIcon = null;
-        this.#cahcedTranslatePosition = null;
+        this.#cachedTranslatePosition = null;
         this.#popup = null;
         this.#mouseUpHandler =null;
         this.#mouseDownHandler = null;
@@ -148,26 +147,24 @@ export class Dialog extends HTMLElement {
         if (isHidden === "true") return;
 
         this.#tooltipIcon.dataset.visible = "false";
-        this.#cahcedTranslatePosition = this.#popup.style.translate;
+        this.#cachedTranslatePosition = this.#popup.style.translate;
         this.#cachedWidth = this.#popup.style.width;
     }
 
     async #mouseUp(event) {
         const isHidden = this.#tooltipIcon.getAttribute("hidden");
 
-        if (isHidden === "true") return
+        if (isHidden === "true") return;
 
         const position  = this.#popup.style.translate;
         const width = this.#popup.style.width;
 
-        if(position !== this.#cahcedTranslatePosition || width !== this.#cachedWidth) {
+        if(position !== this.#cachedTranslatePosition || width !== this.#cachedWidth) {
             this.#tooltipIcon.setAttribute("hidden", "true");
-            this.#cahcedTranslatePosition = position;
             return;
         }
 
         this.#tooltipIcon.dataset.visible = "true";
-        this.#cahcedTranslatePosition = position;
     }
 
     /**
@@ -246,9 +243,8 @@ export class Dialog extends HTMLElement {
      */
     async #setOptions(options) {
         if (options?.allowMove === true && options?.showHeader === true) {
-            const popup = this.#popup;
             await crs.call("dom_interactive", "enable_move", {
-                element: popup,
+                element: this.#popup,
                 move_query: "header"
             });
         }
@@ -365,11 +361,9 @@ export class Dialog extends HTMLElement {
      * @returns {Promise<*>}
      */
     async #setPosition(options) {
-        // const popup = this.shadowRoot.querySelector(".popup");
-
         if (options?.target == null) {
             return await crs.call("fixed_position", "set", {
-                element: popup,
+                element: this.#popup,
                 container: options?.parent,
                 position: "center-screen",
                 margin: 10
